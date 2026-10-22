@@ -699,3 +699,33 @@ cases:
     kind: upstream_documentation
   - path: tests/test_tutorial/test_body_fields/test_tutorial001.py
     kind: upstream_test
+- case_id: fastapi.first-slice.injected-response-status-code
+  actions:
+  - action_id: get-root-with-nested-response-dependency
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+    - {kind: asgi_send, selector: message_types, comparison: ordered}
+  # FastAPI 0.157.0's pinned test sets Response.status_code in a nested
+  # dependency (tests/test_response_change_status_code.py:7-17) and asserts
+  # the returned 201 JSON response at lines 23-26. Pinned source SHA-256:
+  # cf643bdb721951d2e5a57a1b9c5281736e77349d21b4542dd46feca4af563f69.
+  source_evidence:
+  - path: tests/test_response_change_status_code.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/response-change-status-code.md
+    kind: upstream_documentation

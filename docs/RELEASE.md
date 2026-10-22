@@ -149,9 +149,9 @@ separate hosted site is selected and configured.
 
 ## Readiness snapshot (2026-10-21; source candidate 9b66f3c)
 
-The clean `main` candidate was
-`9b66f3c5ef5b53a9b846c43059d119fffba9bc75`, built against FastAPI
-`95f8322ee1dcda7ceace7b1c4f6c9915b36d748f` and Starlette-RS
+This historical 2026-10-21 snapshot used the FastAPI 0.141.1 source pin. The
+clean `main` candidate was `9b66f3c5ef5b53a9b846c43059d119fffba9bc75`, built
+against FastAPI 0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f` and Starlette-RS
 `4139a72449bf5751e8902fb1c7175ee7f191d338` (source tree SHA-256
 `da4acf9c64ae8df8a9bde0976d1777f5b36d67a6af45c443b0d0f617cad10f48`). These
 artifacts are local preparation evidence, not uploaded or tagged releases.

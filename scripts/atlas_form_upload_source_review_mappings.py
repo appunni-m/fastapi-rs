@@ -49,7 +49,7 @@ SOURCE_IDENTITIES = {
     },
     "pydantic": {
         "version": "2.13.5",
-        "pydantic_core_version": "2.46.4",
+        "pydantic_core_version": "2.46.5",
         "role": "public scalar/model validation and model schema dependency where applicable",
     },
     "python-multipart": {

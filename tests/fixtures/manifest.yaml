@@ -523,7 +523,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 6cf0f9a6d41a1106496930837ce10365dd547218438b32ae18f0464cfb4cb62b
+    sha256: 8da97aa9418dfed38c2175d89ab777fc7517d992fb453c74afc78937715c3ba0
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1831
@@ -563,7 +563,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: f1ef564ac335494f983f87f93ecc0316bb8c3684ef7e6c50e9848f0e148bee18
+    sha256: 642e25c1accd7039deae24573ec1c30c929f1e1541e61830476099f2790925bf
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 913
@@ -600,14 +600,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: bfff6ba2effb14998dd1f2b546e7aa5c1e185aa5429be44ace780f461fd0d71a
+    sha256: f3fed337456014622dc85d3a258537e8937a6a1f91ef822151cb1300ce9068ab
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: 61ec8ca935acdac54c98e148d48e90879bc3d3cfe68315db856332ef55a38bf9
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 736
-      cases: 3089
-      partial_source_mappings: 2016
+      cases: 3090
+      partial_source_mappings: 2018
 
 contract_metadata:
   aliases:
@@ -699,13 +699,13 @@ unresolved:
     comparison_schema_id: fastapi-rs/python-asgi-comparison@2
     comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v2.schema.json
     comparison_schema_sha256: 3e9cb95f0786f370f795e65316e8c69c7b23c9f0ce613e40c40ae8fe987d84c3
-    input_state: HTTP and WebSocket workflow schemas define stimuli; the first HTTP slice has fourteen input-only cases
+    input_state: HTTP and WebSocket workflow schemas define stimuli; the first HTTP slice has fifteen input-only cases
     oracle_environment: isolated environment from the FastAPI 0.157.0 lock with local Starlette 1.6.0 override
     recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-    recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+    recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
     first_slice_workload:
       path: tests/fixtures/workloads/first_slice.py
-      sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
     case_ids:
       - fastapi.first-slice.create-item-valid
       - fastapi.first-slice.create-item-optional-query-default
@@ -721,6 +721,7 @@ unresolved:
       - fastapi.first-slice.create-item-text-plain-content-type
       - fastapi.first-slice.create-item-missing-content-type
       - fastapi.first-slice.openapi
+      - fastapi.first-slice.injected-response-status-code
     expected_outputs: absent
     missing:
       - complete operation-level FastAPI public contract
@@ -1459,7 +1460,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 195
     symbols_with_operation_fixture_refs: 490
-    operation_fixture_refs: 2957
+    operation_fixture_refs: 2967
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -3170,6 +3171,19 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: first-asgi-request
+      input_path: tests/fixtures/inputs/parity/first-asgi-request.json
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
+      recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
+      workload_path: tests/fixtures/workloads/first_slice.py
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
+      case_id: fastapi.first-slice.injected-response-status-code
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: generator-awaitable-protocol
       input_path: tests/fixtures/inputs/parity/generator-awaitable-protocol.json
       input_sha256: ba021904c37edbdd0e5561de821813b8cbddb9f3ed5cbc42510a54a3ca0bbe65
@@ -10312,11 +10326,11 @@ api_surface_contract:
       - warnings.category_message
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.openapi
       observation_selectors:
       - asgi.send.message_types
@@ -10331,11 +10345,11 @@ api_surface_contract:
       - openapi.request_schema
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-valid
       observation_selectors:
       - asgi.send.message_types
@@ -10344,11 +10358,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-optional-query-default
       observation_selectors:
       - asgi.send.message_types
@@ -10357,11 +10371,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-invalid-path-conversion
       observation_selectors:
       - asgi.send.message_types
@@ -10370,11 +10384,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.path-not-found
       observation_selectors:
       - asgi.send.message_types
@@ -10383,11 +10397,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.method-not-allowed
       observation_selectors:
       - asgi.send.message_types
@@ -10396,11 +10410,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-chunked-body
       observation_selectors:
       - asgi.send.message_types
@@ -10409,11 +10423,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-missing-header
       observation_selectors:
       - asgi.send.message_types
@@ -10422,11 +10436,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-invalid
       observation_selectors:
       - asgi.send.message_types
@@ -10435,11 +10449,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-malformed-json
       observation_selectors:
       - asgi.send.message_types
@@ -10448,11 +10462,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-aggregated-errors
       observation_selectors:
       - asgi.send.message_types
@@ -10461,11 +10475,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-json-suffix-content-type
       observation_selectors:
       - asgi.send.message_types
@@ -10474,11 +10488,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-text-plain-content-type
       observation_selectors:
       - asgi.send.message_types
@@ -10487,11 +10501,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-missing-content-type
       observation_selectors:
       - asgi.send.message_types
@@ -10610,11 +10624,11 @@ api_surface_contract:
       - python.signature
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.openapi
       observation_selectors:
       - asgi.send.message_types
@@ -10629,11 +10643,11 @@ api_surface_contract:
       - openapi.request_schema
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-valid
       observation_selectors:
       - asgi.send.message_types
@@ -10642,11 +10656,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-optional-query-default
       observation_selectors:
       - asgi.send.message_types
@@ -10655,11 +10669,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-invalid-path-conversion
       observation_selectors:
       - asgi.send.message_types
@@ -10668,11 +10682,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.path-not-found
       observation_selectors:
       - asgi.send.message_types
@@ -10681,11 +10695,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-chunked-body
       observation_selectors:
       - asgi.send.message_types
@@ -10694,11 +10708,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-missing-header
       observation_selectors:
       - asgi.send.message_types
@@ -10707,11 +10721,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-invalid
       observation_selectors:
       - asgi.send.message_types
@@ -10720,11 +10734,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-malformed-json
       observation_selectors:
       - asgi.send.message_types
@@ -10733,11 +10747,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-aggregated-errors
       observation_selectors:
       - asgi.send.message_types
@@ -10746,11 +10760,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-json-suffix-content-type
       observation_selectors:
       - asgi.send.message_types
@@ -10759,11 +10773,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-text-plain-content-type
       observation_selectors:
       - asgi.send.message_types
@@ -10772,11 +10786,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-missing-content-type
       observation_selectors:
       - asgi.send.message_types
@@ -12064,11 +12078,11 @@ api_surface_contract:
       - python.signature
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.openapi
       observation_selectors:
       - asgi.send.message_types
@@ -19697,11 +19711,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.openapi
       observation_selectors:
       - asgi.send.message_types
@@ -21205,11 +21219,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.openapi
       observation_selectors:
       - asgi.send.message_types
@@ -21224,11 +21238,11 @@ api_surface_contract:
       - openapi.request_schema
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-valid
       observation_selectors:
       - asgi.send.message_types
@@ -21237,11 +21251,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-optional-query-default
       observation_selectors:
       - asgi.send.message_types
@@ -21250,11 +21264,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-invalid-path-conversion
       observation_selectors:
       - asgi.send.message_types
@@ -21263,11 +21277,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.method-not-allowed
       observation_selectors:
       - asgi.send.message_types
@@ -21276,11 +21290,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-chunked-body
       observation_selectors:
       - asgi.send.message_types
@@ -21289,11 +21303,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-missing-header
       observation_selectors:
       - asgi.send.message_types
@@ -21302,11 +21316,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-invalid
       observation_selectors:
       - asgi.send.message_types
@@ -21315,11 +21329,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-malformed-json
       observation_selectors:
       - asgi.send.message_types
@@ -21328,11 +21342,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-aggregated-errors
       observation_selectors:
       - asgi.send.message_types
@@ -21341,11 +21355,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-json-suffix-content-type
       observation_selectors:
       - asgi.send.message_types
@@ -21354,11 +21368,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-text-plain-content-type
       observation_selectors:
       - asgi.send.message_types
@@ -21367,11 +21381,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-missing-content-type
       observation_selectors:
       - asgi.send.message_types
@@ -65787,11 +65801,11 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-valid
       observation_selectors:
       - asgi.send.message_types
@@ -65800,11 +65814,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-optional-query-default
       observation_selectors:
       - asgi.send.message_types
@@ -65813,11 +65827,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-invalid-path-conversion
       observation_selectors:
       - asgi.send.message_types
@@ -65826,11 +65840,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-chunked-body
       observation_selectors:
       - asgi.send.message_types
@@ -65839,11 +65853,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-missing-header
       observation_selectors:
       - asgi.send.message_types
@@ -65852,11 +65866,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-invalid
       observation_selectors:
       - asgi.send.message_types
@@ -65865,11 +65879,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-malformed-json
       observation_selectors:
       - asgi.send.message_types
@@ -65878,11 +65892,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-aggregated-errors
       observation_selectors:
       - asgi.send.message_types
@@ -65891,11 +65905,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-json-suffix-content-type
       observation_selectors:
       - asgi.send.message_types
@@ -65904,11 +65918,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-text-plain-content-type
       observation_selectors:
       - asgi.send.message_types
@@ -65917,11 +65931,11 @@ api_surface_contract:
       - http.status
     - workflow_id: first-asgi-request
       input_path: tests/fixtures/inputs/parity/first-asgi-request.json
-      input_sha256: af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
       recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
-      recipe_sha256: 767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
       workload_path: tests/fixtures/workloads/first_slice.py
-      workload_sha256: da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
       case_id: fastapi.first-slice.create-item-missing-content-type
       observation_selectors:
       - asgi.send.message_types
@@ -67807,6 +67821,19 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: first-asgi-request
+      input_path: tests/fixtures/inputs/parity/first-asgi-request.json
+      input_sha256: f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14
+      recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+      recipe_sha256: b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281
+      workload_path: tests/fixtures/workloads/first_slice.py
+      workload_sha256: 05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797
+      case_id: fastapi.first-slice.injected-response-status-code
+      observation_selectors:
+      - asgi.send.message_types
+      - http.body.bytes
+      - http.headers.ordered
+      - http.status
     - workflow_id: generate-unique-id-function-precedence
       input_path: tests/fixtures/inputs/parity/generate-unique-id-function-precedence.json
       input_sha256: 792aa210ff309cd9dfc2315a9941c6e1d2de09f1014cff5e47bda6446f5b7af2
@@ -71031,6 +71058,17 @@ api_surface_contract:
       case_id: fastapi.security.public-api.api-key-cookie
       observation_selectors:
       - python.signature
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 0120436c28b43c823f44b452b0dee2ea569bed4fd10e76d5b9e207d47928f964
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -71580,6 +71618,17 @@ api_surface_contract:
       case_id: fastapi.security.public-api.api-key-query
       observation_selectors:
       - python.signature
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 0120436c28b43c823f44b452b0dee2ea569bed4fd10e76d5b9e207d47928f964
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -73977,6 +74026,17 @@ api_surface_contract:
       case_id: fastapi.security.public-api.api-key-cookie
       observation_selectors:
       - python.signature
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 0120436c28b43c823f44b452b0dee2ea569bed4fd10e76d5b9e207d47928f964
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -74187,6 +74247,17 @@ api_surface_contract:
       case_id: fastapi.security.public-api.api-key-cookie
       observation_selectors:
       - python.signature
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 0120436c28b43c823f44b452b0dee2ea569bed4fd10e76d5b9e207d47928f964
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -74410,6 +74481,17 @@ api_surface_contract:
       case_id: fastapi.security.public-api.api-key-cookie
       observation_selectors:
       - python.signature
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 0120436c28b43c823f44b452b0dee2ea569bed4fd10e76d5b9e207d47928f964
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -75499,6 +75581,17 @@ api_surface_contract:
       case_id: fastapi.security.public-api.api-key-query
       observation_selectors:
       - python.signature
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 0120436c28b43c823f44b452b0dee2ea569bed4fd10e76d5b9e207d47928f964
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -75709,6 +75802,17 @@ api_surface_contract:
       case_id: fastapi.security.public-api.api-key-query
       observation_selectors:
       - python.signature
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 0120436c28b43c823f44b452b0dee2ea569bed4fd10e76d5b9e207d47928f964
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -75931,6 +76035,17 @@ api_surface_contract:
       case_id: fastapi.security.public-api.api-key-query
       observation_selectors:
       - python.signature
+    - workflow_id: root-alias-identity
+      input_path: tests/fixtures/inputs/parity/root-alias-identity.json
+      input_sha256: e2e27970143fd30c5ac68ca0d8890b9e76e264618c2db67e9b10a65297c072c4
+      recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+      recipe_sha256: 966d94667d7b277ad79c03ac3fff7338c3bf55408b2b3c6ecc784c5acbddddae
+      workload_path: tests/fixtures/workloads/root_alias_identity.py
+      workload_sha256: 0120436c28b43c823f44b452b0dee2ea569bed4fd10e76d5b9e207d47928f964
+      case_id: fastapi.root-alias-identity.http-reexports
+      observation_selectors:
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - dependency-security

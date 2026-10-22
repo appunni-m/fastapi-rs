@@ -12884,9 +12884,9 @@
     {
       "id": "first-asgi-request",
       "input_path": "tests/fixtures/inputs/parity/first-asgi-request.json",
-      "input_sha256": "af88490c7fd5a0ab25b974d8f7244a02041d8ea3c8084c5fa4869e561e766451",
+      "input_sha256": "f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14",
       "recipe_path": "tests/fixtures/input-recipes/parity/first-asgi-request.yaml",
-      "recipe_sha256": "767e3c20cbf1f3b068f562b37e471fd77be4dd829baee67ec7ffe46b442b1b5e",
+      "recipe_sha256": "b9eae9434766f5170b16e06120a6ac10ea03449e8dd7ad6cbf0c849dfad17281",
       "case_ids": [
         "fastapi.first-slice.create-item-valid",
         "fastapi.first-slice.create-item-optional-query-default",
@@ -12901,10 +12901,11 @@
         "fastapi.first-slice.create-item-json-suffix-content-type",
         "fastapi.first-slice.create-item-text-plain-content-type",
         "fastapi.first-slice.create-item-missing-content-type",
-        "fastapi.first-slice.openapi"
+        "fastapi.first-slice.openapi",
+        "fastapi.first-slice.injected-response-status-code"
       ],
       "workload_path": "tests/fixtures/workloads/first_slice.py",
-      "workload_sha256": "da41fd8b054c50c6ffdcdc92a943440c88b4c94f9bdb83a9b510058e9ba7b3ec",
+      "workload_sha256": "05dce1dd2434b736b6489c3a91ea416a0b8594f9d30a778965acc956151f1797",
       "case_contracts": [
         {
           "case_id": "fastapi.first-slice.create-item-valid",
@@ -13027,6 +13028,14 @@
             "source:upstream-test:tests/test_application.py",
             "source:upstream-test:tests/test_param_in_path_and_dependency.py",
             "source:upstream-test:tests/test_tutorial/test_body_fields/test_tutorial001.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.first-slice.injected-response-status-code",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/response-change-status-code.md",
+            "source:upstream-test:tests/test_response_change_status_code.py"
           ]
         }
       ]
@@ -56412,6 +56421,22 @@
       ]
     },
     {
+      "source_item_id": "documented-page:advanced/response-change-status-code.md",
+      "fixture_id": "fastapi.docs.advanced-response-change-status-code",
+      "workflow_id": "first-asgi-request",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.first-slice.injected-response-status-code"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
       "source_item_id": "documented-page:reference/fastapi.md",
       "fixture_id": "fastapi.docs.reference-fastapi",
       "workflow_id": "first-asgi-request",
@@ -56653,6 +56678,22 @@
       "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.first-slice.create-item-optional-query-default"
+      ],
+      "observation_selectors": [
+        "asgi.send.message_types",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_response_change_status_code.py",
+      "fixture_id": "fastapi.test.test-response-change-status-code",
+      "workflow_id": "first-asgi-request",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.send.message_types, http.body.bytes, http.headers.ordered, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.first-slice.injected-response-status-code"
       ],
       "observation_selectors": [
         "asgi.send.message_types",

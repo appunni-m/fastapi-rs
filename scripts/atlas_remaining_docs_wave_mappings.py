@@ -5616,7 +5616,7 @@ DOC_PAGE_EXCLUSION_MAPPINGS = {
         "model APIs; the "
         "selected FastAPI "
         "contract pins Pydantic "
-        "2.13.4 and maps its "
+        "2.13.5 and maps its "
         "integration "
         "separately.",
         "supporting_sources": [

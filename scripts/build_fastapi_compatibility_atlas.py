@@ -4345,7 +4345,7 @@ DOC_EXCLUSION_OVERRIDES = {
     "history-design-future.md": "Historical and design narrative, not behavior in the pinned FastAPI 0.157.0 contract.",
     "how-to/general.md": "How-to navigation page with no independently observable behavior; focused guides are mapped separately.",
     "how-to/graphql.md": "GraphQL routing and schema execution are third-party-owned; the page provides no independent FastAPI behavior case.",
-    "how-to/migrate-from-pydantic-v1-to-pydantic-v2.md": "Migration guidance concerns Pydantic model APIs; the selected FastAPI contract pins Pydantic 2.13.4 and maps its integration separately.",
+    "how-to/migrate-from-pydantic-v1-to-pydantic-v2.md": "Migration guidance concerns Pydantic model APIs; the selected FastAPI contract pins Pydantic 2.13.5 and maps its integration separately.",
     "newsletter.md": "Newsletter signup and project communication content do not specify FastAPI runtime behavior.",
     "project-generation.md": "Project scaffolding and generated template behavior belong to separate tooling, outside the FastAPI runtime API.",
     "reference/middleware.md": "The reference exposes Starlette 1.6.0 middleware aliases; import paths remain in the FastAPI API manifest and generic middleware behavior belongs to Starlette-RS.",
@@ -6097,7 +6097,7 @@ _dependency_lifecycle_limits_note = "; ".join(
     [
         "Python source baseline >= "
         + dependency_lifecycle_review.REVIEW_LIMITS["python"]["minimum"],
-        "generic TestClient behavior is owned by Starlette 1.6.0; FastAPI's lock resolves Starlette 1.3.1 and does not establish HTTPX pairing for the selected contract",
+        "generic TestClient behavior is owned by Starlette 1.6.0; FastAPI's lock resolves Starlette 1.7.0 and does not establish HTTPX pairing for the selected contract",
         "Pydantic behavior is pinned to "
         + dependency_lifecycle_review.REVIEW_LIMITS["pydantic"]["version"],
     ]
@@ -12999,7 +12999,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         },
         {
             "id": "extra-models-pep604-prose-contradiction",
-            "status": "pinned-source-contradiction; oracle-input-recorded",
+            "status": "pinned-source-contradiction; historical-oracle-input-recorded; current-pydantic-observation-unresolved",
             "question": (
                 "How should the extra-models tutorial's contradictory Python 3.10 union "
                 "prose be represented while preserving the pinned executable contract?"
@@ -13029,9 +13029,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "(tests/test_tutorial/test_separate_openapi_schemas/test_tutorial001.py:115-125 "
                 "and test_tutorial002.py). The independent atlas-openapi-schema-modes-interface-review "
                 "workflow observes HTTP input/output and full documents with the setting enabled "
-                "and disabled. For its analogous Record model, public oracle inspection with "
-                "Pydantic 2.13.4 emits one component in both modes. These inputs do not establish "
-                "a schema difference; other model shapes require separate independent evidence."
+                "and disabled. For its analogous Record model, a previously recorded public oracle "
+                "inspection with Pydantic 2.13.4 emits one component in both modes. That execution "
+                "is historical and does not establish behavior for the pinned Pydantic 2.13.5 and "
+                "pydantic-core 2.46.5; the current dependency-profile observation remains unresolved. "
+                "These inputs do not establish a schema difference; other model shapes require "
+                "separate independent evidence."
             ),
         },
         {

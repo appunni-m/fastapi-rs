@@ -9650,6 +9650,10 @@ reviewed_api_contract_overlay:
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
         - {path: docs/en/docs/advanced/path-operation-advanced-configuration.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.injected-response-status-code
+          workload_path: tests/fixtures/workloads/first_slice.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
         - *generate_unique_id_callback_precedence
         - *response_field_included_reuse
         - *response_class_router_custom
@@ -11094,6 +11098,10 @@ reviewed_api_contract_overlay:
           start_line: 10
           end_line: 29
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/first-asgi-request.yaml
+          case_id: fastapi.first-slice.injected-response-status-code
+          workload_path: tests/fixtures/workloads/first_slice.py
+          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
         - *generator_await_marked_immediate
         - *generator_await_marked_checkpoint
         - *generator_await_marked_nested
@@ -14098,6 +14106,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.api-key-cookie.empty-string-credential
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.api-key-cookie
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
       feature_ids: [dependency-security, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-
@@ -14232,6 +14242,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.api-key-query.empty-string-credential
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.api-key-query
+        - recipe_path: tests/fixtures/input-recipes/parity/root-alias-identity.yaml
+          case_id: fastapi.root-alias-identity.http-reexports
       feature_ids: [dependency-security, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-

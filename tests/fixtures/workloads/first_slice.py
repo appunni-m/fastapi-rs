@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, Header, Query, status
+from fastapi import Depends, FastAPI, Header, Query, Response, status
 from pydantic import BaseModel, Field
 
 
@@ -29,6 +29,14 @@ def current_actor(x_actor: Annotated[str, Header(alias="X-Actor")]) -> str:
     return x_actor
 
 
+async def set_created_status(response: Response) -> None:
+    response.status_code = status.HTTP_201_CREATED
+
+
+async def inherit_created_status(result=Depends(set_created_status)):
+    return result
+
+
 def create_app() -> FastAPI:
     app = FastAPI(title="FastAPI-RS parity slice")
 
@@ -47,5 +55,9 @@ def create_app() -> FastAPI:
             "color": color,
             "internal_debug": "filtered by response_model",
         }
+
+    @app.get("/", dependencies=[Depends(inherit_created_status)])
+    async def read_root() -> dict[str, str]:
+        return {"msg": "Hello World"}
 
     return app

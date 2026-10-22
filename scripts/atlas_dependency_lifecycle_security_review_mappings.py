@@ -1082,7 +1082,7 @@ REVIEW_LIMITS = {
         "starlette_contract": "Starlette 1.6.0",
         "httpx2_from_fastapi_uv_lock": "2.5.0",
         "legacy_httpx_from_fastapi_uv_lock": "0.28.1",
-        "version_pairing_limit": "FastAPI's uv.lock resolves Starlette 1.3.1, so its HTTPX versions do not establish TestClient compatibility for the separately pinned Starlette 1.6.0 contract",
+        "version_pairing_limit": "FastAPI's uv.lock resolves Starlette 1.7.0, so its HTTPX versions do not establish TestClient compatibility for the separately pinned Starlette 1.6.0 contract",
         "workload_boundary": "new and existing linked workloads are direct ASGI inputs; they do not run TestClient or HTTPX",
     },
     "pydantic": {
