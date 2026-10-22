@@ -10431,23 +10431,56 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml",
           "workflow_id": "router-events-lifespan-upstream"
+        },
+        {
+          "case_ids": [
+            "fastapi.lifecycle.router-events-startup-data"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.lifespan.event_order, asgi.lifespan.startup_contract, http.body.bytes, http.body.json, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "asgi.lifespan.event_order",
+            "asgi.lifespan.startup_contract",
+            "http.body.bytes",
+            "http.body.json",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/router-events-startup-data-upstream.yaml",
+          "workflow_id": "router-events-startup-data-upstream"
         }
       ],
       "input_only": true,
       "observation_selectors": [
         "asgi.lifespan.event_order",
-        "asgi.lifespan.startup"
+        "asgi.lifespan.startup",
+        "asgi.lifespan.startup_contract",
+        "http.body.bytes",
+        "http.body.json",
+        "http.status"
       ],
       "selector_evidence": [
+        {
+          "feature_id": "app-routing",
+          "schema_extension_required": [
+            "http.body.json"
+          ],
+          "selectors": [
+            "http.body.bytes",
+            "http.body.json",
+            "http.status"
+          ]
+        },
         {
           "feature_id": null,
           "schema_extension_required": [
             "asgi.lifespan.event_order",
-            "asgi.lifespan.startup"
+            "asgi.lifespan.startup",
+            "asgi.lifespan.startup_contract"
           ],
           "selectors": [
             "asgi.lifespan.event_order",
-            "asgi.lifespan.startup"
+            "asgi.lifespan.startup",
+            "asgi.lifespan.startup_contract"
           ]
         }
       ],
@@ -10473,7 +10506,7 @@
         "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable.",
         "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
       ],
-      "stimulus_design_notes": "The app registers an async startup event. An independent legacy-event lifecycle workflow observes event order and startup dispatch; module-level item population, route behavior, and event data are not claimed."
+      "stimulus_design_notes": "The app registers an async startup event and initializes item data. An independent legacy-event workflow observes lifecycle dispatch and a route response populated by startup. The example's module globals, exact item values, warning location, and TestClient behavior are not claimed."
     },
     {
       "feature_ids": [
@@ -578281,10 +578314,27 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/openapi-event-shapes-wave.yaml",
           "workflow_id": "openapi-event-shapes-wave"
+        },
+        {
+          "case_ids": [
+            "fastapi.lifecycle.router-events-startup-data"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.body.json, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.body.json",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/router-events-startup-data-upstream.yaml",
+          "workflow_id": "router-events-startup-data-upstream"
         }
       ],
       "input_only": true,
       "observation_selectors": [
+        "http.body.bytes",
+        "http.body.json",
+        "http.status",
         "openapi.document"
       ],
       "selector_evidence": [
@@ -578297,6 +578347,18 @@
             "openapi.document"
           ],
           "workflow_id": "openapi-event-shapes-wave"
+        },
+        {
+          "case_ids": [
+            "fastapi.lifecycle.router-events-startup-data"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/router-events-startup-data-upstream.yaml",
+          "selectors": [
+            "http.body.bytes",
+            "http.body.json",
+            "http.status"
+          ],
+          "workflow_id": "router-events-startup-data-upstream"
         }
       ],
       "source_evidence": {

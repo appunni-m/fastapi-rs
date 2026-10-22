@@ -339,9 +339,10 @@ DOC_EXAMPLE_CITATION_WAVE_K = {
     ),
     "docs_src/events/tutorial001_py310.py": _review(
         (
-            "The app registers an async startup event. An independent legacy-event lifecycle "
-            "workflow observes event order and startup dispatch; module-level item population, "
-            "route behavior, and event data are not claimed."
+            "The app registers an async startup event and initializes item data. An independent "
+            "legacy-event workflow observes lifecycle dispatch and a route response populated by "
+            "startup. The example's module globals, exact item values, warning location, and "
+            "TestClient behavior are not claimed."
         ),
         [
             _span(
@@ -356,7 +357,18 @@ DOC_EXAMPLE_CITATION_WAVE_K = {
                 "router-events-lifespan-upstream.yaml",
                 "fastapi.lifecycle.router-events-legacy",
                 selectors=["asgi.lifespan.event_order", "asgi.lifespan.startup"],
-            )
+            ),
+            _case(
+                "router-events-startup-data-upstream.yaml",
+                "fastapi.lifecycle.router-events-startup-data",
+                selectors=[
+                    "asgi.lifespan.event_order",
+                    "asgi.lifespan.startup_contract",
+                    "http.status",
+                    "http.body.bytes",
+                    "http.body.json",
+                ],
+            ),
         ],
     ),
     "docs_src/events/tutorial002_py310.py": _review(

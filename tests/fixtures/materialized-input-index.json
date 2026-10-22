@@ -11888,7 +11888,7 @@
         "fastapi.lifecycle.lifespan-suppresses-legacy-events"
       ],
       "workload_path": "tests/fixtures/workloads/router_events_lifespan_upstream.py",
-      "workload_sha256": "332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00",
+      "workload_sha256": "5e28914b2c85968243cb5d80f5f1a3eed8d77aa17fec2f77590d5dccf955f746",
       "case_contracts": [
         {
           "case_id": "fastapi.lifecycle.lifespan-suppresses-legacy-events",
@@ -34726,7 +34726,7 @@
         "fastapi.lifecycle.add-event-handler-invalid-string"
       ],
       "workload_path": "tests/fixtures/workloads/router_events_lifespan_upstream.py",
-      "workload_sha256": "332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00",
+      "workload_sha256": "5e28914b2c85968243cb5d80f5f1a3eed8d77aa17fec2f77590d5dccf955f746",
       "case_contracts": [
         {
           "case_id": "fastapi.lifecycle.router-events-legacy",
@@ -34842,6 +34842,28 @@
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:advanced/events.md"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "router-events-startup-data-upstream",
+      "input_path": "tests/fixtures/inputs/parity/router-events-startup-data-upstream.json",
+      "input_sha256": "ce71a69db589e36909b62c137ba67230d1a1f6f8f340c38b281642c57c684629",
+      "recipe_path": "tests/fixtures/input-recipes/parity/router-events-startup-data-upstream.yaml",
+      "recipe_sha256": "46e5664ba01bed6dfc7e14857b9ad376178aa12f53df74894d042883662b424b",
+      "case_ids": [
+        "fastapi.lifecycle.router-events-startup-data"
+      ],
+      "workload_path": "tests/fixtures/workloads/router_events_lifespan_upstream.py",
+      "workload_sha256": "5e28914b2c85968243cb5d80f5f1a3eed8d77aa17fec2f77590d5dccf955f746",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.lifecycle.router-events-startup-data",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-example:docs_src/events/tutorial001_py310.py",
+            "source:upstream-test:tests/test_tutorial/test_events/test_tutorial001.py"
           ]
         }
       ]
@@ -35128,7 +35150,7 @@
         "fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent"
       ],
       "workload_path": "tests/fixtures/workloads/router_events_lifespan_upstream.py",
-      "workload_sha256": "332c0f08fd06971c68a4028ed2b55d67e300a58892bd93b5f8a9a186422fef00",
+      "workload_sha256": "5e28914b2c85968243cb5d80f5f1a3eed8d77aa17fec2f77590d5dccf955f746",
       "case_contracts": [
         {
           "case_id": "fastapi.lifecycle.included-lifespan-entry-error-suppressed-by-parent",
@@ -70785,6 +70807,38 @@
         "http.status",
         "python.warnings",
         "warnings.category_message"
+      ]
+    },
+    {
+      "source_item_id": "documented-example:docs_src/events/tutorial001_py310.py",
+      "fixture_id": "fastapi.docs-example.events-tutorial001-py310",
+      "workflow_id": "router-events-startup-data-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.lifespan.event_order, asgi.lifespan.startup_contract, http.body.bytes, http.body.json, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.lifecycle.router-events-startup-data"
+      ],
+      "observation_selectors": [
+        "asgi.lifespan.event_order",
+        "asgi.lifespan.startup_contract",
+        "http.body.bytes",
+        "http.body.json",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_tutorial/test_events/test_tutorial001.py",
+      "fixture_id": "fastapi.test.test-tutorial-test-events-test-tutorial001",
+      "workflow_id": "router-events-startup-data-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.body.json, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.lifecycle.router-events-startup-data"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.body.json",
+        "http.status"
       ]
     },
     {

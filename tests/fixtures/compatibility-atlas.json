@@ -137554,18 +137554,35 @@
       "mapping_evidence": {
         "example_observation_selectors": [
           "asgi.lifespan.event_order",
-          "asgi.lifespan.startup"
+          "asgi.lifespan.startup",
+          "asgi.lifespan.startup_contract",
+          "http.body.bytes",
+          "http.body.json",
+          "http.status"
         ],
         "example_selector_evidence": [
+          {
+            "feature_id": "app-routing",
+            "schema_extension_required": [
+              "http.body.json"
+            ],
+            "selectors": [
+              "http.body.bytes",
+              "http.body.json",
+              "http.status"
+            ]
+          },
           {
             "feature_id": null,
             "schema_extension_required": [
               "asgi.lifespan.event_order",
-              "asgi.lifespan.startup"
+              "asgi.lifespan.startup",
+              "asgi.lifespan.startup_contract"
             ],
             "selectors": [
               "asgi.lifespan.event_order",
-              "asgi.lifespan.startup"
+              "asgi.lifespan.startup",
+              "asgi.lifespan.startup_contract"
             ]
           }
         ],
@@ -137610,6 +137627,22 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml",
             "workflow_id": "router-events-lifespan-upstream"
+          },
+          {
+            "case_ids": [
+              "fastapi.lifecycle.router-events-startup-data"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes asgi.lifespan.event_order, asgi.lifespan.startup_contract, http.body.bytes, http.body.json, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "asgi.lifespan.event_order",
+              "asgi.lifespan.startup_contract",
+              "http.body.bytes",
+              "http.body.json",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/router-events-startup-data-upstream.yaml",
+            "workflow_id": "router-events-startup-data-upstream"
           }
         ],
         "mapped_documented_pages": [
@@ -137681,7 +137714,7 @@
           "advanced/events.md"
         ],
         "reviewed_example_mapping": {
-          "rationale": "The app registers an async startup event. An independent legacy-event lifecycle workflow observes event order and startup dispatch; module-level item population, route behavior, and event data are not claimed.",
+          "rationale": "The app registers an async startup event and initializes item data. An independent legacy-event workflow observes lifecycle dispatch and a route response populated by startup. The example's module globals, exact item values, warning location, and TestClient behavior are not claimed.",
           "source_evidence": [
             {
               "end_line": 12,
@@ -137701,6 +137734,19 @@
                 "asgi.lifespan.startup"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.lifecycle.router-events-startup-data"
+              ],
+              "observation_selectors": [
+                "asgi.lifespan.event_order",
+                "asgi.lifespan.startup_contract",
+                "http.body.bytes",
+                "http.body.json",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/router-events-startup-data-upstream.yaml"
             }
           ]
         }
@@ -660125,6 +660171,20 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/openapi-event-shapes-wave.yaml",
             "workflow_id": "openapi-event-shapes-wave"
+          },
+          {
+            "case_ids": [
+              "fastapi.lifecycle.router-events-startup-data"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.body.json, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.body.json",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/router-events-startup-data-upstream.yaml",
+            "workflow_id": "router-events-startup-data-upstream"
           }
         ],
         "mapping_rule": "whole-token source signals plus explicitly reviewed function-to-feature mappings; candidate only",
@@ -660193,6 +660253,9 @@
       },
       "mapping_status": "partially_mapped",
       "observation_selectors": [
+        "http.body.bytes",
+        "http.body.json",
+        "http.status",
         "openapi.document"
       ],
       "review_reason": "At least one behavior mapping is contract-gated and is not represented by a complete independent workflow.",
@@ -660207,6 +660270,18 @@
             "openapi.document"
           ],
           "workflow_id": "openapi-event-shapes-wave"
+        },
+        {
+          "case_ids": [
+            "fastapi.lifecycle.router-events-startup-data"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/router-events-startup-data-upstream.yaml",
+          "selectors": [
+            "http.body.bytes",
+            "http.body.json",
+            "http.status"
+          ],
+          "workflow_id": "router-events-startup-data-upstream"
         }
       ],
       "source_path": "tests/test_tutorial/test_events/test_tutorial001.py",

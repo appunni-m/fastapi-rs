@@ -14,16 +14,27 @@ from typing import Any
 from fastapi import APIRouter, FastAPI, Request
 
 
-def _callback(trace: list[str], marker: str, is_async: bool) -> Any:
+def _callback(
+    trace: list[str],
+    marker: str,
+    is_async: bool,
+    item_store: dict[str, Any] | None = None,
+    populate_items: Mapping[str, Any] | None = None,
+) -> Any:
+    def record() -> None:
+        trace.append(marker)
+        if item_store is not None and populate_items is not None:
+            item_store.update(populate_items)
+
     if is_async:
 
         async def callback() -> None:
-            trace.append(marker)
+            record()
 
     else:
 
         def callback() -> None:
-            trace.append(marker)
+            record()
 
     callback.__name__ = marker.replace("-", "_")
     return callback
@@ -89,7 +100,11 @@ def _lifespan_context(spec: Mapping[str, Any] | None, trace: list[str]) -> Any:
     raise ValueError("unsupported lifespan kind in workload input")
 
 
-def _node_options(spec: Mapping[str, Any], trace: list[str]) -> tuple[dict[str, Any], list[Any]]:
+def _node_options(
+    spec: Mapping[str, Any],
+    trace: list[str],
+    item_store: dict[str, Any] | None = None,
+) -> tuple[dict[str, Any], list[Any]]:
     options: dict[str, Any] = {}
     lifespan = _lifespan_context(spec.get("lifespan"), trace)
     if lifespan is not None:
@@ -104,7 +119,16 @@ def _node_options(spec: Mapping[str, Any], trace: list[str]) -> tuple[dict[str, 
     legacy_callbacks = []
     for event in spec.get("legacy_on_event", []):
         legacy_callbacks.append(
-            (event["stage"], _callback(trace, event["marker"], event.get("async", False)))
+            (
+                event["stage"],
+                _callback(
+                    trace,
+                    event["marker"],
+                    event.get("async", False),
+                    item_store,
+                    event.get("populate_items"),
+                ),
+            )
         )
     return options, legacy_callbacks
 
@@ -135,27 +159,51 @@ def _add_state_route(target: Any, route: Mapping[str, Any]) -> None:
     target.get(path, response_model=None)(endpoint)
 
 
-def _build_router(spec: Mapping[str, Any], trace: list[str]) -> APIRouter:
-    options, legacy_events = _node_options(spec, trace)
+def _add_item_lookup_route(
+    target: Any,
+    route: Mapping[str, Any],
+    item_store: dict[str, Any],
+) -> None:
+    path = route.get("path", "/items/{item_id}")
+
+    async def endpoint(item_id: str) -> Any:
+        return item_store[item_id]
+
+    target.get(path, response_model=None)(endpoint)
+
+
+def _build_router(
+    spec: Mapping[str, Any],
+    trace: list[str],
+    item_store: dict[str, Any],
+) -> APIRouter:
+    options, legacy_events = _node_options(spec, trace, item_store)
     router = APIRouter(**options)
     _add_legacy_events(router, legacy_events)
     _add_direct_events(router, spec, trace)
     for route in spec.get("routes", []):
-        _add_state_route(router, route)
+        if route.get("item_lookup", False):
+            _add_item_lookup_route(router, route, item_store)
+        else:
+            _add_state_route(router, route)
     for child_spec in spec.get("routers", []):
-        router.include_router(_build_router(child_spec, trace))
+        router.include_router(_build_router(child_spec, trace, item_store))
     return router
 
 
 def _build_app(spec: Mapping[str, Any], trace: list[str]) -> FastAPI:
-    options, legacy_events = _node_options(spec, trace)
+    item_store: dict[str, Any] = {}
+    options, legacy_events = _node_options(spec, trace, item_store)
     app = FastAPI(**options)
     _add_legacy_events(app, legacy_events)
     _add_direct_events(app, spec, trace)
     for route in spec.get("routes", []):
-        _add_state_route(app, route)
+        if route.get("item_lookup", False):
+            _add_item_lookup_route(app, route, item_store)
+        else:
+            _add_state_route(app, route)
     for child_spec in spec.get("routers", []):
-        app.include_router(_build_router(child_spec, trace))
+        app.include_router(_build_router(child_spec, trace, item_store))
     for mount_spec in spec.get("mounts", []):
         app.mount(mount_spec["path"], _build_app(mount_spec["application"], trace))
     return app

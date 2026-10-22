@@ -1,0 +1,80 @@
+# FastAPI 0.141.1 requires Python >=3.10; the pinned oracle profile uses CPython 3.12.13.
+# This independently authored case observes data written by a legacy startup callback.
+schema: fastapi-rs/python-asgi-workflow@17
+workload:
+  file: tests/fixtures/workloads/router_events_lifespan_upstream.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.lifecycle.router-events-startup-data
+    verification: parity
+    factory_input:
+      application:
+        legacy_on_event:
+          - stage: startup
+            marker: catalog-startup
+            async: false
+            populate_items:
+              featured:
+                title: Independently Authored
+        routes:
+          - path: /catalog/{item_id}
+            item_lookup: true
+      request_path: /catalog/featured
+    construction_observation:
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: lifespan
+        kind: lifespan
+        events: [lifespan.startup, lifespan.shutdown]
+        observations:
+          - kind: asgi_lifespan
+            selector: event_order
+            comparison: ordered
+          - kind: asgi_lifespan
+            selector: startup_contract
+            comparison: exact
+          - kind: asgi_lifespan
+            selector: shutdown
+            comparison: exact
+          - kind: asgi_lifespan
+            selector: application_errors
+            comparison: exact
+          - kind: asgi_lifespan
+            selector: workload_trace
+            comparison: ordered
+          - kind: asgi_lifespan
+            selector: scope_state
+            comparison: exact
+      - action_id: request
+        kind: http_request
+        scope:
+          type: http
+          asgi:
+            version: '3.0'
+            spec_version: '2.0'
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /catalog/featured
+          query_string: ''
+          root_path: ''
+          headers:
+            - [host, testserver]
+          client: [127.0.0.1, 12345]
+          server: [testserver, 80]
+        receive_events:
+          - type: http.request
+            body: ''
+            more_body: false
+        observations:
+          - kind: http_response
+            selectors: [status, body, body_json]
+            comparison: exact
+    source_evidence:
+      - path: tests/test_tutorial/test_events/test_tutorial001.py
+        kind: upstream_test
+      - path: docs_src/events/tutorial001_py310.py
+        kind: upstream_documentation_example
