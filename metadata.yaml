@@ -13455,6 +13455,8 @@ reviewed_api_contract_overlay:
         - {path: tests/test_validation_error_context.py, symbol: test_validation_error_with_no_context}
       feature_ids: [public-api-errors, request-validation]
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml
+          case_id: fastapi.validation-exceptions.direct-api-contract
         - recipe_path: tests/fixtures/input-recipes/parity/worker-dispatch.yaml
           case_id: fastapi.worker-dispatch.input-validation-on-loop-before-endpoint
         - recipe_path: tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml
@@ -13473,7 +13475,7 @@ reviewed_api_contract_overlay:
           case_id: fastapi.request-validation-error-details.rethrowing-handler
         - recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
           case_id: fastapi.validation-error-context.exact.request-constructor-fields
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, construction.outcome, construction.exception_class, construction.exception_message, asgi.application_error.exception, validation.error_details, error.public_attributes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, construction.outcome, construction.exception_class, construction.exception_message, asgi.application_error.exception, validation.error_details, error.public_attributes, python.import_path, python.object_identity, python.signature, python.call_outcome, python.attribute_value]
       error_contract_ids: [fastapi.exceptions.RequestValidationError]
       supported_slice: >-
         Partial native error-object slice: constructors preserve errors, body,
@@ -13488,6 +13490,9 @@ reviewed_api_contract_overlay:
         RequestValidationError and compares its body, endpoint context, and
         derived fields. Other error records, WebSocket validation, overrides,
         and other ValidationException subclasses remain outside this slice.
+        The direct API workflow separately observes this class's import path,
+        exact identity, signature, docstring value, and selected constructor
+        outcomes; its mapping is not a parity result.
     fastapi.exceptions.ValidationException.errors:
       target_binding:
         implementation_owner: fastapi-rs
@@ -13579,6 +13584,8 @@ reviewed_api_contract_overlay:
           section: 0.97.0 (2023-06-11)
           statement: Add exception handler for WebSocketRequestValidationError (which also allows to override it).
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml
+          case_id: fastapi.validation-exceptions.direct-api-contract
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
           case_id: fastapi.websocket-validation.default-handler-close
         - recipe_path: tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml
@@ -13607,6 +13614,10 @@ reviewed_api_contract_overlay:
         - websocket.event_order
         - websocket.messages
         - websocket.workload_trace
+        - python.import_path
+        - python.object_identity
+        - python.signature
+        - python.call_outcome
       supported_slice: >-
         FastAPI defines the error class, installs its default WebSocket
         validation handler, and permits an application handler to override it.
@@ -13623,7 +13634,9 @@ reviewed_api_contract_overlay:
         now supplies errors and a populated endpoint context in the input,
         rethrows that instance through the handler, and observes those same
         fields. This fixture mapping is not a parity result and does not
-        establish behavior beyond those inputs.
+        establish behavior beyond those inputs. The direct API workflow also
+        maps import identity, constructor signature, and selected populated
+        and invalid-context constructor outcomes for this class.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
