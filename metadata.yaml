@@ -13342,14 +13342,17 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security-wave.oauth2-protected-user.test-no-token
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero.yaml
           case_id: fastapi.security.oauth2-password-bearer.auto-error-int-zero
+        - recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero-api.yaml
+          case_id: fastapi.security.oauth2-password-bearer.auto-error-int-zero-direct
       feature_ids: [dependency-security, public-api-errors]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, python.attribute_value]
       supported_slice: >-
         Selected requests observe a valid Bearer token returned to the endpoint
         and a missing required credential producing the 401 challenge. The
         focused auto_error case observes falsey integer semantics for missing
-        and non-Bearer headers. Token whitespace/case variants, empty parameters,
-        nonzero values, and custom truthy objects remain unverified.
+        and non-Bearer headers through both ASGI and direct __call__ observations.
+        Token whitespace/case variants, empty parameters, nonzero values, and
+        custom truthy objects remain unverified.
     fastapi.security.HTTPAuthorizationCredentials:
       target_binding:
         implementation_owner: fastapi-rs

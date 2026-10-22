@@ -38553,6 +38553,64 @@
       ]
     },
     {
+      "id": "security-oauth2-password-bearer-auto-error-zero-api",
+      "input_path": "tests/fixtures/inputs/parity/security-oauth2-password-bearer-auto-error-zero-api.json",
+      "input_sha256": "5c5122c12c8611c111539f3e5cc57ca35bac74bfcb2f3dc5827d422bc669b792",
+      "recipe_path": "tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero-api.yaml",
+      "recipe_sha256": "0fd04019afd7a8accebd57b8c46621a2f6a27d049470d59d80a286d86addb8f9",
+      "case_ids": [
+        "fastapi.security.oauth2-password-bearer.auto-error-int-zero-direct"
+      ],
+      "workload_path": "tests/fixtures/workloads/security_oauth2_password_bearer_auto_error_zero_api.py",
+      "workload_sha256": "74708fba18350aa80345d9bcd1e4943bec49d15bef3e1a130587f0e1f4a690d5",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.security.oauth2-password-bearer.auto-error-int-zero-direct",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordBearer.__call__",
+          "path": "fastapi/security/oauth2.py",
+          "sha256": "b12a96e2d6efa07696365778e9361ab6d6b9ae015f8e87782e1c6679d5f3908f"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.security.oauth2-password-bearer.auto-error-int-zero-direct",
+          "probe_id": "direct-call-bearer-authorization",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordBearer.__call__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.oauth2-password-bearer.auto-error-int-zero-direct",
+          "probe_id": "direct-call-missing-authorization",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordBearer.__call__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.security.oauth2-password-bearer.auto-error-int-zero-direct",
+          "probe_id": "direct-call-non-bearer-authorization",
+          "symbol_id": "fastapi.security.oauth2.OAuth2PasswordBearer.__call__",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.security.oauth2-password-bearer.auto-error-int-zero-direct",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.security.oauth2.OAuth2PasswordBearer.__call__"
+          ]
+        }
+      ]
+    },
+    {
       "id": "security-oauth2-strict-optional-gap-wave",
       "input_path": "tests/fixtures/inputs/parity/security-oauth2-strict-optional-gap-wave.json",
       "input_sha256": "51505965d442d12c561d53661a8bb79cf951c5da732791f0db10a15a6d970ca0",

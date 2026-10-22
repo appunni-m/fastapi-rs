@@ -602,13 +602,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: b1434ddf944c256f8b2cd79cd5d52bba2a5ddb8a09000fdb3c433f4f7caa09e3
+    sha256: 0286683c3e6ca6f1bc065d5ca5c5cce64f97eb5c348f3ea5ec7b09d28964bf36
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: cac8df351bf84759f16ca130c47e4e01059c81424579c809ec20aeba1a19d0ea
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 722
-      cases: 2988
+      workflows: 723
+      cases: 2989
       partial_source_mappings: 1986
 
 contract_metadata:
@@ -1435,9 +1435,9 @@ api_surface_contract:
     symbols_with_alias_refs: 46
     symbols_with_deprecation_refs: 22
     symbols_with_error_contract_refs: 14
-    symbols_with_direct_api_input_workflow_refs: 190
+    symbols_with_direct_api_input_workflow_refs: 191
     symbols_with_operation_fixture_refs: 461
-    operation_fixture_refs: 2821
+    operation_fixture_refs: 2822
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -77845,7 +77845,43 @@ api_surface_contract:
       fixture_id: fastapi.docs.reference-security-index
       fixture_design_ref: /fixture_designs/385
       observation_selectors: *id022
-    input_workflow_refs: []
+    input_workflow_refs:
+    - workflow_id: security-oauth2-password-bearer-auto-error-zero-api
+      input_path: tests/fixtures/inputs/parity/security-oauth2-password-bearer-auto-error-zero-api.json
+      input_sha256: 5c5122c12c8611c111539f3e5cc57ca35bac74bfcb2f3dc5827d422bc669b792
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero-api.yaml
+      recipe_sha256: 0fd04019afd7a8accebd57b8c46621a2f6a27d049470d59d80a286d86addb8f9
+      workload_path: tests/fixtures/workloads/security_oauth2_password_bearer_auto_error_zero_api.py
+      workload_sha256: 74708fba18350aa80345d9bcd1e4943bec49d15bef3e1a130587f0e1f4a690d5
+      case_id: fastapi.security.oauth2-password-bearer.auto-error-int-zero-direct
+      probe_id: direct-call-bearer-authorization
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: security-oauth2-password-bearer-auto-error-zero-api
+      input_path: tests/fixtures/inputs/parity/security-oauth2-password-bearer-auto-error-zero-api.json
+      input_sha256: 5c5122c12c8611c111539f3e5cc57ca35bac74bfcb2f3dc5827d422bc669b792
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero-api.yaml
+      recipe_sha256: 0fd04019afd7a8accebd57b8c46621a2f6a27d049470d59d80a286d86addb8f9
+      workload_path: tests/fixtures/workloads/security_oauth2_password_bearer_auto_error_zero_api.py
+      workload_sha256: 74708fba18350aa80345d9bcd1e4943bec49d15bef3e1a130587f0e1f4a690d5
+      case_id: fastapi.security.oauth2-password-bearer.auto-error-int-zero-direct
+      probe_id: direct-call-missing-authorization
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: security-oauth2-password-bearer-auto-error-zero-api
+      input_path: tests/fixtures/inputs/parity/security-oauth2-password-bearer-auto-error-zero-api.json
+      input_sha256: 5c5122c12c8611c111539f3e5cc57ca35bac74bfcb2f3dc5827d422bc669b792
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero-api.yaml
+      recipe_sha256: 0fd04019afd7a8accebd57b8c46621a2f6a27d049470d59d80a286d86addb8f9
+      workload_path: tests/fixtures/workloads/security_oauth2_password_bearer_auto_error_zero_api.py
+      workload_sha256: 74708fba18350aa80345d9bcd1e4943bec49d15bef3e1a130587f0e1f4a690d5
+      case_id: fastapi.security.oauth2-password-bearer.auto-error-int-zero-direct
+      probe_id: direct-call-non-bearer-authorization
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
     operation_fixture_refs:
     - workflow_id: security-wave
       input_path: tests/fixtures/inputs/parity/security-wave.json
@@ -77886,6 +77922,16 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: security-oauth2-password-bearer-auto-error-zero-api
+      input_path: tests/fixtures/inputs/parity/security-oauth2-password-bearer-auto-error-zero-api.json
+      input_sha256: 5c5122c12c8611c111539f3e5cc57ca35bac74bfcb2f3dc5827d422bc669b792
+      recipe_path: tests/fixtures/input-recipes/parity/security-oauth2-password-bearer-auto-error-zero-api.yaml
+      recipe_sha256: 0fd04019afd7a8accebd57b8c46621a2f6a27d049470d59d80a286d86addb8f9
+      workload_path: tests/fixtures/workloads/security_oauth2_password_bearer_auto_error_zero_api.py
+      workload_sha256: 74708fba18350aa80345d9bcd1e4943bec49d15bef3e1a130587f0e1f4a690d5
+      case_id: fastapi.security.oauth2-password-bearer.auto-error-int-zero-direct
+      observation_selectors:
+      - python.attribute_value
     identity_workflow_refs: []
     feature_ids:
     - dependency-security
@@ -77901,6 +77947,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.security
+    - python.attribute_value
     - python.signature
     operation_scope:
       status: slice-described
