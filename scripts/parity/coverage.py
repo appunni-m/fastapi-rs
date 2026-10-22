@@ -182,6 +182,16 @@ def _wave_h_bigger_applications_direct(case_slug, action_id):
 
 REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
     (
+        "tests/test_datetime_custom_encoder.py",
+        "test_pydanticv2",
+    ): _reviewed_direct_link(
+        "datetime-custom-encoder-upstream",
+        "tests/fixtures/input-recipes/parity/datetime-custom-encoder-upstream.yaml",
+        "fastapi.responses.pydantic-datetime-field-serializer.upstream",
+        ("response-model-custom-datetime",),
+        ("http.status", "http.body.bytes"),
+    ),
+    (
         "tests/test_dependency_after_yield_websockets.py",
         "test_websocket_dependency_after_yield",
     ): _reviewed_direct_link(

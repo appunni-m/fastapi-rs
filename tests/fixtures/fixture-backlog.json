@@ -166184,6 +166184,12 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 28,
+            "line": 8,
+            "path": "tests/test_datetime_custom_encoder.py",
+            "sha256": "31057a9c5e5df9b0e912ff637e456ea78aad8265cc3d89b4ba82de75c723f03f"
+          },
           "id": "fastapi.test.test-datetime-custom-encoder.test-pydanticv2",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -166254,7 +166260,19 @@
                 "sha256": "31057a9c5e5df9b0e912ff637e456ea78aad8265cc3d89b4ba82de75c723f03f",
                 "start_line": 8
               }
-            ]
+            ],
+            "workflow_case": {
+              "action_ids": [
+                "response-model-custom-datetime"
+              ],
+              "case_id": "fastapi.responses.pydantic-datetime-field-serializer.upstream",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/datetime-custom-encoder-upstream.yaml",
+              "workflow_id": "datetime-custom-encoder-upstream"
+            }
           },
           "selector_evidence": [
             {
@@ -166271,7 +166289,19 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": null
+          "stimulus_design_notes": null,
+          "workflow_case": {
+            "action_ids": [
+              "response-model-custom-datetime"
+            ],
+            "case_id": "fastapi.responses.pydantic-datetime-field-serializer.upstream",
+            "observation_selectors": [
+              "http.status",
+              "http.body.bytes"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/datetime-custom-encoder-upstream.yaml",
+            "workflow_id": "datetime-custom-encoder-upstream"
+          }
         }
       ],
       "feature_ids": [

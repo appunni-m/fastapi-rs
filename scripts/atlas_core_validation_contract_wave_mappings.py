@@ -1,10 +1,8 @@
 """Reviewed function-to-input mappings for core validation/schema tests.
 
-This sidecar is intentionally not imported by the atlas builder yet. It records
-function-level fixture/action links and source evidence so the atlas owner can
-wire it in without inferring coverage from inventory or generated artifacts.
-All workflow recipes are input-only; selector names identify observations and
-never encode expected values.
+This sidecar records function-level fixture/action links and source evidence
+for the atlas builder. All workflow recipes are input-only; selector names
+identify observations and never encode expected values.
 """
 
 from __future__ import annotations
@@ -63,6 +61,7 @@ def _function(
     workflows: list[dict[str, object]],
     *,
     contract_gate: str | None = None,
+    direct_workflow_case: dict[str, object] | None = None,
 ) -> dict[str, object]:
     gate = contract_gate or (
         "Source-reviewed fixture link only; no parity run or compatibility claim is included in this review wave."
@@ -86,6 +85,8 @@ def _function(
             )
         ],
     }
+    if direct_workflow_case is not None:
+        mapping["workflow_case"] = direct_workflow_case
     return mapping
 
 
@@ -882,6 +883,13 @@ CORE_VALIDATION_TEST_REVIEW_MAPPINGS = {
                         ["http.status", "http.body.bytes"],
                     )
                 ],
+                direct_workflow_case={
+                    "workflow_id": "datetime-custom-encoder-upstream",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/datetime-custom-encoder-upstream.yaml",
+                    "case_id": "fastapi.responses.pydantic-datetime-field-serializer.upstream",
+                    "action_ids": ["response-model-custom-datetime"],
+                    "observation_selectors": ["http.status", "http.body.bytes"],
+                },
             ),
         },
     ),
