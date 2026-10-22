@@ -23,3 +23,26 @@ The observed response status and headers, cancellation state, and post-cancel
 cleanup response matched. This removes the recorded mismatch for the active
 dependency lock; it does not claim parity for other streaming or disconnect
 combinations. No Starlette-RS source was changed.
+
+## Current-main refresh (2026-10-23)
+
+The three-case workflow was rerun against current main after the earlier Kata
+blocker note. FastAPI 0.157.0 and Starlette 1.6.0 matched FastAPI-RS at target
+`378cf2900933b577fcb1182dc1ec0209bab20565`, with Starlette-RS
+`4139a72449bf5751e8902fb1c7175ee7f191d338` and AnyIO 4.14.2 on both sides.
+The current fixture manifest SHA-256 is
+`827764700cc27233098327b1e9e9e638269c86a6fda58bca5f576a19b318360a`.
+
+| Evidence | Identity |
+| --- | --- |
+| Comparison | `parity-results/comparisons/bd221dd7-9379-4695-9aa8-7d01fe824400.json` |
+| Comparison SHA-256 | `d8e52df7d7897b06081ba00f3fc2a813373afd0f5e23b35449b4e3bd48e9bb86` |
+| Input SHA-256 | `42c43141f152d2d05d1136027ba3ecd90f3c8153c6f414f6adeee6990f9547f5` |
+| Result | 3/3 matched; zero failed or not-run cases |
+| Target source-tree SHA-256 | `54da9c478c6029d0b6f15505b8e5e06907152b72d634e2045173bd37952706e4` |
+| Target binary SHA-256 | `77755183189547b31b00e0944d1dd85bacfb68fa30d02b785e729e04095b2032` |
+
+This fresh run confirms only the three declared cases on the active profile;
+it does not establish parity for other streaming, callback, or disconnect
+combinations. The older failure note remains historical to its target and
+dependency identity. No FastAPI-RS or Starlette-RS implementation was changed.
