@@ -192,6 +192,46 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
         ("http.status", "http.body.bytes"),
     ),
     (
+        "tests/test_tutorial/test_custom_response/test_tutorial007.py",
+        "test_get",
+    ): _reviewed_direct_link(
+        "starlette-response-runtime-upstream",
+        "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+        "fastapi.test.test-tutorial-test-custom-response-test-tutorial007.test-get",
+        ("request",),
+        (
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes",
+            "asgi.send.message_types",
+        ),
+    ),
+    (
+        "tests/test_tutorial/test_custom_response/test_tutorial008.py",
+        "test_get",
+    ): _reviewed_direct_link(
+        "starlette-response-runtime-upstream",
+        "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+        "fastapi.test.test-tutorial-test-custom-response-test-tutorial008.test-get",
+        ("request",),
+        (
+            "http.status",
+            "http.headers.ordered",
+            "http.body.bytes",
+            "asgi.send.message_types",
+        ),
+    ),
+    (
+        "tests/test_tutorial/test_custom_response/test_tutorial009b.py",
+        "test_get",
+    ): _reviewed_direct_link(
+        "starlette-response-runtime-upstream",
+        "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+        "fastapi.test.test-tutorial-test-custom-response-test-tutorial009b.test-get",
+        ("request",),
+        ("http.status", "http.headers.ordered", "http.body.bytes"),
+    ),
+    (
         "tests/test_dependency_after_yield_websockets.py",
         "test_websocket_dependency_after_yield",
     ): _reviewed_direct_link(

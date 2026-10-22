@@ -23,6 +23,8 @@ from pydantic import BaseModel
 _FILE_RESPONSE_MTIME = 1_700_000_000
 _FILE_RESPONSE_BYTES = b"original-file-content"
 _FILE_RESPONSE_MUTATED_PATH_BYTES = b"mutated-path-content"
+_STREAMING_FILE_BYTES = b"Fake video bytes"
+_FILE_RESPONSE_CLASS_BYTES = b"Fake video bytes"
 
 
 def _write_file_response_input(path: Path, contents: bytes) -> None:
@@ -44,8 +46,12 @@ def create_app() -> FastAPI:
     file_response_root = Path(file_response_directory.name)
     file_response_original = file_response_root / "original.txt"
     file_response_mutated = file_response_root / "mutated.txt"
+    streaming_file = file_response_root / "streaming-input.mp4"
+    file_response_class_input = file_response_root / "class-response-input.mp4"
     _write_file_response_input(file_response_original, _FILE_RESPONSE_BYTES)
     _write_file_response_input(file_response_mutated, _FILE_RESPONSE_MUTATED_PATH_BYTES)
+    _write_file_response_input(streaming_file, _STREAMING_FILE_BYTES)
+    _write_file_response_input(file_response_class_input, _FILE_RESPONSE_CLASS_BYTES)
     app.state.file_response_directory = file_response_directory
 
     @app.get("/plain", response_class=PlainTextResponse)
@@ -60,15 +66,15 @@ def create_app() -> FastAPI:
     async def stream_chunks():
         async def generate():
             for _ in range(10):
-                yield b"stream-part;"
+                yield b"some fake video bytes"
                 await anyio.sleep(0)
 
-        return StreamingResponse(generate(), media_type="application/octet-stream")
+        return StreamingResponse(generate())
 
     @app.get("/stream-file")
     def stream_file():
         def iter_file():
-            with Path(__file__).open("rb") as file_like:
+            with streaming_file.open("rb") as file_like:
                 yield from file_like
 
         return StreamingResponse(iter_file(), media_type="video/mp4")
@@ -87,7 +93,7 @@ def create_app() -> FastAPI:
 
     @app.get("/file-class", response_class=FileResponse)
     async def file_response_class():
-        return str(Path(__file__))
+        return str(file_response_class_input)
 
     @app.get("/file-call-time/status-code")
     async def file_response_mutated_status_code():

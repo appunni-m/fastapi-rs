@@ -651266,10 +651266,30 @@
           {
             "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial007.test-get",
             "end_line": 11,
+            "function_source_ref": {
+              "end_line": 11,
+              "line": 8,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial007.py",
+              "sha256": "cac13866d926290c02291ec196f07c743d060a41b3fb8becf3f1ba02e2ca3888"
+            },
             "line": 8,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_get"
+            "name": "test_get",
+            "workflow_case": {
+              "action_ids": [
+                "request"
+              ],
+              "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial007.test-get",
+              "observation_selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes",
+                "asgi.send.message_types"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+              "workflow_id": "starlette-response-runtime-upstream"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -651284,6 +651304,80 @@
               "role": "streaming response endpoint",
               "sha256": "55364469146c6890300e56c280fbdd55ae1514a9f5a7597428621fe605e8afb8",
               "start_line": 8
+            },
+            {
+              "end_line": 11,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial007.py",
+              "role": "pinned FastAPI 0.141.1 test function and asserted observations",
+              "sha256": "cac13866d926290c02291ec196f07c743d060a41b3fb8becf3f1ba02e2ca3888",
+              "start_line": 8
+            },
+            {
+              "end_line": 16,
+              "path": "docs_src/custom_response/tutorial007_py310.py",
+              "role": "documented ten-chunk fake-video StreamingResponse",
+              "sha256": "55364469146c6890300e56c280fbdd55ae1514a9f5a7597428621fe605e8afb8",
+              "start_line": 8
+            },
+            {
+              "end_line": 372,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI applies route and injected Response status values when constructing responses",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 357
+            },
+            {
+              "end_line": 400,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI selects the route's actual response class",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 375
+            },
+            {
+              "end_line": 750,
+              "path": "fastapi/routing.py",
+              "role": "FastAPI preserves returned Response instances and constructs the configured response class for other values",
+              "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+              "start_line": 711
+            },
+            {
+              "end_line": 255,
+              "path": "starlette/responses.py",
+              "role": "Starlette StreamingResponse adapts iterables and emits response body chunks",
+              "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
+              "source_authority": "Starlette 1.6.0",
+              "start_line": 222
+            },
+            {
+              "end_line": 276,
+              "path": "starlette/responses.py",
+              "role": "Starlette dispatches the streaming response over ASGI",
+              "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
+              "source_authority": "Starlette 1.6.0",
+              "start_line": 257
+            },
+            {
+              "end_line": 1,
+              "path": "fastapi/testclient.py",
+              "role": "FastAPI re-exports Starlette TestClient",
+              "sha256": "9c1bda0265fae9895d45e24d6573ce935b1fba8d90ea1b3c6cebc86827a9e8b4",
+              "start_line": 1
+            },
+            {
+              "end_line": 374,
+              "path": "starlette/testclient.py",
+              "role": "Starlette 1.6.0 TestClient captures the ASGI response status, headers, and body",
+              "sha256": "4cf49139b46669742733f24c2e6baab0a358f4f1772f775f5f1d03b59aa42d6d",
+              "source_authority": "Starlette 1.6.0",
+              "start_line": 327
+            },
+            {
+              "end_line": 420,
+              "path": "starlette/testclient.py",
+              "role": "Starlette 1.6.0 TestClient wraps the app in its ASGI HTTP transport",
+              "sha256": "4cf49139b46669742733f24c2e6baab0a358f4f1772f775f5f1d03b59aa42d6d",
+              "source_authority": "Starlette 1.6.0",
+              "start_line": 377
             },
             {
               "end_line": 11,
@@ -651494,16 +651588,36 @@
           {
             "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial008.test-get",
             "end_line": 18,
+            "function_source_ref": {
+              "end_line": 18,
+              "line": 12,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial008.py",
+              "sha256": "877d2d1ecad2b41e6ffba37cd8ee39ef4c9578f3ffe25de98738ee08c46b3641"
+            },
             "line": 12,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_get"
+            "name": "test_get",
+            "workflow_case": {
+              "action_ids": [
+                "request"
+              ],
+              "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial008.test-get",
+              "observation_selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes",
+                "asgi.send.message_types"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+              "workflow_id": "starlette-response-runtime-upstream"
+            }
           }
         ],
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "The test creates a temporary file, points the documented synchronous file iterator at it, and compares the collected response content.",
+          "rationale": "The input reproduces the documented synchronous file iterator over the same fake-video bytes and compares the collected response content.",
           "stimulus_notes": "Source-reviewed partial mapping to independent cases: tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml::fastapi.test.test-tutorial-test-custom-response-test-tutorial008.test-get (actions: request; selectors: http.body.bytes). FastAPI owns response-class selection and direct-response dispatch. Response encoding, file metadata/transfer, streaming, redirects, and TestClient transport belong to the pinned Starlette contract.",
           "supporting_sources": [
             {
@@ -652002,16 +652116,35 @@
           {
             "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial009b.test-get",
             "end_line": 18,
+            "function_source_ref": {
+              "end_line": 18,
+              "line": 12,
+              "path": "tests/test_tutorial/test_custom_response/test_tutorial009b.py",
+              "sha256": "58cb505ac69c7c7d505eb13266db945f0635cfa4a48fc3eefc58c0b8eff09516"
+            },
             "line": 12,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_get"
+            "name": "test_get",
+            "workflow_case": {
+              "action_ids": [
+                "request"
+              ],
+              "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial009b.test-get",
+              "observation_selectors": [
+                "http.status",
+                "http.headers.ordered",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+              "workflow_id": "starlette-response-runtime-upstream"
+            }
           }
         ],
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "The test writes bytes to a temporary file, assigns its path to the documented module global, and checks a FileResponse class selected by the route decorator.",
+          "rationale": "The input reproduces a route-selected FileResponse returning a path to an independently created temporary file with the source's fake-video bytes.",
           "stimulus_notes": "Source-reviewed partial mapping to independent cases: tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml::fastapi.test.test-tutorial-test-custom-response-test-tutorial009b.test-get (actions: request; selectors: http.body.bytes). FastAPI owns response-class selection and direct-response dispatch. Response encoding, file metadata/transfer, streaming, redirects, and TestClient transport belong to the pinned Starlette contract.",
           "supporting_sources": [
             {

@@ -56,6 +56,8 @@ def _function(
     links: tuple[dict[str, Any], ...],
     gate: str,
     sources: tuple[dict[str, Any], ...],
+    *,
+    direct_workflow_case: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     link_notes = "; ".join(
         f"{link['recipe_path']}::{link['case_id']} "
@@ -63,7 +65,7 @@ def _function(
         f"selectors: {', '.join(link['observation_selectors'])})"
         for link in links
     )
-    return {
+    mapping = {
         "feature_ids": list(feature_ids),
         "observation_selectors": list(selectors),
         "rationale": rationale,
@@ -85,6 +87,9 @@ def _function(
             *sources,
         ],
     }
+    if direct_workflow_case is not None:
+        mapping["workflow_case"] = direct_workflow_case
+    return mapping
 
 
 def _module(rationale: str, functions: dict[str, dict[str, Any]]) -> dict[str, Any]:
@@ -287,8 +292,53 @@ CUSTOM_RESPONSE_TUTORIAL_TEST_REVIEW_MAPPINGS = {
             ),
         },
     ),
+    "tests/test_tutorial/test_custom_response/test_tutorial007.py": _module(
+        "The independent StreamingResponse case reproduces the documented ten-chunk fake-video body; its exact body bytes cover the upstream assertion, while chunk framing remains outside that assertion.",
+        {
+            "test_get": _function(
+                "tests/test_tutorial/test_custom_response/test_tutorial007.py",
+                8,
+                11,
+                ("response-serialization",),
+                _BODY_BYTES,
+                "The input stream yields the documented fake-video bytes ten times and compares the complete body.",
+                (
+                    _link(
+                        _RUNTIME_RECIPE,
+                        "fastapi.test.test-tutorial-test-custom-response-test-tutorial007.test-get",
+                        ("request",),
+                        _BODY_BYTES,
+                    ),
+                ),
+                "The source asserts the exact aggregated body. The independent ASGI case uses the same ten payload chunks; the source does not assert chunk boundaries. StreamingResponse transport is owned by Starlette 1.6.0.",
+                (
+                    _source(
+                        "docs_src/custom_response/tutorial007_py310.py",
+                        8,
+                        16,
+                        "documented ten-chunk fake-video StreamingResponse",
+                    ),
+                    *_FASTAPI_RESPONSE_DISPATCH,
+                    *_STREAMING_RESPONSE,
+                    *_TESTCLIENT,
+                ),
+                direct_workflow_case={
+                    "workflow_id": "starlette-response-runtime-upstream",
+                    "recipe_path": _RUNTIME_RECIPE,
+                    "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial007.test-get",
+                    "action_ids": ["request"],
+                    "observation_selectors": [
+                        "http.status",
+                        "http.headers.ordered",
+                        "http.body.bytes",
+                        "asgi.send.message_types",
+                    ],
+                },
+            ),
+        },
+    ),
     "tests/test_tutorial/test_custom_response/test_tutorial008.py": _module(
-        "The test creates a temporary file, points the documented synchronous file iterator at it, and compares the collected response content.",
+        "The input reproduces the documented synchronous file iterator over the same fake-video bytes and compares the collected response content.",
         {
             "test_get": _function(
                 "tests/test_tutorial/test_custom_response/test_tutorial008.py",
@@ -305,7 +355,7 @@ CUSTOM_RESPONSE_TUTORIAL_TEST_REVIEW_MAPPINGS = {
                         _BODY_BYTES,
                     ),
                 ),
-                "The source compares only response.content. The existing case observes exact body bytes, but its generator reads the workload source file rather than a temporary file containing the source's fake-video bytes; arbitrary file-path/content variation and ASGI chunk boundaries are not claimed. Generic StreamingResponse behavior belongs to Starlette 1.6.0.",
+                "The source compares only response.content. The input streams the same fake-video bytes from an independently created temporary file; dynamic file-path variation and ASGI chunk boundaries are not claimed. Generic StreamingResponse behavior belongs to Starlette 1.6.0.",
                 (
                     _source(
                         "docs_src/custom_response/tutorial008_py310.py",
@@ -317,6 +367,18 @@ CUSTOM_RESPONSE_TUTORIAL_TEST_REVIEW_MAPPINGS = {
                     *_STREAMING_RESPONSE,
                     *_TESTCLIENT,
                 ),
+                direct_workflow_case={
+                    "workflow_id": "starlette-response-runtime-upstream",
+                    "recipe_path": _RUNTIME_RECIPE,
+                    "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial008.test-get",
+                    "action_ids": ["request"],
+                    "observation_selectors": [
+                        "http.status",
+                        "http.headers.ordered",
+                        "http.body.bytes",
+                        "asgi.send.message_types",
+                    ],
+                },
             ),
         },
     ),
@@ -354,7 +416,7 @@ CUSTOM_RESPONSE_TUTORIAL_TEST_REVIEW_MAPPINGS = {
         },
     ),
     "tests/test_tutorial/test_custom_response/test_tutorial009b.py": _module(
-        "The test writes bytes to a temporary file, assigns its path to the documented module global, and checks a FileResponse class selected by the route decorator.",
+        "The input reproduces a route-selected FileResponse returning a path to an independently created temporary file with the source's fake-video bytes.",
         {
             "test_get": _function(
                 "tests/test_tutorial/test_custom_response/test_tutorial009b.py",
@@ -371,7 +433,7 @@ CUSTOM_RESPONSE_TUTORIAL_TEST_REVIEW_MAPPINGS = {
                         _BODY_BYTES,
                     ),
                 ),
-                "The source compares only response.content. The current case observes exact body bytes from a stable workload file rather than the temporary file containing the source's fake-video bytes; status, file headers, ranges, missing-file errors, and path variation are not claimed. FastAPI class construction is distinct, while file transfer is Starlette 1.6.0 behavior.",
+                "The source compares only response.content. The input uses the same fake-video bytes and route-selected FileResponse class from an independently created temporary file; status, file headers, ranges, missing-file errors, and dynamic path variation are not asserted by this function. FastAPI class construction is distinct, while file transfer is Starlette 1.6.0 behavior.",
                 (
                     _source(
                         "docs_src/custom_response/tutorial009b_py310.py",
@@ -384,6 +446,17 @@ CUSTOM_RESPONSE_TUTORIAL_TEST_REVIEW_MAPPINGS = {
                     *_FILE_RESPONSE,
                     *_TESTCLIENT,
                 ),
+                direct_workflow_case={
+                    "workflow_id": "starlette-response-runtime-upstream",
+                    "recipe_path": _RUNTIME_RECIPE,
+                    "case_id": "fastapi.test.test-tutorial-test-custom-response-test-tutorial009b.test-get",
+                    "action_ids": ["request"],
+                    "observation_selectors": [
+                        "http.status",
+                        "http.headers.ordered",
+                        "http.body.bytes",
+                    ],
+                },
             ),
         },
     ),
