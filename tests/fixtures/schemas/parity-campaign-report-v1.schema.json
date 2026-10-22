@@ -1,0 +1,533 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fastapi-rs.dev/schemas/parity-campaign-report/1",
+  "title": "FastAPI-RS declared indexed fixture campaign report v1",
+  "description": "A deterministic ledger over currently declared indexed parity requirement references. This is not a complete FastAPI behavior denominator.",
+  "type": "object",
+  "required": [
+    "schema",
+    "denominator",
+    "foundation",
+    "identity",
+    "scope",
+    "summary",
+    "parity_cases",
+    "fault_contract_cases",
+    "accepted_comparisons",
+    "invalid_evidence"
+  ],
+  "properties": {
+    "schema": {
+      "const": "fastapi-rs/parity-campaign-report@1"
+    },
+    "denominator": {
+      "const": "declared-indexed-fixtures"
+    },
+    "foundation": {
+      "type": "object",
+      "required": [
+        "contract_status",
+        "api_surface_contract_status",
+        "api_scope_counts"
+      ],
+      "properties": {
+        "contract_status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "api_surface_contract_status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "api_scope_counts": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/countValue"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "identity": {
+      "type": "object",
+      "required": [
+        "fastapi",
+        "starlette",
+        "starlette_rs",
+        "target",
+        "manifest",
+        "materialized_index"
+      ],
+      "properties": {
+        "fastapi": {
+          "$ref": "#/$defs/sourceIdentity"
+        },
+        "starlette": {
+          "$ref": "#/$defs/sourceIdentity"
+        },
+        "starlette_rs": {
+          "type": "object",
+          "required": [
+            "name",
+            "version",
+            "contract",
+            "commit"
+          ],
+          "properties": {
+            "name": {"type": "string"},
+            "version": {"type": "string"},
+            "contract": {"type": "string"},
+            "commit": {"$ref": "#/$defs/commit"}
+          },
+          "additionalProperties": false
+        },
+        "target": {
+          "type": "object",
+          "required": [
+            "distribution",
+            "version",
+            "current_revision",
+            "source_tree_sha256",
+            "source_clean",
+            "starlette_rs_revision",
+            "starlette_rs_profile_matches"
+          ],
+          "properties": {
+            "distribution": {"const": "fastapi-rs"},
+            "version": {"type": "string"},
+            "current_revision": {
+              "oneOf": [
+                {"$ref": "#/$defs/commit"},
+                {"type": "null"}
+              ]
+            },
+            "source_tree_sha256": {"$ref": "#/$defs/sha256"},
+            "source_clean": {"type": "boolean"},
+            "starlette_rs_revision": {
+              "oneOf": [
+                {"$ref": "#/$defs/commit"},
+                {"type": "null"}
+              ]
+            },
+            "starlette_rs_profile_matches": {"type": "boolean"}
+          },
+          "additionalProperties": false
+        },
+        "manifest": {
+          "$ref": "#/$defs/artifactIdentity"
+        },
+        "materialized_index": {
+          "$ref": "#/$defs/artifactIdentity"
+        }
+      },
+      "additionalProperties": false
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "workflow_count",
+        "case_count",
+        "parity_requirement_count",
+        "fault_contract_requirement_count",
+        "complete_fastapi_behavior_denominator",
+        "supports_100_percent_compatibility_claim"
+      ],
+      "properties": {
+        "workflow_count": {"type": "integer", "minimum": 0},
+        "case_count": {"type": "integer", "minimum": 0},
+        "parity_requirement_count": {"type": "integer", "minimum": 0},
+        "fault_contract_requirement_count": {"type": "integer", "minimum": 0},
+        "complete_fastapi_behavior_denominator": {"const": false},
+        "supports_100_percent_compatibility_claim": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": ["parity", "fault_contract"],
+      "properties": {
+        "parity": {"$ref": "#/$defs/laneSummary"},
+        "fault_contract": {"$ref": "#/$defs/laneSummary"}
+      },
+      "additionalProperties": false
+    },
+    "parity_cases": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/ledgerRow"}
+    },
+    "fault_contract_cases": {
+      "type": "array",
+      "items": {
+        "allOf": [
+          {"$ref": "#/$defs/ledgerRow"},
+          {
+            "type": "object",
+            "required": ["fault"],
+            "properties": {
+              "fault": {"$ref": "#/$defs/fault"}
+            }
+          }
+        ]
+      }
+    },
+    "accepted_comparisons": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/acceptedComparison"}
+    },
+    "invalid_evidence": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/invalidEvidence"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "sourceIdentity": {
+      "type": "object",
+      "required": ["version", "commit"],
+      "properties": {
+        "version": {"type": "string"},
+        "commit": {"$ref": "#/$defs/commit"}
+      },
+      "additionalProperties": false
+    },
+    "artifactIdentity": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "countValue": {
+      "oneOf": [
+        {"type": "integer", "minimum": 0},
+        {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/countValue"}
+        }
+      ]
+    },
+    "laneSummary": {
+      "type": "object",
+      "required": ["requirement_count", "passed", "failed", "not_run"],
+      "properties": {
+        "requirement_count": {"type": "integer", "minimum": 0},
+        "passed": {"type": "integer", "minimum": 0},
+        "failed": {"type": "integer", "minimum": 0},
+        "not_run": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "packageMap": {
+      "type": "object",
+      "additionalProperties": {"type": "string", "minLength": 1}
+    },
+    "profileSet": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["oracle", "target"],
+          "properties": {
+            "oracle": {
+              "type": "object",
+              "required": ["id", "packages"],
+              "properties": {
+                "id": {"type": "string", "minLength": 1},
+                "packages": {"$ref": "#/$defs/packageMap"}
+              },
+              "additionalProperties": false
+            },
+            "target": {
+              "type": "object",
+              "required": ["id", "version", "starlette_rs_distribution", "optional_runtime_packages"],
+              "properties": {
+                "id": {"type": "string", "minLength": 1},
+                "version": {"type": "string", "minLength": 1},
+                "starlette_rs_distribution": {
+                  "type": "object",
+                  "required": ["name", "version", "starlette_contract", "commit"],
+                  "properties": {
+                    "name": {"type": "string", "minLength": 1},
+                    "version": {"type": "string", "minLength": 1},
+                    "starlette_contract": {"type": "string", "minLength": 1},
+                    "commit": {"$ref": "#/$defs/commit"}
+                  },
+                  "additionalProperties": false
+                },
+                "optional_runtime_packages": {"$ref": "#/$defs/packageMap"}
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["oracle", "target"],
+          "properties": {
+            "oracle": {
+              "type": "object",
+              "required": ["id", "sha256"],
+              "properties": {
+                "id": {"type": "string", "minLength": 1},
+                "sha256": {"$ref": "#/$defs/sha256"}
+              },
+              "additionalProperties": false
+            },
+            "target": {
+              "type": "object",
+              "required": ["id", "sha256"],
+              "properties": {
+                "id": {"type": "string", "minLength": 1},
+                "sha256": {"$ref": "#/$defs/sha256"}
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "pythonIdentity": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["implementation", "version"],
+          "properties": {
+            "implementation": {"type": "string", "minLength": 1},
+            "version": {"type": "string", "minLength": 1}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["implementation", "version", "path", "sha256"],
+          "properties": {
+            "implementation": {"type": "string", "minLength": 1},
+            "version": {"type": "string", "minLength": 1},
+            "path": {"type": "string", "minLength": 1},
+            "sha256": {"$ref": "#/$defs/sha256"}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "entrypointIdentity": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "required": ["path", "sha256"],
+          "properties": {
+            "path": {"type": "string", "minLength": 1},
+            "sha256": {"$ref": "#/$defs/sha256"}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "identitySet": {
+      "type": "object",
+      "required": ["oracle", "target"],
+      "properties": {
+        "oracle": {
+          "$ref": "#/$defs/oracleIdentity"
+        },
+        "target": {
+          "type": "object",
+          "required": ["distribution", "version", "target_revision", "fastapi_rs_commit", "starlette_rs_commit", "starlette_rs_version", "source_tree_sha256", "target_binary_sha256", "entrypoint", "profile_sha256"],
+          "properties": {
+            "distribution": {"type": "string", "minLength": 1},
+            "version": {"type": "string", "minLength": 1},
+            "target_revision": {"$ref": "#/$defs/commit"},
+            "fastapi_rs_commit": {"$ref": "#/$defs/commit"},
+            "starlette_rs_commit": {"$ref": "#/$defs/commit"},
+            "starlette_rs_version": {"type": "string", "minLength": 1},
+            "source_tree_sha256": {"$ref": "#/$defs/sha256"},
+            "target_binary_sha256": {"$ref": "#/$defs/nullableSha256"},
+            "entrypoint": {"$ref": "#/$defs/entrypointIdentity"},
+            "profile_sha256": {"$ref": "#/$defs/nullableSha256"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "oracleIdentity": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["distribution", "version", "fastapi_commit", "starlette_commit", "python", "entrypoint", "profile_sha256"],
+          "properties": {
+            "distribution": {"type": "string", "minLength": 1},
+            "version": {"type": "string", "minLength": 1},
+            "fastapi_commit": {"$ref": "#/$defs/commit"},
+            "starlette_commit": {"$ref": "#/$defs/commit"},
+            "python": {"$ref": "#/$defs/pythonIdentity"},
+            "entrypoint": {"$ref": "#/$defs/entrypointIdentity"},
+            "profile_sha256": {"$ref": "#/$defs/nullableSha256"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["fastapi_commit", "starlette_commit", "python", "entrypoint", "profile_sha256"],
+          "properties": {
+            "fastapi_commit": {"$ref": "#/$defs/commit"},
+            "starlette_commit": {"$ref": "#/$defs/commit"},
+            "python": {"$ref": "#/$defs/pythonIdentity"},
+            "entrypoint": {"$ref": "#/$defs/entrypointIdentity"},
+            "profile_sha256": {"$ref": "#/$defs/nullableSha256"}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "nullableSha256": {
+      "oneOf": [
+        {"$ref": "#/$defs/sha256"},
+        {"type": "null"}
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["comparison", "case_outcome", "profiles", "runners"],
+      "properties": {
+        "comparison": {
+          "type": "object",
+          "required": ["path", "sha256", "schema", "id"],
+          "properties": {
+            "path": {"type": "string", "minLength": 1},
+            "sha256": {"$ref": "#/$defs/sha256"},
+            "schema": {"type": "string", "minLength": 1},
+            "id": {"type": "string", "minLength": 1}
+          },
+          "additionalProperties": false
+        },
+        "case_outcome": {"enum": ["pass", "fail", "not_run"]},
+        "profiles": {"$ref": "#/$defs/profileSet"},
+        "runners": {
+          "type": "object",
+          "required": ["oracle", "target", "comparison"],
+          "properties": {
+            "oracle": {"type": "string"},
+            "target": {"type": "string"},
+            "comparison": {"type": "string"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "ledgerRow": {
+      "type": "object",
+      "required": [
+        "workflow_id",
+        "workflow_schema",
+        "input_path",
+        "input_sha256",
+        "case_id",
+        "requirement_ref",
+        "status",
+        "reason",
+        "evidence"
+      ],
+      "properties": {
+        "workflow_id": {"type": "string", "minLength": 1},
+        "workflow_schema": {"type": "string", "minLength": 1},
+        "input_path": {"type": "string", "minLength": 1},
+        "input_sha256": {"$ref": "#/$defs/sha256"},
+        "case_id": {"type": "string", "minLength": 1},
+        "requirement_ref": {"type": "string", "minLength": 1},
+        "status": {"enum": ["not_run", "pass", "fail"]},
+        "reason": {"type": "string"},
+        "evidence": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/evidence"}
+          ]
+        },
+        "fault": {"$ref": "#/$defs/fault"}
+      },
+      "additionalProperties": false
+    },
+    "fault": {
+      "type": "object",
+      "required": ["point", "contract"],
+      "properties": {
+        "point": {"type": "string", "minLength": 1},
+        "contract": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "acceptedComparison": {
+      "type": "object",
+      "required": [
+        "comparison",
+        "source_result",
+        "target_result",
+        "profiles",
+        "runners",
+        "identities"
+      ],
+      "properties": {
+        "comparison": {"$ref": "#/$defs/evidence/properties/comparison"},
+        "source_result": {"$ref": "#/$defs/resultArtifact"},
+        "target_result": {"$ref": "#/$defs/resultArtifact"},
+        "profiles": {"$ref": "#/$defs/profileSet"},
+        "runners": {
+          "type": "object",
+          "required": ["oracle", "target", "comparison"],
+          "properties": {
+            "oracle": {"type": "string"},
+            "target": {"type": "string"},
+            "comparison": {"type": "string"}
+          },
+          "additionalProperties": false
+        },
+        "identities": {"$ref": "#/$defs/identitySet"}
+      },
+      "additionalProperties": false
+    },
+    "resultArtifact": {
+      "type": "object",
+      "required": ["path", "sha256", "run_id"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "run_id": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "invalidEvidence": {
+      "type": "object",
+      "required": ["path", "sha256", "status", "reason", "affected_case_ids"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {
+          "oneOf": [
+            {"$ref": "#/$defs/sha256"},
+            {"type": "null"}
+          ]
+        },
+        "status": {"const": "invalid"},
+        "reason": {"type": "string", "minLength": 1},
+        "affected_case_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

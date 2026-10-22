@@ -57,6 +57,8 @@ PARITY_EMAIL_INPUT ?= tests/fixtures/inputs/parity/extra-models-tutorials-upstre
 PARITY_MULTIPART_INPUT ?= tests/fixtures/inputs/parity/request-optional-list-aliases-20261016.json
 PARITY_API_INPUT ?= tests/fixtures/inputs/parity/encoding.json
 PARITY_API_PROFILE_EXTENSION ?=
+PARITY_CAMPAIGN_COMPARISONS ?=
+PARITY_CAMPAIGN_OUTPUT_DIR ?= parity-results/campaign
 PARITY_API_ORACLE_PYTHON ?= $(if $(filter testclient,$(PARITY_API_PROFILE_EXTENSION)),$(ORACLE_TESTCLIENT_PYTHON),$(if $(filter templates,$(PARITY_API_PROFILE_EXTENSION)),$(ORACLE_TEMPLATES_PYTHON),$(ORACLE_PYTHON)))
 PARITY_API_TARGET_PYTHON ?= $(if $(filter testclient,$(PARITY_API_PROFILE_EXTENSION)),$(TARGET_TESTCLIENT_PYTHON),$(if $(filter templates,$(PARITY_API_PROFILE_EXTENSION)),$(TARGET_TEMPLATES_PYTHON),$(TARGET_PYTHON)))
 PARITY_PROCESS_INPUT ?= tests/fixtures/inputs/parity/fastapi-cli-process-workflow.json
@@ -80,7 +82,7 @@ RELEASE_SDIST_DIR ?= target/release-sdist
 RELEASE_SDIST_WHEEL_DIR ?= target/release-sdist-validation-wheels
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare release-sdist developer-tools-prepare developer-tools-inventory-update developer-tools-inventory-check python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-oracle-email-validation parity-prepare-oracle-templates parity-prepare-oracle-json-serializers parity-prepare-target parity-prepare-target-testclient parity-prepare-target-email-validation parity-prepare-target-standard-multipart parity-prepare-target-templates parity-prepare-target-json-serializers fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-oracle parity-oracle-standard parity-oracle-email-validation parity-target parity-target-email-validation parity-target-standard-multipart parity-fault-target parity-compare parity-compare-email-validation signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice parity-workflow benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite benchmark-testclient-input-check verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare release-sdist developer-tools-prepare developer-tools-inventory-update developer-tools-inventory-check python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-oracle-email-validation parity-prepare-oracle-templates parity-prepare-oracle-json-serializers parity-prepare-target parity-prepare-target-testclient parity-prepare-target-email-validation parity-prepare-target-standard-multipart parity-prepare-target-templates parity-prepare-target-json-serializers fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-campaign parity-oracle parity-oracle-standard parity-oracle-email-validation parity-target parity-target-email-validation parity-target-standard-multipart parity-fault-target parity-compare parity-compare-email-validation signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice parity-workflow benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite benchmark-testclient-input-check verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -130,6 +132,7 @@ help: ## Show common development commands
 	  '  make parity-validate Validate workflows, source atlas, and fixture mappings' \
 	  '  make parity-index-update Rebuild source mappings for current fixture workflows' \
 	  '  make parity-index-check  Check the materialized fixture index is current' \
+	  '  make parity-campaign Build the declared-indexed-fixtures campaign ledger' \
 	  '  make parity-oracle   Run PARITY_INPUT against the isolated FastAPI oracle' \
 	  '  make parity-oracle-standard Run PARITY_INPUT with locked standard extras' \
 	  '  make parity-oracle-email-validation Run PARITY_EMAIL_INPUT in the locked EmailStr oracle profile' \
@@ -394,8 +397,14 @@ parity-process-compare: ## Compare completed FastAPI and FastAPI-RS CLI process 
 parity-index-update: parity-inputs ## Rebuild source mappings for current fixture workflows
 	$(PYTHON) -m scripts.build_materialized_input_index
 
-parity-index-check: parity-inputs ## Check the materialized fixture index is current
+parity-index-check: ## Check recipes, materialized inputs, and mappings without writing generated artifacts
+	$(PYTHON) scripts/build_parity_inputs.py --check
 	$(PYTHON) -m scripts.build_materialized_input_index --check
+
+parity-campaign: parity-index-check ## Build the declared-indexed-fixtures ledger (optional: PARITY_CAMPAIGN_COMPARISONS='path [path ...]')
+	$(PYTHON) -m scripts.parity.campaign \
+	  $(foreach path,$(PARITY_CAMPAIGN_COMPARISONS),--comparison "$(path)") \
+	  --output-dir "$(PARITY_CAMPAIGN_OUTPUT_DIR)"
 
 parity-oracle: parity-inputs ## Execute the input workflow against the isolated FastAPI oracle
 	$(PYTHON) -m scripts.parity.cli oracle --input "$(PARITY_INPUT)" --python "$(ORACLE_PYTHON)"

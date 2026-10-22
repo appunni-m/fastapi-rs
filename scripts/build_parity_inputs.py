@@ -55,7 +55,8 @@ def materialize(*, check: bool = False) -> tuple[int, int]:
     recipes = sorted(RECIPE_DIR.glob("*.yaml"))
     if not recipes:
         raise ContractError(f"no parity input recipes found under {RECIPE_DIR}")
-    INPUT_DIR.mkdir(parents=True, exist_ok=True)
+    if not check:
+        INPUT_DIR.mkdir(parents=True, exist_ok=True)
     expected: dict[str, str] = {}
     for recipe in recipes:
         value = read_recipe(recipe)
