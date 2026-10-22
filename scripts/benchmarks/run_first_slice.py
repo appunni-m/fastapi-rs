@@ -60,6 +60,16 @@ def _version(command: list[str]) -> str:
     return result.stdout.strip()
 
 
+def _shared_packages(identity: dict[str, Any], excluded: set[str]) -> dict[str, str]:
+    packages = identity.get("packages")
+    if not isinstance(packages, dict) or any(
+        not isinstance(name, str) or not isinstance(version, str)
+        for name, version in packages.items()
+    ):
+        raise BenchmarkError("parity identity has no valid package-version map")
+    return {name: version for name, version in packages.items() if name not in excluded}
+
+
 def main() -> int:
     if str(ROOT) not in sys.path:
         sys.path.insert(0, str(ROOT))
@@ -100,11 +110,6 @@ def main() -> int:
         "starlette_rs_source": target_contract["starlette_rs_distribution"]["commit"],
         "fastapi_rs_version": target_contract["version"],
         "starlette_rs_version": target_contract["starlette_rs_distribution"]["version"],
-        "shared_packages": {
-            name: version
-            for name, version in oracle_profile["packages"].items()
-            if name not in {"fastapi", "starlette"}
-        },
     }
     if expected_identity["python"] != oracle_profile["python"]:
         raise BenchmarkError(
@@ -167,6 +172,12 @@ def main() -> int:
     ):
         raise BenchmarkError(f"full selected parity gate did not pass: {summary}")
 
+    subject_shared_packages = {
+        "fastapi": _shared_packages(oracle["identity"], {"fastapi", "starlette"}),
+        "starlette-control": _shared_packages(oracle["identity"], {"fastapi", "starlette"}),
+        "fastapi-rs": _shared_packages(target["identity"], {"fastapi-rs", "starlette-rs-py"}),
+    }
+
     subject_python = {
         "fastapi": args.oracle_python.absolute(),
         "starlette-control": args.oracle_python.absolute(),
@@ -195,7 +206,11 @@ def main() -> int:
             "--samples-per-round",
             str(workload["timing"]["samples_per_round"]),
             "--identities-json",
-            json.dumps(expected_identity, sort_keys=True, separators=(",", ":")),
+            json.dumps(
+                {**expected_identity, "shared_packages": subject_shared_packages[kind]},
+                sort_keys=True,
+                separators=(",", ":"),
+            ),
             "--fastapi-source",
             str(args.fastapi_source.resolve()),
             "--starlette-source",
