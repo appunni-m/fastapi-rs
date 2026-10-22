@@ -258,7 +258,17 @@ def _function(
     links: tuple[dict[str, Any], ...],
     sources: tuple[dict[str, Any], ...],
 ) -> dict[str, Any]:
-    selectors = sorted({selector for link in links for selector in link["observation_selectors"]})
+    if not links:
+        raise ValueError(f"test function {test_path}:{function_name} needs an input workflow")
+
+    # The first link is the direct function witness; subsequent links add
+    # independent observations to the reviewed partial module mapping.
+    direct_workflow_case = dict(links[0])
+    direct_selectors = [
+        selector
+        for selector in links[0]["observation_selectors"]
+        if not selector.startswith("construction.")
+    ]
     link_notes = "; ".join(
         f"{link['recipe_path']}::{link['case_id']} actions "
         f"{', '.join(link['action_ids'])} observe "
@@ -268,7 +278,7 @@ def _function(
     return {
         "review_status": "reviewed_partial",
         "feature_ids": list(feature_ids),
-        "observation_selectors": selectors,
+        "observation_selectors": direct_selectors,
         "behavior_ownership": {
             "fastapi_target": _RUST_TARGET_BOUNDARY,
             "pydantic": _PYDANTIC_BOUNDARY,
@@ -276,6 +286,7 @@ def _function(
         },
         "rationale": rationale,
         "replace_features": True,
+        "direct_workflow_case": direct_workflow_case,
         "contract_gate": "Partial: " + _PARITY_GATE,
         "workflow_cases": list(links),
         "stimulus_notes": (
@@ -327,7 +338,12 @@ def _module(
         )
         sources.setdefault(key, source)
     selectors = sorted(
-        {selector for row in functions.values() for selector in row["observation_selectors"]}
+        {
+            selector
+            for row in functions.values()
+            for link in row["workflow_cases"]
+            for selector in link["observation_selectors"]
+        }
     )
     return {
         "review_status": "reviewed_partial",
@@ -345,14 +361,18 @@ def _module(
 
 
 _UNION_HTTP = ("http.status", "http.body.bytes")
-_UNION_OPENAPI = ("http.status", "openapi.document")
+_UNION_OPENAPI = ("docs.response.status", "http.status", "openapi.document")
 _APPLICATION_EXCEPTION = ("asgi.application_error.exception",)
 _CONSTRUCTION_SELECTORS = (
     "construction.outcome",
     "construction.exception_class",
     "construction.exception_message",
 )
-_VALIDATION_EXCEPTION_SELECTORS = (*_APPLICATION_EXCEPTION, *_CONSTRUCTION_SELECTORS)
+_VALIDATION_EXCEPTION_SELECTORS = (
+    *_APPLICATION_EXCEPTION,
+    "validation.error_class",
+    *_CONSTRUCTION_SELECTORS,
+)
 
 _BODY_RECIPE = "tests/fixtures/input-recipes/parity/union-body-tutorial-review.yaml"
 _BODY_WORKFLOW = "tests/fixtures/workloads/union_body_tutorial_review.py"
@@ -697,10 +717,12 @@ UNION_ERROR_CONTEXT_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                         "fastapi.websocket-validation.custom-handler-close",
                         ("invalid-path-custom-close",),
                         (
+                            *_CONSTRUCTION_SELECTORS,
                             "websocket.close_code",
                             "websocket.close_reason",
                             "websocket.event_order",
                             "websocket.messages",
+                            "websocket.workload_trace",
                         ),
                     ),
                 ),
@@ -799,20 +821,70 @@ TOTAL_FUNCTION_DENOMINATOR = sum(FUNCTION_DENOMINATORS.values())
 
 def _selectors_for_action(action: dict[str, Any]) -> set[str]:
     selectors: set[str] = set()
+    if action.get("kind") == "testclient_request":
+        path = action.get("request", {}).get("url", "").split("?", 1)[0]
+    else:
+        path = action.get("scope", {}).get("path", "")
+    openapi_endpoint = path == "/openapi.json"
     for observation in action.get("observations", []):
         kind = observation.get("kind")
         if kind == "http_response":
             values = set(observation.get("selectors", []))
             if "status" in values:
                 selectors.add("http.status")
+                if openapi_endpoint:
+                    selectors.add("docs.response.status")
+            if "headers" in values:
+                selectors.add("http.headers.ordered")
+                if openapi_endpoint:
+                    selectors.add("docs.response.headers")
             if "body" in values:
                 selectors.add("http.body.bytes")
+                if openapi_endpoint:
+                    selectors.add("docs.response.body.bytes")
+            if "body_json" in values:
+                selectors.add("http.body.json")
         elif kind == "openapi":
-            selectors.add("openapi.document")
-            if any(pointer.startswith("/paths/") for pointer in observation["json_pointers"]):
-                selectors.add("openapi.paths")
-        elif kind == "application_error" and observation.get("selector") == "exception":
-            selectors.add("asgi.application_error.exception")
+            for pointer in observation["json_pointers"]:
+                is_security_pointer = (
+                    pointer.startswith("/components/securitySchemes/")
+                    or pointer.endswith("/security")
+                    or "/security/" in pointer
+                )
+                if is_security_pointer:
+                    selectors.add("openapi.security")
+                if pointer == "/paths" or pointer.startswith("/paths/"):
+                    selectors.update(("openapi.document", "openapi.paths"))
+                elif not is_security_pointer:
+                    selectors.add("openapi.document")
+                pointer_segments = pointer.split("/")
+                try:
+                    request_body_index = pointer_segments.index("requestBody")
+                except ValueError:
+                    request_body_index = -1
+                if (
+                    request_body_index >= 0
+                    and "schema" in pointer_segments[request_body_index + 1 :]
+                ):
+                    selectors.add("openapi.request_schema")
+        elif kind == "application_error":
+            selector = observation.get("selector")
+            selector_map = {
+                "exception": "asgi.application_error.exception",
+                "validation_error_class": "validation.error_class",
+                "validation_error_details": "validation.error_details",
+                "error_public_attributes": "error.public_attributes",
+            }
+            if selector in selector_map:
+                selectors.add(selector_map[selector])
+        elif kind == "websocket" and observation.get("selector"):
+            selectors.add(f"websocket.{observation['selector']}")
+        elif kind == "workload_trace" and observation.get("selector"):
+            selectors.add(observation["selector"])
+        elif kind == "asgi_lifespan" and observation.get("selector"):
+            selectors.add(f"asgi.lifespan.{observation['selector']}")
+        elif kind == "asgi_send":
+            selectors.add("asgi.send.message_types")
     return selectors
 
 
@@ -851,6 +923,12 @@ def validate_union_error_context_review_mappings() -> list[str]:
             if not row.get("workflow_cases"):
                 errors.append(
                     f"test function has no workflow mapping: {module_path}:{function_name}"
+                )
+            direct_workflow_case = row.get("direct_workflow_case")
+            if direct_workflow_case not in row.get("workflow_cases", []):
+                errors.append(
+                    f"direct function witness is not one of its reviewed input links: "
+                    f"{module_path}:{function_name}"
                 )
             for link in row.get("workflow_cases", []):
                 recipe_path = link["recipe_path"]

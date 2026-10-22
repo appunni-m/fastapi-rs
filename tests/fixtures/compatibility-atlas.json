@@ -734592,26 +734592,81 @@
           {
             "case_id": "fastapi.test.test-union-body.test-post-other-item",
             "end_line": 28,
+            "function_source_ref": {
+              "end_line": 28,
+              "line": 25,
+              "path": "tests/test_union_body.py",
+              "sha256": "2f33b14d7f852337be6eacf32ae58033891a40eb8b8c40a3dc4014e8a3eb025c"
+            },
             "line": 25,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_post_other_item"
+            "name": "test_post_other_item",
+            "workflow_case": {
+              "action_ids": [
+                "post-other-item"
+              ],
+              "case_id": "fastapi.request-union-body.tutorial.other-item",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/union-body-tutorial-review.yaml",
+              "workflow_id": "union-body-tutorial-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-union-body.test-post-item",
             "end_line": 34,
+            "function_source_ref": {
+              "end_line": 34,
+              "line": 31,
+              "path": "tests/test_union_body.py",
+              "sha256": "2f33b14d7f852337be6eacf32ae58033891a40eb8b8c40a3dc4014e8a3eb025c"
+            },
             "line": 31,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_post_item"
+            "name": "test_post_item",
+            "workflow_case": {
+              "action_ids": [
+                "post-item"
+              ],
+              "case_id": "fastapi.request-union-body.tutorial.item",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/union-body-tutorial-review.yaml",
+              "workflow_id": "union-body-tutorial-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-union-body.test-openapi-schema",
             "end_line": 134,
+            "function_source_ref": {
+              "end_line": 134,
+              "line": 37,
+              "path": "tests/test_union_body.py",
+              "sha256": "2f33b14d7f852337be6eacf32ae58033891a40eb8b8c40a3dc4014e8a3eb025c"
+            },
             "line": 37,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_openapi_schema"
+            "name": "test_openapi_schema",
+            "workflow_case": {
+              "action_ids": [
+                "union-body-openapi"
+              ],
+              "case_id": "fastapi.request-union-body.tutorial.openapi",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/union-body-tutorial-review.yaml",
+              "workflow_id": "union-body-tutorial-review"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -734935,6 +734990,7 @@
                 "fastapi.request-union-body.tutorial.openapi"
               ],
               "observation_selectors": [
+                "docs.response.status",
                 "http.status",
                 "openapi.document"
               ],
@@ -734949,17 +735005,6 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/request-models.yaml"
-            },
-            {
-              "case_ids": [
-                "fastapi.request-union-body.tutorial.openapi"
-              ],
-              "observation_selectors": [
-                "docs.response.status",
-                "http.status",
-                "openapi.document"
-              ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/union-body-tutorial-review.yaml"
             }
           ]
         },
@@ -735203,10 +735248,29 @@
           {
             "case_id": "fastapi.test.test-union-body-discriminator.test-discriminator-pydantic-v2",
             "end_line": 204,
+            "function_source_ref": {
+              "end_line": 204,
+              "line": 10,
+              "path": "tests/test_union_body_discriminator.py",
+              "sha256": "418fcb815a4de584938299341966dbe4da7720f7af78043bd12c7b7757b3ce0b"
+            },
             "line": 10,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_discriminator_pydantic_v2"
+            "name": "test_discriminator_pydantic_v2",
+            "workflow_case": {
+              "action_ids": [
+                "first-tagged-union-branch",
+                "other-tagged-union-branch"
+              ],
+              "case_id": "fastapi.request.explicit-tagged-union-body-discriminator-upstream",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/union-body-discriminator-upstream.yaml",
+              "workflow_id": "union-body-discriminator-upstream"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -735506,16 +735570,6 @@
                 "fastapi.request.explicit-tagged-union-body-discriminator.full-schema"
               ],
               "observation_selectors": [
-                "http.status",
-                "openapi.document"
-              ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/union-body-discriminator-full-schema-review.yaml"
-            },
-            {
-              "case_ids": [
-                "fastapi.request.explicit-tagged-union-body-discriminator.full-schema"
-              ],
-              "observation_selectors": [
                 "docs.response.status",
                 "http.status",
                 "openapi.document"
@@ -735772,26 +735826,81 @@
           {
             "case_id": "fastapi.test.test-union-body-discriminator-annotated.test-union-body-discriminator-assignment",
             "end_line": 51,
+            "function_source_ref": {
+              "end_line": 51,
+              "line": 48,
+              "path": "tests/test_union_body_discriminator_annotated.py",
+              "sha256": "349a3198735684971a911c8e21145036630d1c321401515abcc5c63a90da2f5c"
+            },
             "line": 48,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_union_body_discriminator_assignment"
+            "name": "test_union_body_discriminator_assignment",
+            "workflow_case": {
+              "action_ids": [
+                "callable-discriminator-assignment-body"
+              ],
+              "case_id": "fastapi.request-union-body.callable-discriminator.assignment",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/union-body-discriminator-annotated-review.yaml",
+              "workflow_id": "union-body-discriminator-annotated-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-union-body-discriminator-annotated.test-union-body-discriminator-annotated",
             "end_line": 57,
+            "function_source_ref": {
+              "end_line": 57,
+              "line": 54,
+              "path": "tests/test_union_body_discriminator_annotated.py",
+              "sha256": "349a3198735684971a911c8e21145036630d1c321401515abcc5c63a90da2f5c"
+            },
             "line": 54,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_union_body_discriminator_annotated"
+            "name": "test_union_body_discriminator_annotated",
+            "workflow_case": {
+              "action_ids": [
+                "callable-discriminator-annotated-body"
+              ],
+              "case_id": "fastapi.request-union-body.callable-discriminator.annotated",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/union-body-discriminator-annotated-review.yaml",
+              "workflow_id": "union-body-discriminator-annotated-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-union-body-discriminator-annotated.test-openapi-schema",
             "end_line": 203,
+            "function_source_ref": {
+              "end_line": 203,
+              "line": 60,
+              "path": "tests/test_union_body_discriminator_annotated.py",
+              "sha256": "349a3198735684971a911c8e21145036630d1c321401515abcc5c63a90da2f5c"
+            },
             "line": 60,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_openapi_schema"
+            "name": "test_openapi_schema",
+            "workflow_case": {
+              "action_ids": [
+                "callable-discriminator-openapi"
+              ],
+              "case_id": "fastapi.request-union-body.callable-discriminator.openapi",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/union-body-discriminator-annotated-review.yaml",
+              "workflow_id": "union-body-discriminator-annotated-review"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -736119,6 +736228,7 @@
                 "fastapi.request-union-body.callable-discriminator.openapi"
               ],
               "observation_selectors": [
+                "docs.response.status",
                 "http.status",
                 "openapi.document"
               ],
@@ -736133,17 +736243,6 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/request-models.yaml"
-            },
-            {
-              "case_ids": [
-                "fastapi.request-union-body.callable-discriminator.openapi"
-              ],
-              "observation_selectors": [
-                "docs.response.status",
-                "http.status",
-                "openapi.document"
-              ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/union-body-discriminator-annotated-review.yaml"
             }
           ]
         },
@@ -736438,42 +736537,133 @@
           {
             "case_id": "fastapi.test.test-union-forms.test-post-user-form",
             "end_line": 36,
+            "function_source_ref": {
+              "end_line": 36,
+              "line": 29,
+              "path": "tests/test_union_forms.py",
+              "sha256": "23617a94d3f3c63069963223748938358a8bdc9851b08d8cb70063124f518e5f"
+            },
             "line": 29,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_post_user_form"
+            "name": "test_post_user_form",
+            "workflow_case": {
+              "action_ids": [
+                "post-user-form"
+              ],
+              "case_id": "fastapi.request-union-forms.tutorial.user",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/union-forms-tutorial-review.yaml",
+              "workflow_id": "union-forms-tutorial-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-union-forms.test-post-company-form",
             "end_line": 46,
+            "function_source_ref": {
+              "end_line": 46,
+              "line": 39,
+              "path": "tests/test_union_forms.py",
+              "sha256": "23617a94d3f3c63069963223748938358a8bdc9851b08d8cb70063124f518e5f"
+            },
             "line": 39,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_post_company_form"
+            "name": "test_post_company_form",
+            "workflow_case": {
+              "action_ids": [
+                "post-company-form"
+              ],
+              "case_id": "fastapi.request-union-forms.tutorial.company",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/union-forms-tutorial-review.yaml",
+              "workflow_id": "union-forms-tutorial-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-union-forms.test-invalid-form-data",
             "end_line": 54,
+            "function_source_ref": {
+              "end_line": 54,
+              "line": 49,
+              "path": "tests/test_union_forms.py",
+              "sha256": "23617a94d3f3c63069963223748938358a8bdc9851b08d8cb70063124f518e5f"
+            },
             "line": 49,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_invalid_form_data"
+            "name": "test_invalid_form_data",
+            "workflow_case": {
+              "action_ids": [
+                "post-invalid-mixed-form"
+              ],
+              "case_id": "fastapi.request-union-forms.tutorial.invalid-mixed-fields",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/union-forms-tutorial-review.yaml",
+              "workflow_id": "union-forms-tutorial-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-union-forms.test-empty-form",
             "end_line": 59,
+            "function_source_ref": {
+              "end_line": 59,
+              "line": 57,
+              "path": "tests/test_union_forms.py",
+              "sha256": "23617a94d3f3c63069963223748938358a8bdc9851b08d8cb70063124f518e5f"
+            },
             "line": 57,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_empty_form"
+            "name": "test_empty_form",
+            "workflow_case": {
+              "action_ids": [
+                "post-empty-form"
+              ],
+              "case_id": "fastapi.request-union-forms.tutorial.empty",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/union-forms-tutorial-review.yaml",
+              "workflow_id": "union-forms-tutorial-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-union-forms.test-openapi-schema",
             "end_line": 163,
+            "function_source_ref": {
+              "end_line": 163,
+              "line": 62,
+              "path": "tests/test_union_forms.py",
+              "sha256": "23617a94d3f3c63069963223748938358a8bdc9851b08d8cb70063124f518e5f"
+            },
             "line": 62,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_openapi_schema"
+            "name": "test_openapi_schema",
+            "workflow_case": {
+              "action_ids": [
+                "union-forms-openapi"
+              ],
+              "case_id": "fastapi.request-union-forms.tutorial.openapi",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/union-forms-tutorial-review.yaml",
+              "workflow_id": "union-forms-tutorial-review"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -736821,6 +737011,7 @@
                 "fastapi.request-union-forms.tutorial.openapi"
               ],
               "observation_selectors": [
+                "docs.response.status",
                 "http.status",
                 "openapi.document"
               ],
@@ -736849,17 +737040,6 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml"
-            },
-            {
-              "case_ids": [
-                "fastapi.request-union-forms.tutorial.openapi"
-              ],
-              "observation_selectors": [
-                "docs.response.status",
-                "http.status",
-                "openapi.document"
-              ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/union-forms-tutorial-review.yaml"
             }
           ]
         },
@@ -737181,26 +737361,81 @@
           {
             "case_id": "fastapi.test.test-union-inherited-body.test-post-extended-item",
             "end_line": 28,
+            "function_source_ref": {
+              "end_line": 28,
+              "line": 25,
+              "path": "tests/test_union_inherited_body.py",
+              "sha256": "2b884d1fa6209b9dc22eaa7ed1c496d21d68c198f3ff0fbbd2894635ca229381"
+            },
             "line": 25,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_post_extended_item"
+            "name": "test_post_extended_item",
+            "workflow_case": {
+              "action_ids": [
+                "post-extended-item"
+              ],
+              "case_id": "fastapi.request-union-body.inherited.extended-item",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/union-inherited-body-tutorial-review.yaml",
+              "workflow_id": "union-inherited-body-tutorial-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-union-inherited-body.test-post-item",
             "end_line": 34,
+            "function_source_ref": {
+              "end_line": 34,
+              "line": 31,
+              "path": "tests/test_union_inherited_body.py",
+              "sha256": "2b884d1fa6209b9dc22eaa7ed1c496d21d68c198f3ff0fbbd2894635ca229381"
+            },
             "line": 31,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_post_item"
+            "name": "test_post_item",
+            "workflow_case": {
+              "action_ids": [
+                "post-base-item"
+              ],
+              "case_id": "fastapi.request-union-body.inherited.base-item",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/union-inherited-body-tutorial-review.yaml",
+              "workflow_id": "union-inherited-body-tutorial-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-union-inherited-body.test-openapi-schema",
             "end_line": 142,
+            "function_source_ref": {
+              "end_line": 142,
+              "line": 37,
+              "path": "tests/test_union_inherited_body.py",
+              "sha256": "2b884d1fa6209b9dc22eaa7ed1c496d21d68c198f3ff0fbbd2894635ca229381"
+            },
             "line": 37,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_openapi_schema"
+            "name": "test_openapi_schema",
+            "workflow_case": {
+              "action_ids": [
+                "inherited-union-openapi"
+              ],
+              "case_id": "fastapi.request-union-body.inherited.openapi",
+              "observation_selectors": [
+                "docs.response.status",
+                "http.status",
+                "openapi.document"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/union-inherited-body-tutorial-review.yaml",
+              "workflow_id": "union-inherited-body-tutorial-review"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -737524,6 +737759,7 @@
                 "fastapi.request-union-body.inherited.openapi"
               ],
               "observation_selectors": [
+                "docs.response.status",
                 "http.status",
                 "openapi.document"
               ],
@@ -737538,17 +737774,6 @@
                 "http.status"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/request-models.yaml"
-            },
-            {
-              "case_ids": [
-                "fastapi.request-union-body.inherited.openapi"
-              ],
-              "observation_selectors": [
-                "docs.response.status",
-                "http.status",
-                "openapi.document"
-              ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/union-inherited-body-tutorial-review.yaml"
             }
           ]
         },
@@ -738506,7 +738731,8 @@
         "websocket.close_code",
         "websocket.close_reason",
         "websocket.event_order",
-        "websocket.messages"
+        "websocket.messages",
+        "websocket.workload_trace"
       ],
       "candidate_selector_evidence": [
         {
@@ -738555,7 +738781,8 @@
             "websocket.close_code",
             "websocket.close_reason",
             "websocket.event_order",
-            "websocket.messages"
+            "websocket.messages",
+            "websocket.workload_trace"
           ],
           "selectors": [
             "asgi.application_error.exception",
@@ -738565,7 +738792,8 @@
             "websocket.close_code",
             "websocket.close_reason",
             "websocket.event_order",
-            "websocket.messages"
+            "websocket.messages",
+            "websocket.workload_trace"
           ]
         }
       ],
@@ -738704,7 +738932,7 @@
             "case_ids": [
               "fastapi.websocket-validation.custom-handler-close"
             ],
-            "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, websocket.close_code, websocket.close_reason, websocket.event_order, websocket.messages, websocket.workload_trace. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "construction.exception_class",
@@ -738713,7 +738941,8 @@
               "websocket.close_code",
               "websocket.close_reason",
               "websocket.event_order",
-              "websocket.messages"
+              "websocket.messages",
+              "websocket.workload_trace"
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml",
             "workflow_id": "websocket-validation-handler-wave"
@@ -738724,58 +738953,184 @@
           {
             "case_id": "fastapi.test.test-validation-error-context.test-request-validation-error-includes-endpoint-context",
             "end_line": 97,
+            "function_source_ref": {
+              "end_line": 97,
+              "line": 87,
+              "path": "tests/test_validation_error_context.py",
+              "sha256": "1974060617ce55acafb7c9f701d4b27fc25ea8fcdf4a4cceaaa5eea4b14302fb"
+            },
             "line": 87,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_request_validation_error_includes_endpoint_context"
+            "name": "test_request_validation_error_includes_endpoint_context",
+            "workflow_case": {
+              "action_ids": [
+                "invalid-user-path"
+              ],
+              "case_id": "fastapi.validation-error-context.exact.request-endpoint",
+              "observation_selectors": [
+                "asgi.application_error.exception",
+                "validation.error_class"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml",
+              "workflow_id": "validation-error-context-exact-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-validation-error-context.test-response-validation-error-includes-endpoint-context",
             "end_line": 110,
+            "function_source_ref": {
+              "end_line": 110,
+              "line": 100,
+              "path": "tests/test_validation_error_context.py",
+              "sha256": "1974060617ce55acafb7c9f701d4b27fc25ea8fcdf4a4cceaaa5eea4b14302fb"
+            },
             "line": 100,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_response_validation_error_includes_endpoint_context"
+            "name": "test_response_validation_error_includes_endpoint_context",
+            "workflow_case": {
+              "action_ids": [
+                "invalid-item-response"
+              ],
+              "case_id": "fastapi.validation-error-context.exact.response-endpoint",
+              "observation_selectors": [
+                "asgi.application_error.exception",
+                "validation.error_class"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml",
+              "workflow_id": "validation-error-context-exact-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-validation-error-context.test-websocket-validation-error-includes-endpoint-context",
             "end_line": 124,
+            "function_source_ref": {
+              "end_line": 124,
+              "line": 113,
+              "path": "tests/test_validation_error_context.py",
+              "sha256": "1974060617ce55acafb7c9f701d4b27fc25ea8fcdf4a4cceaaa5eea4b14302fb"
+            },
             "line": 113,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_websocket_validation_error_includes_endpoint_context"
+            "name": "test_websocket_validation_error_includes_endpoint_context",
+            "workflow_case": {
+              "action_ids": [
+                "invalid-websocket-path"
+              ],
+              "case_id": "fastapi.validation-error-context.exact.websocket-endpoint",
+              "observation_selectors": [
+                "asgi.application_error.exception",
+                "validation.error_class"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml",
+              "workflow_id": "validation-error-context-exact-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-validation-error-context.test-subapp-request-validation-error-includes-endpoint-context",
             "end_line": 137,
+            "function_source_ref": {
+              "end_line": 137,
+              "line": 127,
+              "path": "tests/test_validation_error_context.py",
+              "sha256": "1974060617ce55acafb7c9f701d4b27fc25ea8fcdf4a4cceaaa5eea4b14302fb"
+            },
             "line": 127,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_subapp_request_validation_error_includes_endpoint_context"
+            "name": "test_subapp_request_validation_error_includes_endpoint_context",
+            "workflow_case": {
+              "action_ids": [
+                "invalid-mounted-item-response"
+              ],
+              "case_id": "fastapi.validation-error-context.exact.mounted-response-endpoint",
+              "observation_selectors": [
+                "asgi.application_error.exception",
+                "validation.error_class"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml",
+              "workflow_id": "validation-error-context-exact-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-validation-error-context.test-subapp-websocket-validation-error-includes-endpoint-context",
             "end_line": 151,
+            "function_source_ref": {
+              "end_line": 151,
+              "line": 140,
+              "path": "tests/test_validation_error_context.py",
+              "sha256": "1974060617ce55acafb7c9f701d4b27fc25ea8fcdf4a4cceaaa5eea4b14302fb"
+            },
             "line": 140,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_subapp_websocket_validation_error_includes_endpoint_context"
+            "name": "test_subapp_websocket_validation_error_includes_endpoint_context",
+            "workflow_case": {
+              "action_ids": [
+                "invalid-mounted-websocket-path"
+              ],
+              "case_id": "fastapi.validation-error-context.exact.mounted-websocket-endpoint",
+              "observation_selectors": [
+                "asgi.application_error.exception",
+                "validation.error_class"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml",
+              "workflow_id": "validation-error-context-exact-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-validation-error-context.test-validation-error-with-only-path",
             "end_line": 159,
+            "function_source_ref": {
+              "end_line": 159,
+              "line": 154,
+              "path": "tests/test_validation_error_context.py",
+              "sha256": "1974060617ce55acafb7c9f701d4b27fc25ea8fcdf4a4cceaaa5eea4b14302fb"
+            },
             "line": 154,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_validation_error_with_only_path"
+            "name": "test_validation_error_with_only_path",
+            "workflow_case": {
+              "action_ids": [
+                "format-path-only-context"
+              ],
+              "case_id": "fastapi.validation-error-context.exact.path-only",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml",
+              "workflow_id": "validation-error-context-exact-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-validation-error-context.test-validation-error-with-no-context",
             "end_line": 168,
+            "function_source_ref": {
+              "end_line": 168,
+              "line": 162,
+              "path": "tests/test_validation_error_context.py",
+              "sha256": "1974060617ce55acafb7c9f701d4b27fc25ea8fcdf4a4cceaaa5eea4b14302fb"
+            },
             "line": 162,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_validation_error_with_no_context"
+            "name": "test_validation_error_with_no_context",
+            "workflow_case": {
+              "action_ids": [
+                "format-empty-context"
+              ],
+              "case_id": "fastapi.validation-error-context.exact.empty-context",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml",
+              "workflow_id": "validation-error-context-exact-review"
+            }
           }
         ],
         "module_excluded_test_functions": [],
@@ -738793,7 +739148,7 @@
         "reviewed_module_mapping": {
           "contract_gate": "Partial: Input mapping only. Cases contain independent stimuli and selectors, not expected values, and no live parity was run. Compare the selectors only after identity-checked isolated execution; generic ASGI, form parser, mount, and TestClient behavior remains under the Starlette 1.6.0 contract, while Pydantic 2.13.4 retains model validation and schema ownership.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
           "rationale": "Five workflows reproduce the source route paths, endpoint names, response model failures, websocket invalid path values, and mounted sub-application cases. Two existing cases exercise explicit-path-only and empty endpoint contexts. The function named request-validation for /sub/items/ actually captures a ResponseValidationError, as its source handler and response_model route show.",
-          "stimulus_notes": "Pydantic 2.13.4 owns BaseModel field metadata, union-branch validation and coercion, Annotated Tag/Discriminator interpretation, validation error items, and model JSON Schema. FastAPI owns Python endpoint annotation inspection, deciding that these declarations are request bodies or forms, applying request/error locations and endpoint context, and placing the generated field schema into an OpenAPI operation. No Pydantic internals are claimed as FastAPI-RS behavior by this mapping. Starlette 1.6.0 is the sole contract for ASGI request/response transport, URL-encoded form parsing, generic route/mount scope behavior, exception middleware, and TestClient encoding and re-raising. FastAPI owns body/form parameter binding, validation exception context and OpenAPI operation composition. The error-context workflows observe the ASGI exception directly; fastapi.validation-error-context.exact.websocket-error-fields covers one rethrowing WebSocket-handler path. It does not claim TestClient transport or all handler and re-raising behavior. The original FastAPI tree is a development/oracle source only. Every FastAPI behavior described here belongs in fastapi-rs Rust control flow. The target Python runtime may only directly re-export native symbols and declare literal __all__; fastapi-rs-py is limited to PyO3 binding and value conversion. The Starlette 1.6.0 replacement has a separate Rust contract; Pydantic 2.13.4 remains the pinned model/validation/schema authority.; Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-validation-cross-location-wave.yaml::fastapi.request-validation.cross-location.path-query-body-aggregation (actions: dispatch-invalid-path-query-and-body; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml::fastapi.request-validation-error-details.rethrowing-handler (actions: capture-invalid-query-and-body-error; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/request-validation-error-object.yaml::fastapi.validation-error-object.path-context (actions: observe-path-context; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-error-object.yaml::fastapi.validation-error-object.empty-context (actions: observe-empty-context; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-error-object.yaml::fastapi.validation-error-object.omitted-defaults (actions: observe-omitted-defaults; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml::fastapi.request-validation-handler.path-error (actions: dispatch-path-validation-error; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml::fastapi.request-validation-handler.body-error (actions: dispatch-body-validation-error; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml::fastapi.request-validation-handler.manual-structured-errors (actions: encode-manually-raised-structured-errors; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml::fastapi.request-validation-handler.manual-explicit-endpoint-context (actions: expose-explicit-request-error-context; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.request-endpoint (actions: invalid-user-path; selectors: construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.response-endpoint (actions: invalid-item-response; selectors: construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.websocket-endpoint (actions: invalid-websocket-path; selectors: construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.websocket-error-fields (actions: invalid-path-and-dependency-values; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.mounted-response-endpoint (actions: invalid-mounted-item-response; selectors: construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.mounted-websocket-endpoint (actions: invalid-mounted-websocket-path; selectors: construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.path-only (actions: format-path-only-context; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.empty-context (actions: format-empty-context; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.request-constructor-fields (actions: raise-populated-request-error; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.response-errors-body (actions: call-response-errors-method-and-preserve-body; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status); tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml::fastapi.validation-error-context.path-parameter-http (actions: read-invalid-member; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml::fastapi.validation-error-context.response-model-http (actions: read-invalid-summary; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml::fastapi.validation-error-context.mounted-path-parameter-http (actions: read-invalid-mounted-member; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml::fastapi.validation-error-context.websocket (actions: open-invalid-websocket; selectors: validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml::fastapi.validation-error-context.mounted-websocket (actions: open-invalid-mounted-websocket; selectors: validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml::fastapi.validation-error-context.explicit-path-only (actions: render-path-only-context; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml::fastapi.validation-error-context.empty-endpoint-context (actions: render-empty-context; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml::fastapi.websocket-validation.custom-handler-close (actions: invalid-path-custom-close; selectors: construction.exception_class, construction.exception_message, construction.outcome). Inputs contain no expected results.",
+          "stimulus_notes": "Pydantic 2.13.4 owns BaseModel field metadata, union-branch validation and coercion, Annotated Tag/Discriminator interpretation, validation error items, and model JSON Schema. FastAPI owns Python endpoint annotation inspection, deciding that these declarations are request bodies or forms, applying request/error locations and endpoint context, and placing the generated field schema into an OpenAPI operation. No Pydantic internals are claimed as FastAPI-RS behavior by this mapping. Starlette 1.6.0 is the sole contract for ASGI request/response transport, URL-encoded form parsing, generic route/mount scope behavior, exception middleware, and TestClient encoding and re-raising. FastAPI owns body/form parameter binding, validation exception context and OpenAPI operation composition. The error-context workflows observe the ASGI exception directly; fastapi.validation-error-context.exact.websocket-error-fields covers one rethrowing WebSocket-handler path. It does not claim TestClient transport or all handler and re-raising behavior. The original FastAPI tree is a development/oracle source only. Every FastAPI behavior described here belongs in fastapi-rs Rust control flow. The target Python runtime may only directly re-export native symbols and declare literal __all__; fastapi-rs-py is limited to PyO3 binding and value conversion. The Starlette 1.6.0 replacement has a separate Rust contract; Pydantic 2.13.4 remains the pinned model/validation/schema authority.; Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/request-validation-cross-location-wave.yaml::fastapi.request-validation.cross-location.path-query-body-aggregation (actions: dispatch-invalid-path-query-and-body; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml::fastapi.request-validation-error-details.rethrowing-handler (actions: capture-invalid-query-and-body-error; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/request-validation-error-object.yaml::fastapi.validation-error-object.path-context (actions: observe-path-context; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-error-object.yaml::fastapi.validation-error-object.empty-context (actions: observe-empty-context; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-error-object.yaml::fastapi.validation-error-object.omitted-defaults (actions: observe-omitted-defaults; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml::fastapi.request-validation-handler.path-error (actions: dispatch-path-validation-error; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml::fastapi.request-validation-handler.body-error (actions: dispatch-body-validation-error; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml::fastapi.request-validation-handler.manual-structured-errors (actions: encode-manually-raised-structured-errors; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml::fastapi.request-validation-handler.manual-explicit-endpoint-context (actions: expose-explicit-request-error-context; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.request-endpoint (actions: invalid-user-path; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.response-endpoint (actions: invalid-item-response; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.websocket-endpoint (actions: invalid-websocket-path; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.websocket-error-fields (actions: invalid-path-and-dependency-values; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.mounted-response-endpoint (actions: invalid-mounted-item-response; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.mounted-websocket-endpoint (actions: invalid-mounted-websocket-path; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.path-only (actions: format-path-only-context; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.empty-context (actions: format-empty-context; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.request-constructor-fields (actions: raise-populated-request-error; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml::fastapi.validation-error-context.exact.response-errors-body (actions: call-response-errors-method-and-preserve-body; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status); tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml::fastapi.validation-error-context.path-parameter-http (actions: read-invalid-member; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml::fastapi.validation-error-context.response-model-http (actions: read-invalid-summary; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml::fastapi.validation-error-context.mounted-path-parameter-http (actions: read-invalid-mounted-member; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml::fastapi.validation-error-context.websocket (actions: open-invalid-websocket; selectors: validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml::fastapi.validation-error-context.mounted-websocket (actions: open-invalid-mounted-websocket; selectors: validation.error_class); tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml::fastapi.validation-error-context.explicit-path-only (actions: render-path-only-context; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/validation-error-context-upstream.yaml::fastapi.validation-error-context.empty-endpoint-context (actions: render-empty-context; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml::fastapi.websocket-validation.custom-handler-close (actions: invalid-path-custom-close; selectors: construction.exception_class, construction.exception_message, construction.outcome). Inputs contain no expected results.",
           "supporting_sources": [
             {
               "end_line": 97,
@@ -739131,7 +739486,8 @@
                 "asgi.application_error.exception",
                 "construction.exception_class",
                 "construction.exception_message",
-                "construction.outcome"
+                "construction.outcome",
+                "validation.error_class"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml"
             },
@@ -739143,7 +739499,8 @@
                 "asgi.application_error.exception",
                 "construction.exception_class",
                 "construction.exception_message",
-                "construction.outcome"
+                "construction.outcome",
+                "validation.error_class"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml"
             },
@@ -739155,7 +739512,8 @@
                 "asgi.application_error.exception",
                 "construction.exception_class",
                 "construction.exception_message",
-                "construction.outcome"
+                "construction.outcome",
+                "validation.error_class"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml"
             },
@@ -739164,10 +739522,14 @@
                 "fastapi.websocket-validation.custom-handler-close"
               ],
               "observation_selectors": [
+                "construction.exception_class",
+                "construction.exception_message",
+                "construction.outcome",
                 "websocket.close_code",
                 "websocket.close_reason",
                 "websocket.event_order",
-                "websocket.messages"
+                "websocket.messages",
+                "websocket.workload_trace"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/websocket-validation-handler-wave.yaml"
             },
@@ -739179,7 +739541,8 @@
                 "asgi.application_error.exception",
                 "construction.exception_class",
                 "construction.exception_message",
-                "construction.outcome"
+                "construction.outcome",
+                "validation.error_class"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml"
             },
@@ -739191,7 +739554,8 @@
                 "asgi.application_error.exception",
                 "construction.exception_class",
                 "construction.exception_message",
-                "construction.outcome"
+                "construction.outcome",
+                "validation.error_class"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml"
             },
@@ -739336,70 +739700,10 @@
             },
             {
               "case_ids": [
-                "fastapi.validation-error-context.exact.request-endpoint"
-              ],
-              "observation_selectors": [
-                "construction.exception_class",
-                "construction.exception_message",
-                "construction.outcome",
-                "validation.error_class"
-              ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml"
-            },
-            {
-              "case_ids": [
-                "fastapi.validation-error-context.exact.response-endpoint"
-              ],
-              "observation_selectors": [
-                "construction.exception_class",
-                "construction.exception_message",
-                "construction.outcome",
-                "validation.error_class"
-              ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml"
-            },
-            {
-              "case_ids": [
-                "fastapi.validation-error-context.exact.websocket-endpoint"
-              ],
-              "observation_selectors": [
-                "construction.exception_class",
-                "construction.exception_message",
-                "construction.outcome",
-                "validation.error_class"
-              ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml"
-            },
-            {
-              "case_ids": [
                 "fastapi.validation-error-context.exact.websocket-error-fields"
               ],
               "observation_selectors": [
                 "asgi.application_error.exception",
-                "construction.exception_class",
-                "construction.exception_message",
-                "construction.outcome",
-                "validation.error_class"
-              ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml"
-            },
-            {
-              "case_ids": [
-                "fastapi.validation-error-context.exact.mounted-response-endpoint"
-              ],
-              "observation_selectors": [
-                "construction.exception_class",
-                "construction.exception_message",
-                "construction.outcome",
-                "validation.error_class"
-              ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml"
-            },
-            {
-              "case_ids": [
-                "fastapi.validation-error-context.exact.mounted-websocket-endpoint"
-              ],
-              "observation_selectors": [
                 "construction.exception_class",
                 "construction.exception_message",
                 "construction.outcome",
@@ -739533,7 +739837,8 @@
         "websocket.close_code",
         "websocket.close_reason",
         "websocket.event_order",
-        "websocket.messages"
+        "websocket.messages",
+        "websocket.workload_trace"
       ],
       "review_reason": "At least one behavior mapping is contract-gated and is not represented by a complete independent workflow.",
       "review_status": "reviewed_partial",
@@ -739657,7 +739962,8 @@
             "websocket.close_code",
             "websocket.close_reason",
             "websocket.event_order",
-            "websocket.messages"
+            "websocket.messages",
+            "websocket.workload_trace"
           ],
           "workflow_id": "websocket-validation-handler-wave"
         }

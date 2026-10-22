@@ -1198,6 +1198,26 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
     ),
 }
 
+from scripts.atlas_union_error_context_review_mappings import (  # noqa: E402
+    UNION_ERROR_CONTEXT_TEST_REVIEW_MAPPINGS,
+)
+
+for _test_path, _module_review in UNION_ERROR_CONTEXT_TEST_REVIEW_MAPPINGS.items():
+    for _function_name, _function_review in _module_review["functions"].items():
+        _direct_link = _function_review["direct_workflow_case"]
+        _key = (_test_path, _function_name)
+        REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS[_key] = _reviewed_direct_link(
+            Path(_direct_link["recipe_path"]).stem.replace("_", "-"),
+            _direct_link["recipe_path"],
+            _direct_link["case_id"],
+            _direct_link["action_ids"],
+            tuple(
+                selector
+                for selector in _direct_link["observation_selectors"]
+                if not selector.startswith("construction.")
+            ),
+        )
+
 
 def _fail(message: str) -> None:
     raise ContractError(f"compatibility atlas: {message}")
@@ -3416,6 +3436,12 @@ def validate_compatibility_artifacts(
                 "tests/test_tutorial/test_dataclasses/test_tutorial001.py",
                 "tests/test_tutorial/test_dataclasses/test_tutorial002.py",
                 "tests/test_tutorial/test_dataclasses/test_tutorial003.py",
+                "tests/test_union_body.py",
+                "tests/test_union_body_discriminator.py",
+                "tests/test_union_body_discriminator_annotated.py",
+                "tests/test_union_forms.py",
+                "tests/test_union_inherited_body.py",
+                "tests/test_validation_error_context.py",
             }:
                 expected_direct_links = {
                     function_name: row[2]

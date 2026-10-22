@@ -3709,7 +3709,15 @@ merge_test_review_mappings(_response_serialization_review_mappings)
 # ownership boundaries; normalize both levels to the merged atlas contract.
 from atlas_union_error_context_review_mappings import (  # noqa: E402
     UNION_ERROR_CONTEXT_TEST_REVIEW_MAPPINGS,
+    validate_union_error_context_review_mappings,
 )
+
+_union_error_context_mapping_errors = validate_union_error_context_review_mappings()
+if _union_error_context_mapping_errors:
+    raise ValueError(
+        "invalid union/error-context source-function mappings: "
+        + "; ".join(_union_error_context_mapping_errors)
+    )
 
 _union_error_context_review_mappings = {}
 for _union_test_path, _union_module_review in UNION_ERROR_CONTEXT_TEST_REVIEW_MAPPINGS.items():
@@ -3719,7 +3727,13 @@ for _union_test_path, _union_module_review in UNION_ERROR_CONTEXT_TEST_REVIEW_MA
         _union_function = {
             key: value
             for key, value in _union_function_review.items()
-            if key not in {"review_status", "behavior_ownership", "workflow_cases"}
+            if key
+            not in {
+                "review_status",
+                "behavior_ownership",
+                "direct_workflow_case",
+                "workflow_cases",
+            }
         }
         _function_workflows = []
         for _union_link in _union_function_review.get("workflow_cases", []):
@@ -3740,6 +3754,16 @@ for _union_test_path, _union_module_review in UNION_ERROR_CONTEXT_TEST_REVIEW_MA
             )
             _module_link["observation_selectors"].update(_union_link["observation_selectors"])
         _union_function["workflow_cases"] = _function_workflows
+        _direct_function_link = _union_function_review["direct_workflow_case"]
+        _union_function["workflow_case"] = {
+            **_direct_function_link,
+            "workflow_id": Path(_direct_function_link["recipe_path"]).stem.replace("_", "-"),
+            "observation_selectors": [
+                selector
+                for selector in _direct_function_link["observation_selectors"]
+                if not selector.startswith("construction.")
+            ],
+        }
         _union_functions[_union_function_name] = _union_function
 
     _union_module_sources = [
