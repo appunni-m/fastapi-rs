@@ -792574,6 +792574,12 @@
       "status": "crosswalk-generated; support-and-revision-review-pending"
     },
     {
+      "evidence": "FastAPI source identity and generated candidate inventory use the exact 0.157.0 tag. A 2026-10-22 scan found 158 strings naming 0.141.1 in the generated compatibility atlas and 128 in the derived fixture backlog, with the source notes originating in active mapping scripts, recipes, and workload descriptions. These notes are not 0.157.0 parity evidence; do not silently relabel or rely on them as current source review until they are checked against the pinned source or explicitly marked historical.",
+      "id": "fastapi-source-evidence-revalidation",
+      "question": "Which active atlas mapping rationales and fixture-backlog notes that cite FastAPI 0.141.1 remain accurate against FastAPI 0.157.0, and which must be revised or explicitly retained as historical?",
+      "status": "0.157.0 source pin current; pre-0.157 mapping rationale review pending"
+    },
+    {
       "evidence": "FastAPI AST inventory explicitly excludes Pydantic-generated BaseModel surfaces.",
       "id": "pydantic-runtime-generated-api",
       "question": "Which inherited/runtime-generated Pydantic model methods and schemas are externally observable through FastAPI's OpenAPI models and facade?",

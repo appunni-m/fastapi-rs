@@ -863,6 +863,7 @@ Priority 0 records the narrow end-to-end slice already present. The remaining pr
 ## Unresolved points
 
 - **starlette-rs-surface-review** (crosswalk-generated; support-and-revision-review-pending): For each FastAPI behavior that delegates to Starlette, does the sibling Starlette-RS contract provide the required surface and exact target support, without importing or duplicating unrelated Starlette APIs?
+- **fastapi-source-evidence-revalidation** (0.157.0 source pin current; pre-0.157 mapping rationale review pending): Which active atlas mapping rationales and fixture-backlog notes that cite FastAPI 0.141.1 remain accurate against FastAPI 0.157.0, and which must be revised or explicitly retained as historical?
 - **pydantic-runtime-generated-api** (pending): Which inherited/runtime-generated Pydantic model methods and schemas are externally observable through FastAPI's OpenAPI models and facade?
 - **extra-models-pep604-prose-contradiction** (pinned-source-contradiction; oracle-input-recorded): How should the extra-models tutorial's contradictory Python 3.10 union prose be represented while preserving the pinned executable contract?
 - **separate-schemas-optional-default-prose-contradiction** (pinned-source-contradiction; oracle-input-recorded): Which model shapes demonstrate separate input/output schemas under the pinned Pydantic contract when the tutorial's optional-default model does not?

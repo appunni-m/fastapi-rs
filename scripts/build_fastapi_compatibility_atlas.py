@@ -12969,6 +12969,20 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "evidence": f"The merged FastAPI coverage matrix assigns Starlette-RS ownership areas, and direct re-export/subclass/helper edges reference the sibling catalog and reviewed dispositions. FastAPI-RS metadata and CI pin the local sibling at {starlette_rs_revision[:12]}; the initial FastAPI-RS slice consumes it, while full cross-project behavior review remains open.",
         },
         {
+            "id": "fastapi-source-evidence-revalidation",
+            "status": "0.157.0 source pin current; pre-0.157 mapping rationale review pending",
+            "question": "Which active atlas mapping rationales and fixture-backlog notes that cite FastAPI 0.141.1 remain accurate against FastAPI 0.157.0, and which must be revised or explicitly retained as historical?",
+            "evidence": (
+                "FastAPI source identity and generated candidate inventory use the exact "
+                "0.157.0 tag. A 2026-10-22 scan found 158 strings naming 0.141.1 in the "
+                "generated compatibility atlas and 128 in the derived fixture backlog, "
+                "with the source notes originating in active mapping scripts, recipes, and "
+                "workload descriptions. These notes are not 0.157.0 parity evidence; do not "
+                "silently relabel or rely on them as current source review until they are "
+                "checked against the pinned source or explicitly marked historical."
+            ),
+        },
+        {
             "id": "pydantic-runtime-generated-api",
             "status": "pending",
             "question": "Which inherited/runtime-generated Pydantic model methods and schemas are externally observable through FastAPI's OpenAPI models and facade?",
