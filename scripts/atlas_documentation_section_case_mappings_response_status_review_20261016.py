@@ -54,9 +54,9 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016 = {
             "nested cookie API details belong to Starlette 1.6.0."
         ),
         (
-            "FastAPI 0.141.1 identifies and injects a temporary Response in "
-            "fastapi/dependencies/utils.py:350-364,611-614,719-720, and transfers its headers "
-            "in fastapi/routing.py:716-750. The child rows map those route workflows; the "
+            "FastAPI 0.157.0 identifies and injects a temporary Response in "
+            "fastapi/dependencies/utils.py:392-413,683-686,797-812, and transfers its headers "
+            "in fastapi/routing.py:751-779. The child rows map those route workflows; the "
             "overview adds no separate operation."
         ),
     ),
@@ -75,10 +75,10 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016 = {
             "or TestClient cookie-jar persistence and reuse."
         ),
         (
-            "FastAPI 0.141.1 recognizes Response as a special dependency parameter "
-            "(fastapi/dependencies/utils.py:350-364), creates and injects the temporary value "
-            "(fastapi/dependencies/utils.py:611-614,719-720), then copies its raw headers to "
-            "the serialized response (fastapi/routing.py:716-750). Starlette 1.6.0 owns cookie "
+            "FastAPI 0.157.0 recognizes Response as a special dependency parameter "
+            "(fastapi/dependencies/utils.py:392-413), creates and injects the temporary value "
+            "(fastapi/dependencies/utils.py:683-686,797-812), then copies its raw headers to "
+            "the serialized response (fastapi/routing.py:751-779). Starlette 1.6.0 owns cookie "
             "formatting and HTTP header emission."
         ),
     ),
@@ -96,8 +96,8 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016 = {
             "response-model bypass, cookie-jar behavior, or every Response subclass."
         ),
         (
-            "FastAPI 0.141.1 returns an endpoint-provided Response through its direct-response "
-            "branch (fastapi/routing.py:706-715). Starlette 1.6.0 owns JSONResponse rendering, "
+            "FastAPI 0.157.0 returns an endpoint-provided Response through its direct-response "
+            "branch (fastapi/routing.py:751-779). Starlette 1.6.0 owns JSONResponse rendering, "
             "set_cookie formatting, and ASGI response emission."
         ),
     ),
@@ -111,7 +111,7 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016 = {
             "object identity, and cookie formatting/options are Starlette 1.6.0 behavior."
         ),
         (
-            "FastAPI 0.141.1 re-exports Starlette response classes from fastapi/responses.py:6-12 "
+            "FastAPI 0.157.0 re-exports Starlette response classes from fastapi/responses.py:6-12 "
             "and the root Response from fastapi/__init__.py:22. Those public identities belong "
             "to the API manifest; the linked Starlette page owns the generic cookie contract."
         ),
@@ -125,8 +125,8 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016 = {
             "workflows mapped under the child headings."
         ),
         (
-            "FastAPI 0.141.1 applies a changed temporary Response status while building the "
-            "ordinary response (fastapi/routing.py:357-372); the child use-case and parameter "
+            "FastAPI 0.157.0 applies a changed temporary Response status while building the "
+            "ordinary response (fastapi/routing.py:380-395); the child use-case and parameter "
             "rows map the distinct sampled behavior, so this overview adds no operation."
         ),
     ),
@@ -145,9 +145,9 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016 = {
             "filtering, or all status values."
         ),
         (
-            "FastAPI 0.141.1 creates the shared temporary Response during dependency solving "
-            "(fastapi/dependencies/utils.py:611-614) and applies its status to the response "
-            "built from a returned value (fastapi/routing.py:357-372,716-750). Starlette 1.6.0 "
+            "FastAPI 0.157.0 creates the shared temporary Response during dependency solving "
+            "(fastapi/dependencies/utils.py:683-686) and applies its status to the response "
+            "built from a returned value (fastapi/routing.py:380-395,751-779). Starlette 1.6.0 "
             "owns final response emission."
         ),
     ),
@@ -167,10 +167,10 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016 = {
             "multiple status-setting dependencies."
         ),
         (
-            "FastAPI 0.141.1 classifies Response parameters in "
-            "fastapi/dependencies/utils.py:350-364, creates and injects the shared temporary "
-            "Response in fastapi/dependencies/utils.py:611-614,719-729, and applies its final "
-            "status in fastapi/routing.py:357-372. Starlette 1.6.0 owns generic response "
+            "FastAPI 0.157.0 classifies Response parameters in "
+            "fastapi/dependencies/utils.py:392-413, creates and injects the shared temporary "
+            "Response in fastapi/dependencies/utils.py:683-686,797-812, and applies its final "
+            "status in fastapi/routing.py:380-395. Starlette 1.6.0 owns generic response "
             "construction and ASGI emission."
         ),
     ),
@@ -184,8 +184,8 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016 = {
             "the OpenAPI statement are mapped under their child headings."
         ),
         (
-            "FastAPI 0.141.1 applies declared or temporary Response status while constructing "
-            "ordinary return values (fastapi/routing.py:357-372,716-750). The child workflows "
+            "FastAPI 0.157.0 applies declared or temporary Response status while constructing "
+            "ordinary return values (fastapi/routing.py:380-395,751-779). The child workflows "
             "map those independent behaviors without treating the page overview as another "
             "operation."
         ),
@@ -208,8 +208,8 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016 = {
             "in the next section."
         ),
         (
-            "FastAPI 0.141.1 serializes ordinary endpoint values and returns a directly "
-            "returned Response through separate branches (fastapi/routing.py:706-750). "
+            "FastAPI 0.157.0 serializes ordinary endpoint values and returns a directly "
+            "returned Response through separate branches (fastapi/routing.py:751-779). "
             "Starlette 1.6.0 owns JSONResponse rendering and wire behavior."
         ),
     ),
@@ -223,9 +223,9 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016 = {
             "only, so they cannot establish absence from the generated schema."
         ),
         (
-            "FastAPI 0.141.1 generates OpenAPI responses from route.status_code and declared "
-            "route.responses metadata (fastapi/openapi/utils.py:403-419,473-490); runtime "
-            "endpoint Responses are returned directly (fastapi/routing.py:706-715). No "
+            "FastAPI 0.157.0 generates OpenAPI responses from route.status_code and declared "
+            "route.responses metadata (fastapi/openapi/utils.py:388-419,458-501); runtime "
+            "endpoint Responses are returned directly (fastapi/routing.py:751-779). No "
             "selected action queries /openapi.json, so this negative OpenAPI claim remains "
             "outside the mapping."
         ),
@@ -254,10 +254,10 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016 = {
             "the page level through its own recipe and is not part of this section row."
         ),
         (
-            "FastAPI 0.141.1 normalizes IntEnum route status values "
-            "(fastapi/routing.py:1029-1032), uses the route or temporary Response status for "
-            "runtime responses (fastapi/routing.py:357-372), and builds OpenAPI response "
-            "entries from route metadata (fastapi/openapi/utils.py:403-419). The pinned "
+            "FastAPI 0.157.0 normalizes IntEnum route status values "
+            "(fastapi/routing.py:1083-1088), uses the route or temporary Response status for "
+            "runtime responses (fastapi/routing.py:380-395), and builds OpenAPI response "
+            "entries from route metadata (fastapi/openapi/utils.py:388-419). The pinned "
             "tutorial's no-body claim at docs/en/docs/tutorial/response-status-code.md:34-38 is "
             "linked to a separate 204 case at the page level. Starlette 1.6.0 owns emitted HTTP "
             "response behavior."
@@ -292,9 +292,9 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016 = {
             "identity, or exercise every constant in the re-exported namespace."
         ),
         (
-            "FastAPI 0.141.1 re-exports starlette.status as fastapi.status "
+            "FastAPI 0.157.0 re-exports starlette.status as fastapi.status "
             "(fastapi/__init__.py:5); APIRoute normalizes IntEnum status values "
-            "(fastapi/routing.py:1029-1032). The namespace itself is a Starlette re-export."
+            "(fastapi/routing.py:1083-1088). The namespace itself is a Starlette re-export."
         ),
     ),
     ("tutorial/response-status-code.md", "changing-the-default"): _workflow(
@@ -311,8 +311,8 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_STATUS_REVIEW_20261016 = {
             "behavior are covered by the separate advanced-section mapping."
         ),
         (
-            "FastAPI 0.141.1 applies the temporary Response status when building a response "
-            "from the returned value (fastapi/routing.py:357-372,716-750). Starlette 1.6.0 "
+            "FastAPI 0.157.0 applies the temporary Response status when building a response "
+            "from the returned value (fastapi/routing.py:380-395,751-779). Starlette 1.6.0 "
             "owns HTTP response emission."
         ),
     ),

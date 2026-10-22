@@ -1,14 +1,14 @@
-# Pinned FastAPI 0.141.1 source evidence (tag commit
-# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f):
-# tests/test_dependency_overrides.py:43-48 and :216-257 exercise an async
-# app-level override whose nested dependency declares a required query value.
-# fastapi/dependencies/utils.py:619-655 resolves override dependencies
-# recursively; :681-697 extracts and validates query parameters. This
-# independent workflow covers two required scalar query values in its baseline
-# route and composes the nested override pattern with two explicit Query aliases
-# in a second route. The pinned sources test these component rules separately;
-# no upstream test asserts this exact combination. Inputs only, no expected
-# outputs.
+# Historical component-test provenance: FastAPI 0.141.1's
+# `tests/test_dependency_overrides.py::test_override_with_sub_main_depends_k_bar`
+# covers a nested required query override. Pinned FastAPI 0.157.0, commit
+# 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1, retains that test at
+# `tests/test_dependency_overrides.py:252-257`; required query-alias behavior
+# is covered separately in `tests/test_request_params/test_query/test_required_str.py`.
+# Current `solve_dependencies` rebuilds and resolves overrides at
+# `fastapi/dependencies/utils.py:700-733` and validates query fields at :763-785.
+# This independent workflow composes two required scalar fields and distinct
+# Query aliases; no upstream test asserts that exact combination. Inputs only,
+# no expected outputs.
 schema: fastapi-rs/python-asgi-workflow@3
 workload:
   file: tests/fixtures/workloads/dependency_override_async_nested_two_required_query_wave.py

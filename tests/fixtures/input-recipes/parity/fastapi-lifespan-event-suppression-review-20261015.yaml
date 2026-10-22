@@ -1,5 +1,9 @@
-# FastAPI 0.141.1 input-only case for the documented lifespan/on_event boundary.
-# The case shares the independent lifecycle workload and contains no expected output.
+# Independent input-only case for the documented lifespan/on_event boundary in
+# FastAPI 0.157.0 (commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1). The docs
+# state that supplying `lifespan` disables startup/shutdown event handlers at
+# `docs/en/docs/advanced/events.md:91-95`; APIRouter selects the supplied context
+# instead of `_DefaultLifespan` at `fastapi/routing.py:2594-2611`. The case shares
+# the independent lifecycle workload and contains no expected output.
 schema: fastapi-rs/python-asgi-workflow@4
 workload:
   file: tests/fixtures/workloads/router_events_lifespan_upstream.py

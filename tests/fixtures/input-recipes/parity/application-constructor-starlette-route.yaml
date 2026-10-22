@@ -1,9 +1,14 @@
 # Scope is a Starlette Route supplied directly through FastAPI(routes=...).
 # This case does not exercise APIRouter.include_router.
-# Pinned source references:
-# - FastAPI 0.141.1 fastapi/applications.py:73-91 declares routes and :984-999
-#   passes routes to APIRouter; fastapi/routing.py:2532-2537 forwards routes
-#   to the Starlette Router constructor.
+# Pinned FastAPI 0.157.0 (commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1)
+# declares `routes` at fastapi/applications.py:96-115 and passes them to
+# APIRouter at :981-996. APIRouter forwards the supplied list to Starlette's
+# Router at fastapi/routing.py:2427-2448 and :2606-2611.
+# FastAPI APIRouter dispatches full matches before the first partial match at
+# fastapi/routing.py:2793-2827, then performs slash fallback at :2829-2860.
+# Current neighboring tests cover included-route partial/full matching and
+# slash fallback at tests/test_router_include_context.py:675-733; this direct
+# constructor-route workload is an independent input-only case.
 # - Starlette 1.6.0 starlette/routing.py:684-705 records the first partial
 #   match, dispatches a full match first, and otherwise dispatches that partial;
 #   Route.handle at :271-280 raises HTTP 405 with its Allow header on mismatch.

@@ -1,14 +1,14 @@
 # Scope is plain Starlette HTTP and WebSocket routes supplied through
 # APIRouter(routes=...) and included by FastAPI with a path prefix. This does
 # not establish mixed declaration ordering or other BaseRoute families.
-# Pinned source references:
-# - FastAPI 0.141.1 fastapi/routing.py:2353-2374 declares deprecated routes;
-#   :2532-2537 passes them to Starlette Router.
-# - FastAPI fastapi/routing.py:1653-1677 rebuilds a generic Route using the
-#   include prefix, endpoint, methods, name, and include_in_schema.
-# - FastAPI fastapi/routing.py:1692-1700 rebuilds a generic WebSocketRoute using
-#   the include prefix, endpoint, and name.
-# - tests/test_router_include_context.py::test_no_prefix_include_validation_sees_effective_starlette_route_path
+# Pinned FastAPI 0.157.0 (commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1)
+# declares APIRouter constructor routes at fastapi/routing.py:2427-2448 and
+# passes them to Starlette Router at :2606-2611. Included routers are represented
+# by `_IncludedRouter`; `_build_effective_context` rebuilds plain Starlette Route
+# and WebSocketRoute objects with the effective prefix at :1714-1760.
+# Current neighboring tests cover prefixed plain Starlette Route inclusion at
+# tests/test_router_include_context.py:1087-1102 and prefixed WebSocket routers
+# at tests/test_ws_router.py:125-151; they do not assert this exact combination.
 schema: fastapi-rs/python-asgi-workflow@2
 workload:
   file: tests/fixtures/workloads/apirouter_constructor_starlette_route.py

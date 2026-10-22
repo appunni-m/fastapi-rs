@@ -1,6 +1,8 @@
-# Narrow path-only DELETE route stimulus adapted from FastAPI 0.141.1's
-# tests/test_extra_routes.py::test_delete. The upstream test also sends a body;
-# this case isolates DELETE route registration and path dispatch.
+# Historical provenance: adapted from FastAPI 0.141.1's test_delete.
+# Current FastAPI 0.157.0 tests/test_extra_routes.py:27-29 declares the DELETE
+# route and :67-70 sends a body in test_delete. This input intentionally removes
+# that body to isolate route registration and path dispatch; it is not a copy of
+# the upstream test case.
 schema: fastapi-rs/python-asgi-workflow@2
 workload:
   file: tests/fixtures/workloads/delete_route_path_only.py

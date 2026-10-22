@@ -58,11 +58,11 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
             "records, or application authorization policy."
         ),
         (
-            "Partial page mapping against FastAPI 0.141.1 at 95f8322: the pinned page is "
+            "Partial page mapping against FastAPI 0.157.0 at 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1: the pinned page is "
             "docs/en/docs/advanced/security/oauth2-scopes.md#L1-L274; FastAPI's boundaries are "
-            "fastapi/security/oauth2.py#L14-L90, #L433-L507, #L653-L693, "
-            "fastapi/dependencies/utils.py#L271-L347, #L721-L724, and "
-            "fastapi/openapi/utils.py#L99-L154."
+            "fastapi/security/oauth2.py#L14-L160, #L433-L507, #L653-L693, "
+            "fastapi/dependencies/utils.py#L314-L389, #L809-L812, and "
+            "fastapi/openapi/utils.py#L98-L155."
         ),
     ),
     ("advanced/security/oauth2-scopes.md", "oauth2-scopes-and-openapi"): _workflow(
@@ -77,9 +77,9 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         ),
         (
             "The pinned docs section is docs/en/docs/advanced/security/oauth2-scopes.md#L29-L60. "
-            "FastAPI 0.141.1 declares scopes on OAuth2PasswordBearer and projects security "
+            "FastAPI 0.157.0 declares scopes on OAuth2PasswordBearer and projects security "
             "requirements in fastapi/security/oauth2.py#L433-L477 and "
-            "fastapi/openapi/utils.py#L99-L154."
+            "fastapi/openapi/utils.py#L98-L155."
         ),
     ),
     ("advanced/security/oauth2-scopes.md", "global-view"): _workflow(
@@ -97,7 +97,7 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
             "The pinned docs section is docs/en/docs/advanced/security/oauth2-scopes.md#L61-L68 "
             "and points to docs_src/security/tutorial005_an_py310.py. The selected FastAPI "
             "surfaces are OAuth2PasswordRequestForm, OAuth2PasswordBearer, and SecurityScopes "
-            "in fastapi/security/oauth2.py#L14-L90, #L433-L477, and #L653-L693."
+            "in fastapi/security/oauth2.py#L14-L160, #L433-L477, and #L653-L693."
         ),
     ),
     ("advanced/security/oauth2-scopes.md", "oauth2-security-scheme"): _workflow(
@@ -112,9 +112,9 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         ),
         (
             "The pinned docs section is docs/en/docs/advanced/security/oauth2-scopes.md#L69-L84. "
-            "FastAPI 0.141.1 stores the flow scopes on OAuth2PasswordBearer in "
+            "FastAPI 0.157.0 stores the flow scopes on OAuth2PasswordBearer in "
             "fastapi/security/oauth2.py#L433-L477 and emits its security scheme through "
-            "fastapi/openapi/utils.py#L132-L154."
+            "fastapi/openapi/utils.py#L131-L155."
         ),
     ),
     ("advanced/security/oauth2-scopes.md", "jwt-token-with-scopes"): _workflow(
@@ -131,7 +131,7 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         (
             "The pinned docs section is docs/en/docs/advanced/security/oauth2-scopes.md#L85-L102 "
             "and the example is docs_src/security/tutorial005_an_py310.py#L155-L163. "
-            "FastAPI 0.141.1 parses the password form in fastapi/security/oauth2.py#L14-L90; "
+            "FastAPI 0.157.0 parses the password form in fastapi/security/oauth2.py#L14-L160; "
             "JWT creation and scope assignment occur in the documentation application."
         ),
     ),
@@ -154,10 +154,10 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         ),
         (
             "The pinned docs section is docs/en/docs/advanced/security/oauth2-scopes.md#L103-L138. "
-            "FastAPI 0.141.1 represents Security as a Depends subtype in "
-            "fastapi/params.py#L752-L754, builds scoped dependency nodes in "
-            "fastapi/dependencies/utils.py#L271-L331, and projects scopes to OpenAPI in "
-            "fastapi/openapi/utils.py#L99-L154."
+            "FastAPI 0.157.0 represents Security as a Depends subtype in "
+            "fastapi/params.py#L790-L799, builds scoped dependency nodes in "
+            "fastapi/dependencies/utils.py#L314-L389, and projects scopes to OpenAPI in "
+            "fastapi/openapi/utils.py#L98-L155."
         ),
     ),
     ("advanced/security/oauth2-scopes.md", "use-securityscopes"): _workflow(
@@ -173,8 +173,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         ),
         (
             "The pinned docs section is docs/en/docs/advanced/security/oauth2-scopes.md#L139-L154. "
-            "FastAPI 0.141.1 injects SecurityScopes in "
-            "fastapi/dependencies/utils.py#L721-L724; its public scope fields are defined in "
+            "FastAPI 0.157.0 injects SecurityScopes in "
+            "fastapi/dependencies/utils.py#L809-L812; its public scope fields are defined in "
             "fastapi/security/oauth2.py#L653-L693."
         ),
     ),
@@ -191,8 +191,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         ),
         (
             "The pinned docs section is docs/en/docs/advanced/security/oauth2-scopes.md#L155-L168. "
-            "FastAPI 0.141.1 fills the parameter from the dependency graph in "
-            "fastapi/dependencies/utils.py#L721-L724; the documented scope fields are in "
+            "FastAPI 0.157.0 fills the parameter from the dependency graph in "
+            "fastapi/dependencies/utils.py#L809-L812; the documented scope fields are in "
             "fastapi/security/oauth2.py#L677-L693."
         ),
     ),
@@ -241,8 +241,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         ),
         (
             "The pinned docs section is docs/en/docs/advanced/security/oauth2-scopes.md#L193-L225. "
-            "FastAPI 0.141.1 accumulates parent and local scopes in "
-            "fastapi/dependencies/utils.py#L271-L331 and injects the resulting list at #L721-L724."
+            "FastAPI 0.157.0 accumulates parent and local scopes in "
+            "fastapi/dependencies/utils.py#L314-L389 and injects the resulting list at #L809-L812."
         ),
     ),
     ("advanced/security/oauth2-scopes.md", "more-details-about-securityscopes"): _workflow(
@@ -257,8 +257,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         ),
         (
             "The pinned docs section is docs/en/docs/advanced/security/oauth2-scopes.md#L226-L235. "
-            "FastAPI 0.141.1 carries parent scope lists through dependency construction in "
-            "fastapi/dependencies/utils.py#L271-L331."
+            "FastAPI 0.157.0 carries parent scope lists through dependency construction in "
+            "fastapi/dependencies/utils.py#L314-L389."
         ),
     ),
     ("advanced/security/oauth2-scopes.md", "check-it"): _workflow(
@@ -281,9 +281,9 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         ),
         (
             "The pinned docs section is docs/en/docs/advanced/security/oauth2-scopes.md#L236-L247. "
-            "FastAPI 0.141.1 documents the scheme and scopes in "
+            "FastAPI 0.157.0 documents the scheme and scopes in "
             "fastapi/security/oauth2.py#L456-L477 and projects operation requirements in "
-            "fastapi/openapi/utils.py#L132-L154."
+            "fastapi/openapi/utils.py#L131-L155."
         ),
     ),
     (
@@ -319,9 +319,9 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         ),
         (
             "The pinned docs section is docs/en/docs/advanced/security/oauth2-scopes.md#L272-L274. "
-            "FastAPI 0.141.1 models Security as a Depends subtype in "
-            "fastapi/params.py#L752-L754 and uses it in dependency/OpenAPI construction at "
-            "fastapi/dependencies/utils.py#L318-L331 and fastapi/openapi/utils.py#L99-L154."
+            "FastAPI 0.157.0 models Security as a Depends subtype in "
+            "fastapi/params.py#L790-L799 and uses it in dependency/OpenAPI construction at "
+            "fastapi/dependencies/utils.py#L314-L389 and fastapi/openapi/utils.py#L98-L155."
         ),
     ),
     (
@@ -343,11 +343,11 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
             "application authorization decisions."
         ),
         (
-            "Partial page mapping against FastAPI 0.141.1 at 95f8322: the pinned page is "
+            "Partial page mapping against FastAPI 0.157.0 at 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1: the pinned page is "
             "docs/en/docs/tutorial/security/oauth2-jwt.md#L1-L277; relevant framework surfaces "
-            "are fastapi/security/oauth2.py#L14-L90, #L433-L507, #L653-L693, "
-            "fastapi/dependencies/utils.py#L271-L347, #L721-L724, and "
-            "fastapi/openapi/utils.py#L99-L154."
+            "are fastapi/security/oauth2.py#L14-L160, #L433-L507, #L653-L693, "
+            "fastapi/dependencies/utils.py#L314-L389, #L809-L812, and "
+            "fastapi/openapi/utils.py#L98-L155."
         ),
     ),
     ("tutorial/security/oauth2-jwt.md", "about-jwt"): _excluded(
@@ -459,8 +459,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         ),
         (
             "The pinned docs section is docs/en/docs/tutorial/security/oauth2-jwt.md#L161-L170. "
-            "FastAPI 0.141.1 extracts the bearer credential in "
-            "fastapi/security/oauth2.py#L433-L507; JWT decoding is application code in "
+            "FastAPI 0.157.0 extracts the bearer credential in "
+            "fastapi/security/oauth2.py#L433-L535; JWT decoding is application code in "
             "docs_src/security/tutorial004_an_py310.py#L93-L110."
         ),
     ),
@@ -480,8 +480,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         ),
         (
             "The pinned docs section is docs/en/docs/tutorial/security/oauth2-jwt.md#L171-L200. "
-            "FastAPI 0.141.1 binds the form dependency in "
-            "fastapi/security/oauth2.py#L14-L90; JWT creation and response-model selection are "
+            "FastAPI 0.157.0 binds the form dependency in "
+            "fastapi/security/oauth2.py#L14-L160; JWT creation and response-model selection are "
             "in docs_src/security/tutorial004_an_py310.py#L121-L136."
         ),
     ),
@@ -518,9 +518,9 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         ),
         (
             "The pinned docs section is docs/en/docs/tutorial/security/oauth2-jwt.md#L201-L246. "
-            "FastAPI 0.141.1 serves the OAuth2 scheme through "
-            "fastapi/security/oauth2.py#L433-L507 and generated OpenAPI through "
-            "fastapi/openapi/utils.py#L132-L154."
+            "FastAPI 0.157.0 serves the OAuth2 scheme through "
+            "fastapi/security/oauth2.py#L433-L535 and generated OpenAPI through "
+            "fastapi/openapi/utils.py#L131-L155."
         ),
     ),
     (
@@ -538,9 +538,9 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         ),
         (
             "The pinned docs section is docs/en/docs/tutorial/security/oauth2-jwt.md#L247-L256. "
-            "FastAPI 0.141.1 exposes OAuth2 scopes in "
+            "FastAPI 0.157.0 exposes OAuth2 scopes in "
             "fastapi/security/oauth2.py#L433-L477 and injects SecurityScopes in "
-            "fastapi/dependencies/utils.py#L721-L724."
+            "fastapi/dependencies/utils.py#L809-L812."
         ),
     ),
     ("tutorial/security/oauth2-jwt.md", "recap"): _excluded(

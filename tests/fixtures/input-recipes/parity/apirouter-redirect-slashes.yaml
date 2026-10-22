@@ -1,6 +1,9 @@
-# FastAPI 0.141.1 APIRouter passes redirect_slashes to the inherited
-# Starlette Router constructor. The mounted router receives FastAPI's request
-# context while its own router performs dispatch.
+# FastAPI 0.157.0 (commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1) declares
+# `redirect_slashes` on APIRouter at fastapi/routing.py:2449-2457 and forwards
+# it to the inherited Starlette Router at :2606-2611. FastAPI APIRouter's own
+# `app` implementation performs the slash fallback at :2793-2888, governed by
+# the router's setting. Starlette 1.6.0 is the generic routing oracle and uses
+# the same full-match, partial-match, then slash-fallback dispatch order.
 schema: fastapi-rs/python-asgi-workflow@3
 workload:
   file: tests/fixtures/workloads/apirouter_redirect_slashes.py

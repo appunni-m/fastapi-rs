@@ -1,16 +1,15 @@
-# Pinned FastAPI 0.141.1 source evidence (tag commit
-# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f):
-# tests/test_dependency_overrides.py:39-40 defines the async optional-query
-# override; lines 208-212 install it and issue a request. In
-# fastapi/dependencies/utils.py:623-638, solve_dependencies rebuilds a
-# dependant from the override callable; utils.py:524-535 applies the query
-# field alias; utils.py:656-680 performs cache lookup and stores the result.
-# fastapi/params.py:221-280 defines Query(alias=...). The pinned test
-# tests/test_request_params/test_query/test_optional_str.py:75-79 and
-# :111-120 demonstrate a Python parameter named p whose query alias is p_alias,
-# including omission; this fixture uses q/search to observe that behavior
-# through a dependency override. The repeated original edge and two requests
-# on one app make cache reuse and request-local reset observable.
+# Historical input provenance: FastAPI 0.141.1's
+# `tests/test_dependency_overrides.py::test_override_simple` supplied the async
+# optional-query override. Pinned FastAPI 0.157.0, commit
+# 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1, retains it at
+# `tests/test_dependency_overrides.py:39-40` and :208-213; optional query alias
+# coverage remains in `tests/test_request_params/test_query/test_optional_str.py:95-146`.
+# Current `analyze_param` selects/copies the declared annotation at
+# `fastapi/dependencies/utils.py:423-514`; `request_params_to_args` applies its
+# alias at :952-989. `solve_dependencies` rebuilds overrides and performs cache
+# lookup/insertion at :700-762; Depends defaults to caching at
+# `fastapi/params.py:790-795`. The fixture uses q/search and two requests on one
+# app to expose alias handling through an override and request-local cache reset.
 schema: fastapi-rs/python-asgi-workflow@2
 workload:
   file: tests/fixtures/workloads/dependency_override_async_query_alias_cache_request_local.py

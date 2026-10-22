@@ -1,13 +1,15 @@
 # Independent public inputs for raw dependency cache policies and their timing.
-# Pinned FastAPI 0.141.1, commit 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f:
-# params.py:745-754 and param_functions.py:2369,2460 retain arbitrary use_cache
-# objects. dependencies/utils.py:285,328 copies those objects into each analyzed
-# edge; :132-145 omits the supplied policy for parameterless declarations.
-# :625-654 reanalyzes override edges, recursively solves children, and skips
-# cache decisions for validation failures. :656-680 computes the original edge
-# key, evaluates its raw policy before membership, then keeps the first cache
-# insertion even when the policy is false. :681 onward validates parent inputs.
-# routing.py:140-146 closes yielded scopes when policy evaluation raises.
+# Reviewed against pinned FastAPI 0.157.0, commit
+# 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1. params.py:790-799 defines the
+# frozen Depends/Security records; param_functions.py:2391-2477 exposes
+# Depends(use_cache=True). dependencies/utils.py:314-389 copies `use_cache`
+# into analyzed edges, while :133-145 builds parameterless edges without
+# forwarding that field. :700-737 resolves override edges and skips their cache
+# decision when recursive validation has errors. :738-762 computes the original
+# edge key, truth-tests the raw policy before lookup, and stores only the first
+# insertion. The cache key at dependencies/models.py:83-97 also includes scope
+# information. routing.py:143-155 establishes cleanup stacks when policy
+# evaluation raises.
 # The workloads observe user callback traces, JSON values, object relationships,
 # ordinary validation errors, and registered public exception responses. They
 # neither import private source implementations nor store oracle results.

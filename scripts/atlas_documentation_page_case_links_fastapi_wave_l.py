@@ -84,6 +84,27 @@ DOC_PAGE_CASE_LINK_COMPLETIONS_WAVE_L = {
             ),
         },
     ],
+    "tutorial/response-status-code.md": [
+        {
+            "recipe_path": (
+                "tests/fixtures/input-recipes/parity/response-204-bodyless-isolated-upstream.yaml"
+            ),
+            "case_ids": ["fastapi.response.bodyless-204-isolated"],
+            "observation_selectors": [
+                "construction.exception_class",
+                "construction.exception_message",
+                "construction.outcome",
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
+            ],
+            "scope_note": (
+                "The input confirms construction succeeds and records the documented 204 "
+                "response status, ordered headers, and empty body. Construction selectors "
+                "are setup observations, not additional claims about the page's behavior."
+            ),
+        },
+    ],
     "tutorial/dependencies/index.md": [
         {
             "recipe_path": (

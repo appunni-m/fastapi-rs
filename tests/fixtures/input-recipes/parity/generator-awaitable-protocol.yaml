@@ -1,5 +1,9 @@
 # Independent inputs for CPython 3.12.13 iterable-coroutine generators.
-# FastAPI 0.141.1 utils.py:673-674 awaits a coroutine-classified call exactly once.
+# Pinned FastAPI 0.157.0 (commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1)
+# classifies callables in dependencies/models.py:198-228 and awaits a
+# coroutine-classified dependency exactly once at
+# `fastapi/dependencies/utils.py:755-758`. Path-operation callables use the
+# corresponding classification and single await at `fastapi/routing.py:364-377`.
 # A nongenerator sync routine marked through public inspect.markcoroutinefunction
 # returns a generator created by public types.coroutine. It has no __wrapped__
 # link to that generator function, avoiding the source yield-dependency branch.

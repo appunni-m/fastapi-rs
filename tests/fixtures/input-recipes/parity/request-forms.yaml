@@ -83,7 +83,8 @@ cases:
   - path: tests/test_forms_from_non_typing_sequences.py
     kind: upstream_test
 - case_id: fastapi.request-forms.single-form-model.test-send-all-data
-  # Pinned FastAPI 0.141.1: tests/test_forms_single_model.py::test_send_all_data (37-55).
+  # Originally selected from FastAPI 0.141.1; rechecked against the matching
+  # FastAPI 0.157.0 test module. This is an independent ASGI input.
   actions:
   - action_id: dispatch
     kind: http_request
@@ -123,7 +124,8 @@ cases:
   - path: tests/test_forms_single_model.py
     kind: upstream_test
 - case_id: fastapi.request-forms.single-form-model.test-defaults
-  # Pinned FastAPI 0.141.1: tests/test_forms_single_model.py::test_defaults (58-67).
+  # Historical provenance: FastAPI 0.141.1 test_defaults. Current FastAPI 0.157.0
+  # source remains at tests/test_forms_single_model.py:58-67.
   actions:
   - action_id: dispatch
     kind: http_request
@@ -163,7 +165,8 @@ cases:
   - path: tests/test_forms_single_model.py
     kind: upstream_test
 - case_id: fastapi.request-forms.single-form-model.test-invalid-data
-  # Pinned FastAPI 0.141.1: tests/test_forms_single_model.py::test_invalid_data (70-90).
+  # Historical provenance: FastAPI 0.141.1 test_invalid_data. Current FastAPI
+  # 0.157.0 source remains at tests/test_forms_single_model.py:70-90.
   actions:
   - action_id: dispatch
     kind: http_request
@@ -203,7 +206,9 @@ cases:
   - path: tests/test_forms_single_model.py
     kind: upstream_test
 - case_id: fastapi.request-forms.single-form-model.test-no-data
-  # Pinned FastAPI 0.141.1: tests/test_forms_single_model.py::test_no_data (93-112).
+  # FastAPI 0.157.0: tests/test_forms_single_model.py::test_no_data (93-112).
+  # The request remains empty; upstream now reports {} as the missing-field input.
+  # This recipe records the request and selectors only, with no expected output.
   actions:
   - action_id: dispatch
     kind: http_request
@@ -241,7 +246,8 @@ cases:
   - path: tests/test_forms_single_model.py
     kind: upstream_test
 - case_id: fastapi.request-forms.single-form-model.test-extra-param-single
-  # Pinned FastAPI 0.141.1: tests/test_forms_single_model.py::test_extra_param_single (114-127).
+  # Historical provenance: FastAPI 0.141.1 test_extra_param_single. Current
+  # FastAPI 0.157.0 source remains at tests/test_forms_single_model.py:114-127.
   actions:
   - action_id: dispatch
     kind: http_request
@@ -281,7 +287,8 @@ cases:
   - path: tests/test_forms_single_model.py
     kind: upstream_test
 - case_id: fastapi.request-forms.single-form-model.test-extra-param-list
-  # Pinned FastAPI 0.141.1: tests/test_forms_single_model.py::test_extra_param_list (129-141).
+  # Historical provenance: FastAPI 0.141.1 test_extra_param_list. Current
+  # FastAPI 0.157.0 source remains at tests/test_forms_single_model.py:129-141.
   actions:
   - action_id: dispatch
     kind: http_request

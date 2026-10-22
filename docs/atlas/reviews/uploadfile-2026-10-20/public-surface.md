@@ -1,5 +1,7 @@
 # UploadFile public-surface review
 
+> Historical review from 2026-10-20 against FastAPI 0.141.1. Its source and manifest observations are preserved as a dated snapshot; use the 2026-10-23 source revalidation for the active FastAPI 0.157.0 baseline.
+
 Review date: 2026-10-20. This is a read-only source review; no build or parity workflow was run.
 
 ## Pins checked

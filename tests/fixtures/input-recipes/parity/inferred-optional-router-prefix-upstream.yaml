@@ -1,6 +1,12 @@
-# Pinned FastAPI 0.141.1 source: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f.
-# Independent requests compare the same optional endpoint parameter as a query
-# field under /items and as a required path field under an included prefix.
+# Historical input provenance: FastAPI 0.141.1's
+# `tests/test_infer_param_optionality.py::test_get_item_1` and `::test_get_item_2`
+# established the two public input shapes. Pinned FastAPI 0.157.0 (commit
+# 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1) retains those tests at
+# `tests/test_infer_param_optionality.py:78-89`. At runtime, `get_dependant`
+# derives path names at `fastapi/dependencies/utils.py:314-344`; `analyze_param`
+# selects path versus query fields at :423-430 and :533-549. Router prefixes
+# are composed in `fastapi/routing.py:1336-1421` and applied to included API
+# routes at :1485-1515.
 schema: fastapi-rs/python-asgi-workflow@5
 workload:
   file: tests/fixtures/workloads/inferred_optional_router_prefix_upstream.py

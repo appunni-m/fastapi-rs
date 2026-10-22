@@ -1,17 +1,14 @@
-# Pinned FastAPI source oracle: ../fastapi is tag 0.141.1 at
-# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f. In
-# fastapi/dependencies/utils.py, solve_dependencies iterates dependency edges
-# in order and awaits each recursive solve at lines 619-651; it maps each
-# original callable through app.dependency_overrides and rebuilds the
-# dependant at lines 623-638; it checks use_cache at lines 656-661, awaits
-# coroutine overrides at lines 673-674, and stores results at lines 679-680.
-# fastapi/dependencies/models.py:82-96 includes the callable in each cache
-# key. fastapi/params.py:746-748 sets Depends.use_cache=true by default. The
-# route repeats each of two distinct direct dependencies, exposing
-# one cache hit per key in each request. The same app serves a second request
-# so the counters and ordered resolution show that cached values are request
-# local. Both replacement callables are flat async functions with no inputs
-# or nested dependencies and each suspends at asyncio.sleep(0).
+# Historical component-test provenance: the cache and override dimensions were
+# reviewed alongside FastAPI 0.141.1's `test_sub_counter` and `test_override_simple`.
+# Pinned FastAPI 0.157.0, commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1,
+# builds direct edges in signature order at `fastapi/dependencies/utils.py:337-373`;
+# `solve_dependencies` visits them in order, applies current overrides, and
+# resolves/cache results at :700-762. The cache key at
+# `fastapi/dependencies/models.py:83-97` includes the callable and scope data;
+# `Depends.use_cache` defaults to true at `fastapi/params.py:790-795`. The route
+# repeats two distinct direct dependencies, exposing one cache hit per key in
+# each request. A second request exposes request-local lifetime. Both replacement
+# callables are flat async functions that suspend at asyncio.sleep(0).
 schema: fastapi-rs/python-asgi-workflow@15
 workload:
   file: tests/fixtures/workloads/dependency_override_async_two_keys_request_local.py

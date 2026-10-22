@@ -12828,6 +12828,12 @@ impl CallablePlan {
                                         error,
                                         location: source.as_str().to_owned(),
                                         alias: alias.clone(),
+                                        header_aliases: parameter_model_header_error_aliases(
+                                            context.py,
+                                            parameter,
+                                            source,
+                                            is_model_parameter,
+                                        )?,
                                         include_parameter_alias: !is_model_parameter,
                                         body_field,
                                     },
@@ -12853,6 +12859,12 @@ impl CallablePlan {
                             error,
                             location: source.as_str().to_owned(),
                             alias: alias.clone(),
+                            header_aliases: parameter_model_header_error_aliases(
+                                context.py,
+                                parameter,
+                                source,
+                                is_model_parameter,
+                            )?,
                             include_parameter_alias: !is_model_parameter,
                             body_field,
                         },
@@ -13478,6 +13490,7 @@ struct InputValidationFailure {
     error: PyErr,
     location: String,
     alias: String,
+    header_aliases: Vec<(String, String)>,
     include_parameter_alias: bool,
     body_field: bool,
 }
@@ -15046,6 +15059,51 @@ fn header_model_convert_underscores(field_info: Option<&Bound<'_, PyAny>>) -> Py
     }
 }
 
+fn parameter_model_header_error_aliases(
+    py: Python<'_>,
+    parameter: &CallableParameter,
+    source: InputSource,
+    is_model_parameter: bool,
+) -> PyResult<Vec<(String, String)>> {
+    if source != InputSource::Header || !is_model_parameter {
+        return Ok(Vec::new());
+    }
+
+    let loc_by_alias = if let Some(config) = parameter.parameter_model_config.as_ref() {
+        config
+            .bind(py)
+            .cast::<PyDict>()?
+            .get_item("loc_by_alias")?
+            .map(|value| value.extract::<bool>())
+            .transpose()?
+            .unwrap_or(true)
+    } else {
+        true
+    };
+    if !loc_by_alias {
+        return Ok(Vec::new());
+    }
+
+    let model_convert_underscores = parameter.model_convert_underscores.unwrap_or(true);
+    let Some(fields) = parameter.parameter_model_fields.as_ref() else {
+        return Ok(Vec::new());
+    };
+    Ok(fields
+        .iter()
+        .filter_map(|field| {
+            let convert_underscores = field
+                .convert_underscores
+                .unwrap_or(model_convert_underscores);
+            if convert_underscores && field.alias == field.name {
+                let request_alias = field.alias.replace('_', "-");
+                (request_alias != field.alias).then(|| (field.alias.clone(), request_alias))
+            } else {
+                None
+            }
+        })
+        .collect())
+}
+
 fn parameter_model_fields(
     py: Python<'_>,
     annotation: &Bound<'_, PyAny>,
@@ -15479,8 +15537,23 @@ fn append_input_validation_details(
             let field_loc = entry.get_item("loc")?.ok_or_else(|| {
                 PyValueError::new_err("Pydantic validation error is missing its location")
             })?;
+            let mut first_field_path = true;
             for part in field_loc.try_iter()? {
-                loc.append(part?)?;
+                let part = part?;
+                if first_field_path {
+                    first_field_path = false;
+                    if let Ok(field_alias) = part.extract::<String>() {
+                        if let Some((_, request_alias)) = failure
+                            .header_aliases
+                            .iter()
+                            .find(|(alias, _)| alias == &field_alias)
+                        {
+                            loc.append(request_alias.as_str())?;
+                            continue;
+                        }
+                    }
+                }
+                loc.append(part)?;
             }
         }
         detail.set_item("loc", validation_location_tuple(py, &loc)?)?;

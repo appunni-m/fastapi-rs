@@ -1,11 +1,11 @@
-# Unexecuted input-only proposal for ordinary worker-dispatch parity.
-# Intended repository workload path after review; no active input is changed.
-# Source pin: FastAPI 0.141.1 / 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f.
+# Active, input-only worker-dispatch parity workflow; every case is indexed.
+# FastAPI 0.157.0 source pin: 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1.
 # Starlette 1.6.0 / 4f250d6b814587e20c5365f0a5f0c4d42bcb929f.
-# Source routing.py:316-338 validates according to original endpoint coroutine
-# classification, then serializes on the caller loop. :342-354 dispatches sync
-# endpoints to workers. dependencies/utils.py:676 dispatches sync dependencies;
-# :681 onward validates own inputs on the caller loop. :566-579 wraps generators.
+# routing.py:321-361 validates and serializes response values; :364-377 dispatches
+# sync endpoints, while :417 classifies the callable and :746-779 invokes it then
+# serializes ordinary return values. dependencies/utils.py:637-645 wraps generator
+# dependencies; :657-758 resolves and dispatches sync dependencies; :763-812 binds
+# validated request values and injected parameters.
 # Public source tests/docs below corroborate contexts, yielded scopes and output
 # validation. Raw callback/send traces are user observations, never stored outputs.
 schema: fastapi-rs/python-asgi-workflow@9

@@ -1,8 +1,11 @@
-# Pinned FastAPI 0.141.1 source evidence (tag commit
-# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f):
-# tests/test_dependency_overrides.py:14-16 defines the async endpoint,
-# :43-48 the async nested override, and :216-257 check the required `k`
-# validation and response. This independent input-only workflow stores no
+# Historical input provenance: this pattern was reviewed against FastAPI
+# 0.141.1's `tests/test_dependency_overrides.py::test_override_with_sub_main_depends`
+# and `::test_override_with_sub_main_depends_k_bar`. Pinned FastAPI 0.157.0,
+# commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1, retains the async dependency,
+# endpoint, and nested override at `tests/test_dependency_overrides.py:14-16`,
+# :43-48, and :216-257. Current `solve_dependencies` rebuilds and recursively
+# resolves the override at `fastapi/dependencies/utils.py:700-733`, then
+# validates its query fields at :763-785. This independent workflow stores no
 # expected outputs and does not copy the upstream tests.
 schema: fastapi-rs/python-asgi-workflow@3
 workload:

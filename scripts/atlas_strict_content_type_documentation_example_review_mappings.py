@@ -3,7 +3,9 @@
 STRICT_CONTENT_TYPE_DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     "docs_src/strict_content_type/tutorial001_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example sets strict_content_type=False and documents that a "
+            "Historical provenance: this mapping was first reviewed against FastAPI 0.141.1. "
+            "FastAPI 0.157.0 at 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1 retains the "
+            "strict_content_type=False example and documents that a "
             "request without Content-Type is parsed as JSON. The independent request uses the "
             "separately authored /legacy/items/ route, a different model and payload, and only "
             "claims the successful status and response body bytes; it does not claim the "

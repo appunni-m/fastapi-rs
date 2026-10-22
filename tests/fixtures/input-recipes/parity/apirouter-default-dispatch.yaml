@@ -1,7 +1,9 @@
 # Pinned source basis for the configured ASGI default:
-# - FastAPI 0.141.1 fastapi/routing.py:2384-2392 documents the APIRouter
-#   `default` ASGIApp; :2532-2537 forwards it to Starlette Router; :2719-2781
-#   dispatches unmatched scopes to `self.default` after redirects and fallback routes.
+# - FastAPI 0.157.0 (commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1)
+#   documents `APIRouter(default=...)` at fastapi/routing.py:2458-2466, forwards
+#   it to Starlette Router at :2606-2611, and dispatches unmatched scopes to
+#   `self.default` at :2793-2888. Included-router misses call that router's
+#   default at :1843-1849.
 # - Starlette 1.6.0 starlette/routing.py:573-590 stores the configured default;
 #   :672-720 runs it after route matching. Its built-in miss path is at :616-629.
 # - Starlette 1.6.0 starlette/websockets.py:190-196 defines the built-in close.

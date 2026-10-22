@@ -1,11 +1,11 @@
-# Input-only app-level override and request-cache sequence based on the pinned
-# FastAPI 0.141.1 source (tag 0.141.1, commit 95f8322ee1dc). In
-# fastapi/dependencies/utils.py, solve_dependencies applies dependency_overrides
-# at lines 623-638, resolves sync callables in a threadpool at lines 673-676,
-# and checks/stores the original dependency's cache key at lines 656-680. The
-# dependency cache is initialized for each top-level solve at lines 615-618;
-# fastapi/dependencies/models.py:82-94 defines its key. The two source tests
-# below independently cover dependency caching and app-level overrides.
+# Historical component-test provenance: FastAPI 0.141.1's cache and override
+# tests supplied the neighboring shapes. Pinned FastAPI 0.157.0, commit
+# 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1, initializes the cache for a solve
+# at `fastapi/dependencies/utils.py:687-688`, rebuilds an override at :700-719,
+# dispatches coroutine or sync callables at :755-758, and checks/stores the
+# original edge's key at :738-762. The scope-aware cache key is defined at
+# `fastapi/dependencies/models.py:83-97`. The listed current upstream tests
+# independently cover cache reuse and app-level overrides.
 schema: fastapi-rs/python-asgi-workflow@2
 workload:
   file: tests/fixtures/workloads/dependency_override_cache_request_local.py

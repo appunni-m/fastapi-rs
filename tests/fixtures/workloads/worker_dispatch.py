@@ -1,7 +1,8 @@
-"""Prospective public inputs for endpoint and response-validation worker dispatch.
+"""Independent input workload for endpoint and response-validation dispatch.
 
-This file is an unexecuted proposal. It observes user callbacks and ordinary ASGI
-messages; it imports no private source implementation or target internals.
+This indexed workload observes user callbacks and ordinary ASGI messages; it
+imports no private source implementation or target internals. The FastAPI 0.157.0
+source contract is anchored in the paired input recipe.
 """
 
 import asyncio

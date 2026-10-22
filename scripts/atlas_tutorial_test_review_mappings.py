@@ -372,7 +372,7 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
             ),
         },
         module_observation_selectors=["http.status", "http.headers.ordered", "http.body.bytes"],
-        stimulus_notes="The mapped upstream test imports docs_src/response_cookies/tutorial001_py310.py, and FastAPI 0.141.1 declares Python >=3.10 in pyproject.toml. Run this source/tutorial workflow on Python 3.10 or newer; the `constraints` field records the same minimum for the mapped case.",
+        stimulus_notes="The mapped upstream test imports docs_src/response_cookies/tutorial001_py310.py. FastAPI 0.157.0 declares Python >=3.10 in pyproject.toml; run this source/tutorial workflow on Python 3.10 or newer. The `constraints` field records the same minimum for the mapped case.",
     ),
     "tests/test_tutorial/test_background_tasks/test_tutorial001.py": _module(
         [
@@ -380,37 +380,37 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
                 "path": "tests/test_tutorial/test_background_tasks/test_tutorial001.py",
                 "start_line": 13,
                 "end_line": 21,
-                "role": "FastAPI 0.141.1 tutorial test asserts the response and the task-written effect",
+                "role": "FastAPI 0.157.0 tutorial test asserts the response and the task-written effect",
             },
             {
                 "path": "docs/en/docs/tutorial/background-tasks.md",
                 "start_line": 13,
                 "end_line": 39,
-                "role": "FastAPI 0.141.1 docs specify BackgroundTasks injection and positional plus keyword add_task arguments",
+                "role": "FastAPI 0.157.0 docs specify BackgroundTasks injection and positional plus keyword add_task arguments",
             },
             {
                 "path": "docs/en/docs/tutorial/background-tasks.md",
                 "start_line": 56,
                 "end_line": 61,
-                "role": "FastAPI 0.141.1 docs distinguish the FastAPI-injected BackgroundTasks surface from Starlette response-attached BackgroundTask use",
+                "role": "FastAPI 0.157.0 docs distinguish the FastAPI-injected BackgroundTasks surface from Starlette response-attached BackgroundTask use",
             },
             {
                 "path": "docs_src/background_tasks/tutorial001_py310.py",
                 "start_line": 1,
                 "end_line": 15,
-                "role": "FastAPI 0.141.1 tutorial source passes the path value positionally and message by keyword",
+                "role": "FastAPI 0.157.0 tutorial source passes the path value positionally and message by keyword",
             },
             {
                 "path": "fastapi/background.py",
-                "start_line": 5,
-                "end_line": 61,
-                "role": "FastAPI 0.141.1 BackgroundTasks subclass forwards task function arguments to Starlette",
+                "start_line": 12,
+                "end_line": 62,
+                "role": "FastAPI 0.157.0 BackgroundTasks subclass forwards task function arguments to Starlette",
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 330,
-                "end_line": 345,
-                "role": "FastAPI 0.141.1 places solved background tasks on the response arguments",
+                "start_line": 380,
+                "end_line": 395,
+                "role": "FastAPI 0.157.0 places solved background tasks on the response arguments",
             },
             {
                 "path": "starlette/responses.py",
@@ -442,7 +442,7 @@ TUTORIAL_TEST_REVIEW_MAPPINGS = {
             "http.headers.ordered",
             "http.body.bytes",
         ],
-        stimulus_notes="FastAPI 0.141.1 owns dependency injection and propagation of BackgroundTasks to the response. Starlette 1.6.0 owns the generic attached-task invocation and runs it after sending the response messages.",
+        stimulus_notes="FastAPI 0.157.0 owns dependency injection and propagation of BackgroundTasks to the response. Starlette 1.6.0 owns the generic attached-task invocation and runs it after sending the response messages.",
     ),
     "tests/test_tutorial/test_authentication_error_status_code/test_tutorial001.py": _module(
         [

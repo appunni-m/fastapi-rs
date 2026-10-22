@@ -177,9 +177,9 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/tutorial/security/index.md#L59-L99. FastAPI "
-            "0.141.1 at 95f8322 builds API-key security metadata in "
+            "0.157.0 at 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1 builds API-key security metadata in "
             "fastapi/security/api_key.py#L55-L68, #L134-L145 and projects security "
-            "dependencies in fastapi/openapi/utils.py#L99-L156. The exact case cites this "
+            "dependencies in fastapi/openapi/utils.py#L98-L155. The exact case cites this "
             "documentation page; Starlette 1.6.0 at 4f250d6 provides generic ASGI response "
             "transport in starlette/responses.py#L163-L171."
         ),
@@ -199,9 +199,9 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/tutorial/security/index.md#L100-L106. The "
-            "cookie input is extracted by FastAPI 0.141.1 in "
+            "cookie input is extracted by FastAPI 0.157.0 in "
             "fastapi/security/api_key.py#L235-L242, #L267-L320; OpenAPI security projection "
-            "is in fastapi/openapi/utils.py#L99-L156. The recipe already carries this exact "
+            "is in fastapi/openapi/utils.py#L98-L155. The recipe already carries this exact "
             "documentation source. Generic ASGI response transport is Starlette 1.6.0 at "
             "4f250d6, starlette/responses.py#L163-L171."
         ),
@@ -237,9 +237,9 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L19-L24. "
-            "FastAPI 0.141.1 extracts an opaque Bearer parameter in "
+            "FastAPI 0.157.0 extracts an opaque Bearer parameter in "
             "fastapi/security/oauth2.py#L536-L544 and injects dependencies in "
-            "fastapi/dependencies/utils.py#L619-L655. The recipe's source_evidence includes "
+            "fastapi/dependencies/utils.py#L314-L389, #L657-L819. The recipe's source_evidence includes "
             "this exact page. Starlette 1.6.0 at 4f250d6 owns generic response transport "
             "through starlette/responses.py#L163-L171."
         ),
@@ -274,8 +274,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L55-L88. "
-            "FastAPI 0.141.1 gathers dependency security declarations in "
-            "fastapi/openapi/utils.py#L99-L156 and serves the generated document; the "
+            "FastAPI 0.157.0 gathers dependency security declarations in "
+            "fastapi/openapi/utils.py#L98-L155 and serves the generated document; the "
             "recipe source_evidence includes this page. Starlette 1.6.0 at 4f250d6 handles "
             "generic ASGI HTTP responses in starlette/responses.py#L163-L171."
         ),
@@ -292,7 +292,7 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L89-L114. "
-            "FastAPI 0.141.1's OAuth2PasswordBearer records flow metadata at "
+            "FastAPI 0.157.0's OAuth2PasswordBearer records flow metadata at "
             "fastapi/security/oauth2.py#L433-L535; that metadata does not implement the "
             "external protocol or issue tokens."
         ),
@@ -313,9 +313,9 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L115-L186. "
-            "FastAPI 0.141.1 stores tokenUrl/scopes on OAuth2PasswordBearer in "
+            "FastAPI 0.157.0 stores tokenUrl/scopes on OAuth2PasswordBearer in "
             "fastapi/security/oauth2.py#L433-L535 and projects security dependencies in "
-            "fastapi/openapi/utils.py#L99-L156. The selected recipe includes exact page "
+            "fastapi/openapi/utils.py#L98-L155. The selected recipe includes exact page "
             "source_evidence; its workload's declared token URL and scope differ from the "
             "tutorial snippet."
         ),
@@ -336,9 +336,9 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L169-L186. "
-            "OAuth2PasswordBearer reads and returns the Bearer parameter in FastAPI 0.141.1 "
+            "OAuth2PasswordBearer reads and returns the Bearer parameter in FastAPI 0.157.0 "
             "at fastapi/security/oauth2.py#L536-L544; dependency solving is in "
-            "fastapi/dependencies/utils.py#L619-L655. The recipe cites this exact page."
+            "fastapi/dependencies/utils.py#L314-L389, #L657-L819. The recipe cites this exact page."
         ),
     ),
     ("tutorial/security/first-steps.md", "what-it-does"): _workflow(
@@ -361,7 +361,7 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L187-L200. "
-            "FastAPI 0.141.1 parses the Authorization scheme and either returns its opaque "
+            "FastAPI 0.157.0 parses the Authorization scheme and either returns its opaque "
             "parameter or raises the required-auth error in "
             "fastapi/security/oauth2.py#L536-L544. Each selected recipe case includes the "
             "exact documentation source; Starlette 1.6.0 at 4f250d6 carries generic HTTP "
@@ -429,9 +429,9 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L19-L30. "
-            "FastAPI 0.141.1 returns the opaque Bearer parameter in "
+            "FastAPI 0.157.0 returns the opaque Bearer parameter in "
             "fastapi/security/oauth2.py#L536-L544 and solves nested dependencies in "
-            "fastapi/dependencies/utils.py#L619-L655. The selected case source_evidence "
+            "fastapi/dependencies/utils.py#L314-L389, #L657-L819. The selected case source_evidence "
             "names this exact page."
         ),
     ),
@@ -469,9 +469,9 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L37-L62. "
-            "FastAPI 0.141.1 solves dependency inputs in "
-            "fastapi/dependencies/utils.py#L619-L655 and projects security dependencies in "
-            "fastapi/openapi/utils.py#L99-L156. The exact recipe case cites this page; "
+            "FastAPI 0.157.0 solves dependency inputs in "
+            "fastapi/dependencies/utils.py#L314-L389, #L657-L819 and projects security dependencies in "
+            "fastapi/openapi/utils.py#L98-L155. The exact recipe case cites this page; "
             "Starlette 1.6.0 at 4f250d6 provides generic response transport in "
             "starlette/responses.py#L163-L171."
         ),
@@ -491,8 +491,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L63-L78. "
-            "FastAPI 0.141.1 resolves the selected dependency graph in "
-            "fastapi/dependencies/utils.py#L619-L655; the exact current-user recipe case "
+            "FastAPI 0.157.0 resolves the selected dependency graph in "
+            "fastapi/dependencies/utils.py#L314-L389, #L657-L819; the exact current-user recipe case "
             "cites this page and returns only an app-defined dict."
         ),
     ),
@@ -511,8 +511,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L79-L96. "
-            "FastAPI 0.141.1's dependency solver is in "
-            "fastapi/dependencies/utils.py#L619-L655; the selected case contains one route "
+            "FastAPI 0.157.0's dependency solver is in "
+            "fastapi/dependencies/utils.py#L314-L389, #L657-L819; the selected case contains one route "
             "and one successful request, so only that bounded composition is mapped."
         ),
     ),
@@ -544,8 +544,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/advanced/security/http-basic-auth.md#L1-L107. "
-            "FastAPI 0.141.1's HTTPBasic emits the realm-aware challenge and handles a "
-            "missing header in fastapi/security/http.py#L197-L219. The selected case cites "
+            "FastAPI 0.157.0's HTTPBasic emits the realm-aware challenge and handles a "
+            "missing header in fastapi/security/http.py#L199-L221. The selected case cites "
             "this page; Starlette 1.6.0 at 4f250d6 carries generic exception responses in "
             "starlette/middleware/exceptions.py#L18-L47 and "
             "starlette/responses.py#L163-L171."
@@ -566,8 +566,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/advanced/security/http-basic-auth.md#L15-L28. "
-            "FastAPI 0.141.1 defines HTTPBasicCredentials and parses a Basic header into "
-            "that model in fastapi/security/http.py#L16-L27 and #L202-L219. The exact "
+            "FastAPI 0.157.0 defines HTTPBasicCredentials and parses a Basic header into "
+            "that model in fastapi/security/http.py#L16-L27 and #L204-L221. The exact "
             "recipe case cites this page; generic ASGI responses use Starlette 1.6.0 at "
             "4f250d6, starlette/responses.py#L163-L171."
         ),
@@ -588,7 +588,7 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/advanced/security/http-basic-auth.md#L29-L107. "
-            "FastAPI 0.141.1 performs credential parsing in fastapi/security/http.py#L202-L219; "
+            "FastAPI 0.157.0 performs credential parsing in fastapi/security/http.py#L204-L221; "
             "the compare_digest and credential policy appear in the user-owned "
             "docs_src/security/tutorial007_an_py310.py#L12-L30 and are absent from "
             "tests/fixtures/workloads/http_basic.py. The valid case cites the exact page."
@@ -643,7 +643,7 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
             "The pinned page is docs/en/docs/advanced/security/http-basic-auth.md#L103-L107. "
             "The specific wrong-credential HTTPException is constructed by the user example "
             "in docs_src/security/tutorial007_an_py310.py#L26-L30, while FastAPI's "
-            "missing-header Basic challenge is in fastapi/security/http.py#L197-L219. The "
+            "missing-header Basic challenge is in fastapi/security/http.py#L199-L221. The "
             "existing missing-credentials case cites the exact page and provides only the "
             "limited response-shape observation stated here."
         ),

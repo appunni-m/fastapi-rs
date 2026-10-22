@@ -1,5 +1,7 @@
 # UploadFile Pydantic fixture contract review
 
+> Historical review from 2026-10-20 against FastAPI 0.141.1 and Pydantic 2.13.4. Its parity receipt is retained as historical evidence; it does not describe the active FastAPI 0.157.0 baseline. See the 2026-10-23 source revalidation for current-source findings.
+
 Review date: 2026-10-20. This was a read-only review of the recipe, workload, metadata references, generated mappings, and recorded parity result. No builds or tests were run.
 
 ## Findings

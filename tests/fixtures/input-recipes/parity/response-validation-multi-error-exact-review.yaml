@@ -5,9 +5,10 @@ workload:
   instantiate_per_case: true
 cases:
 - case_id: fastapi.response-validation-error.multiple-invalid-output-values
-  # FastAPI 0.141.1 source selector: test_double_invalid in
-  # tests/test_validate_response.py. The source asserts ResponseValidationError;
-  # this workflow also compares its ordered details and original body.
+  # Historical provenance: test_double_invalid in FastAPI 0.141.1.
+  # FastAPI 0.157.0 tests/test_validate_response.py:75-77 still asserts
+  # ResponseValidationError. The ordered details and original body below are
+  # additional target observations, not assertions made by that upstream test.
   factory_input: {}
   construction_observation:
     kind: construction

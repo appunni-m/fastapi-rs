@@ -1,6 +1,6 @@
 """Reviewed mappings for FastAPI's SQL database tutorial sections.
 
-FastAPI 0.141.1 is the application contract. Starlette 1.6.0 owns generic
+FastAPI 0.157.0 is the application contract. Starlette 1.6.0 owns generic
 ASGI routing and lifecycle behavior. The linked inputs replace SQLModel
 storage with Pydantic-shaped request models and isolated in-memory values.
 """
@@ -91,7 +91,7 @@ DOC_SECTION_CASE_MAPPINGS_SQL_DATABASES_20261015 = {
             "exclude third-party/process behavior."
         ),
         (
-            "FastAPI 0.141.1 says an application may use any database library and presents "
+            "FastAPI 0.157.0 says an application may use any database library and presents "
             "SQLModel only as its example (docs/en/docs/tutorial/sql-databases.md:1-28). "
             "A page-wide workflow would mix FastAPI request/schema behavior with SQLModel, "
             "SQLAlchemy, SQLite, CLI, and Starlette lifecycle behavior."
@@ -207,10 +207,10 @@ DOC_SECTION_CASE_MAPPINGS_SQL_DATABASES_20261015 = {
             "The pinned page describes `SQLModel.metadata.create_all(engine)` at lines 86-90 and "
             "says the tables are created on startup at lines 102-110; the pinned example "
             'registers `@app.on_event("startup")` around `create_db_and_tables()` '
-            "(`docs_src/sql_databases/tutorial001_an_py310.py:21-22, 32-37`). FastAPI 0.141.1 "
+            "(`docs_src/sql_databases/tutorial001_an_py310.py:21-22, 32-37`). FastAPI 0.157.0 "
             "marks `APIRouter.on_event` deprecated and retains its registration decorator at "
-            "`fastapi/routing.py:6415-6445`; callback dispatch remains in `_startup` and "
-            "`_shutdown` at lines 6363-6393. The independent "
+            "`fastapi/routing.py:6530-6554`; callback dispatch remains in `_startup` and "
+            "`_shutdown` at lines 6471-6487. The independent "
             "`fastapi.lifecycle.router-events-legacy` case in "
             "`tests/fixtures/input-recipes/parity/router-events-lifespan-upstream.yaml` covers "
             "callback order, startup/shutdown, lifecycle errors and workload trace, plus the "

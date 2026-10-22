@@ -79,9 +79,9 @@ def _excluded(heading, start, end, reason, rationale):
 
 
 _BODY_PIPELINE = (
-    "FastAPI 0.141.1 chooses body parsing from the request content type in "
-    "fastapi/routing.py:425-450 and binds a non-embedded model body in "
-    "fastapi/dependencies/utils.py:951-998. Starlette 1.6.0 owns generic ASGI request "
+    "FastAPI 0.157.0 chooses body parsing from the request content type in "
+    "fastapi/routing.py:412-475 and binds a non-embedded model body in "
+    "fastapi/dependencies/utils.py:1162-1215. Starlette 1.6.0 owns generic ASGI request "
     "body buffering and JSON decoding in starlette/requests.py:254-266; Pydantic owns "
     "model field conversion and validation."
 )

@@ -1,5 +1,7 @@
 # Request-body ownership review for documented examples — 2026-10-16
 
+> Historical review against the 2026-10-16 atlas/source snapshot. Its row pointers and FastAPI 0.141.1 evidence are not active 0.157.0 source support; use the regenerated atlas and current mappings for the pinned baseline.
+
 ## Scope and pins
 
 Read-only source audit of every documented-example row in tests/fixtures/compatibility-atlas.json whose request-body mapping has ownership_boundary set to “owner review required”. The five exact mapping pointers are /coverage_matrix/104/starlette_rs_contract_mappings/2, /coverage_matrix/105/starlette_rs_contract_mappings/2, /coverage_matrix/230/starlette_rs_contract_mappings/2, /coverage_matrix/239/starlette_rs_contract_mappings/2, and /coverage_matrix/240/starlette_rs_contract_mappings/3.

@@ -171,13 +171,14 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
         (
             "The selected direct-style request exercises the documented max_length=50 rejection "
             "and the matching OpenAPI parameter. The shared schema action also projects the "
-            "Annotated comparison route; this row does not claim behavior from FastAPI versions "
-            "before the pinned release."
+            "Annotated comparison route; this row describes the pinned FastAPI 0.157.0 "
+            "contract only."
         ),
         (
             "FastAPI interprets Query used as a parameter default as query metadata and applies "
-            "the declared constraint; the mapping is limited to this direct-style declaration "
-            "under FastAPI 0.141.1."
+            "the declared constraint; this mapping covers only the selected direct-style "
+            "declaration under FastAPI 0.157.0 (`fastapi/param_functions.py:375`; "
+            "`fastapi/dependencies/utils.py:423-485,952-989`)."
         ),
     ),
     (
@@ -200,8 +201,9 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
             "not separately exercised."
         ),
         (
-            "FastAPI 0.141.1 rejects a FieldInfo default inside Annotated during parameter "
-            "analysis and directs callers to set the function parameter default with =."
+            "FastAPI 0.157.0 rejects a FieldInfo default inside Annotated during parameter "
+            "analysis and directs callers to set the function parameter default with `=` "
+            "(`fastapi/dependencies/utils.py:423-485`)."
         ),
     ),
     ("tutorial/query-params-str-validations.md", "advantages-of-annotated"): _excluded(

@@ -58,7 +58,9 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_FILES_20261015 = {
             "introductory file declaration, and each descendant is mapped separately."
         ),
         (
-            "FastAPI 0.141.1 classifies the `File` parameter and provides the uploaded bytes to "
+            "FastAPI 0.157.0 classifies the `File` parameter and binds uploaded form values "
+            "through the body field machinery (`fastapi/params.py:702-787`; "
+            "`fastapi/dependencies/utils.py:1162-1215`). The uploaded bytes are delivered to "
             "the endpoint. Multipart parsing and the generic ASGI request boundary belong to "
             "Starlette 1.6.0 and Starlette-RS."
         ),
@@ -142,7 +144,7 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_FILES_20261015 = {
             "sample thread-pool scheduling, or call Pydantic's validation hooks."
         ),
         (
-            "FastAPI 0.141.1 `fastapi/datastructures.py:21-64` defines the subclass and its file "
+            "FastAPI 0.157.0 `fastapi/datastructures.py:21-64` defines the subclass and its file "
             "metadata, while lines 66-130 forward awaited read, write, seek, and close calls to "
             "Starlette; its Pydantic hooks at lines 132-150 are outside this sample. Starlette "
             "1.6.0 `starlette/datastructures.py:415-476` owns the generic file storage, size "

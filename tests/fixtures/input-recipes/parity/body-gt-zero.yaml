@@ -1,5 +1,10 @@
-# Input-only scalar-body constraint cases adapted from FastAPI 0.141.1's
-# body-multiple-params tutorial 004.
+# Historical provenance: these scalar-body cases were adapted from FastAPI 0.141.1's
+# body-multiple-params tutorial 004. Current FastAPI 0.157.0 keeps Body(gt=0) in
+# docs_src/body_multiple_params/tutorial004_py310.py:25-26 and
+# docs_src/body_multiple_params/tutorial004_an_py310.py:27-28;
+# tests/test_tutorial/test_body_multiple_params/test_tutorial004.py:135-155
+# still checks zero in the upstream multi-field body. This recipe retains its
+# independent scalar-body inputs.
 schema: fastapi-rs/python-asgi-workflow@2
 workload:
   file: tests/fixtures/workloads/body_gt_zero.py

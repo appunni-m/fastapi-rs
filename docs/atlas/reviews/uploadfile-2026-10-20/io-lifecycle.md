@@ -1,5 +1,7 @@
 # UploadFile I/O and lifecycle audit
 
+> Historical source audit from 2026-10-20 against FastAPI 0.141.1. Retained for its dated analysis; use the 2026-10-23 source revalidation for the active FastAPI 0.157.0 baseline.
+
 ## Scope and source identities
 
 This is a source-only audit of the FastAPI `UploadFile` contract and its Starlette-owned storage and I/O behavior. No builds, tests, or parity workflows were run.

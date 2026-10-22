@@ -1,4 +1,9 @@
-# FastAPI 0.141.1 input-only coverage for nested lifespan entry failure cleanup.
+# Independent input-only case reviewed against FastAPI 0.157.0 (commit
+# 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1). `include_router` merges the parent
+# and child lifespan contexts at `fastapi/routing.py:3420-3427`, while
+# `_merge_lifespan_context` enters them in order at :242-256. FastAPI's current
+# nested lifespan/state coverage is in `tests/test_router_events.py:114-222`;
+# it does not assert this injected startup-error suppression scenario.
 schema: fastapi-rs/python-asgi-workflow@14
 workload:
   file: tests/fixtures/workloads/router_events_lifespan_upstream.py

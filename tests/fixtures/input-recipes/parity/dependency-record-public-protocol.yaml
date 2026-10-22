@@ -1,9 +1,10 @@
-# Independent public inputs for records returned by Depends and Security.
-# Pinned FastAPI 0.141.1, commit 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f:
-# params.py:745-754 declares frozen dataclasses, with Security inheriting
-# Depends. param_functions.py:2283-2460 exposes keyword-only public factories
-# that return those classes. Protocol observations below start from the types
-# returned by those public factories; params aliases remain discovery evidence.
+# Independent public inputs for records returned by Depends and Security,
+# reviewed against pinned FastAPI 0.157.0 at commit
+# 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1. params.py:790-799 declares frozen
+# dataclasses, with Security inheriting Depends. param_functions.py:2391-2477
+# and :2480-2568 expose public factories that return those classes. Protocol
+# observations start from the types returned by those factories; params aliases
+# remain discovery evidence.
 # CPython 3.12.13 dataclasses.py:629-681 derives repr, runtime-class equality,
 # frozen assignment/deletion, and tuple hash from declared fields. :1278-1360
 # supplies fields/is_dataclass/asdict and :1540-1582 implements replace.
@@ -12,12 +13,13 @@
 # parameter name or raises a user comparison error, and records the live
 # comparison order, including the initializer's self parameter. Literal
 # keyword spellings, accepted fields, and errors are never stored as results.
-# dependencies/utils.py:120-142 builds parameterless dependencies with default
-# caching, :391-475 selects the final Annotated FastAPI marker and infers a
-# missing callable through dataclasses.replace, and :623-681 resolves/cache
-# dependencies and enters yielded scopes. encoders.py's dataclass branch
-# encodes through dataclasses.asdict. These independent workloads combine the
-# source rules; reference docs and neighboring upstream tests do not contain
+# dependencies/utils.py:133-145 builds parameterless dependencies with default
+# caching; :423-514 selects the final Annotated FastAPI marker and infers a
+# missing callable through dataclasses.replace; :314-389 builds dependency
+# edges, and :637-762 resolves/caches dependencies and enters yielded scopes.
+# fastapi/encoders.py:259-267 encodes dataclasses through dataclasses.asdict.
+# These independent workloads combine the source rules; reference docs and
+# neighboring upstream tests do not contain
 # these exact protocol scenarios. No expected outputs or oracle snapshots are
 # stored here. Hash values use integer/bool-only tuples; other hash projections
 # expose relationships or error classes, avoiding randomized None/callable

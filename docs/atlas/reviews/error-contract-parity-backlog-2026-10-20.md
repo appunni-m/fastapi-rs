@@ -1,5 +1,7 @@
 # FastAPI error-contract review
 
+> Historical review against FastAPI 0.141.1. Its recorded oracle results and source line references remain tied to that snapshot; active 0.157.0 evidence is represented by the current input recipes and regenerated compatibility atlas.
+
 Reviewed against FastAPI 0.141.1 (`95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`)
 and Starlette 1.6.0 (`4f250d6b814587e20c5365f0a5f0c4d42bcb929f`). The source
 checkouts report those exact package versions.

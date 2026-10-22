@@ -1,7 +1,9 @@
-# FastAPI 0.141.1 assigns `self.router` at fastapi/applications.py:984-999,
-# and its ASGI call delegates to Starlette's cached stack at applications.py:1160-1163.
-# Starlette 1.6.0 builds that stack around the current router on first call
-# (applications.py:80-96); Router dispatches from its own route list.
+# Pinned FastAPI 0.157.0 (commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1)
+# assigns `self.router` during construction at fastapi/applications.py:981-996.
+# The ordinary HTTP/WebSocket path delegates to Starlette at :1189-1205.
+# Starlette 1.6.0 builds its cached middleware stack around the then-current
+# router on first call (starlette/applications.py:80-96). The listed test and
+# documentation sources establish adjacent router usage, not this reassignment.
 schema: fastapi-rs/python-asgi-workflow@2
 workload:
   file: tests/fixtures/workloads/application_router_replacement.py

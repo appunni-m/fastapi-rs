@@ -1,6 +1,8 @@
-# Pinned FastAPI 0.141.1 source evidence: tests/test_response_code_no_body.py
-# test_get_response asserts 204, no Content-Length, and an empty body. This
-# independent workload records only the ASGI request and response selectors.
+# Historical provenance: FastAPI 0.141.1 tests/test_response_code_no_body.py.
+# Current source review: FastAPI 0.157.0 tests/test_response_code_no_body.py:41-45
+# still asserts 204, no Content-Length, and an empty body. The current status-code
+# docs make the same bodyless rule explicit at docs/en/docs/tutorial/response-status-code.md:60.
+# This independent workload records only the ASGI request and response selectors.
 schema: fastapi-rs/python-asgi-workflow@3
 workload:
   file: tests/fixtures/workloads/response_204_bodyless_upstream.py
@@ -35,3 +37,4 @@ cases:
   source_evidence:
   - {path: tests/test_response_code_no_body.py, kind: upstream_test}
   - {path: docs/en/docs/advanced/custom-response.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/response-status-code.md, kind: upstream_documentation}

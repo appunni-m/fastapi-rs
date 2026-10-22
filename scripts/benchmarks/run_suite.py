@@ -387,6 +387,8 @@ def _failed_outcome(workload_id: str, error: BaseException) -> dict[str, Any]:
 def _check_suite_document(
     suite: dict[str, Any],
     loaded_by_id: dict[str, tuple[dict[str, Any], Path, dict[str, Any], Path, dict[str, Any]]],
+    *,
+    validate_current_workload_identity: bool = True,
 ) -> None:
     try:
         schema_path, expected_workloads = SUITE_CONTRACTS[suite["schema"]]
@@ -425,13 +427,14 @@ def _check_suite_document(
             workload, workload_path, _, input_path, action = loaded_by_id[outcome["id"]]
         except KeyError as exc:
             raise SuiteError(f"suite result names an undeclared workload: {outcome['id']}") from exc
-        contract.validate_result(
-            result,
-            workload=workload,
-            workload_path=workload_path,
-            input_path=input_path,
-            action=action,
-        )
+        if validate_current_workload_identity:
+            contract.validate_result(
+                result,
+                workload=workload,
+                workload_path=workload_path,
+                input_path=input_path,
+                action=action,
+            )
         results.append(result)
 
     failure = suite["failure"]
@@ -467,18 +470,37 @@ def _check_suite_document(
 
 def _validate_saved_suite_artifacts(
     loaded: list[tuple[dict[str, Any], Path, dict[str, Any], Path, dict[str, Any]]],
-) -> int:
+) -> tuple[int, int]:
     if not RESULT_ROOT.exists():
-        return 0
+        return 0, 0
     loaded_by_id = {entry[0]["id"]: entry for entry in loaded}
+    current_fastapi_commit = contract.read_manifest()["oracle_profile"]["source_commits"][
+        "fastapi"
+    ]
+    current_count = 0
+    historical_count = 0
     paths = sorted(RESULT_ROOT.glob("suite-*.json"))
     for path in paths:
         try:
             path.resolve().relative_to(RESULT_ROOT.resolve())
         except ValueError as exc:
             raise SuiteError(f"suite artifact escapes benchmark-results/: {path}") from exc
-        _check_suite_document(contract.read_json(path), loaded_by_id)
-    return len(paths)
+        suite = contract.read_json(path)
+        # Keep old receipts structurally checked without comparing their frozen
+        # workload hashes to declarations that now describe a newer oracle.
+        is_current_oracle = (
+            suite.get("source_revisions", {}).get("fastapi_source") == current_fastapi_commit
+        )
+        _check_suite_document(
+            suite,
+            loaded_by_id,
+            validate_current_workload_identity=is_current_oracle,
+        )
+        if is_current_oracle:
+            current_count += 1
+        else:
+            historical_count += 1
+    return current_count, historical_count
 
 
 def _write_suite_artifact(
@@ -560,10 +582,13 @@ def main() -> int:
             loaded = _load_expected_workloads()
             contract._check_schema(SUITE_SCHEMA_PATH, "benchmark suite v1 result")
             contract._check_schema(SUITE_SCHEMA_V2_PATH, "benchmark suite v2 result")
-            artifact_count = _validate_saved_suite_artifacts(loaded)
+            current_artifact_count, historical_artifact_count = _validate_saved_suite_artifacts(
+                loaded
+            )
             print(
                 f"benchmark suite contract valid: {len(loaded)} required workloads, "
-                f"{artifact_count} suite artifacts and result references"
+                f"{current_artifact_count} current suite artifacts and result references, "
+                f"{historical_artifact_count} historical suite artifacts preserved"
             )
             return 0
 

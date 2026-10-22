@@ -1,7 +1,10 @@
 """Reviewed mappings for pending response-reference documentation sections.
 
-Source identities: FastAPI 0.141.1 at 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f,
-Starlette 1.6.0 at 4f250d6b814587e20c5365f0a5f0c4d42bcb929f, and the assigned
+Original review provenance: FastAPI 0.141.1 at
+95f8322ee1dcda7ceace7b1c4f6c9915b36d748f. Active FastAPI source claims below
+were rechecked against 0.157.0 at 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1.
+Starlette remains pinned to 1.6.0 at 4f250d6b814587e20c5365f0a5f0c4d42bcb929f,
+and the assigned
 Starlette-RS behavior owner at b4c8a65c85e1b0d251ca05874412811eaa3ac7b8.
 
 Existing additional-response model/media-type and tutorial/status-code sections
@@ -75,9 +78,9 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015 = {
             "runtime response validation, other merge forms, or every response declaration."
         ),
         (
-            "FastAPI 0.141.1 processes `route.responses`, removes the Python-only `model` key, "
+            "FastAPI 0.157.0 processes `route.responses`, removes the Python-only `model` key, "
             "and merges any prepared model schema into the declared content "
-            "(fastapi/openapi/utils.py:473-516). The selected case observes only the generated "
+            "(fastapi/openapi/utils.py:458-501). The selected case observes only the generated "
             "response subtree for its independent `/documented/{item_id}` route."
         ),
     ),
@@ -101,7 +104,7 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015 = {
         ),
         (
             "FastAPI consumes the route's resulting `responses` mapping and merges its entries "
-            "into the OpenAPI operation (fastapi/openapi/utils.py:473-516). Python dictionary "
+            "into the OpenAPI operation (fastapi/openapi/utils.py:458-501). Python dictionary "
             "unpacking in the source example "
             "(docs_src/additional_responses/tutorial004_py310.py:11-24) "
             "is language behavior and is not claimed by this FastAPI route input."
@@ -141,7 +144,7 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015 = {
         ),
         (
             "FastAPI passes a returned Response instance through in its request handler "
-            "(fastapi/routing.py:711-715); Starlette 1.6.0 owns PlainTextResponse rendering "
+            "(fastapi/routing.py:751-755); Starlette 1.6.0 owns PlainTextResponse rendering "
             "and generic ASGI emission. The selected independent action is PUT "
             "/documents/alpha-7, whose handler returns a PlainTextResponse with status 202."
         ),
@@ -157,7 +160,7 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015 = {
             "input set."
         ),
         (
-            "FastAPI 0.141.1 marks both classes deprecated in fastapi/responses.py:39-98; the "
+            "FastAPI 0.157.0 marks both classes deprecated in fastapi/responses.py:39-98; the "
             "generated API/deprecation inventory is the source of their public contract. The "
             "available UJSON tutorial case does not project a warning selector or successful "
             "serialization result, and no equivalent performance benchmark is part of parity. "
@@ -180,7 +183,7 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015 = {
             "methods."
         ),
         (
-            "FastAPI 0.141.1 imports the documented classes directly from "
+            "FastAPI 0.157.0 imports the documented classes directly from "
             "starlette.responses (fastapi/responses.py:5-12). The selected independent case "
             "returns class-identity relations in its HTTP body; generic response behavior is "
             "owned by the pinned Starlette 1.6.0 contract."
@@ -201,7 +204,7 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015 = {
             "status choice, which is mapped under the Example heading."
         ),
         (
-            "FastAPI 0.141.1 re-exports `starlette.status` directly "
+            "FastAPI 0.157.0 re-exports `starlette.status` directly "
             "(fastapi/__init__.py:5). The identity workload compares those module objects and "
             "enumerates the exported constants; Starlette 1.6.0 owns the constants themselves."
         ),
@@ -226,9 +229,9 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015 = {
             "reference documentation."
         ),
         (
-            "FastAPI normalizes IntEnum status values while constructing an APIRoute "
-            "(fastapi/routing.py:1028-1032) and uses the configured route status in response "
-            "construction (fastapi/routing.py:358-372). The page's example selects one such "
+            "FastAPI 0.157.0 normalizes IntEnum status values while constructing an APIRoute "
+            "(fastapi/routing.py:1083-1088) and uses the configured route status in response "
+            "construction (fastapi/routing.py:380-395). The page's example selects one such "
             "constant-backed response."
         ),
     ),
@@ -248,9 +251,9 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015 = {
             "member."
         ),
         (
-            "FastAPI 0.141.1 provides EventSourceResponse and the ServerSentEvent field model "
+            "FastAPI 0.157.0 provides EventSourceResponse and the ServerSentEvent field model "
             "in fastapi/sse.py:20-34 and :52-156; its routing layer serializes yielded SSE "
-            "items at fastapi/routing.py:520-551. The selected workflow action observes one "
+            "items at fastapi/routing.py:560-591,620-623. The selected workflow action observes one "
             "completed event stream while generic response streaming belongs to Starlette 1.6.0."
         ),
     ),

@@ -1,5 +1,7 @@
 # Documented dependency-override ownership review
 
+> Historical review against the 2026-10-16 atlas/source snapshot. Its row pointers and FastAPI 0.141.1 evidence are not active 0.157.0 source support; use the regenerated atlas and current mappings for the pinned baseline.
+
 Date: 2026-10-16  
 Kata: `m4d4`  
 Scope: documented Python example rows in `tests/fixtures/compatibility-atlas.json` whose `feature_ids` include `dependency-overrides` and whose sibling mapping says `ownership_boundary: owner review required`.

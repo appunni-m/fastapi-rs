@@ -1,15 +1,18 @@
-# Proposed independent inputs for immutable callable classification only.
-# FastAPI 0.141.1 source commit 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f,
-# Python 3.12.13. models.py:18-27 removes partials before inspect.unwrap;
-# :138-220 inspect both callable and underlying __call__ chains, with a class
-# guard and coroutine routine checks. utils.py:566-576 selects async-generator
-# context management before sync-generator context management. :655-680 keeps
-# the original edge cache key and invokes the original wrapper/partial.
-# :673-674 unconditionally awaits a coroutine-classified callable's result,
-# even when a sync wrapper or publicly marked sync routine returns a scalar.
-# utils.py:300-315 rejects a request-scoped generator parent with a function-
-# scoped child; routing.py:140-146 gives function/request cleanup boundaries.
-# The pinned partial/wrapped tests are evidence of public reachability only;
+# Independent inputs for callable classification, reviewed on Python 3.12.13.
+# Earlier review used FastAPI 0.141.1; current behavior was rechecked against
+# pinned FastAPI 0.157.0, commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1.
+# dependencies/models.py:18-28 removes partials before inspect.unwrap;
+# :138-228 checks callable and __call__ chains, class guards, and coroutine
+# routines. :230-234 computes generator dependency scope. dependencies/utils.py
+# :314-389 builds dependency edges and rejects an incompatible child scope;
+# :637-645 selects async-generator or sync-generator context management;
+# :700-762 resolves edges using the original cache key and selected callable.
+# :755-758 awaits coroutine-classified dependencies even when the call returns
+# a scalar. routing.py:143-155 creates function/request cleanup stacks.
+# FastAPI 0.157.0's partial and wrapped tests are public-reachability evidence
+# only (`tests/test_dependency_partial.py:248-251` and
+# `tests/test_dependency_wrapped.py:446-449`); they do not assert this input
+# cross-product.
 # this workload uses independent values, signatures, traces, and projections.
 # No input changes classification metadata after registration, and no results
 # establish classification-cache history, eviction, or descriptor side effects.

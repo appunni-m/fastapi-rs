@@ -1,8 +1,8 @@
 """Source-reviewed overrides for FastAPI tutorial-page atlas candidates.
 
-This file is intentionally separate from the atlas generator.  The source
-checkout used for the review is FastAPI 0.141.1; Starlette ownership notes are
-against the selected Starlette 1.6.0 contract.
+This file is intentionally separate from the atlas generator. The original
+source review used FastAPI 0.141.1; active source claims have been rechecked
+against FastAPI 0.157.0. Starlette ownership notes use Starlette 1.6.0.
 """
 
 DOC_PAGE_REVIEW_MAPPINGS = {
@@ -19,7 +19,7 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "websocket.messages",
         ],
         "rationale": (
-            "FastAPI 0.141.1 exposes Starlette's WebSocket and WebSocketDisconnect through "
+            "FastAPI 0.157.0 exposes Starlette's WebSocket and WebSocketDisconnect through "
             "fastapi.websockets and re-exports those two names at the fastapi root; "
             "WebSocketState is available from fastapi.websockets, not the root. FastAPI owns "
             "@app.websocket registration, APIWebSocketRoute construction, and typed "
@@ -91,26 +91,26 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/applications.py",
-                "start_line": 1361,
-                "end_line": 1439,
+                "start_line": 1418,
+                "end_line": 1481,
                 "role": "FastAPI app.websocket decorator forwards registered endpoints to its router",
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 764,
-                "end_line": 836,
+                "start_line": 808,
+                "end_line": 892,
                 "role": "FastAPI dependency solving, WebSocket endpoint dispatch, APIWebSocketRoute construction, and Starlette route matching",
             },
             {
                 "path": "fastapi/dependencies/utils.py",
-                "start_line": 350,
-                "end_line": 370,
+                "start_line": 392,
+                "end_line": 403,
                 "role": "FastAPI recognizes WebSocket and HTTPConnection as injected connection parameters",
             },
             {
                 "path": "fastapi/dependencies/utils.py",
-                "start_line": 709,
-                "end_line": 714,
+                "start_line": 797,
+                "end_line": 812,
                 "role": "FastAPI supplies HTTPConnection or WebSocket values to endpoint parameters",
             },
         ],
@@ -281,27 +281,39 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/applications.py",
-                "start_line": 1361,
-                "end_line": 1439,
+                "start_line": 1418,
+                "end_line": 1481,
                 "role": "FastAPI.websocket registration and forwarding to APIRouter",
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 764,
-                "end_line": 837,
+                "start_line": 808,
+                "end_line": 892,
                 "role": "FastAPI WebSocket dependency execution and APIWebSocketRoute construction/matching",
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 163,
-                "end_line": 186,
+                "start_line": 172,
+                "end_line": 195,
                 "role": "FastAPI WebSocket ASGI wrapper adds dependency exit stacks around endpoint dispatch",
             },
             {
                 "path": "fastapi/dependencies/utils.py",
-                "start_line": 619,
-                "end_line": 714,
-                "role": "FastAPI dependency recursion, path/query/header/cookie binding, and WebSocket injection",
+                "start_line": 314,
+                "end_line": 389,
+                "role": "FastAPI constructs recursive dependency graphs and classifies endpoint parameters",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 721,
+                "end_line": 812,
+                "role": "FastAPI solves and caches dependencies, binds request parameters, and injects WebSocket values",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 952,
+                "end_line": 989,
+                "role": "FastAPI selects request parameter aliases and validates their values",
             },
             {
                 "path": "fastapi/exception_handlers.py",
@@ -311,14 +323,14 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/applications.py",
-                "start_line": 1000,
-                "end_line": 1012,
+                "start_line": 1001,
+                "end_line": 1011,
                 "role": "FastAPI registers its WebSocket request-validation exception handler",
             },
             {
                 "path": "fastapi/exceptions.py",
                 "start_line": 86,
-                "end_line": 155,
+                "end_line": 108,
                 "role": "FastAPI WebSocketException subclass and public constructor",
             },
             {
@@ -467,38 +479,38 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/dependencies/utils.py",
-                "start_line": 350,
-                "end_line": 365,
+                "start_line": 392,
+                "end_line": 405,
                 "role": "FastAPI classifies Response as a special injected dependency parameter",
             },
             {
                 "path": "fastapi/dependencies/utils.py",
-                "start_line": 611,
-                "end_line": 614,
+                "start_line": 683,
+                "end_line": 687,
                 "role": "FastAPI creates the temporary response shared by dependency solving",
             },
             {
                 "path": "fastapi/dependencies/utils.py",
-                "start_line": 719,
-                "end_line": 720,
+                "start_line": 797,
+                "end_line": 808,
                 "role": "FastAPI passes the temporary response into the endpoint parameter",
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 357,
-                "end_line": 372,
+                "start_line": 380,
+                "end_line": 395,
                 "role": "FastAPI takes the temporary response status into account",
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 706,
-                "end_line": 715,
+                "start_line": 751,
+                "end_line": 755,
                 "role": "FastAPI returns an endpoint-provided Response directly",
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 716,
-                "end_line": 750,
+                "start_line": 756,
+                "end_line": 791,
                 "role": "FastAPI serializes ordinary endpoint values and copies temporary response headers to the final response",
             },
             {
@@ -589,12 +601,12 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "openapi.paths",
         ],
         "rationale": (
-            "FastAPI owns the path-operation decision at routing.py:711-750: a returned "
+            "FastAPI owns the path-operation decision at fastapi/routing.py:751-791: a returned "
             "Starlette Response instance bypasses serialize_response and the configured "
             "response class; FastAPI adds solved background tasks only when the response has "
             "no background task already. A non-Response value goes through response "
             "serialization and response construction. FastAPI also excludes a Response return "
-            "annotation from the inferred response model at routing.py:1081-1114. The classes exposed at "
+            "annotation from the inferred response model at fastapi/routing.py:1136-1157. The classes exposed at "
             "fastapi.responses are Starlette re-exports; generic content rendering, media "
             "types, header defaults, JSON bytes, and ASGI response messages belong to the "
             "Starlette 1.6.0 response contract (and the sibling Starlette-RS contract). "
@@ -673,14 +685,14 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 706,
-                "end_line": 750,
+                "start_line": 751,
+                "end_line": 791,
                 "role": "FastAPI reuses returned Response instances; non-Response values go through serialization and response construction",
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 1081,
-                "end_line": 1114,
+                "start_line": 1136,
+                "end_line": 1157,
                 "role": "FastAPI does not infer a response model from a Response subclass return annotation",
             },
             {
@@ -796,9 +808,9 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/applications.py",
-                "start_line": 1000,
-                "end_line": 1006,
-                "role": "FastAPI 0.141.1 registers the default RequestValidationError handler",
+                "start_line": 1001,
+                "end_line": 1003,
+                "role": "FastAPI 0.157.0 registers the default RequestValidationError handler",
             },
             {
                 "path": "fastapi/exception_handlers.py",
@@ -808,8 +820,8 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 2234,
-                "end_line": 2242,
+                "start_line": 792,
+                "end_line": 799,
                 "role": "FastAPI raises RequestValidationError when dependency solving finds request errors",
             },
         ],
@@ -912,9 +924,21 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/dependencies/utils.py",
-                "start_line": 619,
-                "end_line": 697,
-                "role": "FastAPI recursive solve/cache and query/cookie parameter binding",
+                "start_line": 314,
+                "end_line": 389,
+                "role": "FastAPI constructs recursive dependency graphs and records use_cache policy",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 721,
+                "end_line": 789,
+                "role": "FastAPI resolves and caches dependencies before binding path/query/header/cookie parameters",
+            },
+            {
+                "path": "fastapi/dependencies/utils.py",
+                "start_line": 952,
+                "end_line": 989,
+                "role": "FastAPI selects and validates query/cookie parameter values",
             },
         ],
         "starlette_contract_sources": [
@@ -1009,9 +1033,9 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/applications.py",
-                "start_line": 1000,
-                "end_line": 1006,
-                "role": "FastAPI 0.141.1 registers the default RequestValidationError handler",
+                "start_line": 1001,
+                "end_line": 1003,
+                "role": "FastAPI 0.157.0 registers the default RequestValidationError handler",
             },
             {
                 "path": "fastapi/exception_handlers.py",
@@ -1021,8 +1045,8 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 2234,
-                "end_line": 2242,
+                "start_line": 792,
+                "end_line": 799,
                 "role": "FastAPI raises RequestValidationError when dependency solving finds request errors",
             },
         ],
@@ -1263,20 +1287,20 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/background.py",
-                "start_line": 5,
-                "end_line": 61,
+                "start_line": 12,
+                "end_line": 62,
                 "role": "FastAPI BackgroundTasks subclass and documented add_task wrapper",
             },
             {
                 "path": "fastapi/dependencies/utils.py",
-                "start_line": 360,
-                "end_line": 384,
+                "start_line": 392,
+                "end_line": 409,
                 "role": "special-parameter classification for BackgroundTasks subclasses",
             },
             {
                 "path": "fastapi/dependencies/utils.py",
-                "start_line": 715,
-                "end_line": 730,
+                "start_line": 803,
+                "end_line": 806,
                 "role": "request-scoped creation and injection of the shared BackgroundTasks collection",
             },
         ],
@@ -1355,8 +1379,8 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/encoders.py",
-                "start_line": 119,
-                "end_line": 206,
+                "start_line": 129,
+                "end_line": 218,
                 "role": "pinned encoder signature and options",
             },
         ],
@@ -1470,15 +1494,33 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/applications.py",
-                "start_line": 1222,
-                "end_line": 1299,
+                "start_line": 1264,
+                "end_line": 1341,
                 "role": "FastAPI app.frontend public signature and router delegation",
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 1881,
-                "end_line": 1896,
+                "start_line": 1948,
+                "end_line": 1979,
                 "role": "automatic frontend-directory checking and development warning",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 2241,
+                "end_line": 2281,
+                "role": "FastAPI applies frontend dependencies before returning the selected static response",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 2704,
+                "end_line": 2791,
+                "role": "APIRouter registers frontends as low-priority routes and carries router dependencies",
+            },
+            {
+                "path": "fastapi/routing.py",
+                "start_line": 2793,
+                "end_line": 2889,
+                "role": "FastAPI dispatches normal routes before matching low-priority frontend routes",
             },
         ],
     },
@@ -1782,9 +1824,9 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/applications.py",
-                "start_line": 1000,
-                "end_line": 1006,
-                "role": "FastAPI 0.141.1 registers the default RequestValidationError handler",
+                "start_line": 1001,
+                "end_line": 1003,
+                "role": "FastAPI 0.157.0 registers the default RequestValidationError handler",
             },
             {
                 "path": "fastapi/exception_handlers.py",
@@ -1794,8 +1836,8 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 2234,
-                "end_line": 2242,
+                "start_line": 792,
+                "end_line": 799,
                 "role": "FastAPI raises RequestValidationError when dependency solving finds request errors",
             },
         ],
@@ -1888,14 +1930,14 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/params.py",
-                "start_line": 663,
-                "end_line": 742,
+                "start_line": 702,
+                "end_line": 787,
                 "role": "File is a Form specialization with multipart/form-data media type",
             },
             {
                 "path": "fastapi/dependencies/utils.py",
-                "start_line": 498,
-                "end_line": 505,
+                "start_line": 516,
+                "end_line": 548,
                 "role": "FastAPI infers File for UploadFile and UploadFile sequence annotations",
             },
             {
@@ -1906,14 +1948,14 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 425,
-                "end_line": 431,
+                "start_line": 451,
+                "end_line": 457,
                 "role": "FastAPI parses form request bodies and schedules parsed file cleanup",
             },
             {
                 "path": "fastapi/openapi/utils.py",
-                "start_line": 231,
-                "end_line": 263,
+                "start_line": 216,
+                "end_line": 248,
                 "role": "FastAPI emits request-body media type and schema in OpenAPI operations",
             },
             {
@@ -1960,6 +2002,9 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "response-serialization",
         ],
         "observation_selectors": [
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome",
             "http.status",
             "http.headers.ordered",
             "http.body.bytes",
@@ -1974,7 +2019,10 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "The page explicitly distinguishes decorator status_code from function/request "
             "parameters and documents response/OpenAPI status behavior, including FastAPI's "
             "no-body response entry for 204. The request-validation match is a false positive. "
-            "It also explicitly documents FastAPI's direct Starlette status re-export."
+            "The linked 204 workflow also selects construction outcome, exception class, and "
+            "message as exact setup observations; they ensure the app can be constructed and "
+            "are not a claim about the page's documented status behavior. It also explicitly "
+            "documents FastAPI's direct Starlette status re-export."
         ),
         "supporting_sources": [
             {
@@ -2122,8 +2170,8 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 492,
-                "end_line": 530,
+                "start_line": 529,
+                "end_line": 591,
                 "role": "FastAPI stream-item validation and SSE item encoding",
             },
         ],
@@ -2274,8 +2322,8 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "fastapi/routing.py",
-                "start_line": 492,
-                "end_line": 518,
+                "start_line": 529,
+                "end_line": 555,
                 "role": "shared stream-item response validation and serialization",
             },
         ],

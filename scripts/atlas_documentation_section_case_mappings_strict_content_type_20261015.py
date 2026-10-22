@@ -25,17 +25,18 @@ DOC_SECTION_CASE_MAPPINGS_STRICT_CONTENT_TYPE_20261015 = {
             "form parsing, or the documented CSRF/CORS scenario."
         ),
         "rationale": (
-            "The pinned FastAPI 0.141.1 section at "
+            "The pinned FastAPI 0.157.0 section at "
             "docs/en/docs/advanced/strict-content-type.md:76-88 documents setting "
             "strict_content_type=False, the no-Content-Type JSON behavior, and the 0.132.0 "
             "version boundary. Its source_evidence entry in the input recipe cites this exact "
             "page as upstream_documentation. The adjacent example, "
             "docs_src/strict_content_type/tutorial001_py310.py:1-14, configures that option "
             "and declares POST /items/ with an Item body. The independent workload instead "
-            "uses /legacy/items/, a different model, and different values. FastAPI 0.141.1 "
+            "uses /legacy/items/, a different model, and different values. FastAPI 0.157.0 "
             "declares strict_content_type with default True and documents its JSON handling "
-            "in fastapi/applications.py:840-862, then forwards the configured value to the "
-            "router in fastapi/applications.py:998. The selected case exercises only the "
+            "in fastapi/applications.py:847, then forwards the configured value to the "
+            "router in fastapi/applications.py:995; request handling applies the no-header "
+            "branch in fastapi/routing.py:412-475. The selected case exercises only the "
             "successful no-header request branch and observes HTTP status and body bytes."
         ),
     }

@@ -1,8 +1,11 @@
-# FastAPI 0.141.1 source flow: APIRouter.__init__ declares the provider at
-# fastapi/routing.py:2259-2268 and stores it at :2411; add_api_route forwards it
-# at :2789; APIRoute.get_route_handler passes it to dependency solving at
-# :1166-1183. The router is mounted so FastAPI supplies its normal middleware
-# scope while the router's explicit provider remains responsible for overrides.
+# FastAPI 0.157.0 (commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1) declares
+# `dependency_overrides_provider` on APIRouter at fastapi/routing.py:2467-2477
+# and stores it at :2635. `add_api_route` passes it to APIRoute at :3046-3070;
+# APIRoute carries it into `get_request_handler` at :1241-1278 and :1280-1304,
+# which forwards it to dependency solving at :512-519. `solve_dependencies`
+# reads the provider's current override mapping per edge at :700-719. The router
+# is mounted so the ASGI request context is supplied while its explicit provider
+# remains responsible for overrides.
 schema: fastapi-rs/python-asgi-workflow@14
 workload:
   file: tests/fixtures/workloads/apirouter_dependency_overrides_provider_asgi.py

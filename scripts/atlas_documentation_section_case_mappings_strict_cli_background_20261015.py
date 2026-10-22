@@ -1,9 +1,10 @@
 """Reviewed mappings and exclusions for strict-content-type, CLI, and reference docs.
 
-The source baseline is FastAPI 0.141.1 with Starlette 1.6.0 as the generic ASGI
+The source baseline is FastAPI 0.157.0 with Starlette 1.6.0 as the generic ASGI
 oracle. The Starlette-RS validation checkout is
-``/private/tmp/fastapi-rs-starlette-rs-b4c8-validation`` at ``b4c8a65c``; these
-documentation mappings are input evidence, not parity results.
+``/private/tmp/starlette-rs-4139`` at
+``4139a72449bf5751e8902fb1c7175ee7f191d338``; these documentation mappings are
+input evidence, not parity results.
 """
 
 _STRICT_RECIPE = "tests/fixtures/input-recipes/parity/strict_content_type.yaml"
@@ -32,12 +33,12 @@ DOC_SECTION_CASE_MAPPINGS_STRICT_CLI_BACKGROUND_20261015 = {
             "or empty bodies, or the opt-out setting."
         ),
         "rationale": (
-            "Pinned FastAPI 0.141.1 documents the default requirement for a valid "
+            "Pinned FastAPI 0.157.0 documents the default requirement for a valid "
             "Content-Type on JSON request bodies (../fastapi/docs/en/docs/advanced/"
             "strict-content-type.md:1-3). FastAPI defaults ``strict_content_type`` to "
-            "True (../fastapi/fastapi/applications.py:840-862), passes it into the root "
-            "router (:984-999), and only decodes an untyped request body as JSON when "
-            "that setting is false (../fastapi/fastapi/routing.py:401-449). The selected "
+            "True (../fastapi/fastapi/applications.py:847-869), passes it into the root "
+            "router (:995), and only decodes an untyped request body as JSON when "
+            "that setting is false (../fastapi/fastapi/routing.py:412-475). The selected "
             "``strict-default`` action in ``fastapi.docs.strict-content-type.missing-header`` "
             "has no Content-Type header, and its recipe carries this exact documentation "
             "page with kind ``upstream_documentation``."
@@ -55,12 +56,12 @@ DOC_SECTION_CASE_MAPPINGS_STRICT_CLI_BACKGROUND_20261015 = {
             "branch is sampled under the parent section."
         ),
         "rationale": (
-            "Pinned FastAPI 0.141.1 docs/en/docs/advanced/strict-content-type.md:5-18 "
+            "Pinned FastAPI 0.157.0 docs/en/docs/advanced/strict-content-type.md:5-18 "
             "describes when browsers send requests without Content-Type or credentials "
             "and when the local-network scenario matters. FastAPI's source documents and "
             "implements only the server setting that controls untyped JSON parsing "
-            "(../fastapi/fastapi/applications.py:840-862; ../fastapi/fastapi/routing.py:"
-            "436-449). The selected parent-section workflow observes that server branch, "
+            "(../fastapi/fastapi/applications.py:847-869; ../fastapi/fastapi/routing.py:"
+            "412-475). The selected parent-section workflow observes that server branch, "
             "not browser preflight, origin, or credential behavior, so this narrative "
             "section has no separate FastAPI-owned fixture claim."
         ),
@@ -85,7 +86,7 @@ DOC_SECTION_CASE_MAPPINGS_STRICT_CLI_BACKGROUND_20261015 = {
             "the narrative."
         ),
         "rationale": (
-            "Pinned FastAPI 0.141.1 docs/en/docs/advanced/strict-content-type.md:19-65 "
+            "Pinned FastAPI 0.157.0 docs/en/docs/advanced/strict-content-type.md:19-65 "
             "illustrates an unauthenticated local API reached by a browser request whose "
             "body lacks Content-Type. The selected input in "
             "``fastapi.docs.strict-content-type.missing-header`` posts JSON-shaped bytes "
@@ -93,7 +94,7 @@ DOC_SECTION_CASE_MAPPINGS_STRICT_CLI_BACKGROUND_20261015 = {
             "``upstream_documentation`` evidence; it intentionally maps only the server "
             "parsing consequence. FastAPI's route body parser leaves an untyped body "
             "unparsed as JSON under the default setting (../fastapi/fastapi/routing.py:"
-            "425-450), while the surrounding browser and CORS scenario has no behavior "
+            "412-475), while the surrounding browser and CORS scenario has no behavior "
             "in this ASGI workflow."
         ),
     },
@@ -120,11 +121,11 @@ DOC_SECTION_CASE_MAPPINGS_STRICT_CLI_BACKGROUND_20261015 = {
             "rules, reload output, deployment, or the complete CLI terminal transcript."
         ),
         "rationale": (
-            "Pinned FastAPI 0.141.1 docs/en/docs/fastapi-cli.md:1-7 introduces the "
+            "Pinned FastAPI 0.157.0 docs/en/docs/fastapi-cli.md:1-7 introduces the "
             "optional command-line program and its ``fastapi dev`` usage. Its ``standard`` "
             "extra requires ``fastapi-cli[standard] >=0.0.32`` and exposes "
-            "``fastapi = fastapi.cli:main`` (../fastapi/pyproject.toml:59-62, 119-120); "
-            "the standard oracle pins fastapi-cli 0.0.32 (metadata.yaml:102). FastAPI's "
+            "``fastapi = fastapi.cli:main`` (../fastapi/pyproject.toml:68,90,111,133-134); "
+            "the standard oracle pins fastapi-cli 0.0.32 (metadata.yaml:197). FastAPI's "
             "entrypoint delegates to that optional package (../fastapi/fastapi/cli.py:1-13). "
             "Both selected cases in ``fastapi-cli-documented-process-v2.yaml`` cite this "
             "exact docs page as ``upstream_documentation``; they observe process output "
@@ -156,14 +157,14 @@ DOC_SECTION_CASE_MAPPINGS_STRICT_CLI_BACKGROUND_20261015 = {
             "or CLI output."
         ),
         "rationale": (
-            "Pinned FastAPI 0.141.1 docs/en/docs/fastapi-cli.md:98-115 documents the path "
+            "Pinned FastAPI 0.157.0 docs/en/docs/fastapi-cli.md:98-115 documents the path "
             "argument, ``--entrypoint``, and the recommendation to configure the entrypoint "
             "in ``pyproject.toml``. The selected ``dev-path-preserves-environment`` and "
             "``dev-explicit-entrypoint`` cases in "
             "``fastapi-cli-documented-process-v2.yaml`` use those two command forms and "
             "each carries the exact page as ``upstream_documentation`` evidence. The pin "
-            "is FastAPI 0.141.1's optional ``fastapi-cli[standard] >=0.0.32`` integration "
-            "(../fastapi/pyproject.toml:59-62; metadata.yaml:102); the cases sample only "
+            "is FastAPI 0.157.0's optional ``fastapi-cli[standard] >=0.0.32`` integration "
+            "(../fastapi/pyproject.toml:68,133-134; metadata.yaml:197); the cases sample only "
             "the selected server response and process exit."
         ),
     },
@@ -189,13 +190,13 @@ DOC_SECTION_CASE_MAPPINGS_STRICT_CLI_BACKGROUND_20261015 = {
             "watching, or the default loopback bind address."
         ),
         "rationale": (
-            "Pinned FastAPI 0.141.1 docs/en/docs/fastapi-cli.md:116-125 documents the "
+            "Pinned FastAPI 0.157.0 docs/en/docs/fastapi-cli.md:116-125 documents the "
             "development command, auto-reload, loopback address, and ``FASTAPI_ENV`` "
             "default/preservation rules. The selected process cases use the same pinned "
             "optional CLI workflow and exact page-level ``upstream_documentation`` evidence; "
             "the route input returns the environment value so the chosen HTTP body selector "
             "observes only that limited behavior. FastAPI exposes the pinned CLI through "
-            "``fastapi-cli[standard]`` (../fastapi/pyproject.toml:59-62, 119-120; "
+            "``fastapi-cli[standard]`` (../fastapi/pyproject.toml:68,133-134; "
             "../fastapi/fastapi/cli.py:1-13), while this mapping makes no claim about "
             "reload or bind-address results."
         ),
@@ -219,14 +220,14 @@ DOC_SECTION_CASE_MAPPINGS_STRICT_CLI_BACKGROUND_20261015 = {
             "production deployment."
         ),
         "rationale": (
-            "Pinned FastAPI 0.141.1 docs/en/docs/fastapi-cli.md:126-138 describes ``fastapi "
+            "Pinned FastAPI 0.157.0 docs/en/docs/fastapi-cli.md:126-138 describes ``fastapi "
             "run`` as the production-mode command and links deployment guidance. The "
             "selected ``fastapi.cli.process.run-auto-discovery-no-path`` case in "
             "``fastapi-cli-documented-process-v2.yaml`` invokes that command, sends one "
             "request, and carries this exact page as ``upstream_documentation`` evidence. "
-            "FastAPI 0.141.1 exposes this optional integration through its pinned "
-            "fastapi-cli standard extra (../fastapi/pyproject.toml:59-62, 119-120; "
-            "metadata.yaml:102); the case's explicit host override is why no default "
+            "FastAPI 0.157.0 exposes this optional integration through its pinned "
+            "fastapi-cli standard extra (../fastapi/pyproject.toml:68,133-134; "
+            "metadata.yaml:197); the case's explicit host override is why no default "
             "production bind claim is made."
         ),
     },
@@ -249,18 +250,18 @@ DOC_SECTION_CASE_MAPPINGS_STRICT_CLI_BACKGROUND_20261015 = {
             "callables, errors, or the full public constructor/signature surface."
         ),
         "rationale": (
-            "Pinned FastAPI 0.141.1 docs/en/docs/reference/background.md:1-11 documents "
+            "Pinned FastAPI 0.157.0 docs/en/docs/reference/background.md:1-11 documents "
             "the injected ``BackgroundTasks`` parameter and the ``fastapi`` import. FastAPI "
             "recognizes Starlette BackgroundTasks subclasses and injects a shared instance "
-            "(../fastapi/fastapi/dependencies/utils.py:365-367, 715-729); its public class "
-            "subclasses Starlette's class (../fastapi/fastapi/background.py:5, 11-17). "
+            "(../fastapi/fastapi/dependencies/utils.py:407-409,803-806); its public class "
+            "subclasses Starlette's class (../fastapi/fastapi/background.py:6,12-17). "
             "Starlette 1.6.0 owns execution after the response send "
             "(../starlette/starlette/responses.py:169-170; "
             "../starlette/starlette/background.py:26-36). The selected case in "
             "``docs-reference-http.yaml`` has this exact page with kind "
-            "``upstream_documentation``. The validation checkout "
-            "/private/tmp/fastapi-rs-starlette-rs-b4c8-validation at b4c8a65c contains the "
-            "native BackgroundTasks binding (starlette-rs-py/src/background.rs:114-169); "
+            "``upstream_documentation``. The pinned Starlette-RS checkout "
+            "/private/tmp/starlette-rs-4139 at 4139a724 contains the Rust-backed "
+            "BackgroundTasks value and callbacks (starlette-rs-py/src/background.rs:159-176); "
             "this crosswalk records the input and upstream ownership only, not target parity."
         ),
     },
@@ -282,7 +283,7 @@ DOC_SECTION_CASE_MAPPINGS_STRICT_CLI_BACKGROUND_20261015 = {
             "app-level and cannot evidence APIRouter group behavior."
         ),
         "rationale": (
-            "Pinned FastAPI 0.141.1 docs/en/docs/tutorial/dependencies/global-dependencies.md:"
+            "Pinned FastAPI 0.157.0 docs/en/docs/tutorial/dependencies/global-dependencies.md:"
             "14-16 only points readers to Bigger Applications. That tutorial shows "
             "dependencies attached to an ``APIRouter`` for its path operations "
             "(../fastapi/docs/en/docs/tutorial/bigger-applications.md:143-152). The existing "

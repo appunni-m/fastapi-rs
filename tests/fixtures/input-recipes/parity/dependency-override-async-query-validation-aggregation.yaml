@@ -1,15 +1,16 @@
-# Pinned FastAPI 0.141.1 source evidence (tag commit
-# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f):
-# fastapi/dependencies/utils.py:619 walks direct dependency edges in order,
-# and :640-655 recursively solves each edge, appends its errors, then continues
-# before reaching the cache lookup at :656-661. Query validation errors are
-# collected at :684-697, while a valid coroutine dependency is awaited at
-# :673-680. Thus repeated edges report repeated invalid-query errors while
-# later edges still resolve; failed input never invokes that replacement.
-# fastapi/params.py:745-749 sets Depends.use_cache=True by default. The source
-# tests exercise async app-level overrides in tests/test_dependency_overrides.py
-# at :39-40 and :208-212. Four sequential requests expose duplicated errors,
-# valid cache reuse, and that the invalid request does not invoke the override.
+# Historical component-test provenance: FastAPI 0.141.1's
+# `tests/test_dependency_overrides.py::test_override_simple` covered an async
+# app-level override. Pinned FastAPI 0.157.0, commit
+# 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1, retains it at
+# `tests/test_dependency_overrides.py:39-40` and :208-213. Current
+# `solve_dependencies` visits edges in order at
+# `fastapi/dependencies/utils.py:700-733`, collects recursive errors and skips
+# the cache/call at :735-737, then validates the current dependant's query fields
+# at :763-785. The successful coroutine and cache path is :738-762;
+# `Depends.use_cache` defaults to true at `fastapi/params.py:790-795`. The
+# combined repeated-edge error aggregation remains an independent input-only
+# case. Four requests expose repeated errors, valid cache reuse, and that invalid
+# input does not invoke the replacement.
 schema: fastapi-rs/python-asgi-workflow@2
 workload:
   file: tests/fixtures/workloads/dependency_override_async_query_validation_aggregation.py

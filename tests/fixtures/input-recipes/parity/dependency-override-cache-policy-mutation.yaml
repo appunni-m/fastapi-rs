@@ -1,19 +1,16 @@
-# Independent public inputs for same-request override changes.
-# FastAPI 0.141.1, source commit 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f:
-# applications.py:967-987 stores a public dependency_overrides dictionary and
-# supplies the application as provider. dependencies/utils.py:625-639 rereads
-# that provider before selecting each edge; replacing the dictionary and
-# clearing it therefore affect subsequent edges during the same request.
-# get_dependant at :271-331 captures a selected parent's child callable, raw
-# policy, and signature metadata before any child policy runs. :640-654 solves
-# those children and validates inputs before :660 evaluates the outer policy.
-# Updating an already-selected edge's override leaves that call/kwargs selected;
-# a later edge observes the new mapping. :679-680 keeps the first cache result,
-# but :640-654 still validates new replacement inputs before a cache hit.
-# Signature mutation with a nonempty unrelated map reanalyzes a later edge;
-# clearing the map instead uses its registration snapshot. An invalid override
-# removed/repaired before its edge is reached is never analyzed by source.
-# routing.py:140-146 unwinds entered yield scopes after a user policy error or
+# Independent public inputs for same-request override changes, reviewed against
+# FastAPI 0.157.0 at commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1.
+# `FastAPI.dependency_overrides` is a public dictionary at
+# `fastapi/applications.py:964-980`; `solve_dependencies` rereads it for each
+# edge at `fastapi/dependencies/utils.py:700-719`, so replacing or clearing it
+# affects later edges in the same request. `get_dependant` analyzes a selected
+# callable's signature and child declarations at :314-389 before child policies
+# execute. Recursive resolution and validation happen at :721-737, then cache
+# lookup/insertion at :738-762. An already-selected edge retains its local
+# callable/kwargs; a later edge sees the new mapping. Signature mutation with a
+# nonempty map reanalyzes later edges; clearing the map uses the registered
+# dependant. A repaired override is not analyzed until an edge selects it.
+# routing.py:143-155 unwinds entered yield scopes after a user policy error or
 # after reaching a malformed replacement installed by an earlier policy.
 # All observations are live user traces, values, identities, public errors, and
 # ASGI outcomes. There are no expected results or private FastAPI imports.

@@ -22,9 +22,9 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_DEFAULTS_20261015 = {
             "mentioned in the preceding note but are not exercised or claimed here."
         ),
         "rationale": (
-            "FastAPI 0.141.1 forwards response_model_exclude_unset to response serialization "
+            "FastAPI 0.157.0 forwards response_model_exclude_unset to response serialization "
             "as a distinct option from response_model_exclude_defaults and "
-            "response_model_exclude_none (fastapi/routing.py:510-514). The selected response "
+            "response_model_exclude_none (fastapi/routing.py:546,768-779). The selected response "
             "covers explicitly supplied values for fields that also have defaults."
         ),
     }

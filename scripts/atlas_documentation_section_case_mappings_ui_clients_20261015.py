@@ -64,12 +64,12 @@ def _excluded(heading, start, end, reason, rationale):
 
 
 _UI_RATIONALE = (
-    "FastAPI 0.141.1 get_swagger_ui_html and get_redoc_html build HTML responses from the "
+    "FastAPI 0.157.0 get_swagger_ui_html and get_redoc_html build HTML responses from the "
     "configured OpenAPI and asset URLs (fastapi/openapi/docs.py:40-194, 197-298); "
     "get_swagger_ui_oauth2_redirect_html emits its redirect document at lines 301-380. "
     "FastAPI stores the docs URLs and parameters, then conditionally registers its own "
-    "OpenAPI, Swagger, OAuth redirect, and ReDoc routes (fastapi/applications.py:881-890, "
-    "1105-1158). Starlette 1.6.0 owns generic route/mount dispatch and StaticFiles service "
+    "OpenAPI, Swagger, OAuth redirect, and ReDoc routes (fastapi/applications.py:879-890, "
+    "1120-1175). Starlette 1.6.0 owns generic route/mount dispatch and StaticFiles service "
     "(starlette/applications.py:98-100; starlette/routing.py:380-425; "
     "starlette/staticfiles.py:39-56, 110-152). The selected HTTP actions compare only the "
     "emitted response or mounted-file response; they do not execute a browser, fetch a CDN, "
@@ -77,18 +77,18 @@ _UI_RATIONALE = (
 )
 
 _SWAGGER_RATIONALE = (
-    "FastAPI 0.141.1 copies its default Swagger UI parameter dictionary, applies the provided "
+    "FastAPI 0.157.0 copies its default Swagger UI parameter dictionary, applies the provided "
     "parameter overrides, and serializes values into generated HTML "
     "(fastapi/openapi/docs.py:13-37, 148-172). FastAPI.applications passes the stored values "
-    "to its docs HTML helper (fastapi/applications.py:881-890, 1121-1137). Starlette 1.6.0 "
+    "to its docs HTML helper (fastapi/applications.py:879-890, 1120-1158). Starlette 1.6.0 "
     "emits the HTML response; the selected action observes response bytes and status only. "
     "It does not execute Swagger UI JavaScript or establish browser rendering."
 )
 
 _OPENAPI_VERSION_RATIONALE = (
-    "FastAPI 0.141.1 exposes its configured OpenAPI version through get_openapi, places it "
+    "FastAPI 0.157.0 exposes its configured OpenAPI version through get_openapi, places it "
     "in the root schema object, and serves that schema from the configured OpenAPI endpoint "
-    "(fastapi/openapi/utils.py:585-614; fastapi/applications.py:1085-1120). The pinned page "
+    "(fastapi/openapi/utils.py:570-614; fastapi/applications.py:1085-1118,1120-1135). The pinned page "
     "states that SDK generators must support OpenAPI 3.1 at "
     "docs/en/docs/advanced/generate-clients.md:17-20. The linked action observes only the "
     "server-generated version field; it does not run or claim compatibility for any external "
@@ -97,25 +97,26 @@ _OPENAPI_VERSION_RATIONALE = (
 
 _CLIENT_BASIC_RATIONALE = (
     "The pinned tutorial declares request and response models and path operations in "
-    "docs_src/generate_clients/tutorial001_py310.py:7-26. FastAPI 0.141.1 collects route "
-    "fields and builds the OpenAPI paths and schema components in fastapi/openapi/utils.py:"
-    "620-679; the app serves the resulting schema from applications.py:1105-1120. "
+    "docs_src/generate_clients/tutorial001_py310.py:7-26. FastAPI 0.157.0 collects route "
+    "fields and builds OpenAPI paths and schema components in fastapi/openapi/utils.py:"
+    "272-295,296-501,570-614; the app serves the resulting schema from applications.py:"
+    "1085-1118. "
     "Starlette 1.6.0 owns generic ASGI dispatch. The case supplies API and OpenAPI input to "
     "a client generator; it does not generate, compile, or execute a client."
 )
 
 _CLIENT_TAGGED_RATIONALE = (
-    "FastAPI 0.141.1 records route tags and operation metadata in the OpenAPI document "
-    "(fastapi/openapi/utils.py:287-305, 620-679); the selected tutorial case observes its "
+    "FastAPI 0.157.0 records route tags and operation metadata in the OpenAPI document "
+    "(fastapi/openapi/utils.py:272-295,570-614); the selected tutorial case observes its "
     "tagged paths and schema values. Grouping generated services or methods by those tags is "
     "external SDK-generator behavior and is not claimed."
 )
 
 _CLIENT_IDS_RATIONALE = (
-    "FastAPI 0.141.1 accepts generate_unique_id_function on FastAPI, passes it to API routes, "
+    "FastAPI 0.157.0 accepts generate_unique_id_function on FastAPI, passes it to API routes, "
     "computes each route unique_id, and uses that value as the OpenAPI operationId "
-    "(fastapi/applications.py:765-779, 997-999; fastapi/routing.py:1013-1028; "
-    "fastapi/openapi/utils.py:287-305). The selected action observes the resulting OpenAPI "
+    "(fastapi/applications.py:772,994; fastapi/routing.py:1083-1088; "
+    "fastapi/openapi/utils.py:272-295). The selected action observes the resulting OpenAPI "
     "operationId fields only; client method names and generated output are not observed."
 )
 

@@ -353,11 +353,13 @@ cases:
       - headers
       - body
       comparison: exact
-  # Generic route behavior is from Starlette 1.6.0 at
-  # starlette/starlette/routing.py; FastAPI's 405 body is in
-  # fastapi/exception_handlers.py at the FastAPI 0.141.1 source pin.
-  # Starlette builds the Allow value from a method set; its order varies with
-  # the source process hash seed, so this 405 case selects deterministic status/body.
+  # Historical recipe source citation used FastAPI 0.141.1. Current FastAPI
+  # 0.157.0 registers its HTTPException handler at fastapi/applications.py:997-1004
+  # and returns JSON with the exception detail at fastapi/exception_handlers.py:11-17.
+  # Starlette 1.6.0 Route.handle raises the 405 HTTPException at
+  # starlette/routing.py:271-280. It builds Allow from a method set whose order
+  # varies with the source process hash seed, so this case selects only the
+  # deterministic status and body.
   - action_id: post-docs
     kind: http_request
     scope:

@@ -80,9 +80,9 @@ DOC_SECTION_CASE_MAPPINGS_SETTINGS_20261015 = {
             "settings API workflow."
         ),
         (
-            "The pinned page directs readers to Pydantic Settings. FastAPI 0.141.1 lists "
+            "The pinned page directs readers to Pydantic Settings. FastAPI 0.157.0 lists "
             "`pydantic-settings` as an optional extra dependency in "
-            "`../fastapi/pyproject.toml:59-114`, rather than making it part of the core "
+            "`../fastapi/pyproject.toml:82,103,128`, rather than making it part of the core "
             "runtime. Its FastAPI-specific `run-the-server` child is linked separately to "
             "the CLI process workflow in `scripts/atlas_remaining_docs_wave_mappings.py:56-80`, "
             "including `fastapi.cli.process.run-leaves-environment-unchanged`, "
@@ -101,8 +101,8 @@ DOC_SECTION_CASE_MAPPINGS_SETTINGS_20261015 = {
             "the `all` extra. Package resolution is not a FastAPI request or API behavior."
         ),
         (
-            "FastAPI 0.141.1 declares `pydantic-settings` in optional extras at "
-            "`../fastapi/pyproject.toml:59-114`. The ordinary oracle workflow does not "
+            "FastAPI 0.157.0 declares `pydantic-settings` in optional extras at "
+            "`../fastapi/pyproject.toml:82,103,128`. The ordinary oracle workflow does not "
             "assume that optional package is importable, and this page mapping adds no such "
             "runtime dependency."
         ),
@@ -234,15 +234,15 @@ DOC_SECTION_CASE_MAPPINGS_SETTINGS_20261015 = {
             "sample omits Pydantic construction, `lru_cache`, and unoverridden factory calls."
         ),
         (
-            "FastAPI 0.141.1 builds and solves the dependency graph in "
-            "`../fastapi/fastapi/dependencies/utils.py:586-680`; the solver looks up the "
+            "FastAPI 0.157.0 builds and solves the dependency graph in "
+            "`../fastapi/fastapi/dependencies/utils.py:314-389,657-819`; the solver looks up the "
             "original callable in `dependency_overrides` and builds the replacement "
-            "dependant at lines 620-646. The pinned app example declares `Depends(get_settings)` "
+            "dependant at lines 694-728. The pinned app example declares `Depends(get_settings)` "
             "at `../fastapi/docs_src/settings/app02_an_py310/main.py:16-22`. The input uses "
             "a dataclass to isolate that FastAPI composition from optional "
             "`pydantic-settings`. FastAPI's response projection applies `jsonable_encoder` "
-            "at `../fastapi/fastapi/routing.py:301-341` and selects/constructs its default "
-            "JSON response at `../fastapi/fastapi/routing.py:379-400,741-748`. Generic "
+            "at `../fastapi/fastapi/routing.py:321-350` and selects/constructs its default "
+            "JSON response at `../fastapi/fastapi/routing.py:756-779`. Generic "
             "route dispatch and response start/body sending follow Starlette 1.6.0 "
             "(`../starlette/starlette/routing.py:672-700` and "
             "`../starlette/starlette/responses.py:163-167`); Starlette-RS's selected "

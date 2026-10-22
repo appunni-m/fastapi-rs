@@ -21,7 +21,7 @@ DOC_SECTION_CASE_MAPPINGS_COOKIE_PARAMS_20261015 = {
             "the unannotated form, extra-cookie behavior, or the browser docs UI note."
         ),
         "rationale": (
-            "Pinned FastAPI 0.141.1 docs/en/docs/tutorial/cookie-params.md:11-17 explains "
+            "Pinned FastAPI 0.157.0 docs/en/docs/tutorial/cookie-params.md:11-17 explains "
             "declaring Cookie parameters and highlights the annotated example at "
             "docs_src/cookie_params/tutorial001_an_py310.py:8-10; lines 27-31 state that "
             "Cookie is needed to declare a cookie instead of an inferred query parameter. "
@@ -31,11 +31,12 @@ DOC_SECTION_CASE_MAPPINGS_COOKIE_PARAMS_20261015 = {
             "Its input-only recipe case "
             "fastapi.pending.tutorials-source-wave.cookie-parameter-cases selects only "
             "cookie-annotated-absent and cookie-annotated-present, each observing exact "
-            "HTTP status and body. FastAPI 0.141.1 marks Cookie as ParamTypes.cookie "
-            "(fastapi/params.py:387-389), assigns cookie fields to the cookie collection "
-            "(fastapi/dependencies/utils.py:550-563), and resolves them from request.cookies "
-            "(fastapi/dependencies/utils.py:681-696); its absent-value path returns the "
-            "declared field default (fastapi/dependencies/utils.py:749-777). Starlette 1.6.0 "
+            "HTTP status and body. FastAPI 0.157.0 marks Cookie as ParamTypes.cookie "
+            "(fastapi/params.py:410-411), assigns cookie fields to the cookie collection "
+            "(fastapi/dependencies/utils.py:621-634), and resolves them from request.cookies "
+            "(fastapi/dependencies/utils.py:777-778); its absent-value path uses the field "
+            "default during extraction and validation (fastapi/dependencies/utils.py:843-864,"
+            "952-989). Starlette 1.6.0 "
             "owns parsing the Cookie header into Request.cookies "
             "(starlette/requests.py:150-159)."
         ),

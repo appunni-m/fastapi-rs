@@ -1,18 +1,15 @@
-# Pinned FastAPI 0.141.1 source evidence (tag commit
-# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f):
-# fastapi/dependencies/utils.py:294-332 builds direct dependency edges in
-# signature parameter order; utils.py:615-616 initializes the request's
-# dependency cache, and :619-680 resolves edges in order, applies the
-# dependency_overrides mapping at :623-638, dispatches coroutine overrides at
-# :673-674 versus synchronous callables through the thread pool at :675-676,
-# then stores each value at :679-680. tests/test_dependency_overrides.py:39-40
-# and :208-213 cover an async override installed on app.dependency_overrides;
-# tests/test_dependency_models.py:22-27 and :133-139 distinguish synchronous
-# and coroutine callables; tests/test_dependency_cache.py:54-61 exercises
-# sequential requests with persistent call counters. This input combines those
-# dimensions: a first direct sync dependency remains unoverridden, then a
-# distinct direct dependency uses a flat async override, with both requests on
-# the same app.
+# Historical component-test provenance: FastAPI 0.141.1's override, callable,
+# and cache tests supplied the neighboring dimensions. Pinned FastAPI 0.157.0,
+# commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1, builds dependency edges in
+# signature order at `fastapi/dependencies/utils.py:337-373`; request solving
+# visits them in order, selects overrides, dispatches coroutine versus sync
+# callables, and inserts values at :700-762. Current source tests cover async
+# overrides at `tests/test_dependency_overrides.py:39-40` and :208-213,
+# callable classification at `tests/test_dependency_models.py:133-139`, and
+# sequential cache counters at `tests/test_dependency_cache.py:54-61`. This
+# input combines those dimensions: a first direct sync dependency remains
+# unoverridden, then a distinct direct dependency uses a flat async override,
+# with both requests on the same app.
 schema: fastapi-rs/python-asgi-workflow@15
 workload:
   file: tests/fixtures/workloads/dependency_override_mixed_sync_async_direct_order_request_local.py

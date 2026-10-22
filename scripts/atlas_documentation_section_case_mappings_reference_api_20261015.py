@@ -1,7 +1,10 @@
 """Reviewed mappings for pending FastAPI API-reference sections.
 
-Reviewed against FastAPI 0.141.1 at 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f,
-Starlette 1.6.0 at 4f250d6b814587e20c5365f0a5f0c4d42bcb929f, and the
+Originally reviewed against FastAPI 0.141.1 at
+95f8322ee1dcda7ceace7b1c4f6c9915b36d748f; that pin is historical provenance.
+Active FastAPI claims below were rechecked against 0.157.0 at
+386a28af2f87af1a32ac26d88f07b7f58ab2dfb1. Starlette remains pinned to
+1.6.0 at 4f250d6b814587e20c5365f0a5f0c4d42bcb929f, and the
 Starlette-RS behavior owner at
 /private/tmp/fastapi-rs-starlette-rs-b4c8-validation
 (b4c8a65c85e1b0d251ca05874412811eaa3ac7b8).
@@ -39,9 +42,10 @@ DOC_SECTION_CASE_MAPPINGS_REFERENCE_API_20261015 = {
             "lifespan callbacks, router options, or all inclusion behavior."
         ),
         "rationale": (
-            "FastAPI 0.141.1's APIRouter registers API routes by combining its prefix with the "
+            "FastAPI 0.157.0's APIRouter registers API routes by combining its prefix with the "
             "operation path and carries tags into the generated operation "
-            "(`fastapi/routing.py:2255-2322,2889-2948,3133-3162`). The selected independent "
+            "(`fastapi/routing.py:2996-3057`; "
+            "`fastapi/openapi/utils.py:272-278`). The selected independent "
             "input declares prefix `/v2` and tag `catalogue`, then observes the request and "
             "OpenAPI path. Starlette 1.6.0 owns generic HTTP transport; the pinned "
             "Starlette-RS checkout remains the sibling behavior boundary."
@@ -70,9 +74,10 @@ DOC_SECTION_CASE_MAPPINGS_REFERENCE_API_20261015 = {
             "claim the full constructor, attribute, or method contract listed on the page."
         ),
         "rationale": (
-            "FastAPI 0.141.1 declares FastAPI as the public application class and processes "
-            "constructor metadata for generated OpenAPI (`fastapi/applications.py:42-58,95-125,"
-            "1070-1103`). The selected case observes the configured application's HTTP OpenAPI "
+            "FastAPI 0.157.0 declares FastAPI as the public application class, stores its "
+            "constructor metadata, and passes those values to OpenAPI generation "
+            "(`fastapi/applications.py:52,68,855-879,1085-1118`). The selected case observes "
+            "the configured application's HTTP OpenAPI "
             "response and selected document fields. Starlette 1.6.0 owns the inherited ASGI "
             "application base; the pinned Starlette-RS checkout is the generic behavior owner."
         ),
@@ -100,9 +105,10 @@ DOC_SECTION_CASE_MAPPINGS_REFERENCE_API_20261015 = {
             "for both connection types, not the full HTTPConnection properties or methods."
         ),
         "rationale": (
-            "FastAPI 0.141.1 directly re-exports Starlette's HTTPConnection "
-            "(`fastapi/requests.py:1`) and recognizes that type during dependency analysis "
-            "(`fastapi/dependencies/utils.py:350-361`). The selected cases are independently "
+            "FastAPI 0.157.0 directly re-exports Starlette's HTTPConnection "
+            "(`fastapi/requests.py:1`) and recognizes and injects that type during dependency "
+            "analysis (`fastapi/dependencies/utils.py:392-413,797-812`). The selected cases "
+            "are independently "
             "documented on this page and exercise one HTTP request plus one WebSocket session. "
             "Starlette 1.6.0 owns the connection object and generic HTTP/WebSocket transport; "
             "the pinned Starlette-RS checkout is the sibling behavior boundary."
@@ -126,8 +132,8 @@ DOC_SECTION_CASE_MAPPINGS_REFERENCE_API_20261015 = {
             "parameter dictionary."
         ),
         "rationale": (
-            "FastAPI 0.141.1 implements the documented Swagger UI, ReDoc, and OAuth2 redirect "
-            "helpers in `fastapi/openapi/docs.py:40-65,194,197-224,298,301-307`; the helpers "
+            "FastAPI 0.157.0 implements the documented Swagger UI, ReDoc, and OAuth2 redirect "
+            "helpers in `fastapi/openapi/docs.py:40-194,197-298,301-389`; the helpers "
             "return HTMLResponse values. The selected actions exercise the page's Swagger UI "
             "and ReDoc routes plus an explicit helper route and observe the resulting HTTP "
             "responses. Starlette 1.6.0 owns HTMLResponse rendering and emission."
@@ -157,8 +163,8 @@ DOC_SECTION_CASE_MAPPINGS_REFERENCE_API_20261015 = {
             "a complete OpenAPI document."
         ),
         "rationale": (
-            "FastAPI 0.141.1 defines `Schema` as a Pydantic model and declares JSON Schema "
-            "aliases and field constraints (`fastapi/openapi/models.py:57-58,123-167`). The "
+            "FastAPI 0.157.0 defines `Schema` as a Pydantic model and declares JSON Schema "
+            "aliases and field constraints (`fastapi/openapi/models.py:123-180`). The "
             "selected input-only API cases cite this exact documentation page and project only "
             "model dumps or call outcomes. They sample the documented public model's input "
             "contract under the pinned Pydantic runtime, not standalone Pydantic behavior."
@@ -185,10 +191,11 @@ DOC_SECTION_CASE_MAPPINGS_REFERENCE_API_20261015 = {
             "forms are outside this mapping."
         ),
         "rationale": (
-            "FastAPI 0.141.1 exposes Path, Query, and Header constructors through "
-            "`fastapi/param_functions.py:13-50,357-395,701-742`; dependency analysis derives "
-            "request parameter fields from the endpoint signature "
-            "(`fastapi/dependencies/utils.py:298-347`). The selected case sends `widget_id`, "
+            "FastAPI 0.157.0 exposes Path, Query, and Header constructors through "
+            "`fastapi/param_functions.py:14,375,734`; dependency analysis reads the endpoint "
+            "signature and converts request parameters into validated fields "
+            "(`fastapi/dependencies/utils.py:314-343,423-485,952-989`). The selected case sends "
+            "`widget_id`, "
             "`scale`, and `X-Region` values and observes the response plus generated parameter "
             "schema."
         ),
@@ -213,9 +220,10 @@ DOC_SECTION_CASE_MAPPINGS_REFERENCE_API_20261015 = {
             "do not cover cookies, other Response methods, or all Starlette response classes."
         ),
         "rationale": (
-            "FastAPI 0.141.1 identifies a Response parameter during dependency analysis and "
-            "passes a returned Response through its request handler "
-            "(`fastapi/dependencies/utils.py:350-365,719-720`; `fastapi/routing.py:700-721`). "
+            "FastAPI 0.157.0 identifies and injects a Response parameter during dependency "
+            "solving, then preserves a returned Response in its request handler "
+            "(`fastapi/dependencies/utils.py:392-413,797-812`; "
+            "`fastapi/routing.py:751-779`). "
             "The selected cases cite this exact reference page and observe only the resulting "
             "HTTP responses. Starlette 1.6.0 owns generic Response rendering and ASGI emission."
         ),
@@ -238,9 +246,10 @@ DOC_SECTION_CASE_MAPPINGS_REFERENCE_API_20261015 = {
             "message types and state transitions."
         ),
         "rationale": (
-            "FastAPI 0.141.1 registers WebSocket operations on its router and builds an "
+            "FastAPI 0.157.0 registers WebSocket operations on its router and builds an "
             "APIWebSocketRoute that solves dependencies before calling the endpoint "
-            "(`fastapi/applications.py:1361-1439`; `fastapi/routing.py:764-837`). The selected "
+            "(`fastapi/applications.py:1418-1481`; "
+            "`fastapi/routing.py:3142-3162,808-892`). The selected "
             "case cites this page and observes one endpoint session. Starlette 1.6.0 supplies "
             "the WebSocket class and protocol state machine; the pinned Starlette-RS checkout "
             "owns that generic behavior boundary."
@@ -263,8 +272,9 @@ DOC_SECTION_CASE_MAPPINGS_REFERENCE_API_20261015 = {
             "WebSocketState values and transitions."
         ),
         "rationale": (
-            "FastAPI 0.141.1 directly imports and re-exports `WebSocketDisconnect` and "
-            "`WebSocketState` from Starlette (`fastapi/websockets.py:1-3`), while the pinned "
+            "FastAPI 0.157.0 directly imports and re-exports `WebSocketDisconnect` and "
+            "`WebSocketState` from Starlette (`fastapi/websockets.py:1-3`; "
+            "`fastapi/__init__.py:24-25`), while the pinned "
             "Starlette 1.6.0 defines their exception and enum behavior (`starlette/websockets.py:"
             "13-24`). The selected WebSocket action observes identity relations for both names "
             "and cites this exact page; it does not claim generic disconnect or state-machine "

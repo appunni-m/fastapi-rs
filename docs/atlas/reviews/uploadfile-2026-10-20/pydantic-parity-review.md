@@ -1,5 +1,7 @@
 # UploadFile Pydantic parity review
 
+> Historical parity review from 2026-10-20. The recorded oracle used FastAPI 0.141.1 and Pydantic 2.13.4; that receipt remains tied to its recorded inputs and target snapshot. See the 2026-10-23 source revalidation for current FastAPI source findings.
+
 Review date: 2026-10-20
 
 ## Scope status

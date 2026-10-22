@@ -1,10 +1,12 @@
 # UploadFile Pydantic v2 hook audit
 
+> Historical source audit from 2026-10-20 against FastAPI 0.141.1, Pydantic 2.13.4, and pydantic-core 2.46.4. The identity paragraph below describes that review snapshot, not today's metadata. See the 2026-10-23 source revalidation for current FastAPI source findings.
+
 Audit date: 2026-10-20
 
 ## Pinned identities
 
-The source authority pins FastAPI 0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, Pydantic 2.13.4, and pydantic-core 2.46.4. The oracle Python is CPython 3.12.13. These identities are recorded in `metadata.yaml:6-46`; the target runtime directly pins Pydantic and pydantic-core in `pyproject.toml:13-18` and `requirements/target-runtime-cpython-3.12.13.in:11-17`.
+At the audit date, the source authority pinned FastAPI 0.141.1 at `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`, Starlette 1.6.0 at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, Pydantic 2.13.4, and pydantic-core 2.46.4. The oracle Python was CPython 3.12.13. The target runtime directly pinned Pydantic and pydantic-core in `pyproject.toml:13-18` and `requirements/target-runtime-cpython-3.12.13.in:11-17`.
 
 This is a read-only source comparison. No oracle or target process was run for this audit.
 

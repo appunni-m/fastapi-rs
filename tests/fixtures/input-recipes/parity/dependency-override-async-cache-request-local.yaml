@@ -1,13 +1,17 @@
-# This input-only slice is grounded in FastAPI 0.141.1 (tag 0.141.1,
-# commit 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f). In
-# fastapi/dependencies/utils.py, solve_dependencies resolves the app-level
-# override and rebuilds its dependant at lines 623-638, awaits coroutine
-# overrides at lines 673-674, checks the original dependency's cache key at
-# lines 656-661, and stores the solved value at lines 679-680. It initializes
-# a missing dependency cache at lines 615-616. The key includes the dependency
-# callable in fastapi/dependencies/models.py:82-96. The flat override suspends
-# at asyncio.sleep(0); repeated default-use_cache edges are followed by a
-# second request to exercise per-request cache lifetime.
+# Historical input provenance: FastAPI 0.141.1's
+# `tests/test_dependency_overrides.py::test_override_simple` and
+# `tests/test_dependency_cache.py::test_sub_counter` supplied the neighboring
+# override and request-cache shapes. Pinned FastAPI 0.157.0, commit
+# 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1, retains them at
+# `tests/test_dependency_overrides.py:208-213` and
+# `tests/test_dependency_cache.py:64-71`. Current runtime source initializes a
+# missing request cache at `fastapi/dependencies/utils.py:687-688`, rebuilds an
+# override dependant at :700-719, recursively resolves it at :721-733, awaits
+# it and stores its result at :755-762. The cache key at
+# `fastapi/dependencies/models.py:83-97` includes the dependency callable plus
+# scope information. The flat override suspends at asyncio.sleep(0); repeated
+# default-use_cache edges are followed by a second request to expose the
+# request-local cache lifetime.
 schema: fastapi-rs/python-asgi-workflow@2
 workload:
   file: tests/fixtures/workloads/dependency_override_async_cache_request_local.py

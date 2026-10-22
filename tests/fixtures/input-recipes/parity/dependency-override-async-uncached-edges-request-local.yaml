@@ -1,12 +1,15 @@
-# Pinned FastAPI 0.141.1 source evidence: fastapi/dependencies/utils.py:619-680
-# resolves edges in order; lines 656-661 check cache only when use_cache is
-# true, and lines 679-680 populate only a missing cache key. fastapi/params.py
-# defaults Depends.use_cache to true at lines 745-749. The workload marks the
-# first two repeated override edges uncached and leaves the third cached, then
-# repeats the sequence on the same app to expose lookup bypass, first-value
+# Historical component-test provenance: FastAPI 0.141.1's dependency-cache
+# cases covered `use_cache=False` and repeated requests. Pinned FastAPI 0.157.0,
+# commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1, resolves edges in order at
+# `fastapi/dependencies/utils.py:700-762`; `use_cache` guards lookup at :738-743,
+# and results are inserted only for a missing key at :759-762. The public
+# Depends factory defaults `use_cache=True` at `fastapi/param_functions.py:2391-2423`.
+# The workload marks repeated override edges uncached and leaves one cached,
+# then repeats the sequence on the same app to expose lookup bypass, first-value
 # retention, and request-local reset. The second case checks cached -> uncached
-# -> cached ordering against an already populated slot. Related upstream
-# behavior is covered by tests/test_dependency_cache.py:30-35 and :64-81.
+# -> cached ordering against a populated slot. Current related source tests are
+# `tests/test_dependency_cache.py:30-35` declares the uncached route; its
+# `test_sub_counter_no_cache` test checks repeated dependency evaluation at :74-81.
 schema: fastapi-rs/python-asgi-workflow@2
 workload:
   file: tests/fixtures/workloads/dependency_override_async_uncached_edges_request_local.py

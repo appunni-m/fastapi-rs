@@ -135,29 +135,6 @@ DOC_PAGE_CASE_LINK_COMPLETIONS: dict[str, list[dict[str, Any]]] = {
             ),
         },
         {
-            "recipe_path": (
-                "tests/fixtures/input-recipes/parity/response-204-bodyless-isolated-upstream.yaml"
-            ),
-            "case_ids": [
-                "fastapi.response.bodyless-204-isolated",
-            ],
-            "observation_selectors": [
-                "construction.exception_class",
-                "construction.exception_message",
-                "construction.outcome",
-                "http.body.bytes",
-                "http.headers.ordered",
-                "http.status",
-            ],
-            "scope_note": (
-                "Partial independent sample across 1 case(s); observes "
-                "construction.exception_class, construction.exception_message, "
-                "construction.outcome, http.body.bytes, http.headers.ordered, http.status. "
-                "Unlisted functions, branches, configurations, and edge cases are not "
-                "claimed."
-            ),
-        },
-        {
             "recipe_path": "tests/fixtures/input-recipes/parity/response-field-lifecycle.yaml",
             "case_ids": [
                 "fastapi.response-class-provenance.application-explicit-json-default-model-nan",

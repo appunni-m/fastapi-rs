@@ -38,11 +38,10 @@ DOC_SECTION_CASE_MAPPINGS_REFERENCE_DEPENDENCIES_20261015 = {
             "caching/scope options, or every dependency parameter source."
         ),
         "rationale": (
-            "FastAPI 0.141.1 at 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f defines Depends "
-            "as a frozen record carrying a callable, cache "
-            "flag, and scope (`../fastapi/fastapi/params.py:746-751`), then analyzes and "
+            "FastAPI 0.157.0 defines Depends as a frozen record carrying a callable, cache "
+            "flag, and scope (`../fastapi/fastapi/params.py:790-794`), then analyzes and "
             "resolves callable dependencies in `get_dependant` and `solve_dependencies` "
-            "(`../fastapi/fastapi/dependencies/utils.py:302-347,619-690`). The selected "
+            "(`../fastapi/fastapi/dependencies/utils.py:314-389,657-819`). The selected "
             "workflows are independent requests with different routes and values; Starlette "
             "1.6.0 owns generic ASGI request and response transport."
         ),
@@ -61,12 +60,11 @@ DOC_SECTION_CASE_MAPPINGS_REFERENCE_DEPENDENCIES_20261015 = {
             "hashing, application authorization policy, or all OAuth2 scope combinations."
         ),
         "rationale": (
-            "FastAPI 0.141.1 at 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f defines Security "
-            "as a Depends subtype with an OAuth2 scopes "
-            "field (`../fastapi/fastapi/params.py:753-757`); dependency analysis attaches "
+            "FastAPI 0.157.0 defines Security as a Depends subtype with an OAuth2 scopes "
+            "field (`../fastapi/fastapi/params.py:797-799`); dependency analysis attaches "
             "those scopes to the dependant and OpenAPI generation emits the security "
-            "requirement (`../fastapi/fastapi/dependencies/utils.py:302-347`; "
-            "`../fastapi/fastapi/openapi/utils.py:99-154`). The recipe selects only the "
+            "requirement (`../fastapi/fastapi/dependencies/utils.py:314-389,657-819`; "
+            "`../fastapi/fastapi/openapi/utils.py:98-155`). The recipe selects only the "
             "decorator route's OpenAPI action and one request action."
         ),
     },

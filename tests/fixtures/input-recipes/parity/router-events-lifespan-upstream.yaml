@@ -1,5 +1,12 @@
-# FastAPI 0.141.1 requires Python >=3.10; the pinned oracle profile uses CPython 3.12.13.
-# The v4 workflow captures warnings emitted by legacy on_event registration.
+# FastAPI 0.157.0 requires Python >=3.10; the pinned oracle profile uses CPython
+# 3.12.13. FastAPI passes startup/shutdown handlers and the selected lifespan to
+# APIRouter at `fastapi/applications.py:981-996`; APIRouter selects its default
+# event lifespan or wraps the supplied lifespan at `fastapi/routing.py:2594-2625`.
+# Included routers copy legacy handlers and merge lifespan contexts at :3420-3427;
+# `_merge_lifespan_context` combines nested state at :242-256. The current upstream
+# lifecycle tests are in `tests/test_router_events.py:27-321`. The v4 workflow
+# captures `on_event` deprecation warnings from `fastapi/routing.py:6522-6552`
+# and `fastapi/applications.py:4696-4723`.
 schema: fastapi-rs/python-asgi-workflow@4
 workload:
   file: tests/fixtures/workloads/router_events_lifespan_upstream.py

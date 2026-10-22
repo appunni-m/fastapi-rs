@@ -1,12 +1,12 @@
-# Pinned FastAPI 0.141.1 source evidence (commit
-# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f):
-# tests/test_dependency_overrides.py:10-16 defines an async dependency and
-# async endpoint; :39-40 defines the async optional-query override; and
-# :171-213 installs that override and checks /main-depends/ plus
-# /main-depends/?q=foo. This input-only pair reproduces those two route inputs
-# with the same public API shape. FastAPI dependencies/utils.py:623-638
-# resolves and rebuilds the overridden dependency, then :673-680 awaits and
-# caches its result. No expected outputs are recorded here.
+# Historical input provenance: FastAPI 0.141.1's
+# `tests/test_dependency_overrides.py::test_override_simple` exercised the
+# optional-query override against `/main-depends/` and `?q=foo`. Pinned FastAPI
+# 0.157.0, commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1, retains the async
+# dependency/endpoint at `tests/test_dependency_overrides.py:10-16`, the
+# override at :39-40, and the case at :208-213. Current dependency solving
+# rebuilds overridden callables at `fastapi/dependencies/utils.py:700-719` and
+# awaits/caches successful values at :721-762. This input-only pair keeps the
+# public API shape and records no expected outputs.
 schema: fastapi-rs/python-asgi-workflow@2
 workload:
   file: tests/fixtures/workloads/dependency_override_async_endpoint_request_local.py

@@ -1,19 +1,18 @@
-# Pinned FastAPI 0.141.1 source evidence (tag commit
-# 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f):
-# fastapi/dependencies/utils.py:294-332 recursively builds dependency edges;
-# :623-654 re-analyzes overrides and awaits recursive child resolution before
-# :660-676 enters generators, awaits coroutine callables, or invokes sync
-# parents through the thread pool. Query validation occurs at :684-686.
-# tests/test_dependency_contextmanager.py:23-24 and :45-48 already place an
-# async child beneath a sync generator; :73-87 and :124-133 exercise nested
-# yielded cleanup after normal completion and endpoint errors.
-# tests/test_dependency_models.py:22-35 distinguish the callable categories;
-# tests/test_dependency_overrides.py:39-48 declare async replacements.
-# tests/test_dependency_cache.py:30-35 and :75-82 combine repeated dependency
-# edges with use_cache=False and sequential requests. utils.py:640-661 solves
-# children before looking up a cached parent; :681-697 validates a parent's own
-# query fields even when :652-654 has already collected child errors. The
-# uncached-child and query-aggregation cases observe these rules independently.
+# Historical component-test provenance: FastAPI 0.141.1's dependency and
+# context-manager tests supplied the neighboring shapes. Pinned FastAPI 0.157.0,
+# commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1, builds nested edges at
+# `fastapi/dependencies/utils.py:314-389`; solving recursively resolves child
+# dependencies and selects generator/coroutine/thread-pool execution at
+# :700-762. Query validation follows at :763-785. Function and request cleanup
+# stacks are created in `fastapi/routing.py:143-155`, and selected by scope at
+# `fastapi/dependencies/utils.py:747-750`.
+# Current source tests cover a sync generator with an async child at
+# `tests/test_dependency_contextmanager.py:23-48`, nested yielded cleanup at
+# :73-87, and sync endpoint error cleanup at :181-190. Callable categories are
+# covered at `tests/test_dependency_models.py:133-139`; async override shapes
+# at `tests/test_dependency_overrides.py:39-48`; and cache/no-cache behavior at
+# `tests/test_dependency_cache.py:30-35` and :64-81. The uncached-child and
+# query-aggregation combinations below remain independent inputs.
 # The aggregation route adds an endpoint query field so the root also validates
 # its own input after recursive dependency errors have been collected.
 # These independent arithmetic graphs combine those source-backed rules with

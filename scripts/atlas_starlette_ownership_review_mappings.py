@@ -114,8 +114,8 @@ _TESTCLIENT_EXCEPTION_POLICY = (
 # Status-code review: FastAPI chooses validation, route, injected-response,
 # and handled-exception statuses; Starlette's Response emits the unconfigured
 # successful default, while Router/RedirectResponse own their exact cases.
-_STATUS_VALIDATION = """FastAPI 0.141.1 raises RequestValidationError and its registered request-validation handler selects HTTP 422. This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim."""
-_STATUS_ROUTE = """FastAPI 0.141.1 selects the observed status through path-operation configuration, an injected Response value, or its HTTPException handler. Starlette emits the resulting response but does not choose this status. Ownership mapping only; no FastAPI-RS parity claim."""
+_STATUS_VALIDATION = """FastAPI 0.157.0 registers RequestValidationError with its request-validation handler (`fastapi/applications.py:1000-1004`), which selects HTTP 422 (`fastapi/exception_handlers.py:20-26`). This classifies the observed status selection only; the row's other FastAPI/Pydantic behavior and generic response emission are separate. Ownership mapping only; no FastAPI-RS parity claim."""
+_STATUS_ROUTE = """FastAPI 0.157.0 selects the observed status through path-operation configuration (`fastapi/routing.py:1083-1088`), an injected Response value (`fastapi/dependencies/utils.py:807-808`), or its HTTPException handler (`fastapi/exception_handlers.py:20-26`). Starlette emits the resulting response but does not choose this status. Ownership mapping only; no FastAPI-RS parity claim."""
 _STATUS_DEFAULT = """The reviewed status observation is the default HTTP 200. Starlette 1.6.0 Response defaults status_code to 200 and emits it in http.response.start; the row does not select another status. The operation link identifies generic ownership only and does not establish FastAPI-RS parity."""
 
 _review_rows(
