@@ -17,6 +17,9 @@ if str(ROOT) not in sys.path:
 fastapi_rs_source_tree_sha256 = importlib.import_module(
     "scripts.parity.source_identity"
 ).fastapi_rs_source_tree_sha256
+parity_contract = importlib.import_module("scripts.parity.contract")
+read_json = parity_contract.read_json
+read_manifest = parity_contract.read_manifest
 
 DEFAULT_INPUT = ROOT / "tests/fixtures/inputs/parity/first-asgi-request.json"
 
@@ -104,6 +107,35 @@ def _target_identity(
     }
 
 
+def _validate_declared_case_ids(input_path: Path) -> None:
+    manifest = read_manifest()
+    workflow = manifest.get("unresolved", {}).get("python_asgi_workflow", {})
+    expected = workflow.get("case_ids")
+    document = read_json(input_path)
+    cases = document.get("cases") if isinstance(document, dict) else None
+    actual = None
+    if isinstance(cases, list):
+        actual = [case.get("case_id") for case in cases if isinstance(case, dict)]
+    if (
+        not isinstance(expected, list)
+        or not expected
+        or not all(isinstance(case_id, str) for case_id in expected)
+        or len(set(expected)) != len(expected)
+        or not isinstance(actual, list)
+        or len(actual) != len(cases)
+        or not all(isinstance(case_id, str) for case_id in actual)
+        or len(set(actual)) != len(actual)
+        or len(actual) != len(expected)
+        or set(actual) != set(expected)
+    ):
+        expected_ids = expected if isinstance(expected, list) else "invalid manifest case_ids"
+        actual_ids = actual if isinstance(actual, list) else "invalid input cases"
+        raise RuntimeError(
+            "first-slice input case IDs must exactly match the manifest declaration; "
+            f"expected {expected_ids}, got {actual_ids}"
+        )
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, default=DEFAULT_INPUT)
@@ -119,6 +151,7 @@ def _parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = _parser().parse_args()
     input_path = args.input.resolve()
+    _validate_declared_case_ids(input_path)
     fastapi_source = args.fastapi_source.resolve()
     starlette_source = args.starlette_source.resolve()
     starlette_rs_source = args.starlette_rs_source.resolve()

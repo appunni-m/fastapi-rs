@@ -81929,7 +81929,7 @@
       "declared_pydantic_requirement": ">=2.9.0",
       "declared_starlette_requirement": ">=0.46.0",
       "inventory_path": "tests/fixtures/api-inventory.json",
-      "inventory_sha256": "da9ea249314c3e7987b2e59e302f4944dacab421fcfa42a15c0c4cb8979270f9",
+      "inventory_sha256": "6f8553ec104f1346a07065bbf0195db722d182f718ac27bd3c6753f6829456e8",
       "repository": "https://github.com/fastapi/fastapi",
       "version": "0.157.0",
       "working_tree": "pinned-source"
@@ -82053,7 +82053,7 @@
     "reviewed_inherited_api_candidates": 13,
     "reviewed_public_candidate_candidates": 185,
     "reviewed_source_api_candidates": 389,
-    "source_deprecations": 21,
+    "source_deprecations": 23,
     "starlette_behavior_crosswalks": 4,
     "starlette_integration_edges": 148,
     "starlette_internal_edges_unresolved": 0,
@@ -773621,7 +773621,7 @@
           "expression_source": "deprecated(\n                \"\"\"\n                You normally wouldn't use this parameter with FastAPI, it is inherited\n                from Starlette and supported for compatibility.\n\n                In FastAPI, you normally would use the *path operation methods*,\n                like `app.get()`, `app.post()`, etc.\n                \"\"\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "\n                You normally wouldn't use this parameter with FastAPI, it is inherited\n                from Starlette and supported for compatibility.\n\n                In FastAPI, you normally would use the *path operation methods*,\n                like `app.get()`, `app.post()`, etc.\n                ",
-          "scope": "class",
+          "scope": "parameter_annotation:routes",
           "source_ref": {
             "end_line": 116,
             "line": 108,
@@ -773633,7 +773633,7 @@
           "expression_source": "deprecated(\n                \"\"\"\n                The `root_path` parameter is deprecated. Configure the server's\n                root path instead, for example with\n                `fastapi run --root-path /api/v1`.\n                \"\"\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "\n                The `root_path` parameter is deprecated. Configure the server's\n                root path instead, for example with\n                `fastapi run --root-path /api/v1`.\n                ",
-          "scope": "class",
+          "scope": "parameter_annotation:root_path",
           "source_ref": {
             "end_line": 665,
             "line": 659,
@@ -773645,19 +773645,24 @@
           "expression_source": "warnings.warn(\n                \"The `root_path` parameter is deprecated. Configure the \"\n                \"server's root path instead, for example with \"\n                \"`fastapi run --root-path /api/v1`.\",\n                category=FastAPIDeprecationWarning,\n                stacklevel=2,\n            )",
           "kind": "warning_call",
           "message": "The `root_path` parameter is deprecated. Configure the server's root path instead, for example with `fastapi run --root-path /api/v1`.",
-          "scope": "class",
+          "scope": "body",
           "source_ref": {
             "end_line": 945,
             "line": 939,
             "path": "fastapi/applications.py"
           }
-        },
+        }
+      ],
+      "symbol_id": "fastapi.applications.FastAPI.__init__"
+    },
+    {
+      "evidence": [
         {
           "category_expression": null,
           "expression_source": "deprecated(\n        \"\"\"\n        on_event is deprecated, use lifespan event handlers instead.\n\n        Read more about it in the\n        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).\n        \"\"\"\n    )",
           "kind": "typing_extensions.deprecated",
           "message": "\n        on_event is deprecated, use lifespan event handlers instead.\n\n        Read more about it in the\n        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).\n        ",
-          "scope": "class",
+          "scope": "decorator",
           "source_ref": {
             "end_line": 4703,
             "line": 4696,
@@ -773665,7 +773670,7 @@
           }
         }
       ],
-      "symbol_id": "fastapi.applications.FastAPI"
+      "symbol_id": "fastapi.applications.FastAPI.on_event"
     },
     {
       "evidence": [
@@ -773691,34 +773696,10 @@
           "expression_source": "deprecated(\n            \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n        )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
-          "scope": "body",
-          "source_ref": {
-            "end_line": 176,
-            "line": 174,
-            "path": "fastapi/param_functions.py"
-          }
-        },
-        {
-          "category_expression": null,
-          "expression_source": "deprecated(\n            \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n        )",
-          "kind": "typing_extensions.deprecated",
-          "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
           "scope": "parameter_annotation:regex",
           "source_ref": {
             "end_line": 176,
             "line": 174,
-            "path": "fastapi/param_functions.py"
-          }
-        },
-        {
-          "category_expression": null,
-          "expression_source": "deprecated(\n            \"Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, \"\n            \"although still supported. Use examples instead.\"\n        )",
-          "kind": "typing_extensions.deprecated",
-          "message": "Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, although still supported. Use examples instead.",
-          "scope": "body",
-          "source_ref": {
-            "end_line": 270,
-            "line": 267,
             "path": "fastapi/param_functions.py"
           }
         },
@@ -773744,34 +773725,10 @@
           "expression_source": "deprecated(\n            \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n        )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
-          "scope": "body",
-          "source_ref": {
-            "end_line": 552,
-            "line": 550,
-            "path": "fastapi/param_functions.py"
-          }
-        },
-        {
-          "category_expression": null,
-          "expression_source": "deprecated(\n            \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n        )",
-          "kind": "typing_extensions.deprecated",
-          "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
           "scope": "parameter_annotation:regex",
           "source_ref": {
             "end_line": 552,
             "line": 550,
-            "path": "fastapi/param_functions.py"
-          }
-        },
-        {
-          "category_expression": null,
-          "expression_source": "deprecated(\n            \"Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, \"\n            \"although still supported. Use examples instead.\"\n        )",
-          "kind": "typing_extensions.deprecated",
-          "message": "Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, although still supported. Use examples instead.",
-          "scope": "body",
-          "source_ref": {
-            "end_line": 644,
-            "line": 641,
             "path": "fastapi/param_functions.py"
           }
         },
@@ -773797,34 +773754,10 @@
           "expression_source": "deprecated(\n            \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n        )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
-          "scope": "body",
-          "source_ref": {
-            "end_line": 889,
-            "line": 887,
-            "path": "fastapi/param_functions.py"
-          }
-        },
-        {
-          "category_expression": null,
-          "expression_source": "deprecated(\n            \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n        )",
-          "kind": "typing_extensions.deprecated",
-          "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
           "scope": "parameter_annotation:regex",
           "source_ref": {
             "end_line": 889,
             "line": 887,
-            "path": "fastapi/param_functions.py"
-          }
-        },
-        {
-          "category_expression": null,
-          "expression_source": "deprecated(\n            \"Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, \"\n            \"although still supported. Use examples instead.\"\n        )",
-          "kind": "typing_extensions.deprecated",
-          "message": "Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, although still supported. Use examples instead.",
-          "scope": "body",
-          "source_ref": {
-            "end_line": 981,
-            "line": 978,
             "path": "fastapi/param_functions.py"
           }
         },
@@ -773850,34 +773783,10 @@
           "expression_source": "deprecated(\n            \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n        )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
-          "scope": "body",
-          "source_ref": {
-            "end_line": 1210,
-            "line": 1208,
-            "path": "fastapi/param_functions.py"
-          }
-        },
-        {
-          "category_expression": null,
-          "expression_source": "deprecated(\n            \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n        )",
-          "kind": "typing_extensions.deprecated",
-          "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
           "scope": "parameter_annotation:regex",
           "source_ref": {
             "end_line": 1210,
             "line": 1208,
-            "path": "fastapi/param_functions.py"
-          }
-        },
-        {
-          "category_expression": null,
-          "expression_source": "deprecated(\n            \"Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, \"\n            \"although still supported. Use examples instead.\"\n        )",
-          "kind": "typing_extensions.deprecated",
-          "message": "Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, although still supported. Use examples instead.",
-          "scope": "body",
-          "source_ref": {
-            "end_line": 1302,
-            "line": 1299,
             "path": "fastapi/param_functions.py"
           }
         },
@@ -773903,34 +773812,10 @@
           "expression_source": "deprecated(\n            \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n        )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
-          "scope": "body",
-          "source_ref": {
-            "end_line": 1553,
-            "line": 1551,
-            "path": "fastapi/param_functions.py"
-          }
-        },
-        {
-          "category_expression": null,
-          "expression_source": "deprecated(\n            \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n        )",
-          "kind": "typing_extensions.deprecated",
-          "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
           "scope": "parameter_annotation:regex",
           "source_ref": {
             "end_line": 1553,
             "line": 1551,
-            "path": "fastapi/param_functions.py"
-          }
-        },
-        {
-          "category_expression": null,
-          "expression_source": "deprecated(\n            \"Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, \"\n            \"although still supported. Use examples instead.\"\n        )",
-          "kind": "typing_extensions.deprecated",
-          "message": "Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, although still supported. Use examples instead.",
-          "scope": "body",
-          "source_ref": {
-            "end_line": 1645,
-            "line": 1642,
             "path": "fastapi/param_functions.py"
           }
         },
@@ -773956,34 +773841,10 @@
           "expression_source": "deprecated(\n            \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n        )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
-          "scope": "body",
-          "source_ref": {
-            "end_line": 1884,
-            "line": 1882,
-            "path": "fastapi/param_functions.py"
-          }
-        },
-        {
-          "category_expression": null,
-          "expression_source": "deprecated(\n            \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n        )",
-          "kind": "typing_extensions.deprecated",
-          "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
           "scope": "parameter_annotation:regex",
           "source_ref": {
             "end_line": 1884,
             "line": 1882,
-            "path": "fastapi/param_functions.py"
-          }
-        },
-        {
-          "category_expression": null,
-          "expression_source": "deprecated(\n            \"Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, \"\n            \"although still supported. Use examples instead.\"\n        )",
-          "kind": "typing_extensions.deprecated",
-          "message": "Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, although still supported. Use examples instead.",
-          "scope": "body",
-          "source_ref": {
-            "end_line": 1976,
-            "line": 1973,
             "path": "fastapi/param_functions.py"
           }
         },
@@ -774009,34 +773870,10 @@
           "expression_source": "deprecated(\n            \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n        )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
-          "scope": "body",
-          "source_ref": {
-            "end_line": 2214,
-            "line": 2212,
-            "path": "fastapi/param_functions.py"
-          }
-        },
-        {
-          "category_expression": null,
-          "expression_source": "deprecated(\n            \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n        )",
-          "kind": "typing_extensions.deprecated",
-          "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
           "scope": "parameter_annotation:regex",
           "source_ref": {
             "end_line": 2214,
             "line": 2212,
-            "path": "fastapi/param_functions.py"
-          }
-        },
-        {
-          "category_expression": null,
-          "expression_source": "deprecated(\n            \"Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, \"\n            \"although still supported. Use examples instead.\"\n        )",
-          "kind": "typing_extensions.deprecated",
-          "message": "Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, although still supported. Use examples instead.",
-          "scope": "body",
-          "source_ref": {
-            "end_line": 2306,
-            "line": 2303,
             "path": "fastapi/param_functions.py"
           }
         },
@@ -774062,7 +773899,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:regex",
           "source_ref": {
             "end_line": 53,
             "line": 51,
@@ -774074,7 +773911,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, \"\n                \"although still supported. Use examples instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, although still supported. Use examples instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:example",
           "source_ref": {
             "end_line": 70,
             "line": 67,
@@ -774086,7 +773923,7 @@
           "expression_source": "warnings.warn(\n                \"`example` has been deprecated, please use `examples` instead\",\n                category=FastAPIDeprecationWarning,\n                stacklevel=4,\n            )",
           "kind": "warning_call",
           "message": "`example` has been deprecated, please use `examples` instead",
-          "scope": "class",
+          "scope": "body",
           "source_ref": {
             "end_line": 84,
             "line": 80,
@@ -774098,7 +773935,7 @@
           "expression_source": "warnings.warn(\n                \"`regex` has been deprecated, please use `pattern` instead\",\n                category=FastAPIDeprecationWarning,\n                stacklevel=4,\n            )",
           "kind": "warning_call",
           "message": "`regex` has been deprecated, please use `pattern` instead",
-          "scope": "class",
+          "scope": "body",
           "source_ref": {
             "end_line": 115,
             "line": 111,
@@ -774106,7 +773943,7 @@
           }
         }
       ],
-      "symbol_id": "fastapi.params.Param"
+      "symbol_id": "fastapi.params.Param.__init__"
     },
     {
       "evidence": [
@@ -774115,7 +773952,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:regex",
           "source_ref": {
             "end_line": 168,
             "line": 166,
@@ -774127,7 +773964,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, \"\n                \"although still supported. Use examples instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, although still supported. Use examples instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:example",
           "source_ref": {
             "end_line": 185,
             "line": 182,
@@ -774135,7 +773972,7 @@
           }
         }
       ],
-      "symbol_id": "fastapi.params.Path"
+      "symbol_id": "fastapi.params.Path.__init__"
     },
     {
       "evidence": [
@@ -774144,7 +773981,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:regex",
           "source_ref": {
             "end_line": 258,
             "line": 256,
@@ -774156,7 +773993,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, \"\n                \"although still supported. Use examples instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, although still supported. Use examples instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:example",
           "source_ref": {
             "end_line": 275,
             "line": 272,
@@ -774164,7 +774001,7 @@
           }
         }
       ],
-      "symbol_id": "fastapi.params.Query"
+      "symbol_id": "fastapi.params.Query.__init__"
     },
     {
       "evidence": [
@@ -774173,7 +774010,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:regex",
           "source_ref": {
             "end_line": 347,
             "line": 345,
@@ -774185,7 +774022,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, \"\n                \"although still supported. Use examples instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, although still supported. Use examples instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:example",
           "source_ref": {
             "end_line": 364,
             "line": 361,
@@ -774193,7 +774030,7 @@
           }
         }
       ],
-      "symbol_id": "fastapi.params.Header"
+      "symbol_id": "fastapi.params.Header.__init__"
     },
     {
       "evidence": [
@@ -774202,7 +774039,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:regex",
           "source_ref": {
             "end_line": 436,
             "line": 434,
@@ -774214,7 +774051,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, \"\n                \"although still supported. Use examples instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, although still supported. Use examples instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:example",
           "source_ref": {
             "end_line": 453,
             "line": 450,
@@ -774222,7 +774059,7 @@
           }
         }
       ],
-      "symbol_id": "fastapi.params.Cookie"
+      "symbol_id": "fastapi.params.Cookie.__init__"
     },
     {
       "evidence": [
@@ -774231,7 +774068,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:regex",
           "source_ref": {
             "end_line": 524,
             "line": 522,
@@ -774243,7 +774080,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, \"\n                \"although still supported. Use examples instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, although still supported. Use examples instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:example",
           "source_ref": {
             "end_line": 541,
             "line": 538,
@@ -774255,7 +774092,7 @@
           "expression_source": "warnings.warn(\n                \"`example` has been deprecated, please use `examples` instead\",\n                category=FastAPIDeprecationWarning,\n                stacklevel=4,\n            )",
           "kind": "warning_call",
           "message": "`example` has been deprecated, please use `examples` instead",
-          "scope": "class",
+          "scope": "body",
           "source_ref": {
             "end_line": 557,
             "line": 553,
@@ -774267,7 +774104,7 @@
           "expression_source": "warnings.warn(\n                \"`regex` has been deprecated, please use `pattern` instead\",\n                category=FastAPIDeprecationWarning,\n                stacklevel=4,\n            )",
           "kind": "warning_call",
           "message": "`regex` has been deprecated, please use `pattern` instead",
-          "scope": "class",
+          "scope": "body",
           "source_ref": {
             "end_line": 588,
             "line": 584,
@@ -774275,7 +774112,7 @@
           }
         }
       ],
-      "symbol_id": "fastapi.params.Body"
+      "symbol_id": "fastapi.params.Body.__init__"
     },
     {
       "evidence": [
@@ -774284,7 +774121,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:regex",
           "source_ref": {
             "end_line": 639,
             "line": 637,
@@ -774296,7 +774133,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, \"\n                \"although still supported. Use examples instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, although still supported. Use examples instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:example",
           "source_ref": {
             "end_line": 656,
             "line": 653,
@@ -774304,7 +774141,7 @@
           }
         }
       ],
-      "symbol_id": "fastapi.params.Form"
+      "symbol_id": "fastapi.params.Form.__init__"
     },
     {
       "evidence": [
@@ -774313,7 +774150,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in FastAPI 0.100.0 and Pydantic v2, use `pattern` instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:regex",
           "source_ref": {
             "end_line": 727,
             "line": 725,
@@ -774325,7 +774162,7 @@
           "expression_source": "deprecated(\n                \"Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, \"\n                \"although still supported. Use examples instead.\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "Deprecated in OpenAPI 3.1.0 that now uses JSON Schema 2020-12, although still supported. Use examples instead.",
-          "scope": "class",
+          "scope": "parameter_annotation:example",
           "source_ref": {
             "end_line": 744,
             "line": 741,
@@ -774333,22 +774170,10 @@
           }
         }
       ],
-      "symbol_id": "fastapi.params.File"
+      "symbol_id": "fastapi.params.File.__init__"
     },
     {
       "evidence": [
-        {
-          "category_expression": "FastAPIDeprecationWarning",
-          "expression_source": "deprecated(\n    \"UJSONResponse is deprecated, FastAPI now serializes data directly to JSON \"\n    \"bytes via Pydantic when a return type or response model is set, which is \"\n    \"faster and doesn't need a custom response class. Read more in the FastAPI \"\n    \"docs: https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model \"\n    \"and https://fastapi.tiangolo.com/tutorial/response-model/\",\n    category=FastAPIDeprecationWarning,\n    stacklevel=2,\n)",
-          "kind": "typing_extensions.deprecated",
-          "message": "UJSONResponse is deprecated, FastAPI now serializes data directly to JSON bytes via Pydantic when a return type or response model is set, which is faster and doesn't need a custom response class. Read more in the FastAPI docs: https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model and https://fastapi.tiangolo.com/tutorial/response-model/",
-          "scope": "class",
-          "source_ref": {
-            "end_line": 47,
-            "line": 39,
-            "path": "fastapi/responses.py"
-          }
-        },
         {
           "category_expression": "FastAPIDeprecationWarning",
           "expression_source": "deprecated(\n    \"UJSONResponse is deprecated, FastAPI now serializes data directly to JSON \"\n    \"bytes via Pydantic when a return type or response model is set, which is \"\n    \"faster and doesn't need a custom response class. Read more in the FastAPI \"\n    \"docs: https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model \"\n    \"and https://fastapi.tiangolo.com/tutorial/response-model/\",\n    category=FastAPIDeprecationWarning,\n    stacklevel=2,\n)",
@@ -774371,18 +774196,6 @@
           "expression_source": "deprecated(\n    \"ORJSONResponse is deprecated, FastAPI now serializes data directly to JSON \"\n    \"bytes via Pydantic when a return type or response model is set, which is \"\n    \"faster and doesn't need a custom response class. Read more in the FastAPI \"\n    \"docs: https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model \"\n    \"and https://fastapi.tiangolo.com/tutorial/response-model/\",\n    category=FastAPIDeprecationWarning,\n    stacklevel=2,\n)",
           "kind": "typing_extensions.deprecated",
           "message": "ORJSONResponse is deprecated, FastAPI now serializes data directly to JSON bytes via Pydantic when a return type or response model is set, which is faster and doesn't need a custom response class. Read more in the FastAPI docs: https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model and https://fastapi.tiangolo.com/tutorial/response-model/",
-          "scope": "class",
-          "source_ref": {
-            "end_line": 77,
-            "line": 69,
-            "path": "fastapi/responses.py"
-          }
-        },
-        {
-          "category_expression": "FastAPIDeprecationWarning",
-          "expression_source": "deprecated(\n    \"ORJSONResponse is deprecated, FastAPI now serializes data directly to JSON \"\n    \"bytes via Pydantic when a return type or response model is set, which is \"\n    \"faster and doesn't need a custom response class. Read more in the FastAPI \"\n    \"docs: https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model \"\n    \"and https://fastapi.tiangolo.com/tutorial/response-model/\",\n    category=FastAPIDeprecationWarning,\n    stacklevel=2,\n)",
-          "kind": "typing_extensions.deprecated",
-          "message": "ORJSONResponse is deprecated, FastAPI now serializes data directly to JSON bytes via Pydantic when a return type or response model is set, which is faster and doesn't need a custom response class. Read more in the FastAPI docs: https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model and https://fastapi.tiangolo.com/tutorial/response-model/",
           "scope": "decorator",
           "source_ref": {
             "end_line": 77,
@@ -774400,19 +774213,24 @@
           "expression_source": "deprecated(\n                \"\"\"\n                You normally wouldn't use this parameter with FastAPI, it is inherited\n                from Starlette and supported for compatibility.\n\n                In FastAPI, you normally would use the *path operation methods*,\n                like `router.get()`, `router.post()`, etc.\n                \"\"\"\n            )",
           "kind": "typing_extensions.deprecated",
           "message": "\n                You normally wouldn't use this parameter with FastAPI, it is inherited\n                from Starlette and supported for compatibility.\n\n                In FastAPI, you normally would use the *path operation methods*,\n                like `router.get()`, `router.post()`, etc.\n                ",
-          "scope": "class",
+          "scope": "parameter_annotation:routes",
           "source_ref": {
             "end_line": 2447,
             "line": 2439,
             "path": "fastapi/routing.py"
           }
-        },
+        }
+      ],
+      "symbol_id": "fastapi.routing.APIRouter.__init__"
+    },
+    {
+      "evidence": [
         {
           "category_expression": null,
           "expression_source": "deprecated(\n        \"\"\"\n        on_event is deprecated, use lifespan event handlers instead.\n\n        Read more about it in the\n        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).\n        \"\"\"\n    )",
           "kind": "typing_extensions.deprecated",
           "message": "\n        on_event is deprecated, use lifespan event handlers instead.\n\n        Read more about it in the\n        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).\n        ",
-          "scope": "class",
+          "scope": "decorator",
           "source_ref": {
             "end_line": 6529,
             "line": 6522,
@@ -774420,7 +774238,7 @@
           }
         }
       ],
-      "symbol_id": "fastapi.routing.APIRouter"
+      "symbol_id": "fastapi.routing.APIRouter.on_event"
     },
     {
       "evidence": [

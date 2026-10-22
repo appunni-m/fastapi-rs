@@ -429,24 +429,38 @@ def deprecation_evidence(module: ParsedModule, node: ast.AST) -> list[dict[str, 
                 candidates.append((f"parameter_annotation:{arg.arg}", arg.annotation))
         if node.returns is not None:
             candidates.append(("return_annotation", node.returns))
-        candidates.extend(("body", child) for child in ast.walk(node))
+        candidates.extend(
+            ("body", child)
+            for child in node.body
+            if not isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+        )
     elif isinstance(node, ast.ClassDef):
         candidates.extend(("decorator", decorator) for decorator in node.decorator_list)
         candidates.extend(
-            ("class", child) for child in node.body if isinstance(child, ast.AnnAssign)
-        )
-        candidates.extend(
-            ("class", child) for child in ast.walk(node) if isinstance(child, ast.Call)
+            ("class", child)
+            for child in node.body
+            if not isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
         )
     else:
         candidates.append(("annotation", node))
+
+    def calls_in_scope(candidate: ast.AST) -> list[ast.Call]:
+        calls: list[ast.Call] = []
+        pending = [candidate]
+        while pending:
+            current = pending.pop()
+            if current is not candidate and isinstance(
+                current,
+                (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda),
+            ):
+                continue
+            if isinstance(current, ast.Call):
+                calls.append(current)
+            pending.extend(reversed(list(ast.iter_child_nodes(current))))
+        return calls
+
     for location, candidate in candidates:
-        calls = (
-            [candidate]
-            if isinstance(candidate, ast.Call)
-            else [part for part in ast.walk(candidate) if isinstance(part, ast.Call)]
-        )
-        for call in calls:
+        for call in calls_in_scope(candidate):
             leaf = call_leaf(call.func)
             message_node = next(
                 (keyword.value for keyword in call.keywords if keyword.arg in {"message", "msg"}),
@@ -996,10 +1010,22 @@ def build_inventory(checkout: Path) -> dict[str, Any]:
         for base in item["bases"]
         if base["resolved_path"] == "starlette" or base["resolved_path"].startswith("starlette.")
     ]
+
+    def iter_symbol_records(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        flattened: list[dict[str, Any]] = []
+        pending = list(reversed(records))
+        while pending:
+            item = pending.pop()
+            flattened.append(item)
+            members = item.get("members", [])
+            if isinstance(members, list):
+                pending.extend(reversed([member for member in members if isinstance(member, dict)]))
+        return flattened
+
     deprecations = [
         {"symbol_id": item["id"], "evidence": item["deprecations"]}
         for module in module_records
-        for item in module["definitions"]
+        for item in iter_symbol_records(module["definitions"])
         if item.get("deprecations")
     ]
     callable_kinds = {

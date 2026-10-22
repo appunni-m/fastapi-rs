@@ -460,7 +460,7 @@ SOURCE_SPANS = {
             26,
             "tutorial OpenAPI request/status assertions",
         ),
-        _span("fastapi/openapi/utils.py", 648, 675, "webhook collection and OpenAPI projection"),
+        _span("fastapi/openapi/utils.py", 633, 659, "webhook collection and OpenAPI projection"),
     ],
     (_WEBHOOKS, "an-app-with-webhooks"): [
         _span(
@@ -492,7 +492,7 @@ SOURCE_SPANS = {
             "fastapi/applications.py", 1084, 1101, "webhook routes supplied to schema generation"
         ),
         _span(
-            "fastapi/openapi/utils.py", 648, 675, "webhook routes emitted under OpenAPI webhooks"
+            "fastapi/openapi/utils.py", 633, 659, "webhook routes emitted under OpenAPI webhooks"
         ),
     ],
     (_WEBHOOKS, "check-the-docs"): [

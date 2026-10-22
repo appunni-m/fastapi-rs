@@ -12,6 +12,8 @@ The current generated atlas records 1,831 API candidates: 493 supported, 1,279 p
 
 Active source mappings and recipes were checked against the 0.157.0 checkout. Any retained 0.141.1 references are labeled as historical provenance. The documented-page mapping for the bodyless 204 workflow now flows through the same reviewed wave-L map used by both the atlas and materialized index, including its construction selectors. Generated inputs, parity results, and their historical receipts remain local evidence; the recipes, mappings, manifest, and atlas sources are the reviewed artifacts.
 
+The inventory's deprecation scan now assigns parameter annotations and warning calls to their owning methods instead of duplicating them under the parent class. The refreshed atlas records 23 deprecation-bearing symbols, including `FastAPI.on_event`, `APIRouter.on_event`, and the parameter constructors. Class-level deprecations remain on `UJSONResponse` and `ORJSONResponse`. Warning categories and runtime timing remain behavior questions; the source ledger is evidence, not a claim that those warning cases have passed parity.
+
 The new `model-extra-request-parameters-upstream` input exercises FastAPI's default header underscore conversion using a raw `x_user_id` header. It caught a target mismatch: the request correctly failed validation, but FastAPI-RS reported the Python field name `x_user_id` in the error location while FastAPI reports the normalized header alias `x-user-id`. FastAPI-RS now applies that alias translation to Pydantic header-model error locations when `loc_by_alias` and underscore conversion are enabled. The four-case workflow then matched exactly.
 
 ## Focused parity evidence

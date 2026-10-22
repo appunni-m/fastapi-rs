@@ -835,7 +835,7 @@ The sibling Starlette-RS manifest, API review, and coverage matrix remain the so
 
 - Error and warning-type candidates: 49, each with source evidence and relevant observation selectors.
 - Alias/re-export records: 71.
-- Source deprecation records: 21.
+- Source deprecation records: 23.
 - Optional FastAPI extras: opentelemetry, standard, standard-no-fastapi-cloud-cli, all.
 - Python contract: >=3.10; project classifiers: 3.10, 3.11, 3.12, 3.13, 3.14; upstream test workflow versions: 3.10, 3.12, 3.13, 3.14.
 

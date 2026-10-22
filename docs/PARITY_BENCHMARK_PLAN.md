@@ -54,16 +54,10 @@ consumer-surface benchmark results.
 
 ## Benchmark evidence freshness
 
-All recorded results below still use the previous FastAPI 0.141.1 source pin.
+All timing results below still use the previous FastAPI 0.141.1 source pin.
 Keep their identities and measured values as historical evidence; they do not
-establish parity or performance for the current 0.157.0 protocol baseline.
-
-The latest focused first-slice parity comparison passed 14/14 selected
-observations on FastAPI-RS `f9a345fdce889c6a837b188367b1c43a1acdf331` with
-FastAPI 0.141.1, Starlette 1.6.0, and Starlette-RS
-`4139a72449bf5751e8902fb1c7175ee7f191d338`. Its comparison is
-`parity-results/comparisons/4706de12-4e64-4780-a36d-636d9c3f737e.json` (SHA-256
-`fff67e79b6ed951243d8a2edc6cf1739be2b2162f5b16a52291c494876a2a016`).
+establish performance for the current 0.157.0 baseline. The current focused
+parity receipt is recorded in the parity section below.
 
 The latest recorded direct-ASGI timing evidence on that previous source pin is
 the [seven-workload refresh](benchmarks/2026-10-22-f9a345f.md). All seven
@@ -105,16 +99,24 @@ identity-checked parity gate passes for the current target.
 
 The first fourteen-case HTTP request/response slice has a Rust-owned target,
 pass-through `fastapi` facade, isolated workers, and an exact comparator. The
-`make parity-first-slice` command runs both pinned products and stores the
-comparison in ignored `parity-results/`; CI runs this gate. The latest
-identity-checked first-slice comparison passed 14/14 at FastAPI-RS
-`f4600d2b4d5d08543ac46f74589ed9b636a5a65e` with FastAPI 0.141.1, Starlette
-1.6.0, and Starlette-RS `4139a72449bf5751e8902fb1c7175ee7f191d338`; comparison
-receipt `parity-results/comparisons/47a9b155-3af2-4802-9447-2d652cfe32df.json`
-binds manifest SHA-256
-`b12e8958101b3f4edd225ad67b6d744a157da6bddd4372764db3d7623ff74eba`. This
-validates only the declared first slice. It does not establish broader API or
-feature parity. Broader parity remains incomplete.
+`make parity-first-slice` command regenerates the input from its recipe, checks
+that its case IDs exactly match the manifest declaration, runs both pinned
+products, and stores the comparison in ignored `parity-results/`; CI runs this
+gate. For local runs, set `STARLETTE_RS_SOURCE` to a checkout at the pinned
+`4139a72449bf5751e8902fb1c7175ee7f191d338` revision if the sibling default is
+on another commit; the target identity gate rejects a mismatch. The current
+identity-checked comparison passed 14/14 at FastAPI-RS
+`df7a3de679208c35976027b3f4873d74d5567773` with FastAPI 0.157.0 at
+`386a28af2f87af1a32ac26d88f07b7f58ab2dfb1`, Starlette 1.6.0, and Starlette-RS
+`4139a72449bf5751e8902fb1c7175ee7f191d338`. The comparison receipt is
+`parity-results/comparisons/19355fe1-12e1-49c9-9ac1-be637353ef58.json`; it binds
+manifest SHA-256
+`ef73450dd119cd3da3248b7dc353ee984160471579143d808b506afc8ef36a88` and target
+source-tree SHA-256
+`62eaf983cc429b291dcdebafeaed46cca35ac88cc37b11bd47318fa019bb41c3`. This
+validates only the fourteen declared cases. It does not establish broader API
+or feature parity. Broader parity remains incomplete, and no timing benchmark
+has been run for the 0.157.0 baseline.
 
 Direct Python API workflows use isolated source and target workers, a versioned
 result schema, and exact comparison. The 2026-10-14 receipt below contains one
