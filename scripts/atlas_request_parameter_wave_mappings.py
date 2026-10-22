@@ -1608,7 +1608,89 @@ _QUERY_REQUIRED_OPTIONAL_INTEGER_FUNCTION_ROWS = {
 }
 
 
+_PARAMETER_REPR_TEST_PATH = "tests/test_params_repr.py"
+_PARAMETER_REPR_RECIPE = "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml"
+_PARAMETER_REPR_CASE_ID = "fastapi.params-repr.representative-default-categories"
+_PARAMETER_REPR_INPUT_DESCRIPTIONS = {
+    "str": "the exact string literal 'teststr'",
+    "none": "None",
+    "ellipsis": "ellipsis, normalized by FastAPI to PydanticUndefined",
+    "number": "the integer 1",
+    "list": "an empty list",
+}
+
+
+def _parameter_repr_function_mappings() -> dict[str, dict[str, Any]]:
+    case_row = _RECIPE_CASE_INDEX.get(_PARAMETER_REPR_CASE_ID)
+    if case_row is None or case_row["recipe_path"] != _PARAMETER_REPR_RECIPE:
+        raise ValueError("parameter repr source functions need their reviewed input case")
+    case = case_row["case"]
+    source_paths = {
+        evidence.get("path")
+        for evidence in case.get("source_evidence", [])
+        if evidence.get("kind") == "upstream_test"
+    }
+    if _PARAMETER_REPR_TEST_PATH not in source_paths:
+        raise ValueError("parameter repr input case does not cite its pinned source test")
+    actions = case.get("actions", [])
+    if len(actions) != 1 or actions[0].get("action_id") != "parameter-representations":
+        raise ValueError("parameter repr input case must select its single reviewed action")
+
+    function_specs = {
+        "test_path_repr": (
+            "Path",
+            "the default and explicit-ellipsis values asserted by this source function",
+        )
+    }
+    for class_name in ("Query", "Header", "Cookie", "Body"):
+        prefix = f"test_{class_name.lower()}_repr_"
+        for suffix, input_description in _PARAMETER_REPR_INPUT_DESCRIPTIONS.items():
+            function_specs[prefix + suffix] = (class_name, input_description)
+
+    spans = {
+        span["role"].rsplit(" ", 1)[-1]: span
+        for span in _test_function_spans(_PARAMETER_REPR_TEST_PATH)
+    }
+    excluded = set(_TOP_LEVEL_REQUEST_PARAMETER_FUNCTION_EXCLUSIONS[_PARAMETER_REPR_TEST_PATH])
+    if set(spans) - excluded != set(function_specs):
+        raise ValueError("parameter repr mappings do not cover exactly the public test functions")
+
+    selectors = _workflow_selectors(case)
+    contract_gate = REQUEST_PARAMETER_TEST_REVIEW_MAPPINGS[_PARAMETER_REPR_TEST_PATH][
+        "contract_gate"
+    ]
+    supporting_sources = [
+        _source(
+            "fastapi/params.py",
+            132,
+            133,
+            "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+        )
+    ]
+    return {
+        function_name: {
+            "source_span": spans[function_name],
+            "supporting_sources": supporting_sources,
+            "workflow_case": {
+                "recipe_path": _PARAMETER_REPR_RECIPE,
+                "case_id": _PARAMETER_REPR_CASE_ID,
+                "action_ids": ["parameter-representations"],
+                "observation_selectors": selectors,
+            },
+            "feature_ids": ["public-api-errors"],
+            "rationale": (
+                f"The independent parameter-representations response includes repr() for "
+                f"{class_name} with {input_description}, matching this pinned source function; "
+                "the action also observes sibling parameter categories."
+            ),
+            "contract_gate": contract_gate,
+        }
+        for function_name, (class_name, input_description) in function_specs.items()
+    }
+
+
 REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
+    _PARAMETER_REPR_TEST_PATH: _parameter_repr_function_mappings(),
     "tests/test_enforce_once_required_parameter.py": {
         "test_openapi_schema": _required_parameter_once_openapi_function_mapping(),
     },
@@ -2581,6 +2663,58 @@ def validate_request_parameter_mappings() -> list[str]:
             "query required/optional/integer function mappings do not cover each recipe case "
             "exactly once"
         )
+
+    parameter_repr_function_mappings = REQUEST_PARAMETER_FUNCTION_MAPPINGS.get(
+        _PARAMETER_REPR_TEST_PATH, {}
+    )
+    parameter_repr_source_names = {
+        span["role"].rsplit(" ", 1)[-1] for span in _test_function_spans(_PARAMETER_REPR_TEST_PATH)
+    }
+    parameter_repr_excluded = set(
+        _TOP_LEVEL_REQUEST_PARAMETER_FUNCTION_EXCLUSIONS[_PARAMETER_REPR_TEST_PATH]
+    )
+    if (
+        set(parameter_repr_function_mappings)
+        != parameter_repr_source_names - parameter_repr_excluded
+    ):
+        errors.append(
+            "parameter repr direct mappings do not cover exactly the non-excluded public functions"
+        )
+    parameter_repr_case_ids = {
+        row["workflow_case"]["case_id"] for row in parameter_repr_function_mappings.values()
+    }
+    if parameter_repr_case_ids != {_PARAMETER_REPR_CASE_ID}:
+        errors.append("parameter repr functions must link to their reviewed input case")
+    try:
+        source_tree = ast.parse(
+            (FASTAPI_ROOT / _PARAMETER_REPR_TEST_PATH).read_text(encoding="utf-8")
+        )
+        source_values = next(
+            ast.literal_eval(node.value)
+            for node in source_tree.body
+            if isinstance(node, ast.AnnAssign)
+            and isinstance(node.target, ast.Name)
+            and node.target.id == "test_data"
+        )
+        workload_tree = ast.parse(
+            (
+                PROJECT_ROOT / "tests/fixtures/workloads/public_model_edge_cases_upstream.py"
+            ).read_text(encoding="utf-8")
+        )
+        workload_values = next(
+            ast.literal_eval(node.value)
+            for function in ast.walk(workload_tree)
+            if isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and function.name == "parameter_representations"
+            for node in function.body
+            if isinstance(node, ast.AnnAssign)
+            and isinstance(node.target, ast.Name)
+            and node.target.id == "values"
+        )
+        if source_values != workload_values:
+            errors.append("parameter repr workload inputs differ from pinned test_data values")
+    except (OSError, ValueError, StopIteration) as exc:
+        errors.append(f"cannot verify parameter repr source inputs: {exc}")
 
     function_spans = {
         (

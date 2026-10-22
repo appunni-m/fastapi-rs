@@ -1221,19 +1221,18 @@ for _test_path, _module_review in UNION_ERROR_CONTEXT_TEST_REVIEW_MAPPINGS.items
             ),
         )
 
-for _function_name, _function_review in REQUEST_PARAMETER_FUNCTION_MAPPINGS[
-    "tests/test_query.py"
-].items():
-    _direct_link = _function_review["workflow_case"]
-    REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS[("tests/test_query.py", _function_name)] = (
-        _reviewed_direct_link(
-            Path(_direct_link["recipe_path"]).stem.replace("_", "-"),
-            _direct_link["recipe_path"],
-            _direct_link["case_id"],
-            _direct_link["action_ids"],
-            tuple(_direct_link["observation_selectors"]),
+for _test_path in ("tests/test_params_repr.py", "tests/test_query.py"):
+    for _function_name, _function_review in REQUEST_PARAMETER_FUNCTION_MAPPINGS[_test_path].items():
+        _direct_link = _function_review["workflow_case"]
+        REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS[(_test_path, _function_name)] = (
+            _reviewed_direct_link(
+                Path(_direct_link["recipe_path"]).stem.replace("_", "-"),
+                _direct_link["recipe_path"],
+                _direct_link["case_id"],
+                _direct_link["action_ids"],
+                tuple(_direct_link["observation_selectors"]),
+            )
         )
-    )
 
 
 def _fail(message: str) -> None:
@@ -3453,6 +3452,8 @@ def validate_compatibility_artifacts(
                 "tests/test_tutorial/test_dataclasses/test_tutorial001.py",
                 "tests/test_tutorial/test_dataclasses/test_tutorial002.py",
                 "tests/test_tutorial/test_dataclasses/test_tutorial003.py",
+                "tests/test_params_repr.py",
+                "tests/test_query.py",
                 "tests/test_union_body.py",
                 "tests/test_union_body_discriminator.py",
                 "tests/test_union_body_discriminator_annotated.py",

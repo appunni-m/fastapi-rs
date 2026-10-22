@@ -42,7 +42,7 @@ def create_app() -> FastAPI:
 
     @app.get("/parameter-representations")
     def parameter_representations() -> dict[str, list[str]]:
-        values: list[object] = ["harbor-tag", None, ..., 29, ["bronze"]]
+        values: list[object] = ["teststr", None, ..., 1, []]
         parameter_types = (Query, Header, Cookie, Body)
         result = {
             parameter_type.__name__: [repr(parameter_type(value)) for value in values]

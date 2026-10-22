@@ -256299,6 +256299,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 34,
+                  "line": 32,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -256306,21 +256320,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 34,
+            "line": 32,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-path-repr",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Path with the default and explicit-ellipsis values asserted by this source function, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 34,
@@ -256532,21 +256547,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 34,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_path_repr",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 32
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -256556,7 +256596,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -256765,6 +256817,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 38,
+                  "line": 37,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -256772,21 +256838,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 38,
+            "line": 37,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-query-repr-str",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Query with the exact string literal 'teststr', matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 38,
@@ -256998,21 +257065,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 38,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_query_repr_str",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 37
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -257022,7 +257114,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -257231,6 +257335,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 42,
+                  "line": 41,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -257238,21 +257356,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 42,
+            "line": 41,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-query-repr-none",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Query with None, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 42,
@@ -257464,21 +257583,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 42,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_query_repr_none",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 41
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -257488,7 +257632,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -257697,6 +257853,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 46,
+                  "line": 45,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -257704,21 +257874,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 46,
+            "line": 45,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-query-repr-ellipsis",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Query with ellipsis, normalized by FastAPI to PydanticUndefined, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 46,
@@ -257930,21 +258101,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 46,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_query_repr_ellipsis",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 45
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -257954,7 +258150,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -258163,6 +258371,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 50,
+                  "line": 49,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -258170,21 +258392,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 50,
+            "line": 49,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-query-repr-number",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Query with the integer 1, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 50,
@@ -258396,21 +258619,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 50,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_query_repr_number",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 49
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -258420,7 +258668,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -258629,6 +258889,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 54,
+                  "line": 53,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -258636,21 +258910,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 54,
+            "line": 53,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-query-repr-list",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Query with an empty list, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 54,
@@ -258862,21 +259137,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 54,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_query_repr_list",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 53
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -258886,7 +259186,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -259095,6 +259407,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 58,
+                  "line": 57,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -259102,21 +259428,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 58,
+            "line": 57,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-header-repr-str",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Header with the exact string literal 'teststr', matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 58,
@@ -259328,21 +259655,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 58,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_header_repr_str",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 57
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -259352,7 +259704,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -259561,6 +259925,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 62,
+                  "line": 61,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -259568,21 +259946,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 62,
+            "line": 61,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-header-repr-none",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Header with None, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 62,
@@ -259794,21 +260173,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 62,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_header_repr_none",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 61
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -259818,7 +260222,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -260027,6 +260443,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 66,
+                  "line": 65,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -260034,21 +260464,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 66,
+            "line": 65,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-header-repr-ellipsis",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Header with ellipsis, normalized by FastAPI to PydanticUndefined, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 66,
@@ -260260,21 +260691,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 66,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_header_repr_ellipsis",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 65
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -260284,7 +260740,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -260493,6 +260961,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 70,
+                  "line": 69,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -260500,21 +260982,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 70,
+            "line": 69,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-header-repr-number",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Header with the integer 1, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 70,
@@ -260726,21 +261209,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 70,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_header_repr_number",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 69
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -260750,7 +261258,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -260959,6 +261479,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 74,
+                  "line": 73,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -260966,21 +261500,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 74,
+            "line": 73,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-header-repr-list",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Header with an empty list, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 74,
@@ -261192,21 +261727,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 74,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_header_repr_list",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 73
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -261216,7 +261776,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -261425,6 +261997,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 78,
+                  "line": 77,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -261432,21 +262018,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 78,
+            "line": 77,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-cookie-repr-str",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Cookie with the exact string literal 'teststr', matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 78,
@@ -261658,21 +262245,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 78,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_cookie_repr_str",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 77
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -261682,7 +262294,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -261891,6 +262515,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 82,
+                  "line": 81,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -261898,21 +262536,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 82,
+            "line": 81,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-cookie-repr-none",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Cookie with None, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 82,
@@ -262124,21 +262763,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 82,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_cookie_repr_none",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 81
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -262148,7 +262812,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -262357,6 +263033,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 86,
+                  "line": 85,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -262364,21 +263054,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 86,
+            "line": 85,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-cookie-repr-ellipsis",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Cookie with ellipsis, normalized by FastAPI to PydanticUndefined, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 86,
@@ -262590,21 +263281,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 86,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_cookie_repr_ellipsis",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 85
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -262614,7 +263330,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -262823,6 +263551,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 90,
+                  "line": 89,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -262830,21 +263572,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 90,
+            "line": 89,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-cookie-repr-number",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Cookie with the integer 1, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 90,
@@ -263056,21 +263799,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 90,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_cookie_repr_number",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 89
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -263080,7 +263848,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -263289,6 +264069,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 94,
+                  "line": 93,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -263296,21 +264090,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 94,
+            "line": 93,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-cookie-repr-list",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Cookie with an empty list, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 94,
@@ -263522,21 +264317,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 94,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_cookie_repr_list",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 93
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -263546,7 +264366,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -263755,6 +264587,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 98,
+                  "line": 97,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -263762,21 +264608,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 98,
+            "line": 97,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-body-repr-str",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Body with the exact string literal 'teststr', matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 98,
@@ -263988,21 +264835,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 98,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_body_repr_str",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 97
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -264012,7 +264884,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -264221,6 +265105,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 102,
+                  "line": 101,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -264228,21 +265126,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 102,
+            "line": 101,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-body-repr-none",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Body with None, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 102,
@@ -264454,21 +265353,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 102,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_body_repr_none",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 101
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -264478,7 +265402,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -264687,6 +265623,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 106,
+                  "line": 105,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -264694,21 +265644,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 106,
+            "line": 105,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-body-repr-ellipsis",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Body with ellipsis, normalized by FastAPI to PydanticUndefined, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 106,
@@ -264920,21 +265871,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 106,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_body_repr_ellipsis",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 105
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -264944,7 +265920,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -265153,6 +266141,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 110,
+                  "line": 109,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -265160,21 +266162,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 110,
+            "line": 109,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-body-repr-number",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Body with the integer 1, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 110,
@@ -265386,21 +266389,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 110,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_body_repr_number",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 109
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -265410,7 +266438,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -265619,6 +266659,20 @@
                   "path": "starlette/datastructures.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 114,
+                  "line": 113,
+                  "path": "tests/test_params_repr.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 133,
+                  "line": 132,
+                  "path": "fastapi/params.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -265626,21 +266680,22 @@
           "feature_ids": [
             "public-api-errors"
           ],
+          "function_source_ref": {
+            "end_line": 114,
+            "line": 113,
+            "path": "tests/test_params_repr.py",
+            "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1"
+          },
           "id": "fastapi.test.test-params-repr.test-body-repr-list",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "error.class",
-            "error.public_attributes",
-            "python.attribute_value",
-            "python.import_path",
-            "python.object_identity",
-            "python.signature",
-            "warnings.category_message"
+            "http.body.bytes",
+            "http.status"
           ],
           "reviewed_mapping": {
-            "contract_gate": "Requires an explicit fastapi.params.Param.__repr__ operation in the full public manifest.; Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
-            "rationale": "These cases register FastAPI Param instances in a representative route and serialize their repr() strings into the observable HTTP response; the reviewed operation gate is fastapi.params.Param.__repr__.",
+            "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
+            "rationale": "The independent parameter-representations response includes repr() for Body with an empty list, matching this pinned source function; the action also observes sibling parameter categories.",
             "source_evidence": [
               {
                 "end_line": 114,
@@ -265852,21 +266907,46 @@
                 "sha256": "f9e310036299d6a427443ca96ba118e58486e5927cd4c3bac0ffb815626e52cd",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 500
+              },
+              {
+                "end_line": 114,
+                "path": "tests/test_params_repr.py",
+                "role": "upstream FastAPI 0.141.1 test function test_body_repr_list",
+                "sha256": "481341a4c78ecf3be05de3bdca7783c2490410a3145c837c253f6f85034e83f1",
+                "start_line": 113
+              },
+              {
+                "end_line": 133,
+                "path": "fastapi/params.py",
+                "role": "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+                "sha256": "d5f34d48ae49ecf339170f85e7ff6e3b2b00d8d802fbad666f72e5ac15a9a893",
+                "start_line": 132
               }
             ],
-            "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+            "workflow_case": {
+              "action_ids": [
+                "parameter-representations"
+              ],
+              "case_id": "fastapi.params-repr.representative-default-categories",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+              "workflow_id": "public-model-edge-cases-upstream"
+            }
           },
           "selector_evidence": [
             {
-              "feature_id": "public-api-errors",
+              "feature_id": null,
+              "schema_extension_required": [
+                "http.body.bytes",
+                "http.status"
+              ],
               "selectors": [
-                "python.import_path",
-                "python.object_identity",
-                "python.signature",
-                "python.attribute_value",
-                "warnings.category_message",
-                "error.class",
-                "error.public_attributes"
+                "http.body.bytes",
+                "http.status"
               ]
             }
           ],
@@ -265876,7 +266956,19 @@
           "stimulus_design": [
             "Import or call the named public symbol with the documented arguments, including deprecated aliases and public error construction where applicable."
           ],
-          "stimulus_design_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories (actions: parameter-representations; selectors: http.body.bytes, http.status). Inputs contain no expected results."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml::fastapi.params-repr.representative-default-categories actions parameter-representations; the workflow is input-only and observes http.body.bytes, http.status.",
+          "workflow_case": {
+            "action_ids": [
+              "parameter-representations"
+            ],
+            "case_id": "fastapi.params-repr.representative-default-categories",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/public-model-edge-cases-upstream.yaml",
+            "workflow_id": "public-model-edge-cases-upstream"
+          }
         }
       ],
       "feature_ids": [

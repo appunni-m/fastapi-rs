@@ -4248,6 +4248,12 @@ for test_path, function_rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.items():
     reviewed_functions = TEST_REVIEW_MAPPINGS.setdefault(test_path, {}).setdefault("functions", {})
     for function_name, function_row in function_rows.items():
         workflow = function_row["workflow_case"]
+        function_supporting_sources = function_row.get("supporting_sources")
+        if function_supporting_sources is None:
+            function_supporting_sources = [
+                *module_review.get("fastapi_implementation_sources", []),
+                *module_review.get("starlette_contract_sources", []),
+            ]
         function_note = "Use %s::%s actions %s; the workflow is input-only and observes %s." % (
             workflow["recipe_path"],
             workflow["case_id"],
@@ -4260,18 +4266,15 @@ for test_path, function_rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.items():
             "rationale": function_row["rationale"],
             "replace_features": True,
             "supporting_sources": _append_unique_review_sources(
-                [],
-                [
-                    function_row["source_span"],
-                    *module_review.get("fastapi_implementation_sources", []),
-                    *module_review.get("starlette_contract_sources", []),
-                ],
+                [function_row["source_span"]],
+                function_supporting_sources,
             ),
             "stimulus_notes": function_note,
             "contract_gate": function_row["contract_gate"],
         }
         if test_path in {
             "tests/test_enforce_once_required_parameter.py",
+            "tests/test_params_repr.py",
             "tests/test_path.py",
             "tests/test_query.py",
             "tests/test_request_params/test_query/test_list.py",
