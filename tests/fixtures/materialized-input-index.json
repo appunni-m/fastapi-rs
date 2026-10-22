@@ -11743,9 +11743,9 @@
     {
       "id": "fastapi-cli-documented-process-v2",
       "input_path": "tests/fixtures/inputs/parity/fastapi-cli-documented-process-v2.json",
-      "input_sha256": "f014403a9b576ef2a8b09a25a586f11949d5fc4519ee4d9abefae059fa772963",
+      "input_sha256": "905894350068ee96f65c4b6dc0f6395802a3295672b87b12b3ca3534f436714c",
       "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-cli-documented-process-v2.yaml",
-      "recipe_sha256": "8a01c184ae9b6d618f49f0d443b09a41daf24efc12945fc029527a151849047c",
+      "recipe_sha256": "86aa5125e6d612f42ba4b85800c413bc6e27e4dc2f90ca1c7ac795c1f285c456",
       "case_ids": [
         "fastapi.cli.process.root-help",
         "fastapi.cli.process.root-version",
@@ -11763,6 +11763,7 @@
         "fastapi.cli.process.dev-auto-discovery-api-object",
         "fastapi.cli.process.dev-path-preserves-environment",
         "fastapi.cli.process.run-leaves-environment-unchanged",
+        "fastapi.cli.process.opentelemetry-guide-request",
         "fastapi.cli.process.run-auto-discovery-no-path",
         "fastapi.cli.process.dev-pyproject-entrypoint",
         "fastapi.cli.process.dev-explicit-entrypoint",
@@ -11898,6 +11899,15 @@
           "case_id": "fastapi.cli.process.run-leaves-environment-unchanged",
           "verification": "parity",
           "requirement_refs": [
+            "source:documented-page:fastapi-cli.md",
+            "source:upstream-test:tests/test_fastapi_cli.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.cli.process.opentelemetry-guide-request",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/opentelemetry.md",
             "source:documented-page:fastapi-cli.md",
             "source:upstream-test:tests/test_fastapi_cli.py"
           ]
@@ -42898,10 +42908,11 @@
     {
       "id": "telemetry-constructor-contract",
       "input_path": "tests/fixtures/inputs/parity/telemetry-constructor-contract.json",
-      "input_sha256": "8f6a2e9242a56281510aa81f11b239a2ee3f569cbaa4403337f11db78380be5f",
+      "input_sha256": "34b9d32531cd5ff1a4f1db7a52f0ebf3db4aa8be03f7dee60d44cc2946dca9cf",
       "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml",
-      "recipe_sha256": "ebf3e00a75c99d9463270ab1ac36b404f8aa77bb14bfa8cac250dcec3839b4ed",
+      "recipe_sha256": "78a569ee196a6bcd982019f8b94d86198f1e943cea21ffc1d92b659e6c920c1c",
       "case_ids": [
+        "fastapi.telemetry.constructor-default",
         "fastapi.telemetry.constructor-tracing-disabled",
         "fastapi.telemetry.constructor-operation-spans-disabled",
         "fastapi.telemetry.constructor-signals-disabled"
@@ -42909,6 +42920,12 @@
       "workload_path": "tests/fixtures/workloads/telemetry_constructor.py",
       "workload_sha256": "11f996b5a289eab09cce3c52db630d8d8ec88c69ac3084011419d7737b310ef8",
       "api_definitions": [
+        {
+          "case_id": "fastapi.telemetry.constructor-default",
+          "symbol_id": "fastapi.FastAPI",
+          "path": "fastapi/applications.py",
+          "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca"
+        },
         {
           "case_id": "fastapi.telemetry.constructor-operation-spans-disabled",
           "symbol_id": "fastapi.FastAPI",
@@ -42929,6 +42946,15 @@
         }
       ],
       "api_probes": [
+        {
+          "case_id": "fastapi.telemetry.constructor-default",
+          "probe_id": "fastapi-constructor-default-telemetry",
+          "symbol_id": "fastapi.FastAPI",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
         {
           "case_id": "fastapi.telemetry.constructor-operation-spans-disabled",
           "probe_id": "fastapi-constructor-operation-spans-disabled",
@@ -42967,6 +42993,14 @@
         }
       ],
       "case_contracts": [
+        {
+          "case_id": "fastapi.telemetry.constructor-default",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.FastAPI",
+            "source:documented-page:advanced/opentelemetry.md"
+          ]
+        },
         {
           "case_id": "fastapi.telemetry.constructor-tracing-disabled",
           "verification": "parity",
@@ -55914,11 +55948,26 @@
       ]
     },
     {
+      "source_item_id": "documented-page:advanced/opentelemetry.md",
+      "fixture_id": "fastapi.docs.advanced-opentelemetry",
+      "workflow_id": "fastapi-cli-documented-process-v2",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, process.exit_code. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.cli.process.opentelemetry-guide-request"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "process.exit_code"
+      ]
+    },
+    {
       "source_item_id": "documented-page:fastapi-cli.md",
       "fixture_id": "fastapi.docs.fastapi-cli",
       "workflow_id": "fastapi-cli-documented-process-v2",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 24 case(s); observes http.body.bytes, http.status, process.exit_code, process.stderr, process.stdout. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 25 case(s); observes http.body.bytes, http.status, process.exit_code, process.stderr, process.stdout. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.cli.process.dev-app-option",
         "fastapi.cli.process.dev-auto-discovery-api-object",
@@ -55937,6 +55986,7 @@
         "fastapi.cli.process.dev-path-preserves-environment",
         "fastapi.cli.process.dev-port-environment",
         "fastapi.cli.process.dev-pyproject-entrypoint",
+        "fastapi.cli.process.opentelemetry-guide-request",
         "fastapi.cli.process.root-help",
         "fastapi.cli.process.root-version",
         "fastapi.cli.process.run-auto-discovery-no-path",
@@ -55958,7 +56008,7 @@
       "fixture_id": "fastapi.test.test-fastapi-cli",
       "workflow_id": "fastapi-cli-documented-process-v2",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 24 case(s); observes http.body.bytes, http.status, process.exit_code, process.stderr, process.stdout. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 25 case(s); observes http.body.bytes, http.status, process.exit_code, process.stderr, process.stdout. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.cli.process.dev-app-option",
         "fastapi.cli.process.dev-auto-discovery-api-object",
@@ -55977,6 +56027,7 @@
         "fastapi.cli.process.dev-path-preserves-environment",
         "fastapi.cli.process.dev-port-environment",
         "fastapi.cli.process.dev-pyproject-entrypoint",
+        "fastapi.cli.process.opentelemetry-guide-request",
         "fastapi.cli.process.root-help",
         "fastapi.cli.process.root-version",
         "fastapi.cli.process.run-auto-discovery-no-path",
@@ -77741,8 +77792,9 @@
       "fixture_id": "fastapi.docs.advanced-opentelemetry",
       "workflow_id": "telemetry-constructor-contract",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 3 case(s); observes python.call_outcome, python.signature. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes python.call_outcome, python.signature. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.telemetry.constructor-default",
         "fastapi.telemetry.constructor-operation-spans-disabled",
         "fastapi.telemetry.constructor-signals-disabled",
         "fastapi.telemetry.constructor-tracing-disabled"

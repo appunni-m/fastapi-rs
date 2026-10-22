@@ -523,7 +523,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 61c00224b3626d47bc897c3d4d21d8c0f20645942b88ccc72de122306f4068f3
+    sha256: 87b213278ba81b8d27a5bb15bce8c2d62b4151885c8d5ad137fe90f4d1e15712
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1831
@@ -563,7 +563,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: f88cc65ef53de271bb41d28c1065a341eb762712e7b23100303e3cf5fb6c2ae1
+    sha256: 47e9972a775615c861ed5693cfce963b1e8fa84516a74e7f61da7de5d68c2c6d
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 913
@@ -600,14 +600,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: 53d132efb78e1e7edbb339f1a6557add138a92ac6614a142a6735d7f5b1267fa
+    sha256: d96b525494eafdaf3a1740434c588367395d2925dccf4ae69c0e18f2f3bb0818
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: 61ec8ca935acdac54c98e148d48e90879bc3d3cfe68315db856332ef55a38bf9
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 736
-      cases: 3086
-      partial_source_mappings: 2014
+      cases: 3088
+      partial_source_mappings: 2015
 
 contract_metadata:
   aliases:
@@ -672,6 +672,11 @@ unresolved:
     source_artifact: compatibility_atlas
     pointer: /unresolved_compatibility_points
     item_id: fastapi-source-evidence-revalidation
+  fastapi_telemetry_observation_contract:
+    state: constructor-only; telemetry outputs and lifecycle unobserved
+    source_artifact: compatibility_atlas
+    pointer: /unresolved_compatibility_points
+    item_id: fastapi-telemetry-observation-contract
   starlette_rs_streaming_taskgroup_callback:
     state: resolved on the FastAPI 0.157.0 runtime lock; identity-checked 3/3 parity passes
     evidence_ref: docs/atlas/reviews/stream-cancellation-2026-10-22.md
@@ -1454,7 +1459,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 195
     symbols_with_operation_fixture_refs: 490
-    operation_fixture_refs: 2955
+    operation_fixture_refs: 2957
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -5519,6 +5524,9 @@ api_surface_contract:
       fixture_id: fastapi.docs.advanced-opentelemetry
       fixture_design_ref: /fixture_designs/348
       observation_selectors:
+      - http.body.bytes
+      - http.status
+      - process.exit_code
       - python.call_outcome
       - python.signature
     - coverage_matrix_ref: /coverage_matrix/510
@@ -5676,9 +5684,21 @@ api_surface_contract:
       - python.signature
     - workflow_id: telemetry-constructor-contract
       input_path: tests/fixtures/inputs/parity/telemetry-constructor-contract.json
-      input_sha256: 8f6a2e9242a56281510aa81f11b239a2ee3f569cbaa4403337f11db78380be5f
+      input_sha256: 34b9d32531cd5ff1a4f1db7a52f0ebf3db4aa8be03f7dee60d44cc2946dca9cf
       recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
-      recipe_sha256: ebf3e00a75c99d9463270ab1ac36b404f8aa77bb14bfa8cac250dcec3839b4ed
+      recipe_sha256: 78a569ee196a6bcd982019f8b94d86198f1e943cea21ffc1d92b659e6c920c1c
+      workload_path: tests/fixtures/workloads/telemetry_constructor.py
+      workload_sha256: 11f996b5a289eab09cce3c52db630d8d8ec88c69ac3084011419d7737b310ef8
+      case_id: fastapi.telemetry.constructor-default
+      probe_id: fastapi-constructor-default-telemetry
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: telemetry-constructor-contract
+      input_path: tests/fixtures/inputs/parity/telemetry-constructor-contract.json
+      input_sha256: 34b9d32531cd5ff1a4f1db7a52f0ebf3db4aa8be03f7dee60d44cc2946dca9cf
+      recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
+      recipe_sha256: 78a569ee196a6bcd982019f8b94d86198f1e943cea21ffc1d92b659e6c920c1c
       workload_path: tests/fixtures/workloads/telemetry_constructor.py
       workload_sha256: 11f996b5a289eab09cce3c52db630d8d8ec88c69ac3084011419d7737b310ef8
       case_id: fastapi.telemetry.constructor-operation-spans-disabled
@@ -5688,9 +5708,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: telemetry-constructor-contract
       input_path: tests/fixtures/inputs/parity/telemetry-constructor-contract.json
-      input_sha256: 8f6a2e9242a56281510aa81f11b239a2ee3f569cbaa4403337f11db78380be5f
+      input_sha256: 34b9d32531cd5ff1a4f1db7a52f0ebf3db4aa8be03f7dee60d44cc2946dca9cf
       recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
-      recipe_sha256: ebf3e00a75c99d9463270ab1ac36b404f8aa77bb14bfa8cac250dcec3839b4ed
+      recipe_sha256: 78a569ee196a6bcd982019f8b94d86198f1e943cea21ffc1d92b659e6c920c1c
       workload_path: tests/fixtures/workloads/telemetry_constructor.py
       workload_sha256: 11f996b5a289eab09cce3c52db630d8d8ec88c69ac3084011419d7737b310ef8
       case_id: fastapi.telemetry.constructor-signals-disabled
@@ -5700,9 +5720,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: telemetry-constructor-contract
       input_path: tests/fixtures/inputs/parity/telemetry-constructor-contract.json
-      input_sha256: 8f6a2e9242a56281510aa81f11b239a2ee3f569cbaa4403337f11db78380be5f
+      input_sha256: 34b9d32531cd5ff1a4f1db7a52f0ebf3db4aa8be03f7dee60d44cc2946dca9cf
       recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
-      recipe_sha256: ebf3e00a75c99d9463270ab1ac36b404f8aa77bb14bfa8cac250dcec3839b4ed
+      recipe_sha256: 78a569ee196a6bcd982019f8b94d86198f1e943cea21ffc1d92b659e6c920c1c
       workload_path: tests/fixtures/workloads/telemetry_constructor.py
       workload_sha256: 11f996b5a289eab09cce3c52db630d8d8ec88c69ac3084011419d7737b310ef8
       case_id: fastapi.telemetry.constructor-tracing-disabled
@@ -6069,6 +6089,7 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - process.exit_code
     - python.call_outcome
     - python.signature
     - python.warnings
@@ -9964,9 +9985,19 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: telemetry-constructor-contract
       input_path: tests/fixtures/inputs/parity/telemetry-constructor-contract.json
-      input_sha256: 8f6a2e9242a56281510aa81f11b239a2ee3f569cbaa4403337f11db78380be5f
+      input_sha256: 34b9d32531cd5ff1a4f1db7a52f0ebf3db4aa8be03f7dee60d44cc2946dca9cf
       recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
-      recipe_sha256: ebf3e00a75c99d9463270ab1ac36b404f8aa77bb14bfa8cac250dcec3839b4ed
+      recipe_sha256: 78a569ee196a6bcd982019f8b94d86198f1e943cea21ffc1d92b659e6c920c1c
+      workload_path: tests/fixtures/workloads/telemetry_constructor.py
+      workload_sha256: 11f996b5a289eab09cce3c52db630d8d8ec88c69ac3084011419d7737b310ef8
+      case_id: fastapi.telemetry.constructor-default
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: telemetry-constructor-contract
+      input_path: tests/fixtures/inputs/parity/telemetry-constructor-contract.json
+      input_sha256: 34b9d32531cd5ff1a4f1db7a52f0ebf3db4aa8be03f7dee60d44cc2946dca9cf
+      recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
+      recipe_sha256: 78a569ee196a6bcd982019f8b94d86198f1e943cea21ffc1d92b659e6c920c1c
       workload_path: tests/fixtures/workloads/telemetry_constructor.py
       workload_sha256: 11f996b5a289eab09cce3c52db630d8d8ec88c69ac3084011419d7737b310ef8
       case_id: fastapi.telemetry.constructor-tracing-disabled
@@ -9975,9 +10006,9 @@ api_surface_contract:
       - python.signature
     - workflow_id: telemetry-constructor-contract
       input_path: tests/fixtures/inputs/parity/telemetry-constructor-contract.json
-      input_sha256: 8f6a2e9242a56281510aa81f11b239a2ee3f569cbaa4403337f11db78380be5f
+      input_sha256: 34b9d32531cd5ff1a4f1db7a52f0ebf3db4aa8be03f7dee60d44cc2946dca9cf
       recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
-      recipe_sha256: ebf3e00a75c99d9463270ab1ac36b404f8aa77bb14bfa8cac250dcec3839b4ed
+      recipe_sha256: 78a569ee196a6bcd982019f8b94d86198f1e943cea21ffc1d92b659e6c920c1c
       workload_path: tests/fixtures/workloads/telemetry_constructor.py
       workload_sha256: 11f996b5a289eab09cce3c52db630d8d8ec88c69ac3084011419d7737b310ef8
       case_id: fastapi.telemetry.constructor-operation-spans-disabled
@@ -9985,9 +10016,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: telemetry-constructor-contract
       input_path: tests/fixtures/inputs/parity/telemetry-constructor-contract.json
-      input_sha256: 8f6a2e9242a56281510aa81f11b239a2ee3f569cbaa4403337f11db78380be5f
+      input_sha256: 34b9d32531cd5ff1a4f1db7a52f0ebf3db4aa8be03f7dee60d44cc2946dca9cf
       recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
-      recipe_sha256: ebf3e00a75c99d9463270ab1ac36b404f8aa77bb14bfa8cac250dcec3839b4ed
+      recipe_sha256: 78a569ee196a6bcd982019f8b94d86198f1e943cea21ffc1d92b659e6c920c1c
       workload_path: tests/fixtures/workloads/telemetry_constructor.py
       workload_sha256: 11f996b5a289eab09cce3c52db630d8d8ec88c69ac3084011419d7737b310ef8
       case_id: fastapi.telemetry.constructor-signals-disabled
@@ -11969,9 +12000,9 @@ api_surface_contract:
       - python.signature
     - workflow_id: telemetry-constructor-contract
       input_path: tests/fixtures/inputs/parity/telemetry-constructor-contract.json
-      input_sha256: 8f6a2e9242a56281510aa81f11b239a2ee3f569cbaa4403337f11db78380be5f
+      input_sha256: 34b9d32531cd5ff1a4f1db7a52f0ebf3db4aa8be03f7dee60d44cc2946dca9cf
       recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
-      recipe_sha256: ebf3e00a75c99d9463270ab1ac36b404f8aa77bb14bfa8cac250dcec3839b4ed
+      recipe_sha256: 78a569ee196a6bcd982019f8b94d86198f1e943cea21ffc1d92b659e6c920c1c
       workload_path: tests/fixtures/workloads/telemetry_constructor.py
       workload_sha256: 11f996b5a289eab09cce3c52db630d8d8ec88c69ac3084011419d7737b310ef8
       case_id: fastapi.telemetry.constructor-tracing-disabled
@@ -11982,9 +12013,19 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: telemetry-constructor-contract
       input_path: tests/fixtures/inputs/parity/telemetry-constructor-contract.json
-      input_sha256: 8f6a2e9242a56281510aa81f11b239a2ee3f569cbaa4403337f11db78380be5f
+      input_sha256: 34b9d32531cd5ff1a4f1db7a52f0ebf3db4aa8be03f7dee60d44cc2946dca9cf
       recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
-      recipe_sha256: ebf3e00a75c99d9463270ab1ac36b404f8aa77bb14bfa8cac250dcec3839b4ed
+      recipe_sha256: 78a569ee196a6bcd982019f8b94d86198f1e943cea21ffc1d92b659e6c920c1c
+      workload_path: tests/fixtures/workloads/telemetry_constructor.py
+      workload_sha256: 11f996b5a289eab09cce3c52db630d8d8ec88c69ac3084011419d7737b310ef8
+      case_id: fastapi.telemetry.constructor-default
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: telemetry-constructor-contract
+      input_path: tests/fixtures/inputs/parity/telemetry-constructor-contract.json
+      input_sha256: 34b9d32531cd5ff1a4f1db7a52f0ebf3db4aa8be03f7dee60d44cc2946dca9cf
+      recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
+      recipe_sha256: 78a569ee196a6bcd982019f8b94d86198f1e943cea21ffc1d92b659e6c920c1c
       workload_path: tests/fixtures/workloads/telemetry_constructor.py
       workload_sha256: 11f996b5a289eab09cce3c52db630d8d8ec88c69ac3084011419d7737b310ef8
       case_id: fastapi.telemetry.constructor-tracing-disabled
@@ -11993,9 +12034,9 @@ api_surface_contract:
       - python.signature
     - workflow_id: telemetry-constructor-contract
       input_path: tests/fixtures/inputs/parity/telemetry-constructor-contract.json
-      input_sha256: 8f6a2e9242a56281510aa81f11b239a2ee3f569cbaa4403337f11db78380be5f
+      input_sha256: 34b9d32531cd5ff1a4f1db7a52f0ebf3db4aa8be03f7dee60d44cc2946dca9cf
       recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
-      recipe_sha256: ebf3e00a75c99d9463270ab1ac36b404f8aa77bb14bfa8cac250dcec3839b4ed
+      recipe_sha256: 78a569ee196a6bcd982019f8b94d86198f1e943cea21ffc1d92b659e6c920c1c
       workload_path: tests/fixtures/workloads/telemetry_constructor.py
       workload_sha256: 11f996b5a289eab09cce3c52db630d8d8ec88c69ac3084011419d7737b310ef8
       case_id: fastapi.telemetry.constructor-operation-spans-disabled
@@ -12003,9 +12044,9 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: telemetry-constructor-contract
       input_path: tests/fixtures/inputs/parity/telemetry-constructor-contract.json
-      input_sha256: 8f6a2e9242a56281510aa81f11b239a2ee3f569cbaa4403337f11db78380be5f
+      input_sha256: 34b9d32531cd5ff1a4f1db7a52f0ebf3db4aa8be03f7dee60d44cc2946dca9cf
       recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
-      recipe_sha256: ebf3e00a75c99d9463270ab1ac36b404f8aa77bb14bfa8cac250dcec3839b4ed
+      recipe_sha256: 78a569ee196a6bcd982019f8b94d86198f1e943cea21ffc1d92b659e6c920c1c
       workload_path: tests/fixtures/workloads/telemetry_constructor.py
       workload_sha256: 11f996b5a289eab09cce3c52db630d8d8ec88c69ac3084011419d7737b310ef8
       case_id: fastapi.telemetry.constructor-signals-disabled

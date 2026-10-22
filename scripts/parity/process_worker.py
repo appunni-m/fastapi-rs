@@ -88,6 +88,7 @@ ORACLE_PYTHON_PACKAGES = {
     "httpx2",
     "idna",
     "jinja2",
+    "opentelemetry-api",
     "pydantic",
     "pydantic-core",
     "pydantic-extra-types",

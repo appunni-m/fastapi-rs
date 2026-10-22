@@ -6779,6 +6779,9 @@ from atlas_documentation_section_case_mappings_sub_applications_20261015 import 
 from atlas_documentation_section_case_mappings_ui_clients_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_UI_CLIENTS_20261015,
 )
+from atlas_telemetry_documentation_section_review_mappings_20261022 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_OPENTELEMETRY_20261022,
+)
 from atlas_events_documentation_section_review_mappings_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015,
 )
@@ -6876,6 +6879,7 @@ for _new_section_mappings in (
     DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015,
     DOC_SECTION_CASE_MAPPINGS_REFERENCE_API_20261015,
     DOC_SECTION_CASE_MAPPINGS_REQUEST_FORMS_20261015,
+    DOC_SECTION_CASE_MAPPINGS_OPENTELEMETRY_20261022,
 ):
     _section_mapping_overlaps = set(DOC_SECTION_CASE_MAPPINGS).intersection(_new_section_mappings)
     if _section_mapping_overlaps:
@@ -12980,6 +12984,21 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "workload descriptions. These notes are not 0.157.0 parity evidence; do not "
                 "silently relabel or rely on them as current source review until they are "
                 "checked against the pinned source or explicitly marked historical."
+            ),
+        },
+        {
+            "id": "fastapi-telemetry-observation-contract",
+            "status": "constructor-only; telemetry outputs and lifecycle unobserved",
+            "question": "Which deterministic input and observation contract will compare FastAPI telemetry spans, metrics, logs, request-local context, provider/exporter ownership, and lifecycle without confusing them with HTTP or WebSocket outputs?",
+            "evidence": (
+                "FastAPI 0.157.0 exposes native telemetry through FastAPI(telemetry=...), "
+                "fastapi.telemetry, middleware, and lifespan code; its pinned tests exercise "
+                "HTTP, WebSocket, validation, errors, background tasks, integrations, and "
+                "OTLP environment setup. The current telemetry-constructor workflow observes "
+                "only signature and configuration acceptance, while the observation-selector "
+                "catalog has no span, metric, log-record, provider-state, or exporter-output "
+                "selector. The OpenTelemetry documentation sections and test modules therefore "
+                "remain partial or explicitly excluded pending a target-capable telemetry profile."
             ),
         },
         {

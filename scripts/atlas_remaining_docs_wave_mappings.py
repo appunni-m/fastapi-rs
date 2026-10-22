@@ -5036,22 +5036,32 @@ DOC_PAGE_REVIEW_MAPPINGS = {
 }
 
 DOC_PAGE_REVIEW_MAPPINGS["advanced/opentelemetry.md"] = {
-    "observation_selectors": ["python.call_outcome", "python.signature"],
+    "observation_selectors": [
+        "python.call_outcome",
+        "python.signature",
+        "process.exit_code",
+        "http.status",
+        "http.body.bytes",
+    ],
     "rationale": (
         "The selected constructor inputs cover FastAPI 0.157.0's public telemetry "
         "configuration signature and acceptance of tracing, operation-span, and "
-        "signal-disable options. They do not claim runtime span, metric, log, exporter, "
-        "WebSocket, or lifecycle behavior described elsewhere on the page."
+        "signal-disable options. A separate CLI process input follows the guide's "
+        "`fastapi run` and GET /items/1 example. It observes only process and HTTP "
+        "outcomes, not emitted telemetry. The current FastAPI-RS process profile has no "
+        "fastapi console entrypoint, so the target lane remains unresolved."
     ),
     "stimulus_notes": (
         "The linked input-only API workflow probes the FastAPI constructor signature and "
-        "independently disables tracing, operation spans, and telemetry signals."
+        "independently disables tracing, operation spans, and telemetry signals. A separate "
+        "isolated CLI process loads the documented main.py route and requests /items/1."
     ),
     "contract_gate": (
-        "Partial documentation mapping: only public FastAPI constructor configuration is "
-        "observed. Runtime HTTP/WebSocket telemetry, provider selection, exporter setup, "
-        "logs, metrics, and background-task spans require independent workflows and remain "
-        "unproven by these cases."
+        "Partial documentation mapping: constructor configuration and one process/HTTP "
+        "request are observed. HTTP response parity does not establish runtime HTTP or "
+        "WebSocket telemetry, provider selection, exporter setup, logs, metrics, or "
+        "background-task spans. The process case is source-observable only until the target "
+        "exposes the FastAPI console entrypoint."
     ),
     "supporting_sources": [
         {
@@ -5070,6 +5080,15 @@ DOC_PAGE_REVIEW_MAPPINGS["advanced/opentelemetry.md"] = {
                 "fastapi.telemetry.constructor-signals-disabled",
             ],
             "observation_selectors": ["python.call_outcome", "python.signature"],
+        },
+        {
+            "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-cli-documented-process-v2.yaml",
+            "case_ids": ["fastapi.cli.process.opentelemetry-guide-request"],
+            "observation_selectors": [
+                "process.exit_code",
+                "http.status",
+                "http.body.bytes",
+            ],
         }
     ],
 }

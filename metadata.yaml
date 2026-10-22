@@ -2479,6 +2479,10 @@ reviewed_api_contract_overlay:
         - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, symbol: test_openapi_schema}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
+          case_id: fastapi.telemetry.constructor-default
+          workload_path: tests/fixtures/workloads/telemetry_constructor.py
+          observation_selectors: [python.call_outcome]
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
           case_id: fastapi.telemetry.constructor-tracing-disabled
           workload_path: tests/fixtures/workloads/telemetry_constructor.py
           observation_selectors: [python.signature, python.call_outcome]
@@ -7032,6 +7036,10 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/applications.py, symbol: FastAPI}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
+          case_id: fastapi.telemetry.constructor-default
+          workload_path: tests/fixtures/workloads/telemetry_constructor.py
+          observation_selectors: [python.call_outcome]
         - recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
           case_id: fastapi.telemetry.constructor-tracing-disabled
           workload_path: tests/fixtures/workloads/telemetry_constructor.py

@@ -395,7 +395,22 @@ def _review_function(test_path: str, name: str, node: ast.AST) -> dict[str, Any]
         f"Pinned FastAPI 0.157.0 test function {name}",
     )
     families = _signal_families(test_path, node)
-    if node.name == "test_otlp_collector_does_not_resolve_hostname":
+    if (
+        test_path == "tests/test_tutorial/test_opentelemetry/test_tutorial001.py"
+        and node.name == "test_default_example"
+    ):
+        reason = (
+            f"At {test_path}:{span['start_line']}-{span['end_line']}, `{name}` sends GET "
+            "`/items/1` to the documented `item_id: int` route and checks the JSON response; "
+            "it does not assert an OpenTelemetry signal. The same typed route and request are "
+            "represented by the independent input case "
+            "`fastapi.path-params.tutorial002-integer-item-id` in "
+            "tests/fixtures/input-recipes/parity/path-params-tutorial002-upstream.yaml, with "
+            "exact HTTP status and body selectors. Exclude this function only from the "
+            "telemetry-specific denominator; that HTTP case does not establish trace, metric, "
+            "or log parity."
+        )
+    elif node.name == "test_otlp_collector_does_not_resolve_hostname":
         reason = (
             f"At {test_path}:{span['start_line']}-{span['end_line']}, `{name}` calls the "
             "private loopback collector from tests/test_telemetry/_otlp.py and asserts its "
@@ -424,11 +439,10 @@ def _review_function(test_path: str, name: str, node: ast.AST) -> dict[str, Any]
     else:
         reason = (
             f"At {test_path}:{span['start_line']}-{span['end_line']}, `{name}` checks generic "
-            "HTTP or background-task behavior without asserting an OpenTelemetry signal or "
-            "request-context value. Such transport behavior belongs to the pinned Starlette "
-            "1.6.0 oracle, while this review concerns FastAPI telemetry. Exclude this function "
-            "from the telemetry denominator; this does not exclude its generic behavior from "
-            "other reviewed contracts or make a parity claim."
+            "FastAPI request, response, or background-task behavior without asserting an "
+            "OpenTelemetry signal or request-context value. Exclude this function from the "
+            "telemetry denominator; its generic FastAPI behavior belongs to the corresponding "
+            "request, response, or task contract and is not evidence of telemetry parity."
         )
     sources = [span, *_source_refs(families)]
     return {

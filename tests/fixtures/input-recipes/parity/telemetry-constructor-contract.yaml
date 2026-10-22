@@ -4,6 +4,25 @@ workload:
   factory: create_argument_bundles
   instantiate_per_case: true
 cases:
+- case_id: fastapi.telemetry.constructor-default
+  probes:
+  - probe_id: fastapi-constructor-default-telemetry
+    public_callable:
+      module: fastapi
+      attribute: FastAPI
+    argument_bundle: unused
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/applications.py
+    kind: upstream_api_definition
+    sha256: a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca
+    symbol_id: fastapi.FastAPI
+  - path: docs/en/docs/advanced/opentelemetry.md
+    kind: upstream_documentation
+    sha256: 9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a
 - case_id: fastapi.telemetry.constructor-tracing-disabled
   probes:
   - probe_id: fastapi-constructor-telemetry-signature

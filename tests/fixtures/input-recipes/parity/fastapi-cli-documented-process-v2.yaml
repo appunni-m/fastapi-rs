@@ -250,6 +250,57 @@ cases:
     execution: *server_execution
     source_evidence: *cli_sources
 
+  - case_id: fastapi.cli.process.opentelemetry-guide-request
+    argv: [fastapi, run, --host, 127.0.0.1, --port, "{port}"]
+    cwd:
+      kind: isolated-tree
+      files:
+        - path: main.py
+          content: |
+            from fastapi import FastAPI
+
+            app = FastAPI()
+
+            @app.get("/items/{item_id}")
+            async def read_item(item_id: int):
+                return {"item_id": item_id}
+    environment: *stable_terminal
+    timeout_seconds: 30
+    observations: [process.exit_code, http.status, http.body.bytes]
+    execution:
+      kind: http-server
+      readiness:
+        path: /items/1
+        timeout_seconds: 12
+        poll_interval_ms: 100
+      request:
+        method: GET
+        path: /items/1
+        headers: {}
+        body: ""
+        timeout_seconds: 5
+      shutdown:
+        grace_seconds: 4
+    source_evidence:
+      - path: tests/test_fastapi_cli.py
+        kind: upstream_test
+        sha256: c5256b040fd47757ef89e15c9193348af8eb1f5f38e13193a521ab0033133b8c
+      - path: docs/en/docs/fastapi-cli.md
+        kind: upstream_documentation
+        sha256: ad3860dd30364ab774324d61580dd2b7b175e28a0a3fbd3fc1b2c5ec779ffe3f
+      - path: docs/en/docs/advanced/opentelemetry.md
+        kind: upstream_documentation
+        sha256: 9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a
+      - path: fastapi/cli.py
+        kind: upstream_implementation_source
+        sha256: 72c378b14c969a4771d67acb15e28fdbf22f752db192e0e2c3c076b9babd6f0d
+      - path: pyproject.toml
+        kind: upstream_project_metadata
+        sha256: f856aaf7e3718cbd294f9ef0f063072f6c2a7651e27ed6c2c113a0a80a2ae29e
+      - path: uv.lock
+        kind: upstream_lockfile
+        sha256: 62147be0657e1be6cbe592f335f52429e814f1236524c607e1e4cf4b01913678
+
   - case_id: fastapi.cli.process.run-auto-discovery-no-path
     argv: [fastapi, run, --host, 127.0.0.1, --port, "{port}"]
     cwd: *main_app_tree
