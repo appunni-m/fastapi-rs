@@ -4273,6 +4273,7 @@ for test_path, function_rows in REQUEST_PARAMETER_FUNCTION_MAPPINGS.items():
         if test_path in {
             "tests/test_enforce_once_required_parameter.py",
             "tests/test_path.py",
+            "tests/test_query.py",
             "tests/test_request_params/test_query/test_list.py",
         }:
             function_review["workflow_case"] = {

@@ -1198,6 +1198,9 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
     ),
 }
 
+from scripts.atlas_request_parameter_wave_mappings import (  # noqa: E402
+    REQUEST_PARAMETER_FUNCTION_MAPPINGS,
+)
 from scripts.atlas_union_error_context_review_mappings import (  # noqa: E402
     UNION_ERROR_CONTEXT_TEST_REVIEW_MAPPINGS,
 )
@@ -1217,6 +1220,20 @@ for _test_path, _module_review in UNION_ERROR_CONTEXT_TEST_REVIEW_MAPPINGS.items
                 if not selector.startswith("construction.")
             ),
         )
+
+for _function_name, _function_review in REQUEST_PARAMETER_FUNCTION_MAPPINGS[
+    "tests/test_query.py"
+].items():
+    _direct_link = _function_review["workflow_case"]
+    REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS[("tests/test_query.py", _function_name)] = (
+        _reviewed_direct_link(
+            Path(_direct_link["recipe_path"]).stem.replace("_", "-"),
+            _direct_link["recipe_path"],
+            _direct_link["case_id"],
+            _direct_link["action_ids"],
+            tuple(_direct_link["observation_selectors"]),
+        )
+    )
 
 
 def _fail(message: str) -> None:
