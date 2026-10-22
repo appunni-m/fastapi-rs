@@ -221,6 +221,18 @@ CORE_TEST_REVIEW_MAPPINGS = {
                 ["openapi-docs", "response-serialization"],
                 ["http.status", "openapi.document"],
                 "The dedicated app preserves both source routes; the HTTP status selector and root OpenAPI JSON pointer independently cover the asserted 200 status and complete parsed JSON snapshot.",
+                workflow_case={
+                    "workflow_id": "response-class-no-mediatype",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/response-class-no-mediatype.yaml",
+                    "case_id": "fastapi.response-class-no-mediatype.openapi",
+                    "action_ids": ["inspect-openapi"],
+                    "observation_selectors": [
+                        "docs.response.status",
+                        "http.status",
+                        "openapi.document",
+                    ],
+                },
+                stimulus_notes="Use response-class-no-mediatype.yaml case fastapi.response-class-no-mediatype.openapi, action inspect-openapi. The independent workload recreates both route/model declarations and observes the full parsed document; TestClient transport semantics remain in the Starlette-RS contract.",
             ),
         },
     },

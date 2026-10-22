@@ -120,11 +120,12 @@ def _mapping(
     rationale: str,
     contract_gate: str,
     supporting_sources: tuple[dict[str, Any], ...] = (),
+    workflow_case: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     selectors = sorted(
         {selector for workflow in workflows for selector in workflow["observation_selectors"]}
     )
-    return {
+    mapping = {
         "mapping_status": "reviewed_partial",
         "feature_ids": list(feature_ids),
         "observation_selectors": selectors,
@@ -141,6 +142,9 @@ def _mapping(
             *supporting_sources,
         ],
     }
+    if workflow_case is not None:
+        mapping["workflow_case"] = workflow_case
+    return mapping
 
 
 def _exclusion(
@@ -403,6 +407,18 @@ OPENAPI_EXAMPLES_SECURITY_SOURCE_REVIEW = {
                             "Repeated model references across path operations and nested component schemas.",
                         )
                     ],
+                    workflow_case={
+                        "workflow_id": "openapi-schemas",
+                        "recipe_path": _OPENAPI_SCHEMAS,
+                        "case_id": "fastapi.openapi.duplicate-models-openapi.openapi-schema",
+                        "action_ids": ["openapi"],
+                        "observation_selectors": [
+                            "docs.response.status",
+                            "http.status",
+                            "openapi.document",
+                            "openapi.paths",
+                        ],
+                    },
                     rationale=(
                         "The source snapshot checks nested models reused at multiple schema locations. The existing independent schema workflow also selects all paths and component schemas and reuses shared model references across routes."
                     ),
@@ -447,6 +463,18 @@ OPENAPI_EXAMPLES_SECURITY_SOURCE_REVIEW = {
                             "Selected generated query parameter list for a route with openapi_extra additions.",
                         )
                     ],
+                    workflow_case={
+                        "workflow_id": "openapi-operations",
+                        "recipe_path": _OPENAPI_OPERATIONS,
+                        "case_id": "fastapi.openapi.openapi-query-parameter-extension.openapi",
+                        "action_ids": ["openapi"],
+                        "observation_selectors": [
+                            "docs.response.status",
+                            "http.status",
+                            "openapi.document",
+                            "openapi.paths",
+                        ],
+                    },
                     rationale=(
                         "The existing workflow observes the generated parameter array for a route combining a normal query parameter with openapi_extra parameters."
                     ),
@@ -503,6 +531,18 @@ OPENAPI_EXAMPLES_SECURITY_SOURCE_REVIEW = {
                             "Selected OpenAPI operation including the custom x- extension field.",
                         )
                     ],
+                    workflow_case={
+                        "workflow_id": "openapi-operations",
+                        "recipe_path": _OPENAPI_OPERATIONS,
+                        "case_id": "fastapi.openapi.openapi-route-extensions.openapi-schema",
+                        "action_ids": ["openapi"],
+                        "observation_selectors": [
+                            "docs.response.status",
+                            "http.status",
+                            "openapi.document",
+                            "openapi.paths",
+                        ],
+                    },
                     rationale=(
                         "The existing operation pointer observes the route-specific custom extension in generated OpenAPI."
                     ),

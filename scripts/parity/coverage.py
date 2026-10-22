@@ -471,6 +471,46 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
         ("openapi.document",),
     ),
     (
+        "tests/test_response_class_no_mediatype.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "response-class-no-mediatype",
+        "tests/fixtures/input-recipes/parity/response-class-no-mediatype.yaml",
+        "fastapi.response-class-no-mediatype.openapi",
+        ("inspect-openapi",),
+        ("docs.response.status", "http.status", "openapi.document"),
+    ),
+    (
+        "tests/test_duplicate_models_openapi.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "openapi-schemas",
+        "tests/fixtures/input-recipes/parity/openapi-schemas.yaml",
+        "fastapi.openapi.duplicate-models-openapi.openapi-schema",
+        ("openapi",),
+        ("docs.response.status", "http.status", "openapi.document", "openapi.paths"),
+    ),
+    (
+        "tests/test_openapi_query_parameter_extension.py",
+        "test_openapi",
+    ): _reviewed_direct_link(
+        "openapi-operations",
+        "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+        "fastapi.openapi.openapi-query-parameter-extension.openapi",
+        ("openapi",),
+        ("docs.response.status", "http.status", "openapi.document", "openapi.paths"),
+    ),
+    (
+        "tests/test_openapi_route_extensions.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "openapi-operations",
+        "tests/fixtures/input-recipes/parity/openapi-operations.yaml",
+        "fastapi.openapi.openapi-route-extensions.openapi-schema",
+        ("openapi",),
+        ("docs.response.status", "http.status", "openapi.document", "openapi.paths"),
+    ),
+    (
         "tests/test_stream_status_code.py",
         "test_status_code",
     ): _reviewed_direct_link(
@@ -3522,6 +3562,10 @@ def validate_compatibility_artifacts(
                 "tests/test_enforce_once_required_parameter.py",
                 "tests/test_response_code_no_body.py",
                 "tests/test_response_set_response_code_empty.py",
+                "tests/test_response_class_no_mediatype.py",
+                "tests/test_duplicate_models_openapi.py",
+                "tests/test_openapi_query_parameter_extension.py",
+                "tests/test_openapi_route_extensions.py",
                 "tests/test_dependency_after_yield_raise.py",
                 "tests/test_stream_status_code.py",
                 "tests/test_exception_handlers.py",
