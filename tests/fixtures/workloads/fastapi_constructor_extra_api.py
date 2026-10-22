@@ -9,7 +9,11 @@ def create_argument_bundles() -> Mapping[str, dict[str, object]]:
     return {
         "unused": {"args": [], "kwargs": {}},
         "debug-true": {"args": [], "kwargs": {"debug": True}},
-        "fastapi-extra-kwargs": {
+        "openapi-prefix-removed": {
+            "args": [],
+            "kwargs": {"openapi_prefix": "/legacy"},
+        },
+        "arbitrary-extra-keyword": {
             "args": [],
             "kwargs": {"constructor_trace": "opaque-value"},
         },

@@ -1,6 +1,6 @@
 # Contributing
 
-FastAPI-RS is an alpha source-informed implementation of FastAPI 0.141.1.
+FastAPI-RS is an alpha source-informed implementation of FastAPI 0.157.0.
 Keep compatibility claims tied to reviewed evidence and the pinned Starlette
 1.6.0 contract. `fastapi-rs/` owns FastAPI behavior; `fastapi-rs-py/` is the
 internal PyO3 binding and value-conversion crate, and Python runtime files stay

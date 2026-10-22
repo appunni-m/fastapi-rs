@@ -98,10 +98,10 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015 = {
             "dependencies."
         ),
         (
-            "FastAPI inspects the dependency callable when building its graph "
-            "(`../fastapi/fastapi/dependencies/utils.py:198-227,271-347`) and invokes solved "
+            "FastAPI 0.157.0 inspects typed dependency signatures and builds its graph "
+            "(`../fastapi/fastapi/dependencies/utils.py:241-270,314-389`), then resolves "
             "dependencies in `solve_dependencies` "
-            "(`../fastapi/fastapi/dependencies/utils.py:566-680`). "
+            "(`../fastapi/fastapi/dependencies/utils.py:657-819`). "
             "The mapped responses are the pinned example's two checker outcomes."
         ),
     ),
@@ -173,15 +173,17 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015 = {
             "boolean into the path operation "
             "(`../fastapi/docs_src/dependencies/tutorial011_an_py310.py:20-23`). "
             "FastAPI's dependency graph and solver implement that call path "
-            "(`../fastapi/fastapi/dependencies/utils.py:271-347,566-680`)."
+            "(`../fastapi/fastapi/dependencies/utils.py:314-389,657-819`)."
         ),
     ),
     (
         "advanced/advanced-dependencies.md",
         "dependencies-with-yield-httpexception-except-and-background-tasks",
     ): _excluded(
-        "Dependencies with `yield`, `HTTPException`, `except` and Background Tasks "
-        "{ #dependencies-with-yield-httpexception-except-and-background-tasks }",
+        (
+            "Dependencies with `yield`, `HTTPException`, `except` and Background Tasks "
+            "{ #dependencies-with-yield-httpexception-except-and-background-tasks }"
+        ),
         67,
         163,
         (
@@ -210,10 +212,10 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015 = {
             "patterns are not claimed."
         ),
         (
-            "FastAPI 0.141.1 places the function and request exit stacks around endpoint "
-            "execution and response sending (`../fastapi/fastapi/routing.py:137-158`); "
+            "FastAPI 0.157.0 places the function and request exit stacks around endpoint "
+            "execution and response sending (`../fastapi/fastapi/routing.py:143-158`); "
             "dependency scope is validated while building the graph "
-            "(`../fastapi/fastapi/dependencies/utils.py:271-347`). "
+            "(`../fastapi/fastapi/dependencies/utils.py:314-389`). "
             "The selected input actions observe these scope timings and their cleanup state."
         ),
     ),
@@ -221,8 +223,10 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015 = {
         "advanced/advanced-dependencies.md",
         "dependencies-with-yield-and-streamingresponse-technical-details",
     ): _workflow(
-        "Dependencies with `yield` and `StreamingResponse`, Technical Details "
-        "{ #dependencies-with-yield-and-streamingresponse-technical-details }",
+        (
+            "Dependencies with `yield` and `StreamingResponse`, Technical Details "
+            "{ #dependencies-with-yield-and-streamingresponse-technical-details }"
+        ),
         89,
         138,
         _LIFECYCLE,
@@ -236,8 +240,8 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015 = {
             "resource-in-stream path, not the historical pre-0.118 behavior."
         ),
         (
-            "FastAPI 0.141.1 keeps the request-scoped dependency exit stack around response "
-            "sending (`../fastapi/fastapi/routing.py:137-158`). Starlette 1.6.0 sends each "
+            "FastAPI 0.157.0 keeps the request-scoped dependency exit stack around response "
+            "sending (`../fastapi/fastapi/routing.py:143-158`). Starlette 1.6.0 sends each "
             "`StreamingResponse` body chunk before its response background step "
             "(`../starlette/starlette/responses.py:248-284`); the selected input verifies "
             "the yielded "
@@ -266,8 +270,10 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015 = {
         "advanced/advanced-dependencies.md",
         "dependencies-with-yield-and-except-technical-details",
     ): _workflow(
-        "Dependencies with `yield` and `except`, Technical Details "
-        "{ #dependencies-with-yield-and-except-technical-details }",
+        (
+            "Dependencies with `yield` and `except`, Technical Details "
+            "{ #dependencies-with-yield-and-except-technical-details }"
+        ),
         139,
         144,
         _EXCEPT,
@@ -283,16 +289,19 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015 = {
         (
             "The page documents catching and suppressing an exception in a yielded dependency. "
             "This documentation link is limited to reading the captured exception value; the "
-            "pinned test mapping independently records the current FastAPI 0.141.1 guard that "
-            "raises FastAPIError when suppression occurs before a response exists."
+            "pinned test mapping independently records the FastAPI 0.157.0 guard at "
+            "`../fastapi/fastapi/routing.py:143-164` that raises FastAPIError when suppression "
+            "occurs before a response exists."
         ),
     ),
     (
         "advanced/advanced-dependencies.md",
         "background-tasks-and-dependencies-with-yield-technical-details",
     ): _workflow(
-        "Background Tasks and Dependencies with `yield`, Technical Details "
-        "{ #background-tasks-and-dependencies-with-yield-technical-details }",
+        (
+            "Background Tasks and Dependencies with `yield`, Technical Details "
+            "{ #background-tasks-and-dependencies-with-yield-technical-details }"
+        ),
         145,
         163,
         _LIFECYCLE,
@@ -307,9 +316,9 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_DEPENDENCIES_20261015 = {
         ),
         (
             "Starlette 1.6.0 runs a response background task after sending the response "
-            "(`../starlette/starlette/responses.py:163-170`), while FastAPI 0.141.1 manages "
+            "(`../starlette/starlette/responses.py:163-170`), while FastAPI 0.157.0 manages "
             "yielded dependency exit stacks in the routing response path "
-            "(`../fastapi/fastapi/routing.py:137-158`). "
+            "(`../fastapi/fastapi/routing.py:143-158`). "
             "The selected pair observes the current background and cleanup order."
         ),
     ),

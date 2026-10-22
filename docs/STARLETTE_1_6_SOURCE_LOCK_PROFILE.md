@@ -1,8 +1,8 @@
 # Starlette 1.6.0 source-lock dependency profile
 
 This profile records the dependency lock shipped with the pinned Starlette
-1.6.0 source-oracle checkout. It is separate from FastAPI 0.141.1's own
-[`uv.lock` entry for `starlette==1.3.1`](https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock#L4145-L4152).
+1.6.0 source-oracle checkout. It is separate from FastAPI 0.157.0's own
+[`uv.lock` entry for `starlette==1.7.0`](https://github.com/fastapi/fastapi/blob/386a28af2f87af1a32ac26d88f07b7f58ab2dfb1/uv.lock).
 That FastAPI lock remains its source dependency record and is not replaced by
 this profile. Nothing here
 declares a target runtime dependency for FastAPI-RS; the target uses the pinned
@@ -124,7 +124,7 @@ selected installed wheel binary. PyPI JSON metadata omits a license for
 `mypy-extensions==1.1.0`, but the pinned [Starlette lock](https://github.com/Kludex/starlette/blob/4f250d6b814587e20c5365f0a5f0c4d42bcb929f/uv.lock#L1008-L1014)
 selects an sdist with SHA-256
 `52e68efc3284861e772bbcd66823fde5ae21fd2fdb51c62a211403730b916558`.
-FastAPI 0.141.1's [lock](https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/uv.lock#L2393-L2399)
+FastAPI 0.157.0's [lock](https://github.com/fastapi/fastapi/blob/386a28af2f87af1a32ac26d88f07b7f58ab2dfb1/uv.lock)
 selects the same sdist hash, and its inventory records the exact-version
 source archive's `LICENSE` as MIT. The package's
 [1.1.0 `LICENSE`](https://github.com/python/mypy_extensions/blob/1.1.0/LICENSE)
@@ -238,7 +238,7 @@ backend version or its transitive build closure. Treat the version and closure
 as **unknown**, and the backend as a **build-only** input. Do not infer a
 version from the runtime, `dev`, or `docs` groups.
 
-The linked FastAPI 0.141.1 source-lock row remains unchanged; its lock is not
+The linked FastAPI 0.157.0 source-lock row remains unchanged; its lock is not
 an input to this Starlette 1.6.0 profile.
 
 ## Starlette-RS Python runtime and optional-extra closure at `4139a72`

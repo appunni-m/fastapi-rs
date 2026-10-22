@@ -2,7 +2,7 @@
 
 All workflow links reuse existing input-only recipes with exact pinned-page
 source evidence. No expected outputs or upstream test bodies are added here.
-FastAPI source citations refer to 0.141.1 at 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f.
+FastAPI source citations refer to 0.157.0 at 386a28af2f87af1a32ac26d88f07b7f58ab2dfb.
 """
 
 
@@ -13,11 +13,12 @@ def _workflow(heading, start, end, recipe, cases, actions, selectors, note, rati
         "end_line": end,
         "recipe_path": recipe,
         "case_ids": cases,
-        "action_ids": actions,
         "observation_selectors": list(selectors),
         "scope_note": note,
         "rationale": rationale,
     }
+    if actions is not None:
+        row["action_ids"] = actions
     return row
 
 
@@ -46,7 +47,7 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
     ("tutorial/query-params.md", "query-parameters"): _excluded(
         "Query Parameters { #query-parameters }",
         1,
-        188,
+        194,
         (
             "The H1 is a page-level container whose Markdown span includes all nested query "
             "sections. Concrete query behaviors are reviewed under their own headings."
@@ -76,7 +77,7 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
             "default (docs/en/docs/tutorial/query-params.md:31-59). Its linked page-backed "
             "input omits an optional query value; FastAPI's multidict extraction returns the "
             "field default when the input is absent "
-            "(fastapi/dependencies/utils.py:749-777)."
+            "(fastapi/dependencies/utils.py:843-871, 952-989)."
         ),
     ),
     ("tutorial/query-params.md", "optional-parameters"): _workflow(
@@ -97,31 +98,33 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
             "The pinned section declares q optional with a None default "
             "(docs/en/docs/tutorial/query-params.md:60-73). FastAPI binds the query value "
             "and applies its declared default when absent "
-            "(fastapi/dependencies/utils.py:749-777); the recipe covers only omission."
+            "(fastapi/dependencies/utils.py:843-871, 952-989); the recipe covers only omission."
         ),
     ),
     ("tutorial/query-params.md", "query-parameter-type-conversion"): _excluded(
         "Query parameter type conversion { #query-parameter-type-conversion }",
         74,
-        112,
+        118,
         (
-            "The section's bool spellings describe Pydantic field coercion; this mapping set "
-            "does not include a page-cited bool input case."
+            "The section documents true and false boolean spellings, omitted defaults, and "
+            "empty/unrecognized-value errors, but this mapping set does not include a "
+            "page-cited boolean lexical input case."
         ),
         (
-            "The pinned section's concrete claim is that short: bool accepts several true "
-            "spellings (docs/en/docs/tutorial/query-params.md:74-112; "
-            "docs_src/query_params/tutorial003_py310.py:8-10). FastAPI passes typed query "
-            "values through its field-validation path, while Pydantic 2.13.4 owns primitive "
-            "field coercion. Existing page-backed query cases sample required/missing and "
-            "integer validation, not this boolean lexical contract "
-            "(fastapi/dependencies/utils.py:734-743, 780-861)."
+            "The pinned section documents accepted true spellings, false spellings, the "
+            "default for an omitted `short`, and 422 responses for empty or unrecognized "
+            "values (docs/en/docs/tutorial/query-params.md:74-116; "
+            "docs_src/query_params/tutorial003_py310.py:8-10). FastAPI extracts and "
+            "validates typed query fields through `request_params_to_args` and its field "
+            "validation path (fastapi/dependencies/utils.py:952-989); Pydantic 2.13.5 owns "
+            "primitive boolean coercion. The available page-backed query cases sample "
+            "required/missing and integer validation, not this boolean lexical contract."
         ),
     ),
     ("tutorial/query-params.md", "multiple-path-and-query-parameters"): _workflow(
         "Multiple path and query parameters { #multiple-path-and-query-parameters }",
-        113,
-        122,
+        119,
+        128,
         _FIRST,
         ["fastapi.first-slice.create-item-optional-query-default"],
         ["post-item"],
@@ -134,16 +137,16 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
         ),
         (
             "The pinned section states that path and query parameters can coexist in one "
-            "operation (docs/en/docs/tutorial/query-params.md:113-122). The selected "
+            "operation (docs/en/docs/tutorial/query-params.md:119-128). The selected "
             "page-backed request includes the route path value and a query field. FastAPI "
             "classifies path fields separately from inferred query fields "
-            "(fastapi/dependencies/utils.py:490-520, 550-563)."
+            "(fastapi/dependencies/utils.py:430-548, 565-618)."
         ),
     ),
     ("tutorial/query-params.md", "required-query-parameters"): _workflow(
         "Required query parameters { #required-query-parameters }",
-        123,
-        188,
+        129,
+        194,
         _REQUEST_PARAMETERS,
         ["fastapi.request-parameters.query.required-missing"],
         ["get-required-query-missing"],
@@ -155,10 +158,10 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
         ),
         (
             "The pinned section says that a query parameter with no default is required "
-            "and shows its missing-input error (docs/en/docs/tutorial/query-params.md:123-188). "
+            "and shows its missing-input error (docs/en/docs/tutorial/query-params.md:129-194). "
             "FastAPI treats a parameter without a default as required and produces a missing "
-            "field error during request validation (fastapi/dependencies/utils.py:490-506, "
-            "734-743, 749-777)."
+            "field error during request validation (fastapi/dependencies/utils.py:533-548, "
+            "843-871, 952-989)."
         ),
     ),
     ("tutorial/header-params.md", "header-parameters"): _excluded(
@@ -204,8 +207,8 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
             "(docs/en/docs/tutorial/header-params.md:11-32). The page-backed workload uses "
             "a required x_actor Header alias; FastAPI classifies it into the header field "
             "collection and resolves it from request headers "
-            "(fastapi/params.py:303-316; fastapi/dependencies/utils.py:399-442, 550-563, "
-            "681-697). The recipe also records ASGI send message types as a generic "
+            "(fastapi/params.py:320-407; fastapi/dependencies/utils.py:314-389, 423-618, "
+            "763-785, 952-989). The recipe also records ASGI send message types as a generic "
             "harness observation, which is not a separate Header claim."
         ),
     ),
@@ -229,10 +232,10 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
         (
             "The pinned section documents default underscore-to-hyphen conversion and the "
             "explicit Header(convert_underscores=False) opt-out "
-            "(docs/en/docs/tutorial/header-params.md:41-49). FastAPI 0.141.1 declares "
+            "(docs/en/docs/tutorial/header-params.md:41-49). FastAPI 0.157.0 declares "
             "the flag on Header and stores it on the field info "
-            "(fastapi/params.py:303-316, 352-353), then selects a hyphenated alias only "
-            "when conversion is enabled (fastapi/dependencies/utils.py:524-528). The two "
+            "(fastapi/params.py:320-374), then selects a hyphenated alias only when "
+            "conversion is enabled (fastapi/dependencies/utils.py:595-599, 1292-1324). The two "
             "independent requests send request-label for Header() and request_label for "
             "Header(convert_underscores=False). Starlette 1.6.0 performs case-insensitive "
             "lookup for the already selected header name (starlette/datastructures.py:537-539)."
@@ -255,7 +258,7 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
             "The pinned section declares a list-valued header and shows two X-Token values "
             "(docs/en/docs/tutorial/header-params.md:57-86). FastAPI retrieves all values "
             "for a sequence field through the Starlette 1.6.0 Headers interface before "
-            "field validation (fastapi/dependencies/utils.py:749-777, 780-821); Starlette "
+            "field validation (fastapi/dependencies/utils.py:843-871, 952-989); Starlette "
             "owns generic header collection behavior."
         ),
     ),
@@ -273,7 +276,7 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
     ("tutorial/query-param-models.md", "query-parameter-models"): _excluded(
         "Query Parameter Models { #query-parameter-models }",
         1,
-        68,
+        88,
         (
             "The H1 is a page-level container whose Markdown span includes model, docs, "
             "extra-policy, and summary sections."
@@ -301,7 +304,7 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
             "the constructed model (docs/en/docs/tutorial/query-param-models.md:13-20; "
             "docs_src/query_param_models/tutorial001_an_py310.py:9-18). FastAPI recognizes "
             "BaseModel query parameters and extracts model fields during request resolution "
-            "(fastapi/dependencies/utils.py:540-545, 780-850). Pydantic owns field validation."
+            "(fastapi/dependencies/utils.py:611-616, 874-989). Pydantic owns field validation."
         ),
     ),
     ("tutorial/query-param-models.md", "check-the-docs"): _excluded(
@@ -337,24 +340,65 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
             "page-cited input workflow."
         ),
     ),
+    ("tutorial/query-param-models.md", "combine-parameter-models"): _workflow(
+        "Combine Parameter Models { #combine-parameter-models }",
+        60,
+        79,
+        _P + "parameter-models-combined-locations-0157.yaml",
+        [
+            "fastapi.parameter-models.combined-locations.defaults",
+            "fastapi.parameter-models.combined-locations.independent-values",
+            "fastapi.parameter-models.combined-locations.independent-validation",
+            "fastapi.parameter-models.combined-locations.forbid-extras-around-dependencies",
+            "fastapi.parameter-models.combined-locations.openapi-parameters",
+        ],
+        None,
+        [
+            "docs.response.status",
+            "http.body.bytes",
+            "http.status",
+            "openapi.document",
+            "openapi.paths",
+        ],
+        (
+            "The independent cases combine query, header, and cookie models with other "
+            "parameters and dependencies. They sample defaults, same-name values and "
+            "validation, extra-field handling, and OpenAPI declarations. They do not recreate "
+            "the tutorial's exact Pagination/Filters example or claim behavior outside the "
+            "listed input shapes."
+        ),
+        (
+            "The pinned section adds composition of multiple query models with individual "
+            "parameters and dependencies, including independent handling of shared names, "
+            "extra policies, and OpenAPI parameter projection; it also states that the same "
+            "approach works for Header and Cookie models "
+            "(docs/en/docs/tutorial/query-param-models.md:60-79). FastAPI 0.157.0 routes "
+            "request-parameter models through `_request_param_model_to_args` and "
+            "`request_params_to_args` (fastapi/dependencies/utils.py:874-989) and flattens "
+            "model fields into OpenAPI parameters (fastapi/openapi/utils.py:158-213). The "
+            "upstream query example and its tests are in "
+            "docs_src/query_param_models/tutorial003_an_py310.py and "
+            "tests/test_tutorial/test_query_param_models/test_tutorial003.py."
+        ),
+    ),
     ("tutorial/query-param-models.md", "summary"): _excluded(
         "Summary { #summary }",
-        60,
-        68,
+        80,
+        88,
         (
             "The section restates query-model use and points forward to cookie/header models; "
             "it adds no request example."
         ),
         (
             "The pinned summary and spoiler contain no new endpoint or parameter configuration "
-            "(docs/en/docs/tutorial/query-param-models.md:60-68). Query extraction is mapped "
+            "(docs/en/docs/tutorial/query-param-models.md:80-88). Query extraction is mapped "
             "above, and header-model extraction is mapped on its own page."
         ),
     ),
     ("tutorial/header-param-models.md", "header-parameter-models"): _excluded(
         "Header Parameter Models { #header-parameter-models }",
         1,
-        72,
+        80,
         (
             "The H1 is a page-level container whose Markdown span includes model, docs, "
             "extra-policy, underscore, and summary sections."
@@ -382,7 +426,7 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
             "returns it (docs/en/docs/tutorial/header-param-models.md:13-20; "
             "docs_src/header_param_models/tutorial001_an_py310.py:9-18). FastAPI detects a "
             "single model-valued header parameter, extracts its fields from request headers, "
-            "and validates the assembled model (fastapi/dependencies/utils.py:780-850); "
+            "and validates the assembled model (fastapi/dependencies/utils.py:874-989); "
             "Starlette 1.6.0 owns generic Headers access."
         ),
     ),
@@ -418,6 +462,49 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
             "page-cited input workflow."
         ),
     ),
+    ("tutorial/header-param-models.md", "combine-parameter-models"): _workflow(
+        "Combine Parameter Models { #combine-parameter-models }",
+        70,
+        77,
+        _P + "parameter-models-combined-locations-0157.yaml",
+        [
+            "fastapi.parameter-models.combined-locations.defaults",
+            "fastapi.parameter-models.combined-locations.independent-values",
+            "fastapi.parameter-models.combined-locations.independent-validation",
+            "fastapi.parameter-models.combined-locations.forbid-extras-around-dependencies",
+            "fastapi.parameter-models.combined-locations.openapi-parameters",
+        ],
+        None,
+        [
+            "docs.response.status",
+            "http.body.bytes",
+            "http.status",
+            "openapi.document",
+            "openapi.paths",
+        ],
+        (
+            "The independent cases combine header models with query and cookie models, "
+            "individual parameters, and dependencies. They sample per-model extraction, "
+            "same-name values and validation, extra-field handling, underscore settings, "
+            "and OpenAPI declarations. They do not claim the exact CommonHeaders tutorial "
+            "example or proxy-specific header behavior."
+        ),
+        (
+            "The pinned section documents combining Header models with individual header "
+            "parameters and dependencies, independently applying each model's extra and "
+            "convert_underscores policy, and retaining explicit aliases in OpenAPI "
+            "(docs/en/docs/tutorial/header-param-models.md:70-77). FastAPI 0.157.0 expands "
+            "each request-parameter model independently, tracks declared names and aliases, "
+            "and validates the remaining fields through `_request_param_model_to_args` "
+            "(fastapi/dependencies/utils.py:874-949); OpenAPI projection selects each "
+            "field's own underscore-conversion policy "
+            "(fastapi/openapi/utils.py:158-213). The shared input recipe is an independent "
+            "combined-location workload, while the source tutorial's Header model example "
+            "and test remain at "
+            "docs_src/header_param_models/tutorial003_an_py310.py and "
+            "tests/test_tutorial/test_header_param_models/test_tutorial003.py."
+        ),
+    ),
     ("tutorial/header-param-models.md", "disable-convert-underscores"): _workflow(
         "Disable Convert Underscores { #disable-convert-underscores }",
         54,
@@ -438,9 +525,9 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
             "header model, after explaining the default `save_data`-to-`save-data` alias "
             "conversion (docs/en/docs/tutorial/header-param-models.md:56-62). The "
             "independent request sends request_label using the model field's exact "
-            "underscore name. FastAPI 0.141.1 expands the single model into header fields, "
+            "underscore name. FastAPI 0.157.0 expands the single model into header fields, "
             "reads convert_underscores from the top-level Header, and only rewrites field "
-            "names when the flag is true (fastapi/dependencies/utils.py:793-803, 809-824). "
+            "names when the flag is true (fastapi/dependencies/utils.py:874-949, 1292-1324). "
             "Starlette 1.6.0 retrieves the selected key without underscore conversion "
             "(starlette/datastructures.py:537-539); Pydantic owns validation of the "
             "resulting string model field, not FastAPI's header-name selection."
@@ -448,15 +535,15 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_HEADER_PARAMETERS_20261015 = {
     ),
     ("tutorial/header-param-models.md", "summary"): _excluded(
         "Summary { #summary }",
-        70,
-        72,
+        78,
+        80,
         (
             "This is a one-sentence recap of the Header model behavior mapped in the "
             "preceding section."
         ),
         (
             "The pinned summary has no new model declaration or request example "
-            "(docs/en/docs/tutorial/header-param-models.md:70-72). Model extraction is linked "
+            "(docs/en/docs/tutorial/header-param-models.md:78-80). Model extraction is linked "
             "to the preceding section's selected workflow."
         ),
     ),

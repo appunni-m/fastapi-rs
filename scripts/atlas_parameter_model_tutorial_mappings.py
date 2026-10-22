@@ -22,8 +22,8 @@ RECIPE_ROOT = PROJECT_ROOT / "tests/fixtures/input-recipes/parity"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -31,7 +31,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI request, multidict, cookie parsing, response, and TestClient contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "BaseModel field defaults, coercion, constraints, Literal checks, extra policy, and model schema generation",
     },
 }
@@ -54,56 +54,56 @@ TUTORIAL_TEST_MODULES = (*_QUERY_TUTORIALS, *_HEADER_TUTORIALS, *_COOKIE_TUTORIA
 _FASTAPI_SOURCES = (
     {
         "path": "fastapi/params.py",
-        "start_line": 26,
-        "end_line": 134,
+        "start_line": 27,
+        "end_line": 139,
         "role": "FastAPI Param stores request location and parameter FieldInfo metadata used when grouped Pydantic models are declared.",
     },
     {
         "path": "fastapi/params.py",
-        "start_line": 221,
-        "end_line": 300,
+        "start_line": 232,
+        "end_line": 317,
         "role": "FastAPI Query declaration selects query parameters and forwards aliases, defaults, and validation metadata.",
     },
     {
         "path": "fastapi/params.py",
-        "start_line": 303,
-        "end_line": 384,
+        "start_line": 320,
+        "end_line": 407,
         "role": "FastAPI Header declaration selects header parameters and stores convert_underscores behavior.",
     },
     {
         "path": "fastapi/params.py",
-        "start_line": 387,
-        "end_line": 466,
+        "start_line": 410,
+        "end_line": 495,
         "role": "FastAPI Cookie declaration selects cookie parameters and forwards field metadata.",
     },
     {
         "path": "fastapi/dependencies/utils.py",
-        "start_line": 381,
-        "end_line": 547,
+        "start_line": 423,
+        "end_line": 618,
         "role": "FastAPI analyzes endpoint annotations/defaults, recognizes a single request-parameter BaseModel, and builds its request field.",
     },
     {
         "path": "fastapi/dependencies/utils.py",
-        "start_line": 550,
-        "end_line": 563,
+        "start_line": 621,
+        "end_line": 634,
         "role": "FastAPI assigns constructed request fields to the path, query, header, or cookie dependant collection.",
     },
     {
         "path": "fastapi/dependencies/utils.py",
-        "start_line": 681,
-        "end_line": 697,
+        "start_line": 763,
+        "end_line": 785,
         "role": "FastAPI supplies Starlette Request query parameters, headers, and cookies to request-field extraction.",
     },
     {
         "path": "fastapi/dependencies/utils.py",
-        "start_line": 749,
-        "end_line": 866,
+        "start_line": 843,
+        "end_line": 989,
         "role": "FastAPI reads defaults and repeated values, applies header underscore conversion, validates grouped model input, and attaches request-location errors.",
     },
     {
         "path": "fastapi/routing.py",
-        "start_line": 751,
-        "end_line": 755,
+        "start_line": 792,
+        "end_line": 799,
         "role": "FastAPI raises RequestValidationError when dependency solving returns request parameter errors.",
     },
     {
@@ -114,8 +114,8 @@ _FASTAPI_SOURCES = (
     },
     {
         "path": "fastapi/openapi/utils.py",
-        "start_line": 159,
-        "end_line": 228,
+        "start_line": 158,
+        "end_line": 213,
         "role": "FastAPI expands grouped request models into OpenAPI parameter names, locations, required flags, and field schemas, including header underscore names.",
     },
 )
@@ -164,7 +164,7 @@ _OWNERSHIP_BOUNDARIES = {
         "FastAPI owns Query/Header/Cookie declarations, endpoint parameter analysis, grouping a single BaseModel into a request location, extraction aliases/defaults, validation error location and 422 handling, and OpenAPI parameter assembly."
     ),
     "pydantic": (
-        "Pinned Pydantic 2.13.4 owns BaseModel field parsing/coercion, defaults, Literal and numeric constraints, model extra-ignore/extra-forbid policy, and generated field schemas. These checks are not attributed to FastAPI."
+        "Pinned Pydantic 2.13.5 owns BaseModel field parsing/coercion, defaults, Literal and numeric constraints, model extra-ignore/extra-forbid policy, and generated field schemas. These checks are not attributed to FastAPI."
     ),
     "starlette": (
         "Pinned Starlette 1.6.0 owns ASGI Request construction, query/header/cookie parsing, multidict repeated-value behavior, response transport, and TestClient defaults. Generic behavior is tracked by the separate Starlette-RS contract."
@@ -195,7 +195,7 @@ def _test_spans(test_path: str) -> dict[str, dict[str, Any]]:
                 test_path,
                 node.lineno,
                 node.end_lineno or node.lineno,
-                f"FastAPI 0.141.1 upstream test function {node.name}",
+                f"FastAPI 0.157.0 upstream test function {node.name}",
             )
     return spans
 
@@ -574,11 +574,11 @@ PARAMETER_MODEL_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                         _IGNORE_EDGES,
                         "fastapi.request-parameter-model-tutorial.header-001-ignore-edges",
                         "header-required-missing",
-                        _STATUS_ONLY,
+                        _STATUS_BODY,
                     )
                 ],
                 ["request-validation", "public-api-errors"],
-                "The source checks a missing required header; this workflow selects the 422 status because the upstream TestClient contributes additional transport headers to error input.",
+                "The source checks a missing required header and asserts the 422 status. The independent input-only workflow also observes body bytes, which are not asserted by the upstream function and may include transport-dependent error input.",
             ),
             "test_header_param_model_extra": _fn(
                 _HEADER_T1_PATH,

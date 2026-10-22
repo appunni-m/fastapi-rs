@@ -16,8 +16,8 @@ FASTAPI_ROOT = PROJECT_ROOT.parent / "fastapi"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -25,7 +25,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI routing, Response, and HTTP/WebSocket transport contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned request validation and model serialization dependency",
     },
 }
@@ -61,7 +61,7 @@ def _test_function_span(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         min(starts),
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 test function {function_name} and its assertions",
+        f"pinned FastAPI 0.157.0 test function {function_name} and its assertions",
     )
 
 
@@ -149,14 +149,14 @@ _HTTP_ROUTE_SCOPE_SETUP = _source(
 )
 _HTTP_ROUTE_SCOPE_IMPLEMENTATION = _source(
     "fastapi/routing.py",
-    1251,
-    1259,
+    1306,
+    1314,
     "FastAPI APIRoute adds itself as scope['route'] after Starlette path matching",
 )
 _WEBSOCKET_ROUTE_SCOPE_IMPLEMENTATION = _source(
     "fastapi/routing.py",
-    833,
-    837,
+    887,
+    891,
     "FastAPI APIWebSocketRoute adds itself as scope['route'] after Starlette matching",
 )
 _STARLETTE_ROUTE_MATCHING = _source(
@@ -186,7 +186,7 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
     "observation_boundary": (
         "FastAPI app/route registration and FastAPI route-specific ASGI scope metadata. "
         "Starlette 1.6.0 owns generic routing, response emission, and TestClient transport. "
-        "Pydantic 2.13.4 owns request validation and model conversion; those behaviors are "
+        "Pydantic 2.13.5 owns request validation and model conversion; those behaviors are "
         "not claimed by this routing review."
     ),
     "test_modules": {
@@ -295,20 +295,20 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                     supporting_sources=(
                         _source(
                             "fastapi/applications.py",
-                            1070,
-                            1103,
+                            1085,
+                            1118,
                             "FastAPI.openapi generates the document from the application route set",
                         ),
                         _source(
                             "fastapi/openapi/utils.py",
-                            159,
-                            225,
+                            158,
+                            210,
                             "FastAPI projects path parameter names and schemas into OpenAPI parameters",
                         ),
                         _source(
                             "fastapi/openapi/utils.py",
-                            325,
-                            363,
+                            310,
+                            348,
                             "FastAPI adds operation parameter projections under the effective OpenAPI path",
                         ),
                     ),
@@ -408,7 +408,7 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                     ),
                     contract_gate=(
                         "This routing link does not own Item validation/default handling or model "
-                        "serialization; Pydantic 2.13.4 and the request/response waves own those "
+                        "serialization; Pydantic 2.13.5 and the request/response waves own those "
                         "behaviors. The source parses JSON while the workflow compares raw bytes."
                     ),
                     supporting_sources=(_EXTRA_ROUTES_SETUP,),
@@ -474,7 +474,7 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                     ),
                     contract_gate=(
                         "This routing link does not own Item validation/default handling or model "
-                        "serialization; Pydantic 2.13.4 and the request/response waves own those "
+                        "serialization; Pydantic 2.13.5 and the request/response waves own those "
                         "behaviors. The source parses JSON while the workflow compares raw bytes."
                     ),
                     supporting_sources=(_EXTRA_ROUTES_SETUP,),
@@ -715,8 +715,8 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                         ),
                         _source(
                             "fastapi/routing.py",
-                            1161,
-                            1223,
+                            1216,
+                            1278,
                             "FastAPI APIRoute initialization receives and stores the configured status code",
                         ),
                     ),
@@ -733,8 +733,8 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                     supporting_sources=(
                         _source(
                             "fastapi/applications.py",
-                            1105,
-                            1158,
+                            1120,
+                            1173,
                             "FastAPI configures OpenAPI, Swagger UI, OAuth redirect, and ReDoc routes",
                         ),
                     ),
@@ -750,8 +750,8 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                     supporting_sources=(
                         _source(
                             "fastapi/applications.py",
-                            1105,
-                            1158,
+                            1120,
+                            1173,
                             "FastAPI configures OpenAPI, Swagger UI, OAuth redirect, and ReDoc routes",
                         ),
                     ),
@@ -767,8 +767,8 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                     supporting_sources=(
                         _source(
                             "fastapi/applications.py",
-                            1105,
-                            1158,
+                            1120,
+                            1173,
                             "FastAPI configures OpenAPI, Swagger UI, OAuth redirect, and ReDoc routes",
                         ),
                     ),
@@ -791,8 +791,8 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                         ),
                         _source(
                             "fastapi/applications.py",
-                            1105,
-                            1158,
+                            1120,
+                            1173,
                             "FastAPI configures its OpenAPI endpoint and documentation routes",
                         ),
                     ),

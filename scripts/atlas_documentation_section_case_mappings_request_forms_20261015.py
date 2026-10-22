@@ -51,7 +51,7 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_FORMS_20261015 = {
     ("tutorial/request-form-models.md", "form-models"): _workflow(
         "Form Models { #form-models }",
         1,
-        78,
+        80,
         _DOCS_REQUEST_SCHEMA,
         ["fastapi.docs.request-schema.tutorial-request-form-models.form-model"],
         ["dispatch", "openapi"],
@@ -87,7 +87,7 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_FORMS_20261015 = {
     ("tutorial/request-form-models.md", "pydantic-models-for-forms"): _workflow(
         "Pydantic Models for Forms { #pydantic-models-for-forms }",
         23,
-        30,
+        32,
         _DOCS_REQUEST_SCHEMA,
         ["fastapi.docs.request-schema.tutorial-request-form-models.form-model"],
         ["dispatch"],
@@ -99,27 +99,35 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_FORMS_20261015 = {
             "page and the linked form-model example. It samples model-valued form extraction; "
             "the workload uses `display_name` and `notifications_enabled`, so it does not "
             "claim the tutorial's login field names, exact response, field-validation rules, "
-            "or all Pydantic behavior."
+            "or all Pydantic behavior. The added Boolean omission sentence at line 31 is "
+            "explicitly excluded: this action sends `notifications_enabled=true`, and the "
+            "separate Boolean Form mapping covers a scalar parameter rather than a model."
         ),
         (
-            "The pinned FastAPI 0.141.1 section at "
-            "docs/en/docs/tutorial/request-form-models.md:23-30 links "
+            "The pinned FastAPI 0.157.0 section at "
+            "docs/en/docs/tutorial/request-form-models.md:23-32 links "
             "docs_src/request_form_models/tutorial001_an_py310.py:9-16, which declares a "
             "Pydantic model and uses it as an `Annotated[..., Form()]` parameter. The exact "
             "page-evidenced docs-request-schema case "
             "fastapi.docs.request-schema.tutorial-request-form-models.form-model selects its "
             "`dispatch` action, whose HTTP body, ordered headers, and status are the claimed "
-            "observations. FastAPI calls `request.form()` for Form bodies "
-            "(fastapi/routing.py:425-432) and extracts model fields before field validation "
-            "(fastapi/dependencies/utils.py:965-980); Pydantic supplies model validation. "
+            "observations; the recipe sends `display_name=Amira&notifications_enabled=true` "
+            "(tests/fixtures/input-recipes/parity/docs-request-schema.yaml:2292-2324). FastAPI "
+            "extracts Form model fields in `request_body_to_args` and `_extract_form_items` "
+            "(fastapi/dependencies/utils.py:1084-1118, 1162-1213); Pydantic supplies model "
+            "validation. The 0.157.0 source explicitly infers `False` for missing boolean "
+            "form fields (fastapi/dependencies/utils.py:1104-1117), and its upstream test "
+            "covers both scalar and model checkbox inputs (tests/test_request_params/test_form/"
+            "test_nullable_and_defaults.py:775-792). The linked recipe has no omitted-boolean "
+            "model action, so that newly documented behavior remains excluded from this mapping. "
             "Starlette 1.6.0 supplies generic URL-encoded `FormData` parsing "
             "(starlette/requests.py:296-304; starlette/formparsers.py:105-143)."
         ),
     ),
     ("tutorial/request-form-models.md", "check-the-docs"): _workflow(
         "Check the Docs { #check-the-docs }",
-        31,
-        38,
+        33,
+        40,
         _DOCS_REQUEST_SCHEMA,
         ["fastapi.docs.request-schema.tutorial-request-form-models.form-model"],
         ["openapi"],
@@ -145,8 +153,8 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_FORMS_20261015 = {
     ),
     ("tutorial/request-form-models.md", "summary"): _excluded(
         "Summary { #summary }",
-        76,
         78,
+        80,
         (
             "The summary repeats the opening promise that Pydantic models can declare form "
             "fields. The model-form extraction behavior is already sampled in the `form-models` "
@@ -265,7 +273,7 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_FORMS_20261015 = {
     ("tutorial/request-forms.md", "form-data"): _workflow(
         "Form Data { #form-data }",
         1,
-        73,
+        79,
         _REQUEST_MULTIPART,
         ["fastapi.request-multipart.form.required-present"],
         ["dispatch"],
@@ -319,8 +327,8 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_FORMS_20261015 = {
     ),
     ("tutorial/request-forms.md", "about-form-fields"): _workflow(
         'About "Form Fields" { #about-form-fields }',
-        47,
-        70,
+        53,
+        76,
         _REQUEST_MULTIPART,
         [
             "fastapi.request-multipart.form.required-present",
@@ -350,8 +358,8 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_FORMS_20261015 = {
     ),
     ("tutorial/request-forms.md", "recap"): _excluded(
         "Recap { #recap }",
-        71,
-        73,
+        77,
+        79,
         (
             "The recap repeats the instruction to use `Form` for form-data input, already "
             "covered by the H1, import, and form-field mappings. It adds no distinct request "

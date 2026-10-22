@@ -1,7 +1,7 @@
 """Reviewed dispositions for no-signal advanced documentation headings.
 
-Source pin: FastAPI 0.141.1 at
-95f8322ee1dcda7ceace7b1c4f6c9915b36d748f. Workflow inputs are independently
+Source pin: FastAPI 0.157.0 at
+386a28af2f87af1a32ac26d88f07b7f58ab2dfb1. Workflow inputs are independently
 authored; external test tools, generic Starlette responses, Python language
 semantics, and generated client behavior are not attributed to FastAPI.
 """
@@ -49,7 +49,7 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_HEADINGS_20261018 = {
             " an external test-runner contract."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/advanced/async-tests.md:9-12 discusses the"
+            "Pinned FastAPI 0.157.0 docs/en/docs/advanced/async-tests.md:9-12 discusses the"
             " AnyIO marker and pytest scheduling. It specifies no FastAPI application input"
             " or runtime output; the route sample is separately reviewed under Example."
         ),
@@ -117,10 +117,11 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_HEADINGS_20261018 = {
         (
             "Pinned docs/en/docs/advanced/custom-response.md:129-134 describes"
             " PlainTextResponse and includes"
-            " docs_src/custom_response/tutorial005_py310.py:1-10, where a FastAPI GET route"
-            " sets response_class=PlainTextResponse and returns a string. FastAPI 0.141.1"
-            " resolves the route response class in fastapi/routing.py:396-399 and"
-            " constructs it for a non-Response endpoint value at :711-747. The independent"
+            " docs_src/custom_response/tutorial005_py310.py:1-9, where a FastAPI GET route"
+            " sets response_class=PlainTextResponse and returns a string. FastAPI 0.157.0"
+            " selects the route response class in fastapi/routing.py:3031-3033, resolves it"
+            " in the handler at :419-423, and constructs it for a non-Response endpoint"
+            " value at :781-788. The independent"
             " case selects HTTP status, ordered headers, and body bytes; Starlette 1.6.0"
             " owns the generic PlainTextResponse wire representation."
         ),
@@ -157,14 +158,14 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_HEADINGS_20261018 = {
     ),
     ("advanced/security/http-basic-auth.md", "the-time-to-answer-helps-the-attackers"): _excluded(
         "The time to answer helps the attackers { #the-time-to-answer-helps-the-attackers }",
-        83,
-        88,
+        85,
+        90,
         (
             "The section explains a timing side-channel threat model for ordinary string"
             " comparisons; it does not specify a FastAPI response contract."
         ),
         (
-            "Pinned docs/en/docs/advanced/security/http-basic-auth.md:83-88 describes"
+            "Pinned docs/en/docs/advanced/security/http-basic-auth.md:85-90 describes"
             " inferring matching username characters from response timing. This is"
             " explanatory security prose, not an independently selected FastAPI"
             " input/output behavior; the credential-check route is reviewed under its own"
@@ -173,14 +174,14 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_HEADINGS_20261018 = {
     ),
     ("advanced/security/http-basic-auth.md", "a-professional-attack"): _excluded(
         'A "professional" attack { #a-professional-attack }',
-        89,
-        94,
+        91,
+        96,
         (
             "The section estimates an attacker's scripted guessing process and rate,"
             " outside the FastAPI runtime contract."
         ),
         (
-            "Pinned docs/en/docs/advanced/security/http-basic-auth.md:89-94 discusses an"
+            "Pinned docs/en/docs/advanced/security/http-basic-auth.md:91-96 discusses an"
             " attacker program issuing many guesses and recovering credentials over time."
             " It defines neither a FastAPI API input nor an output selector, and does not"
             " provide a reproducible application contract."
@@ -291,8 +292,8 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_HEADINGS_20261018 = {
     ),
     ("async.md", "concurrency-parallelism-web-machine-learning"): _excluded(
         (
-            "Concurrency + Parallelism: Web + Machine Learning {"
-            " #concurrency-parallelism-web-machine-learning }"
+            "Concurrency + Parallelism: Web + Machine Learning "
+            "{ #concurrency-parallelism-web-machine-learning }"
         ),
         293,
         302,

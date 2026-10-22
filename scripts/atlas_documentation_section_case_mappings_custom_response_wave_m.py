@@ -140,8 +140,10 @@ DOC_SECTION_CASE_MAPPINGS_CUSTOM_RESPONSE_WAVE_M = {
         ),
     ),
     ("advanced/custom-response.md", "document-in-openapi-and-override-response"): _workflow(
-        "Document in OpenAPI and override `Response` "
-        "{ #document-in-openapi-and-override-response }",
+        (
+            "Document in OpenAPI and override `Response` "
+            "{ #document-in-openapi-and-override-response }"
+        ),
         74,
         93,
         _TUTORIAL004,

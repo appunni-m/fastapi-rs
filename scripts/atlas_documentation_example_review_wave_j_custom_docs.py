@@ -1,6 +1,7 @@
 """Reviewed partial mappings for custom-docs and frontend examples in Wave J.
 
-The mappings were checked against FastAPI 0.141.1 source. Existing independent
+The mappings were checked against FastAPI 0.157.0 source at
+386a28af2f87af1a32ac26d88f07b7f58ab2dfb1. Existing independent
 workflow cases sample only the cited behavior and selectors; they do not claim
 the complete tutorial examples or their documentation pages.
 """

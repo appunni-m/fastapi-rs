@@ -14,8 +14,8 @@ PROJECT = Path(__file__).resolve().parents[1]
 FASTAPI_ROOT = PROJECT.parent / "fastapi"
 
 SOURCE_IDENTITY = {
-    "fastapi_version": "0.141.1",
-    "fastapi_commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+    "fastapi_version": "0.157.0",
+    "fastapi_commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     "starlette_version": "1.6.0",
     "starlette_commit": "4f250d6b814587e20c5365f0a5f0c4d42bcb929f",
 }
@@ -49,7 +49,7 @@ def _test_span(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         node.lineno,
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 test input and assertions for {function_name}",
+        f"pinned FastAPI 0.157.0 test input and assertions for {function_name}",
     )
 
 
@@ -133,20 +133,20 @@ def _module(
 
 _BODY_READ = _source(
     "fastapi/routing.py",
-    425,
-    465,
+    451,
+    492,
     "FastAPI reads request bodies and converts malformed JSON into request-validation errors",
 )
 _BODY_VALIDATE = _source(
     "fastapi/dependencies/utils.py",
-    951,
-    998,
+    1162,
+    1234,
     "FastAPI validates a single request body field or extracts embedded body fields",
 )
 _VALIDATION_RAISE = _source(
     "fastapi/routing.py",
-    751,
-    755,
+    792,
+    799,
     "FastAPI raises RequestValidationError when body or dependency validation returns errors",
 )
 _VALIDATION_HANDLER = _source(
@@ -157,20 +157,20 @@ _VALIDATION_HANDLER = _source(
 )
 _OPENAPI_BODY = _source(
     "fastapi/openapi/utils.py",
-    231,
-    263,
+    216,
+    248,
     "FastAPI creates the OpenAPI requestBody schema and required flag from the route body field",
 )
 _OPENAPI_OPERATION = _source(
     "fastapi/openapi/utils.py",
-    331,
-    385,
+    316,
+    370,
     "FastAPI adds requestBody data to each documented path operation",
 )
 _OPENAPI_MODELS = _source(
     "fastapi/openapi/utils.py",
-    551,
-    582,
+    536,
+    567,
     "FastAPI collects request and response fields used to build OpenAPI component schemas",
 )
 

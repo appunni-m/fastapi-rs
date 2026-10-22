@@ -3,8 +3,8 @@
 ## Product boundary
 
 FastAPI-RS is intended to replace FastAPI for Python applications that import
-`fastapi`. The tracked reference is FastAPI 0.141.1 at
-[`95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`](https://github.com/fastapi/fastapi/tree/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f).
+`fastapi`. The tracked reference is FastAPI 0.157.0 at
+[`386a28af2f87af1a32ac26d88f07b7f58ab2dfb1`](https://github.com/fastapi/fastapi/tree/386a28af2f87af1a32ac26d88f07b7f58ab2dfb1).
 The matching source checkout is local research input, not a project submodule
 or vendored source tree.
 
@@ -27,12 +27,10 @@ the manifest establishes a separate Rust public API.
 
 ## What the size means
 
-The pinned release contains 48 Python package source files, 492 test files,
-461 Python files under `docs_src` (370 inventoried as documentation-example
-candidates; the larger count also includes support or unlinked source files),
-and 155 English documentation pages. FastAPI's runtime metadata declares five
-direct dependencies; its lock file covers a much larger optional,
-documentation, and development tool graph.
+The pinned release contains 52 Python package source files, 634 Python test
+files, 467 Python files under `docs_src`, and 156 English Markdown reference
+pages. FastAPI's runtime metadata declares five direct dependencies; its lock
+file covers a much larger optional, documentation, and development tool graph.
 The framework's observable contract includes more than exported names:
 
 - application and router configuration, path-operation decorators, dependency

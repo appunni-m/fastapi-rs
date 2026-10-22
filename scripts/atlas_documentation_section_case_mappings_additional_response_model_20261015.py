@@ -25,12 +25,12 @@ DOC_SECTION_CASE_MAPPINGS_ADDITIONAL_RESPONSE_MODEL_20261015 = {
             "media types, or all response models."
         ),
         "rationale": (
-            "FastAPI 0.141.1 walks each route's additional `responses` entry, removes its "
+            "FastAPI 0.157.0 walks each route's additional `responses` entry, removes its "
             "Python-only `model` key, retrieves the route's prepared response field, and "
             "merges that field's generated schema into the declared response content "
-            "(fastapi/openapi/utils.py:473-505). `get_schema_from_model_field` reads the "
+            "(fastapi/openapi/utils.py:458-501). `get_schema_from_model_field` reads the "
             "schema prepared for the field and applies its alias/title projection "
-            "(fastapi/_compat/v2.py:254-282). The selected OpenAPI action compares the 418 "
+            "(fastapi/_compat/v2.py:254-284). The selected OpenAPI action compares the 418 "
             "response and TeaError component pointers; Pydantic supplies the field schema, "
             "and Starlette 1.6.0 owns generic HTTP transport."
         ),

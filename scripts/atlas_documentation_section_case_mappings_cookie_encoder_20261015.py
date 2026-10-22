@@ -17,7 +17,7 @@ def _workflow(
         "start_line": start_line,
         "end_line": end_line,
         "recipe_path": recipe_path,
-        "case_ids": [case_id],
+        "case_ids": case_id if isinstance(case_id, list) else [case_id],
         "observation_selectors": observation_selectors,
         "scope_note": scope_note,
         "rationale": rationale,
@@ -52,7 +52,7 @@ DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015 = {
     ("tutorial/cookie-param-models.md", "cookie-parameter-models"): _workflow(
         "Cookie Parameter Models { #cookie-parameter-models }",
         1,
-        76,
+        82,
         _COOKIE_MODEL_RECIPE,
         _COOKIE_MODEL_CASE,
         ["dispatch"],
@@ -61,12 +61,13 @@ DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015 = {
             "The selected `dispatch` action sends two cookie fields to the documented "
             "Pydantic model route and observes only HTTP status, ordered headers, and body "
             "bytes. It samples model extraction for this one example. It does not cover "
-            "model reuse, Query or Header models, all validation metadata, docs UI behavior, "
-            "or the extra-cookie policy described later on the page. Generic Cookie header "
-            "parsing is owned by Starlette 1.6.0 and Starlette-RS."
+            "model reuse, the separate combined-model behavior mapped under "
+            "`combine-parameter-models`, Query or Header models, all validation metadata, "
+            "docs UI behavior, or the extra-cookie policy mapped below. Generic Cookie "
+            "header parsing is owned by Starlette 1.6.0 and Starlette-RS."
         ),
         (
-            "Pinned FastAPI 0.141.1 `docs/en/docs/tutorial/cookie-param-models.md:1-26` "
+            "Pinned FastAPI 0.157.0 `docs/en/docs/tutorial/cookie-param-models.md:1-26` "
             "introduces grouping Cookie fields in a Pydantic model and extracting them "
             "from a request. The exact-page-evidenced case "
             "`fastapi.docs.request-schema.tutorial-cookie-param-models.cookie-model` in "
@@ -74,7 +75,7 @@ DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015 = {
             "that page with kind `upstream_documentation`; its `dispatch` action sends "
             "`session-id=sid-28; theme=night` and observes status, headers, and body. "
             "FastAPI puts cookie parameters in `dependant.cookie_params` and resolves them "
-            "from `request.cookies` (`fastapi/dependencies/utils.py:550-563, 681-696`). "
+            "from `request.cookies` (`fastapi/dependencies/utils.py:621-634, 776-784`). "
             "Starlette 1.6.0 parses Cookie headers into `Request.cookies` "
             "(`starlette/requests.py:149-159`); generic parsing and transport remain in the "
             "Starlette / Starlette-RS lane."
@@ -95,7 +96,7 @@ DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015 = {
             "and extra-cookie handling are outside this section mapping."
         ),
         (
-            "Pinned FastAPI 0.141.1 `docs/en/docs/tutorial/cookie-param-models.md:19-26` "
+            "Pinned FastAPI 0.157.0 `docs/en/docs/tutorial/cookie-param-models.md:19-26` "
             "says to declare cookie parameters in a Pydantic model, use it as a `Cookie` "
             "parameter, and extract each field from request cookies. The selected "
             "`dispatch` action of "
@@ -103,7 +104,7 @@ DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015 = {
             "(`tests/fixtures/input-recipes/parity/docs-request-schema.yaml:248-284`) "
             "is linked to that exact page using kind `upstream_documentation`. FastAPI "
             "collects cookie fields and resolves values from `request.cookies` "
-            "(`fastapi/dependencies/utils.py:550-563, 681-696`); Starlette 1.6.0 owns "
+            "(`fastapi/dependencies/utils.py:621-634, 776-784`); Starlette 1.6.0 owns "
             "Cookie header parsing (`starlette/requests.py:149-159`)."
         ),
     ),
@@ -118,7 +119,7 @@ DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015 = {
             "`/docs`, execute the browser UI, or observe a cookie submission from that UI."
         ),
         (
-            "Pinned FastAPI 0.141.1 `docs/en/docs/tutorial/cookie-param-models.md:27-44` "
+            "Pinned FastAPI 0.157.0 `docs/en/docs/tutorial/cookie-param-models.md:27-44` "
             "describes seeing cookie parameters in `/docs` and the browser limitation when "
             "executing the form. The only case citing this exact page with kind "
             "`upstream_documentation`, "
@@ -128,34 +129,73 @@ DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015 = {
             "neither action observes the interactive docs UI."
         ),
     ),
-    ("tutorial/cookie-param-models.md", "forbid-extra-cookies"): _excluded(
+    ("tutorial/cookie-param-models.md", "forbid-extra-cookies"): _workflow(
         "Forbid Extra Cookies { #forbid-extra-cookies }",
         45,
         73,
+        "tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml",
+        "fastapi.parameter-models.combined-locations.forbid-extras-around-dependencies",
+        None,
+        _HTTP_COOKIE,
         (
-            "The existing extra-cookie input follows the page's tutorial 002 example, but "
-            "its case cites only the example source, not this exact documentation page with "
-            "kind `upstream_documentation`. The required page-evidence gate therefore "
-            "prevents linking that case to this section."
+            "The selected action sends an undeclared cookie while a separate request "
+            "dependency declares another cookie; status and body expose validation. The "
+            "same request also sends undeclared query and header fields, so its response "
+            "contains multiple validation errors. This row claims only that the cookie "
+            "model's extra policy rejects its undeclared cookie, not a single-error response."
         ),
         (
-            "Pinned FastAPI 0.141.1 `docs/en/docs/tutorial/cookie-param-models.md:45-73` "
+            "Pinned FastAPI 0.157.0 `docs/en/docs/tutorial/cookie-param-models.md:45-73` "
             "describes Pydantic `extra='forbid'` and the resulting extra-cookie validation "
-            "error. The input-only case "
-            "`fastapi.docs-example-wave-f.cookie-model.extra-forbidden` in "
-            "`tests/fixtures/input-recipes/parity/"
-            "docs-example-wave-f-request-parameter-models.yaml:156-196` "
-            "sends an extra cookie and observes status/body, but its source evidence has "
-            "only `docs_src/cookie_param_models/tutorial002_*.py` entries of kind "
-            "`upstream_documentation_example`; it has no exact page-path evidence. The "
-            "other case that cites this page exactly covers the ordinary tutorial 001 model "
-            "and cannot establish the extra-cookie behavior."
+            "error; the linked example configures its cookie model with that policy "
+            "(docs_src/cookie_param_models/tutorial002_an_py310.py:9-14). The selected "
+            "action from `tests/fixtures/input-recipes/parity/"
+            "parameter-models-combined-locations-0157.yaml` cites this exact page with kind "
+            "`upstream_documentation`, declares `CookiePreferences` with `extra='forbid'`, "
+            "and sends an undeclared cookie alongside separately declared dependency fields. "
+            "FastAPI preserves unknown inputs for model validation while excluding other "
+            "known parameter names from each model's extra set "
+            "(fastapi/dependencies/utils.py:874-949); the dependency solver supplies the "
+            "known cookie names and `request.cookies` values "
+            "(fastapi/dependencies/utils.py:776-784). Starlette 1.6.0 owns Cookie-header "
+            "parsing (`starlette/requests.py:149-159)."
+        ),
+    ),
+    ("tutorial/cookie-param-models.md", "combine-parameter-models"): _workflow(
+        "Combine Parameter Models { #combine-parameter-models }",
+        74,
+        79,
+        "tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml",
+        [
+            "fastapi.parameter-models.combined-locations.independent-values",
+            "fastapi.parameter-models.combined-locations.independent-validation",
+            "fastapi.parameter-models.combined-locations.forbid-extras-around-dependencies",
+        ],
+        None,
+        _HTTP_COOKIE,
+        (
+            "The selected independent actions send a cookie model alongside query and "
+            "header inputs, including same-named fields with independent values and bounds, "
+            "then check extra-cookie rejection while preserving declared dependency values. "
+            "They sample only status and response body. The combined recipe also contains "
+            "query/header and OpenAPI actions, which are outside this cookie-section claim."
+        ),
+        (
+            "Pinned FastAPI 0.157.0 `docs/en/docs/tutorial/cookie-param-models.md:74-78` "
+            "says cookie parameter models can be combined with individual cookie parameters "
+            "and dependencies, and that fields from other declarations are not extra model "
+            "fields. The selected input-only actions cite this exact page as upstream "
+            "documentation in `tests/fixtures/input-recipes/parity/"
+            "parameter-models-combined-locations-0157.yaml`. FastAPI independently "
+            "extracts query, header, and cookie fields and supplies `request.cookies` to "
+            "cookie-field resolution (`fastapi/dependencies/utils.py:763-784`); Starlette "
+            "1.6.0 owns generic Cookie-header parsing (`starlette/requests.py:149-159`)."
         ),
     ),
     ("tutorial/cookie-param-models.md", "summary"): _workflow(
         "Summary { #summary }",
-        74,
-        76,
+        80,
+        82,
         _COOKIE_MODEL_RECIPE,
         _COOKIE_MODEL_CASE,
         ["dispatch"],
@@ -166,14 +206,14 @@ DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015 = {
             "separate extra-cookie restriction or docs UI behavior."
         ),
         (
-            "Pinned FastAPI 0.141.1 `docs/en/docs/tutorial/cookie-param-models.md:74-76` "
+            "Pinned FastAPI 0.157.0 `docs/en/docs/tutorial/cookie-param-models.md:80-82` "
             "summarizes declaring cookies with a Pydantic model. The selected `dispatch` "
             "action in "
             "`tests/fixtures/input-recipes/parity/docs-request-schema.yaml:248-284` "
             "cites the exact page as kind `upstream_documentation` and sends the two cookie "
             "fields used by that documented model. FastAPI collects cookie fields and "
             "passes request-cookie values through its dependency solver "
-            "(`fastapi/dependencies/utils.py:550-563, 681-696`)."
+            "(`fastapi/dependencies/utils.py:621-634, 776-784`)."
         ),
     ),
     ("tutorial/cookie-params.md", "cookie-parameters"): _workflow(
@@ -192,15 +232,15 @@ DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015 = {
             "and Starlette-RS."
         ),
         (
-            "Pinned FastAPI 0.141.1 `docs/en/docs/tutorial/cookie-params.md:1-17` "
+            "Pinned FastAPI 0.157.0 `docs/en/docs/tutorial/cookie-params.md:1-17` "
             "introduces Cookie parameters and illustrates the annotated declaration. "
             "`fastapi.pending.tutorials-source-wave.cookie-parameter-cases` in "
             "`tests/fixtures/input-recipes/parity/atlas-pending-tutorials-source-wave.yaml:7-285` "
             "contains exact page evidence (`docs/en/docs/tutorial/cookie-params.md`, kind "
             "`upstream_documentation`) and the selected annotated absent/present actions. "
-            "FastAPI marks `Cookie` as `ParamTypes.cookie` (`fastapi/params.py:387-389`) "
+            "FastAPI marks `Cookie` as `ParamTypes.cookie` (`fastapi/params.py:410-412`) "
             "and extracts cookie fields from `request.cookies` "
-            "(`fastapi/dependencies/utils.py:550-563, 681-696`); Starlette 1.6.0 parses "
+            "(`fastapi/dependencies/utils.py:621-634, 776-784`); Starlette 1.6.0 parses "
             "the Cookie header (`starlette/requests.py:149-159`)."
         ),
     ),
@@ -215,7 +255,7 @@ DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015 = {
             "heading."
         ),
         (
-            "Pinned FastAPI 0.141.1 `docs/en/docs/tutorial/cookie-params.md:5-10` asks the "
+            "Pinned FastAPI 0.157.0 `docs/en/docs/tutorial/cookie-params.md:5-10` asks the "
             "reader to import `Cookie` and includes the import line from the example. The "
             "available case `fastapi.pending.tutorials-source-wave.cookie-parameter-cases` "
             "cites the exact page with kind `upstream_documentation`, but its observations "
@@ -240,14 +280,14 @@ DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015 = {
             "claimed."
         ),
         (
-            "Pinned FastAPI 0.141.1 `docs/en/docs/tutorial/cookie-params.md:43-45` recaps "
+            "Pinned FastAPI 0.157.0 `docs/en/docs/tutorial/cookie-params.md:43-45` recaps "
             "declaring cookies with `Cookie`. The selected annotated absent/present actions "
             "in `fastapi.pending.tutorials-source-wave.cookie-parameter-cases` "
             "(`tests/fixtures/input-recipes/parity/"
             "atlas-pending-tutorials-source-wave.yaml:7-285`) "
             "cite this exact page with kind `upstream_documentation`. FastAPI tags Cookie "
-            "parameters as cookies (`fastapi/params.py:387-389`) and resolves them from "
-            "request cookies (`fastapi/dependencies/utils.py:681-696`)."
+            "parameters as cookies (`fastapi/params.py:410-412`) and resolves them from "
+            "request cookies (`fastapi/dependencies/utils.py:776-784`)."
         ),
     ),
     ("reference/encoders.md", "@line:1"): _workflow(
@@ -265,7 +305,7 @@ DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015 = {
             "use."
         ),
         (
-            "Pinned FastAPI 0.141.1 `docs/en/docs/reference/encoders.md:1-3` documents "
+            "Pinned FastAPI 0.157.0 `docs/en/docs/reference/encoders.md:1-3` documents "
             "`fastapi.encoders.jsonable_encoder`. The case "
             "`fastapi.direct-api-reference-wave.encoder-reference-dataclass` "
             "(`tests/fixtures/input-recipes/parity/direct-api-reference-wave.yaml:61-81`) "
@@ -291,7 +331,7 @@ DOC_SECTION_CASE_MAPPINGS_COOKIE_ENCODER_20261015 = {
             "encoder input types or option combinations."
         ),
         (
-            "Pinned FastAPI 0.141.1 `docs/en/docs/tutorial/encoder.md:1-35` introduces "
+            "Pinned FastAPI 0.157.0 `docs/en/docs/tutorial/encoder.md:1-35` introduces "
             "conversion to JSON-compatible Python values and includes the Pydantic model / "
             "datetime example. The case `fastapi.jsonable-encoder.tutorial.datetime-model` "
             "(`tests/fixtures/input-recipes/parity/encoding.yaml:7-30`) cites that exact "

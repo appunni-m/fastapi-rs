@@ -1,0 +1,1269 @@
+schema: fastapi-rs/python-asgi-workflow@17
+oracle_profile_extension: standard-multipart
+workload:
+  file: tests/fixtures/workloads/field_options_0157.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-parameters.field-options.source-review
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: union-path-none
+    kind: http_request
+    scope:
+      type: http
+      asgi: &id001
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/path/none/123
+      query_string: ''
+      root_path: ''
+      headers:
+      - &id002
+        - host
+        - testserver
+      client: &id003
+      - 127.0.0.1
+      - 123
+      server: &id004
+      - testserver
+      - 80
+    receive_events:
+    - &id005
+      type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-path-smart
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/path/smart/123
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-path-left-to-right
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/path/left-to-right/123
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-query-none
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/query/none
+      query_string: value=123
+      root_path: ''
+      headers:
+      - *id002
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-query-smart
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/query/smart
+      query_string: value=123
+      root_path: ''
+      headers:
+      - *id002
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-query-left-to-right
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/query/left-to-right
+      query_string: value=123
+      root_path: ''
+      headers:
+      - *id002
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-header-none
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/header/none
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - value
+        - '123'
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-header-smart
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/header/smart
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - value
+        - '123'
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-header-left-to-right
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/header/left-to-right
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - value
+        - '123'
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-cookie-none
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/cookie/none
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - cookie
+        - value=123
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-cookie-smart
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/cookie/smart
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - cookie
+        - value=123
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-cookie-left-to-right
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/cookie/left-to-right
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - cookie
+        - value=123
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-body-none
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/body/none
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/json
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: '"123"'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-body-smart
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/body/smart
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/json
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: '"123"'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-body-left-to-right
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/body/left-to-right
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/json
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: '"123"'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-form-none
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/form/none
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/x-www-form-urlencoded
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: value=123
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-form-smart
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/form/smart
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/x-www-form-urlencoded
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: value=123
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: union-form-left-to-right
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/union/form/left-to-right
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/x-www-form-urlencoded
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: value=123
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: fail-fast-query-fast
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/fail-fast/query/fast
+      query_string: value=invalid&value=also-invalid
+      root_path: ''
+      headers:
+      - *id002
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: fail-fast-query-all
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/fail-fast/query/all
+      query_string: value=invalid&value=also-invalid
+      root_path: ''
+      headers:
+      - *id002
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: fail-fast-header-fast
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/fail-fast/header/fast
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - value
+        - invalid
+      - - value
+        - also-invalid
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: fail-fast-header-all
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/fail-fast/header/all
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - value
+        - invalid
+      - - value
+        - also-invalid
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: fail-fast-body-fast
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/fail-fast/body/fast
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/json
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: '["invalid","also-invalid"]'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: fail-fast-body-all
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/fail-fast/body/all
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/json
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: '["invalid","also-invalid"]'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: fail-fast-form-fast
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/fail-fast/form/fast
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/x-www-form-urlencoded
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: value=invalid&value=also-invalid
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: fail-fast-form-all
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/fail-fast/form/all
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/x-www-form-urlencoded
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: value=invalid&value=also-invalid
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: omitted-options-valid
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/omitted-options
+      query_string: number=123
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: '[1,2]'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: explicit-options-valid
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/explicit-options
+      query_string: number=123
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: '[1,2]'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: omitted-options-invalid
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/omitted-options
+      query_string: number=123
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: '["invalid","also-invalid"]'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: explicit-options-invalid
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/explicit-options
+      query_string: number=123
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: '["invalid","also-invalid"]'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: pattern-path-abc
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/pattern/path/ABC
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: pattern-path-xyz
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/pattern/path/xyz
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: pattern-query-abc
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/pattern/query
+      query_string: value=ABC
+      root_path: ''
+      headers:
+      - *id002
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: pattern-query-xyz
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/pattern/query
+      query_string: value=xyz
+      root_path: ''
+      headers:
+      - *id002
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: pattern-header-abc
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/pattern/header
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - value
+        - ABC
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: pattern-header-xyz
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/pattern/header
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - value
+        - xyz
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: pattern-cookie-abc
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/pattern/cookie
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - cookie
+        - value=ABC
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: pattern-cookie-xyz
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/pattern/cookie
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - cookie
+        - value=xyz
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: pattern-body-abc
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/pattern/body
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/json
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: '"ABC"'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: pattern-body-xyz
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/pattern/body
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/json
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: '"xyz"'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: pattern-form-abc
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/pattern/form
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/x-www-form-urlencoded
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: value=ABC
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: pattern-form-xyz
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/pattern/form
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/x-www-form-urlencoded
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: value=xyz
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: file-fail-fast-fast
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/file-fail-fast/fast
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=field-options-boundary
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: "--field-options-boundary\r\nContent-Disposition: form-data; name=\"files\"\
+        \r\n\r\nnot-a-file\r\n--field-options-boundary\r\nContent-Disposition: form-data;\
+        \ name=\"files\"\r\n\r\nalso-not-a-file\r\n--field-options-boundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: file-fail-fast-all
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/file-fail-fast/all
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=field-options-boundary
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: "--field-options-boundary\r\nContent-Disposition: form-data; name=\"files\"\
+        \r\n\r\nnot-a-file\r\n--field-options-boundary\r\nContent-Disposition: form-data;\
+        \ name=\"files\"\r\n\r\nalso-not-a-file\r\n--field-options-boundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: file-fail-fast-valid
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /field-options/file-fail-fast/fast
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - multipart/form-data; boundary=field-options-boundary
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: "--field-options-boundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"example.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\n--field-options-boundary--\r\
+        \n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: query-options
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query
+      query_string: value=123&items=1&items=2
+      root_path: ''
+      headers: &id006
+      - *id002
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: body-options
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /body
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: '{"items":[1,2],"number":"123"}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: openapi-options
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: *id006
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id005
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1query/get/parameters
+      - /paths/~1body/post/requestBody
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_field_options.py
+    kind: upstream_test

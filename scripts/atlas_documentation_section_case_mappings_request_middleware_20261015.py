@@ -2,12 +2,12 @@
 
 This sidecar records input coverage and source evidence only. It contains no
 expected outputs or parity-result claims. Generic ASGI behavior belongs to
-Starlette 1.6.0 / Starlette-RS; FastAPI 0.141.1 owns framework integration.
+Starlette 1.6.0 / Starlette-RS; FastAPI 0.157.0 owns framework integration.
 """
 
 FASTAPI_PIN = {
-    "version": "0.141.1",
-    "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+    "version": "0.157.0",
+    "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
 }
 STARLETTE_PIN = {
     "version": "1.6.0",
@@ -113,7 +113,7 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "with-credentials claims."
         ),
         (
-            "FastAPI 0.141.1 `fastapi/middleware/cors.py:1` directly re-exports Starlette's "
+            "FastAPI 0.157.0 `fastapi/middleware/cors.py:1` directly re-exports Starlette's "
             "middleware. The pinned generic source contains separate wildcard and credential "
             "branches at `starlette/middleware/cors.py:35-63,166-174`; none of the selected "
             "input actions configures a wildcard."
@@ -189,7 +189,7 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "two-layer trace behavior is reviewed separately. The H1 adds no distinct workflow."
         ),
         (
-            "Pinned FastAPI 0.141.1 `../fastapi/docs/en/docs/tutorial/middleware.md:1-95` is the "
+            "Pinned FastAPI 0.157.0 `../fastapi/docs/en/docs/tutorial/middleware.md:1-95` is the "
             "page-level section. The decorator and execution-order child headings have their own "
             "reviewed mappings below."
         ),
@@ -224,7 +224,7 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "The pinned tutorial is "
             "`../fastapi/docs/en/docs/tutorial/middleware.md:22-50`. FastAPI "
             "registers the decorator through `BaseHTTPMiddleware` at "
-            "`fastapi/applications.py:4683-4727`; Starlette 1.6.0 supplies the generic "
+            "`fastapi/applications.py:4725-4769`; Starlette 1.6.0 supplies the generic "
             "HTTP middleware wrapper at `starlette/middleware/base.py:96-120`."
         ),
     ),
@@ -257,7 +257,7 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "The pinned behavior description and example are at "
             "`../fastapi/docs/en/docs/tutorial/middleware.md:52-66` and "
             "`../fastapi/docs_src/middleware/tutorial001_py310.py:8-14`. FastAPI's decorator "
-            "registration is `fastapi/applications.py:4683-4727`; generic middleware "
+            "registration is `fastapi/applications.py:4725-4769`; generic middleware "
             "dispatch is Starlette-owned (`starlette/middleware/base.py:96-120`)."
         ),
     ),
@@ -282,7 +282,7 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "Starlette inserts added middleware at the start of its user list and reverses the "
             "list while wrapping (`starlette/applications.py:63-83,104-108`); FastAPI "
             "middleware registration uses that generic stack through "
-            "`fastapi/applications.py:4683-4727`."
+            "`fastapi/applications.py:4725-4769`."
         ),
     ),
     ("tutorial/middleware.md", "other-middlewares"): _excluded(
@@ -418,7 +418,7 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "`../fastapi/docs/en/docs/tutorial/extra-data-types.md:1-62`; the "
             "specific UUID/datetime/timedelta/time example is mapped below. FastAPI's request and "
             "response validation pipeline delegates type conversion and serialization to its "
-            "Pydantic field (`fastapi/utils.py:58-77`, `fastapi/routing.py:301-341`)."
+            "Pydantic field (`fastapi/utils.py:58-77`, `fastapi/routing.py:321-361`)."
         ),
     ),
     ("tutorial/extra-data-types.md", "other-data-types"): _workflow(
@@ -448,8 +448,8 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "example declarations are "
             "`../fastapi/docs_src/extra_data_types/tutorial001_an_py310.py:1-28`. "
             "FastAPI analyzes endpoint fields and forms request-body arguments "
-            "(`fastapi/dependencies/utils.py:381-535,951-998`) and validates/serializes "
-            "through Pydantic-backed fields (`fastapi/routing.py:301-341`)."
+            "(`fastapi/dependencies/utils.py:423-606,1162-1234`) and validates/serializes "
+            "through Pydantic-backed fields (`fastapi/routing.py:321-361`)."
         ),
     ),
     ("tutorial/extra-data-types.md", "example"): _workflow(
@@ -650,7 +650,7 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
         (
             "The pinned metadata section is `../fastapi/docs/en/docs/python-types.md:296-321`. "
             "FastAPI extracts FastAPI `FieldInfo` metadata from `Annotated` in "
-            "`fastapi/dependencies/utils.py:398-442` and creates the analyzed parameter "
+            "`fastapi/dependencies/utils.py:441-485` and creates the analyzed parameter "
             "field at `:507-535`."
         ),
     ),
@@ -678,8 +678,8 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
         (
             "The pinned overview is `../fastapi/docs/en/docs/python-types.md:322-348`. FastAPI "
             "analyzes parameter annotations and constructs request fields in "
-            "`fastapi/dependencies/utils.py:381-535`, then validates request values "
-            "through those fields at `fastapi/dependencies/utils.py:734-742`; OpenAPI "
+            "`fastapi/dependencies/utils.py:423-606`, then validates request values "
+            "through those fields at `fastapi/dependencies/utils.py:822-831`; OpenAPI "
             "generation consumes the analyzed route fields."
         ),
     ),
@@ -703,7 +703,7 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "FastAPI exposes Request as a direct Starlette re-export "
             "(`fastapi/requests.py:1-2`, `fastapi/__init__.py:21`), recognizes "
             "and injects it through dependency analysis "
-            "(`fastapi/dependencies/utils.py:350-355,709-712`). "
+            "(`fastapi/dependencies/utils.py:392-397,797-800`). "
             "The workload reads and returns request data at "
             "`tests/fixtures/workloads/docs_reference_request.py:70-78`; generic Request "
             "semantics belong to Starlette 1.6.0."
@@ -736,7 +736,7 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_MIDDLEWARE_20261015 = {
             "exports its UploadFile subclass from the root (`fastapi/__init__.py:9`) and "
             "declares its fields at `fastapi/datastructures.py:21-65`; FastAPI recognizes "
             "UploadFile annotations as file fields at "
-            "`fastapi/dependencies/utils.py:498-502,951-998`. "
+            "`fastapi/dependencies/utils.py:541-545,1162-1234`. "
             "The workload reads and returns upload metadata at "
             "`tests/fixtures/workloads/docs_reference_asgi.py:49-57`; multipart parsing and "
             "generic upload behavior belong to Starlette 1.6.0."

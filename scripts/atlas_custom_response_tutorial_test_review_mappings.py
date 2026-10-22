@@ -1,6 +1,6 @@
 """Source-reviewed mappings for the remaining custom-response tutorial tests.
 
-Mappings point to FastAPI 0.141.1 and Starlette 1.6.0 source. The workflows
+Mappings point to FastAPI 0.157.0 and Starlette 1.6.0 source. The workflows
 contain independent ASGI inputs only; generic response bodies and file/stream
 transport are Starlette behavior.
 """
@@ -11,8 +11,8 @@ from typing import Any
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -20,7 +20,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic response-class, file, stream, and TestClient transport contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned dependency; no Pydantic response-model behavior is exercised by these custom-response mappings",
     },
 }
@@ -82,7 +82,7 @@ def _function(
                 test_path,
                 start,
                 end,
-                "pinned FastAPI 0.141.1 test function and asserted observations",
+                "pinned FastAPI 0.157.0 test function and asserted observations",
             ),
             *sources,
         ],
@@ -186,42 +186,42 @@ _TESTCLIENT = (
 _FASTAPI_RESPONSE_DISPATCH = (
     _source(
         "fastapi/routing.py",
-        357,
-        372,
+        380,
+        395,
         "FastAPI applies route and injected Response status values when constructing responses",
     ),
     _source(
         "fastapi/routing.py",
-        375,
-        400,
+        398,
+        423,
         "FastAPI selects the route's actual response class",
     ),
     _source(
         "fastapi/routing.py",
-        711,
-        750,
+        751,
+        791,
         "FastAPI preserves returned Response instances and constructs the configured response class for other values",
     ),
 )
 _ROUTE_RESPONSE_CLASS = (
     _source(
         "fastapi/routing.py",
-        961,
-        1009,
+        1016,
+        1064,
         "FastAPI stores response_class on the route",
     ),
     _source(
         "fastapi/routing.py",
-        1029,
-        1033,
+        1084,
+        1088,
         "FastAPI normalizes and stores the declared route status code",
     ),
 )
 _OPENAPI_STATUS = (
     _source(
         "fastapi/openapi/utils.py",
+        388,
         403,
-        418,
         "FastAPI documents the route's explicit status code or derives it from the response class",
     ),
 )

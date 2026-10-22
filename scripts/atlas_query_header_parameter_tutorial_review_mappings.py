@@ -21,8 +21,8 @@ WORKLOAD_PATH = "tests/fixtures/workloads/query_header_parameter_tutorial_review
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "role": "source-oracle and development-only dependency",
     },
     "starlette": {
@@ -31,7 +31,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic request, response, and TestClient contract via Starlette-RS",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "field/model validation and schema generation where applicable",
     },
 }
@@ -47,7 +47,7 @@ TARGET_OWNERSHIP = {
         "provided through Starlette-RS."
     ),
     "pydantic_contract": (
-        "Pydantic 2.13.4 owns field and model validation plus schema generation where "
+        "Pydantic 2.13.5 owns field and model validation plus schema generation where "
         "applicable; Rust-owned FastAPI control flow classifies parameters, extracts "
         "values, and assembles request errors and OpenAPI operations."
     ),
@@ -224,6 +224,20 @@ _QUERY_MODULES: dict[str, dict[str, Any]] = {
                     "openapi.paths",
                 ],
                 "rationale": "Covers the complete serialized OpenAPI response and selected document sections.",
+            },
+            "test_boolean_query_false": {
+                "exclusion_reason": (
+                    "The pinned function covers five false spellings, but the existing "
+                    "input-only recipe covers only short=true. No independent recipe "
+                    "action represents those false inputs."
+                ),
+            },
+            "test_invalid_boolean_query": {
+                "exclusion_reason": (
+                    "The pinned function covers empty and invalid boolean query values "
+                    "and asserts a detailed validation body. No independent input-only "
+                    "recipe action represents those inputs."
+                ),
             },
         },
         "parameters": [
@@ -560,7 +574,7 @@ def _src_span(path: str, node: ast.FunctionDef | ast.AsyncFunctionDef) -> dict[s
         "path": path,
         "start_line": start_line,
         "end_line": node.end_lineno or node.lineno,
-        "role": f"FastAPI 0.141.1 upstream test function {node.name}",
+        "role": f"FastAPI 0.157.0 upstream test function {node.name}",
     }
 
 
@@ -581,6 +595,14 @@ def _function_rows(test_path: str, module: dict[str, Any], kind: str) -> dict[st
     functions: dict[str, Any] = {}
     source_spans = _test_spans(test_path)
     for name, function in module["functions"].items():
+        if function.get("exclusion_reason"):
+            functions[name] = {
+                "source_span": source_spans[name],
+                "mapping_status": "source-backed-exclusion",
+                "workflow_cases": [],
+                "exclusion_reason": function["exclusion_reason"],
+            }
+            continue
         if kind == "query":
             recipe = _query_recipe(tutorial)
             cases = [
@@ -778,6 +800,10 @@ def validate_query_header_parameter_tutorial_mappings() -> list[str]:
     all_case_actions = {
         (case_id, action_id)
         for case_id, case_row in recipe_index.items()
+        if any(
+            source.get("kind") == "upstream_test"
+            for source in case_row["case"].get("source_evidence", [])
+        )
         for action_id in case_row["actions"]
     }
     expected_recipe_names = {
@@ -873,7 +899,8 @@ def validate_query_header_parameter_tutorial_mappings() -> list[str]:
                 docs_paths = {
                     source.get("path")
                     for source in case.get("source_evidence", [])
-                    if source.get("kind") == "upstream_documentation"
+                    if source.get("kind")
+                    in {"upstream_documentation", "upstream_documentation_example"}
                 }
                 expected_docs = set(
                     module["supporting_docs"].values()
@@ -901,8 +928,8 @@ def validate_query_header_parameter_tutorial_mappings() -> list[str]:
                         f"selector mismatch for {workflow['case_id']}:{workflow['action_id']}"
                     )
 
-    if function_count != 20:
-        errors.append(f"expected 20 top-level test functions, found {function_count}")
+    if function_count != 22:
+        errors.append(f"expected 22 top-level test functions, found {function_count}")
     if case_link_count != 47:
         errors.append(f"expected 47 function-to-case links, found {case_link_count}")
     if linked_case_actions != all_case_actions:

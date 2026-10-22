@@ -75,8 +75,10 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_DIRECTLY_1016 = {
         "advanced/response-directly.md",
         "using-the-jsonable-encoder-in-a-response",
     ): _workflow(
-        "Using the `jsonable_encoder` in a `Response` "
-        "{ #using-the-jsonable-encoder-in-a-response }",
+        (
+            "Using the `jsonable_encoder` in a `Response` "
+            "{ #using-the-jsonable-encoder-in-a-response }"
+        ),
         35,
         52,
         _DIRECTLY,

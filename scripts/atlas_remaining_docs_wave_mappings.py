@@ -1,6 +1,6 @@
 """Source-reviewed mappings for remaining FastAPI documentation pages.
 
-FastAPI 0.141.1 is the source authority. Starlette 1.6.0 is the sole generic
+FastAPI 0.157.0 is the source authority. Starlette 1.6.0 is the sole generic
 framework authority; Starlette-owned behavior remains assigned to Starlette-RS.
 Linked recipes contain stimuli, not parity results.
 """
@@ -17,7 +17,7 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             "http.body.bytes",
         ],
         "rationale": (
-            "FastAPI 0.141.1 publishes the `fastapi` console entrypoint through its "
+            "FastAPI 0.157.0 publishes the `fastapi` console entrypoint through its "
             "optional fastapi-cli integration. The standard oracle pins fastapi-cli "
             "0.0.32. The independent process workflows cover the documented command "
             "surface and a separate missing-optional-package outcome."
@@ -495,8 +495,8 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             },
             {
                 "path": "docs/en/docs/advanced/behind-a-proxy.md",
-                "start_line": 395,
-                "end_line": 460,
+                "start_line": 366,
+                "end_line": 431,
                 "role": "Pinned FastAPI documentation for root_path OpenAPI server insertion and root_path_in_servers=False.",
             },
             {
@@ -508,7 +508,7 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             {
                 "path": "docs_src/behind_a_proxy/tutorial003_py310.py",
                 "start_line": 1,
-                "end_line": 14,
+                "end_line": 13,
                 "role": "Documented configured-server and automatic root_path server example.",
             },
             {
@@ -1554,7 +1554,7 @@ DOC_PAGE_REVIEW_MAPPINGS = {
             {
                 "path": "docs/en/docs/tutorial/bigger-applications.md",
                 "start_line": 1,
-                "end_line": 547,
+                "end_line": 546,
                 "role": "Page-level source evidence "
                 "for the documented Bigger "
                 "Applications - Multiple "
@@ -5035,6 +5035,45 @@ DOC_PAGE_REVIEW_MAPPINGS = {
     },
 }
 
+DOC_PAGE_REVIEW_MAPPINGS["advanced/opentelemetry.md"] = {
+    "observation_selectors": ["python.call_outcome", "python.signature"],
+    "rationale": (
+        "The selected constructor inputs cover FastAPI 0.157.0's public telemetry "
+        "configuration signature and acceptance of tracing, operation-span, and "
+        "signal-disable options. They do not claim runtime span, metric, log, exporter, "
+        "WebSocket, or lifecycle behavior described elsewhere on the page."
+    ),
+    "stimulus_notes": (
+        "The linked input-only API workflow probes the FastAPI constructor signature and "
+        "independently disables tracing, operation spans, and telemetry signals."
+    ),
+    "contract_gate": (
+        "Partial documentation mapping: only public FastAPI constructor configuration is "
+        "observed. Runtime HTTP/WebSocket telemetry, provider selection, exporter setup, "
+        "logs, metrics, and background-task spans require independent workflows and remain "
+        "unproven by these cases."
+    ),
+    "supporting_sources": [
+        {
+            "path": "docs/en/docs/advanced/opentelemetry.md",
+            "start_line": 1,
+            "end_line": 158,
+            "role": "Pinned FastAPI 0.157.0 telemetry guide; constructor settings are one limited section of this page.",
+        }
+    ],
+    "workflow_cases": [
+        {
+            "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml",
+            "case_ids": [
+                "fastapi.telemetry.constructor-tracing-disabled",
+                "fastapi.telemetry.constructor-operation-spans-disabled",
+                "fastapi.telemetry.constructor-signals-disabled",
+            ],
+            "observation_selectors": ["python.call_outcome", "python.signature"],
+        }
+    ],
+}
+
 # The reference page's task-injection example has one exact HTTP workflow. Keep
 # its reviewed claims to selectors actually projected by that case; the direct
 # background-effects selector is still planned, even though a later state read
@@ -5288,7 +5327,7 @@ DOC_PAGE_EXCLUSION_MAPPINGS = {
             {
                 "path": "docs/en/docs/deployment/cloud.md",
                 "start_line": 1,
-                "end_line": 24,
+                "end_line": 23,
                 "role": "Page-level evidence supporting exclusion "
                 "from FastAPI runtime feature "
                 "coverage.",
@@ -5498,7 +5537,7 @@ DOC_PAGE_EXCLUSION_MAPPINGS = {
     },
     "history-design-future.md": {
         "exclusion_reason": "Historical and design narrative, not behavior "
-        "in the pinned FastAPI 0.141.1 contract.",
+        "in the pinned FastAPI 0.157.0 contract.",
         "supporting_sources": [
             {
                 "path": "docs/en/docs/history-design-future.md",
@@ -5600,7 +5639,7 @@ DOC_PAGE_EXCLUSION_MAPPINGS = {
             {
                 "path": "docs/en/docs/index.md",
                 "start_line": 1,
-                "end_line": 587,
+                "end_line": 581,
                 "role": "Page-level evidence supporting exclusion from "
                 "FastAPI runtime feature coverage.",
             }
@@ -5692,7 +5731,7 @@ DOC_PAGE_EXCLUSION_MAPPINGS = {
     },
     "release-notes.md": {
         "exclusion_reason": "Release notes span multiple historical versions and do "
-        "not define one behavior of pinned FastAPI 0.141.1.",
+        "not define one behavior of pinned FastAPI 0.157.0.",
         "supporting_sources": [
             {
                 "path": "docs/en/docs/release-notes.md",
@@ -5737,7 +5776,7 @@ DOC_PAGE_EXCLUSION_MAPPINGS = {
             {
                 "path": "docs/en/docs/translations.md",
                 "start_line": 1,
-                "end_line": 28,
+                "end_line": 26,
                 "role": "Page-level evidence supporting exclusion "
                 "from FastAPI runtime feature coverage.",
             }

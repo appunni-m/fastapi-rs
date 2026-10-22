@@ -234,8 +234,10 @@ DOC_SECTION_CASE_MAPPINGS_REQUEST_FILES_20261015 = {
         "tutorial/request-files.md",
         "multiple-file-uploads-with-additional-metadata",
     ): _workflow(
-        "Multiple File Uploads with Additional Metadata "
-        "{ #multiple-file-uploads-with-additional-metadata }",
+        (
+            "Multiple File Uploads with Additional Metadata "
+            "{ #multiple-file-uploads-with-additional-metadata }"
+        ),
         168,
         173,
         _FILE_METADATA,

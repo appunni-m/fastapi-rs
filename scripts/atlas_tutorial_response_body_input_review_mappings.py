@@ -18,8 +18,8 @@ FASTAPI_ROOT = PROJECT.parent / "fastapi"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -27,7 +27,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic request, response-class, FileResponse, StreamingResponse, and TestClient contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned request/response model validation and schema dependency",
     },
 }
@@ -56,7 +56,7 @@ def _test_span(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         node.lineno,
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 test inputs and assertions for {function_name}",
+        f"pinned FastAPI 0.157.0 test inputs and assertions for {function_name}",
     )
 
 
@@ -193,20 +193,20 @@ _OPENAPI_RESPONSE = ("http.status", "openapi.document")
 _BODY_PARSE = (
     _source(
         "fastapi/routing.py",
-        425,
-        473,
+        451,
+        500,
         "FastAPI reads request-body bytes, decides whether the media type is JSON, parses JSON, and converts parser failures",
     ),
     _source(
         "fastapi/dependencies/utils.py",
-        951,
-        998,
+        1162,
+        1234,
         "FastAPI validates model/body fields and composes body-location errors",
     ),
     _source(
         "fastapi/routing.py",
-        751,
-        755,
+        792,
+        799,
         "FastAPI raises RequestValidationError for body and dependency validation errors",
     ),
     _source(
@@ -233,40 +233,40 @@ _BODY_REQUEST_CONTRACT = (
 _BODY_OPENAPI = (
     _source(
         "fastapi/openapi/utils.py",
-        231,
-        263,
+        216,
+        248,
         "FastAPI projects a route body field into the OpenAPI requestBody schema and required flag",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        331,
-        385,
+        316,
+        370,
         "FastAPI includes parameters and requestBody fields in OpenAPI operations",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        517,
-        533,
+        502,
+        518,
         "FastAPI adds the default request-validation response when an operation has parameters or a body",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        325,
-        330,
+        310,
+        315,
         "FastAPI selects the route response class and its media type for OpenAPI generation",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        456,
-        472,
+        441,
+        457,
         "FastAPI projects the response field into the selected response media type schema",
     ),
 )
 _BODY_FIELD_EMBED = (
     _source(
         "fastapi/dependencies/utils.py",
-        1001,
-        1048,
+        1237,
+        1284,
         "FastAPI builds the body model used to embed body fields and generate its schema",
     ),
     *_BODY_PARSE,
@@ -275,62 +275,62 @@ _BODY_FIELD_EMBED = (
 _ROUTE_RESPONSE = (
     _source(
         "fastapi/routing.py",
-        375,
-        400,
+        398,
+        423,
         "FastAPI selects the configured response class for a route",
     ),
     _source(
         "fastapi/routing.py",
-        711,
-        750,
+        751,
+        791,
         "FastAPI preserves a returned Response instance or serializes endpoint output through the selected response class",
     ),
 )
 _ROUTE_STATUS = (
     _source(
         "fastapi/routing.py",
-        357,
-        372,
+        380,
+        395,
         "FastAPI combines configured status with dependency-mutated Response status when constructing a response",
     ),
     _source(
         "fastapi/routing.py",
-        1029,
-        1034,
+        1084,
+        1089,
         "FastAPI stores the normalized route status code",
     ),
     _source(
         "fastapi/openapi/utils.py",
+        388,
         403,
-        418,
         "FastAPI documents the route's configured status code in OpenAPI",
     ),
 )
 _OPENAPI_DOCUMENT = (
     _source(
         "fastapi/openapi/utils.py",
-        585,
-        647,
+        570,
+        632,
         "FastAPI generates the OpenAPI document from registered route contexts",
     ),
 )
 _ADDITIONAL_RESPONSES = (
     _source(
         "fastapi/openapi/utils.py",
-        325,
-        330,
+        310,
+        315,
         "FastAPI selects a route response class and media type for OpenAPI generation",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        456,
-        472,
+        441,
+        457,
         "FastAPI projects default response media types and response fields into OpenAPI",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        473,
-        516,
+        458,
+        501,
         "FastAPI merges additional response definitions and model schemas into an operation",
     ),
     *_OPENAPI_DOCUMENT,
@@ -338,8 +338,8 @@ _ADDITIONAL_RESPONSES = (
 _INFERRED_RESPONSE_MODEL = (
     _source(
         "fastapi/routing.py",
-        1081,
-        1113,
+        1136,
+        1168,
         "FastAPI infers response models from return annotations and constructs response fields unless the annotation is a Response subclass",
     ),
     _source(
@@ -374,22 +374,22 @@ _FASTAPI_UJSON_RESPONSE = (
 _APP_DEFAULT_RESPONSE_CLASS = (
     _source(
         "fastapi/applications.py",
-        353,
-        372,
+        376,
+        395,
         "FastAPI configures JSONResponse as the app-level default response class unless overridden",
     ),
 )
 _RESPONSE_CLASS_OPENAPI = (
     _source(
         "fastapi/openapi/utils.py",
-        325,
-        330,
+        310,
+        315,
         "FastAPI resolves the route's response class and media type for OpenAPI generation",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        456,
-        472,
+        441,
+        457,
         "FastAPI emits the selected response-class media type and schema",
     ),
 )

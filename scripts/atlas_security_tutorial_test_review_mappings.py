@@ -23,8 +23,8 @@ PROJECT = Path(__file__).resolve().parents[1]
 FASTAPI_ROOT = PROJECT.parent / "fastapi"
 
 SOURCE_IDENTITY = {
-    "fastapi_version": "0.141.1",
-    "fastapi_commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+    "fastapi_version": "0.157.0",
+    "fastapi_commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     "starlette_version": "1.6.0",
     "starlette_commit": "4f250d6b814587e20c5365f0a5f0c4d42bcb929f",
 }
@@ -71,7 +71,7 @@ def _test_span(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         node.lineno,
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 test stimulus and assertions for {function_name}",
+        f"pinned FastAPI 0.157.0 test stimulus and assertions for {function_name}",
     )
 
 
@@ -189,32 +189,32 @@ _OAUTH2_FORM = _source(
 )
 _FORM_REQUEST = _source(
     "fastapi/routing.py",
-    425,
-    432,
+    451,
+    458,
     "FastAPI reads form data for a route with form body fields",
 )
 _FORM_FIELDS = _source(
     "fastapi/dependencies/utils.py",
-    951,
-    998,
+    1162,
+    1234,
     "FastAPI extracts and validates the declared form fields before dependency invocation",
 )
 _DEPENDENCY_SOLVER = _source(
     "fastapi/dependencies/utils.py",
-    619,
-    730,
+    700,
+    818,
     "FastAPI recursively resolves security dependencies and injects endpoint values",
 )
 _HTTP_BASIC = _source(
     "fastapi/security/http.py",
     69,
-    102,
+    104,
     "HTTPBase reads authorization credentials and applies auto_error",
 )
 _HTTP_BASIC_PARSER = _source(
     "fastapi/security/http.py",
-    105,
-    219,
+    107,
+    221,
     "HTTPBasic validates the scheme, decodes Base64, splits username/password, and creates credentials",
 )
 _AUTHORIZATION_SPLIT = _source(
@@ -231,20 +231,20 @@ _HTTP_EXCEPTION_HANDLER = _source(
 )
 _OPENAPI_SECURITY_SCHEME = _source(
     "fastapi/openapi/utils.py",
-    99,
-    156,
+    98,
+    155,
     "FastAPI discovers security dependencies and encodes scheme definitions and operation scopes",
 )
 _OPENAPI_SECURITY_OPERATION = _source(
     "fastapi/openapi/utils.py",
-    331,
-    356,
+    316,
+    341,
     "FastAPI adds dependency-derived security definitions and requirements to OpenAPI operations",
 )
 _OPENAPI_FORM_BODY = _source(
     "fastapi/openapi/utils.py",
-    231,
-    263,
+    216,
+    248,
     "FastAPI builds OpenAPI requestBody content and requiredness from the route body field",
 )
 

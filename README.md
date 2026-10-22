@@ -40,13 +40,13 @@ for artifact checks and publication prerequisites.
 
 ## Compatibility target
 
-- Oracle baseline: FastAPI 0.141.1, pinned to upstream commit
-  `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`.
+- Oracle baseline: FastAPI 0.157.0, pinned to upstream commit
+  `386a28af2f87af1a32ac26d88f07b7f58ab2dfb1`.
 - Starlette contract: Starlette 1.6.0 at upstream commit
   `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`; this is the sole oracle, and
   Starlette-RS is expected to replace that contract.
-- FastAPI's upstream `uv.lock` records Starlette 1.3.1; that version is kept
-  only as dependency-audit provenance and is not an oracle or target profile.
+- FastAPI 0.157.0's upstream `uv.lock` records Starlette 1.7.0. That version is
+  kept only as dependency-audit provenance and is not an oracle or target profile.
 - Runtime baseline: CPython 3.10 and later, matching that FastAPI release's
   declared minimum.
 - Starlette integration: use the separately developed Starlette-RS as a full
@@ -138,16 +138,18 @@ regions. See the
 [checkpoint report](https://github.com/appunni-m/fastapi-rs/blob/main/docs/atlas/drafts/openapi-validation-response-native-contract-review-2026-10-05.md)
 for that run's identity, scope and remaining schema-order gaps.
 
-The latest complete seven-workload suite passed 45/45 selected parity
-observations at FastAPI-RS `8c7eb97`; it binds an earlier manifest and is
-historical to the current contract. One workload has since been refreshed at
-main `57aec8c`: the large-response-model case passed 1/1 parity observations,
-with FastAPI-RS median/p95 latency at 1.123×/1.224× FastAPI on this host. That
-single workload does not replace the full suite or establish a global
-performance claim. See the
+The latest recorded complete seven-workload suite on the previous FastAPI
+0.141.1 oracle passed 45/45 selected parity observations at FastAPI-RS
+`8c7eb97`; it binds an earlier manifest and is historical to the current
+0.157.0 baseline. A single workload was subsequently refreshed at main
+`57aec8c` against that previous oracle: the large-response-model case passed
+1/1 parity observations, with FastAPI-RS median/p95 latency at
+1.123×/1.224× FastAPI on this host. That single workload does not replace the
+full suite or establish a global performance claim. See the
 [single-workload report](https://github.com/appunni-m/fastapi-rs/blob/main/docs/benchmarks/2026-10-21-57aec8c.md),
-[latest complete suite report](https://github.com/appunni-m/fastapi-rs/blob/main/docs/benchmarks/2026-10-21-8c7eb97.md), and
+[previous-baseline suite report](https://github.com/appunni-m/fastapi-rs/blob/main/docs/benchmarks/2026-10-21-8c7eb97.md), and
 [benchmark evidence freshness note](https://github.com/appunni-m/fastapi-rs/blob/main/docs/PARITY_BENCHMARK_PLAN.md#benchmark-evidence-freshness).
+These measurements do not establish parity or performance for FastAPI 0.157.0.
 
 Use `make parity-prepare-oracle` for the core environment and
 `make parity-validate` to check source evidence and workflow links. The
@@ -178,7 +180,7 @@ does not represent full public API parity.
 
 The first correctness-gated performance lane is `make benchmark-first-slice`.
 It runs the pinned fourteen-case parity gate, then compares one valid request
-through the FastAPI 0.141.1 oracle, release FastAPI-RS facade, and Starlette
+through the FastAPI 0.157.0 oracle, release FastAPI-RS facade, and Starlette
 1.6.0 plain route control. It measures direct ASGI dispatch without
 network/client startup and stores raw, identity-stamped samples under ignored
 `benchmark-results/`.

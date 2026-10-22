@@ -19,7 +19,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 METADATA_PATH = ROOT / "metadata.yaml"
 GRAPH_PATH = ROOT / "docs" / "DEPENDENCY_GRAPH.md"
-SOURCE_USE_PATH = ROOT / "docs" / "audit-locks" / "fastapi-0.141.1-source-use.yaml"
+SOURCE_USE_PATH = ROOT / "docs" / "audit-locks" / "fastapi-0.157.0-source-use.yaml"
 TABLE_HEADER = (
     "Distribution @ locked version",
     "Surfaces",

@@ -1017,7 +1017,7 @@ def build_parser() -> argparse.ArgumentParser:
     validate.set_defaults(handler=validate_command)
 
     oracle = subparsers.add_parser(
-        "oracle", help="run an input workflow in isolated FastAPI 0.141.1"
+        "oracle", help="run an input workflow in isolated FastAPI 0.157.0"
     )
     oracle.add_argument("--input", type=Path, default=DEFAULT_INPUT)
     oracle.add_argument("--python", type=Path, default=ROOT / ".venv-oracle/bin/python")
@@ -1047,7 +1047,7 @@ def build_parser() -> argparse.ArgumentParser:
     api_validate.set_defaults(handler=api_validate_command)
 
     api_oracle = subparsers.add_parser(
-        "api-oracle", help="run direct public Python API probes in isolated FastAPI 0.141.1"
+        "api-oracle", help="run direct public Python API probes in isolated FastAPI 0.157.0"
     )
     api_oracle.add_argument("--input", required=True, type=Path)
     api_oracle.add_argument("--python", type=Path, default=ROOT / ".venv-oracle/bin/python")

@@ -22,8 +22,8 @@ WORKLOAD_PATH = "tests/fixtures/workloads/request_body_tutorial_source_review.py
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "role": "pinned source oracle and development evidence only",
     },
     "starlette": {
@@ -41,14 +41,14 @@ SOURCE_IDENTITIES = {
         "oracle": "CPython 3.12.13",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "public model validation and schema semantics",
     },
 }
 
 OWNER_BOUNDARIES = {
     "fastapi_source": (
-        "FastAPI 0.141.1 is isolated source-oracle/development material; the target has zero FastAPI runtime dependency or import."
+        "FastAPI 0.157.0 is isolated source-oracle/development material; the target has zero FastAPI runtime dependency or import."
     ),
     "fastapi_control_flow": (
         "fastapi-rs/ owns FastAPI request-body selection and parsing integration, body-field composition, request validation and error projection, route control flow, and OpenAPI requestBody projection."
@@ -60,12 +60,12 @@ OWNER_BOUNDARIES = {
         "Starlette 1.6.0 is the sole generic Request, Response, and TestClient contract; Starlette-RS implements that contract. FastAPI owns its body and route integration edges."
     ),
     "pydantic": (
-        "Pydantic 2.13.4 owns public model field validation, scalar coercion, and model JSON Schema semantics; FastAPI owns endpoint/body integration and OpenAPI requestBody assembly."
+        "Pydantic 2.13.5 owns public model field validation, scalar coercion, and model JSON Schema semantics; FastAPI owns endpoint/body integration and OpenAPI requestBody assembly."
     ),
 }
 
 COMPATIBILITY_GATES = (
-    "The source checkout identity is FastAPI 0.141.1 at the pinned commit, with Starlette 1.6.0 as the sole generic-framework oracle and Pydantic 2.13.4 for model semantics.",
+    "The source checkout identity is FastAPI 0.157.0 at the pinned commit, with Starlette 1.6.0 as the sole generic-framework oracle and Pydantic 2.13.5 for model semantics.",
     "The upstream functions use Starlette TestClient. These direct-ASGI inputs do not test HTTPX/TestClient request encoding, response wrappers, or transport behavior; those remain Starlette-RS-owned.",
     "HTTP tests compare status plus raw response bytes in the workflow, while the upstream assertions generally compare parsed response JSON. Raw-byte identity is an additional observation and is not claimed by the source tests.",
     "Each source OpenAPI function asserts its full tutorial-app snapshot. The independent app selects only requestBody paths and component schemas; full document metadata, operation identifiers, and exact source-app snapshots remain gated.",
@@ -177,48 +177,48 @@ MAPPED_CASE_COUNT = TOTAL_FUNCTION_COUNT - SOURCE_BACKED_EXCLUSION_COUNT
 _BODY_SOURCE = (
     {
         "path": "fastapi/routing.py",
-        "start_line": 425,
-        "end_line": 473,
+        "start_line": 451,
+        "end_line": 500,
         "role": "FastAPI reads request bytes, selects JSON decoding by content type, and turns decoding failures into request errors",
     },
     {
         "path": "fastapi/dependencies/utils.py",
-        "start_line": 951,
-        "end_line": 998,
+        "start_line": 1162,
+        "end_line": 1234,
         "role": "FastAPI validates one request body field or extracts and validates multiple embedded body fields",
     },
     {
         "path": "fastapi/routing.py",
-        "start_line": 751,
-        "end_line": 755,
+        "start_line": 792,
+        "end_line": 799,
         "role": "FastAPI raises RequestValidationError when request body or dependency validation returns errors",
     },
 )
 _MULTI_BODY_SOURCE = (
     {
         "path": "fastapi/dependencies/utils.py",
-        "start_line": 1001,
-        "end_line": 1048,
+        "start_line": 1237,
+        "end_line": 1284,
         "role": "FastAPI composes multiple body parameters into one embedded body field and determines its requiredness",
     },
 )
 _OPENAPI_SOURCE = (
     {
         "path": "fastapi/openapi/utils.py",
-        "start_line": 231,
-        "end_line": 263,
+        "start_line": 216,
+        "end_line": 248,
         "role": "FastAPI derives requestBody requiredness, media type, and Pydantic field schema",
     },
     {
         "path": "fastapi/openapi/utils.py",
-        "start_line": 331,
-        "end_line": 385,
+        "start_line": 316,
+        "end_line": 370,
         "role": "FastAPI assembles operation path/query parameters and requestBody metadata",
     },
     {
         "path": "fastapi/openapi/utils.py",
-        "start_line": 585,
-        "end_line": 647,
+        "start_line": 570,
+        "end_line": 632,
         "role": "FastAPI generates the OpenAPI document and component definitions from routes",
     },
 )
@@ -264,7 +264,7 @@ def _test_span(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         start_line,
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 test function {function_name} and its asserted observations",
+        f"pinned FastAPI 0.157.0 test function {function_name} and its asserted observations",
     )
 
 
@@ -467,7 +467,7 @@ def _module_review(test_path: str, test_functions: tuple[str, ...]) -> dict[str,
     return {
         "review_status": "reviewed_partial",
         "rationale": (
-            "Function-level review of the assigned FastAPI 0.141.1 request-body tutorial "
+            "Function-level review of the assigned FastAPI 0.157.0 request-body tutorial "
             "module. Every top-level test function has a case link or source-backed exclusion."
         ),
         "functions": functions,
@@ -483,7 +483,7 @@ def _module_review(test_path: str, test_functions: tuple[str, ...]) -> dict[str,
         "stimulus_notes": (
             "Independent input-only request-body cases. FastAPI request/body control flow "
             "is Rust-owned; generic Starlette behavior is Starlette-RS-owned; Pydantic "
-            "model semantics remain Pydantic 2.13.4-owned."
+            "model semantics remain Pydantic 2.13.5-owned."
         ),
     }
 

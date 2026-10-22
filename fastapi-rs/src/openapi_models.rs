@@ -158,7 +158,7 @@ pub(crate) fn register(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResult
     let options = PyDict::new(py);
     options.set_item("_types_namespace", &namespace)?;
     for (name, model) in models {
-        // FastAPI 0.141.1 leaves these models incomplete at import because
+        // FastAPI 0.157.0 leaves these models incomplete at import because
         // their annotations point into the not-yet-rebuilt OpenAPI graph.
         // Pydantic's incomplete state is observable in their constructor
         // signatures, so preserve it instead of eagerly resolving the graph.

@@ -46,14 +46,14 @@ def _workflow(
 
 
 _ROUTING_RATIONALE = (
-    "FastAPI 0.141.1 registers frontend routes in the low-priority route collection and "
+    "FastAPI 0.157.0 registers frontend routes in the low-priority route collection and "
     "dispatches ordinary path operations first (fastapi/routing.py:2630-2717, 2728-2781). "
     "The linked input is direct ASGI; generic file lookup and response emission remain "
     "Starlette 1.6.0 behavior."
 )
 
 _FALLBACK_RATIONALE = (
-    "FastAPI 0.141.1's frontend adapter applies the GET/HEAD, Accept, and fallback-file "
+    "FastAPI 0.157.0's frontend adapter applies the GET/HEAD, Accept, and fallback-file "
     "selection policy in fastapi/routing.py:1899-2044. The input records only response "
     "status and body; generic static-file headers, MIME types, and HEAD body suppression "
     "remain Starlette 1.6.0 behavior."
@@ -89,7 +89,7 @@ DOC_SECTION_CASE_MAPPINGS_FRONTEND_20261015 = {
             "build-tool execution and API-route priority are mapped separately."
         ),
         rationale=(
-            "FastAPI 0.141.1 registers the configured frontend path and delegates file lookup "
+            "FastAPI 0.157.0 registers the configured frontend path and delegates file lookup "
             "to its Starlette StaticFiles adapter (fastapi/routing.py:2630-2717, 1899-2044). "
             "The selected response confirms the integrated route outcome; generic file "
             "lookup, MIME handling, and response emission remain Starlette 1.6.0 behavior."
@@ -185,7 +185,7 @@ DOC_SECTION_CASE_MAPPINGS_FRONTEND_20261015 = {
             "page case."
         ),
         rationale=(
-            "FastAPI 0.141.1 resolves check_dir='auto' from FASTAPI_ENV, warns for a missing "
+            "FastAPI 0.157.0 resolves check_dir='auto' from FASTAPI_ENV, warns for a missing "
             "development directory, validates other environments during construction, and "
             "defers validation when check_dir=False (fastapi/routing.py:1881-1929). The warning "
             "and errors are FastAPI-owned; request protocol behavior remains Starlette-owned."
@@ -205,7 +205,7 @@ DOC_SECTION_CASE_MAPPINGS_FRONTEND_20261015 = {
             "intro mapping; this action observes the asset response only."
         ),
         rationale=(
-            "FastAPI 0.141.1 composes router and include_router prefixes when it registers a "
+            "FastAPI 0.157.0 composes router and include_router prefixes when it registers a "
             "frontend route (fastapi/routing.py:2630-2717). The fixture observes one direct "
             "ASGI asset request; generic static-file behavior remains Starlette 1.6.0-owned."
         ),
@@ -225,7 +225,7 @@ DOC_SECTION_CASE_MAPPINGS_FRONTEND_20261015 = {
             "transport behavior remain assigned to Starlette-RS."
         ),
         rationale=(
-            "FastAPI 0.141.1 builds the frontend's parameterless dependency graph from app and "
+            "FastAPI 0.157.0 builds the frontend's parameterless dependency graph from app and "
             "router dependencies, then resolves it before invoking the selected frontend route "
             "(fastapi/routing.py:2103-2169, 2191-2207). The independent case observes HTTP "
             "status, ordered headers, and body."
@@ -244,7 +244,7 @@ DOC_SECTION_CASE_MAPPINGS_FRONTEND_20261015 = {
             "Starlette-owned."
         ),
         "rationale": (
-            "FastAPI 0.141.1 frontend registration selects a directory-backed Starlette "
+            "FastAPI 0.157.0 frontend registration selects a directory-backed Starlette "
             "StaticFiles adapter (fastapi/routing.py:1899-2044, 2630-2717). The pinned page's "
             "framework rendering boundary does not describe additional FastAPI control flow."
         ),

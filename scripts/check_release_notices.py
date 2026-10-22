@@ -328,7 +328,7 @@ def _sync_source_notices(fastapi_source: Path, starlette_rs_source: Path) -> Non
         raise SystemExit(f"cannot read {NOTICE_FILE}: {exc}") from exc
 
     starlette_heading = "## Starlette-RS — BSD 3-Clause"
-    fastapi_heading = "## FastAPI 0.141.1 signature metadata — MIT"
+    fastapi_heading = "## FastAPI 0.157.0 signature metadata — MIT"
     starlette_section = (
         f"{starlette_heading}\n\n"
         f"Source: pinned Starlette-RS `LICENSE.md` at commit `{starlette_commit}`.\n\n"
@@ -345,10 +345,10 @@ def _sync_source_notices(fastapi_source: Path, starlette_rs_source: Path) -> Non
             f"{fastapi_heading}\n\n"
             "The route and parameter-factory signature metadata and annotation text in\n"
             "`fastapi-rs/src/route_signature.json` and\n"
-            "`fastapi-rs/src/parameter_signature_contract.json` were copied from FastAPI 0.141.1 "
+            "`fastapi-rs/src/parameter_signature_contract.json` were copied from FastAPI 0.157.0 "
             "at the\n"
             f"source commit `{fastapi_commit}` recorded in that file.\n\n"
-            "Source: [FastAPI 0.141.1 LICENSE](https://github.com/fastapi/fastapi/blob/"
+            "Source: [FastAPI 0.157.0 LICENSE](https://github.com/fastapi/fastapi/blob/"
             f"{fastapi_commit}/LICENSE).\n\n"
             "FastAPI's original author and MIT copyright holder is Sebastián Ramírez\n"
             "(Copyright (c) 2018). The complete upstream MIT notice, including its\n"

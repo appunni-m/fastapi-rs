@@ -37,7 +37,7 @@ _HTTP_OPENAPI = ["http.body.bytes", "http.status", "openapi.document", "openapi.
 _OPENAPI = ["openapi.document", "openapi.paths"]
 
 _ROUTING_RATIONALE = (
-    "FastAPI 0.141.1 APIRouter registration and include_router route composition are the "
+    "FastAPI 0.157.0 APIRouter registration and include_router route composition are the "
     "feature under review (fastapi/routing.py:2255-2326, 2889-2971, 3133-3320; "
     "fastapi/applications.py:1441-1545). Starlette 1.6.0 owns "
     "generic ASGI dispatch and response emission. The workload's handler values are "
@@ -45,7 +45,7 @@ _ROUTING_RATIONALE = (
 )
 
 _DEPENDENCY_RATIONALE = (
-    "FastAPI 0.141.1 builds and resolves the Depends graph for router-level dependencies "
+    "FastAPI 0.157.0 builds and resolves the Depends graph for router-level dependencies "
     "(fastapi/dependencies/utils.py:271-349, 619-714). FastAPI extracts declared query and "
     "header parameters and delegates their value validation to Pydantic; the accept/reject "
     "branches and exception details are authored workload behavior. Starlette 1.6.0 owns "
@@ -53,7 +53,7 @@ _DEPENDENCY_RATIONALE = (
 )
 
 _APP_DEPENDENCY_RATIONALE = (
-    "FastAPI 0.141.1 accepts application-wide dependencies and passes them to its root "
+    "FastAPI 0.157.0 accepts application-wide dependencies and passes them to its root "
     "APIRouter (fastapi/applications.py:331-349, 984-999); router registration and "
     "inclusion carry dependency declarations to path operations "
     "(fastapi/routing.py:2889-2971, 3133-3320). FastAPI builds and solves the dependency "
@@ -66,7 +66,7 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
     (_PAGE, "bigger-applications-multiple-files"): _excluded(
         "Bigger Applications - Multiple Files { #bigger-applications-multiple-files }",
         1,
-        547,
+        546,
         (
             "The H1 introduces a broad multi-file organization topic and combines package "
             "layout, router declarations, dependencies, router inclusion, CLI setup, and "
@@ -152,7 +152,7 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
     (_PAGE, "another-module-with-apirouter"): _workflow(
         "Another module with `APIRouter` { #another-module-with-apirouter }",
         130,
-        291,
+        290,
         [_MAIN],
         ["items-read-route", "items-openapi-route"],
         _HTTP_OPENAPI,
@@ -168,8 +168,8 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
     ),
     (_PAGE, "import-the-dependencies"): _excluded(
         "Import the dependencies { #import-the-dependencies }",
-        203,
-        275,
+        202,
+        274,
         (
             "This subsection shows a relative Python import from a sibling module. It adds no "
             "separate FastAPI request or router behavior beyond the dependency and router "
@@ -183,8 +183,8 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
     ),
     (_PAGE, "how-relative-imports-work"): _excluded(
         "How relative imports work { #how-relative-imports-work }",
-        213,
-        275,
+        212,
+        274,
         (
             "The section explains Python's one-dot, two-dot, and three-dot relative import "
             "rules with filesystem examples; it declares no FastAPI or ASGI behavior."
@@ -199,8 +199,8 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
             "Add some custom `tags`, `responses`, and `dependencies` "
             "{ #add-some-custom-tags-responses-and-dependencies }"
         ),
-        276,
-        291,
+        275,
+        290,
         [_MAIN],
         ["items-custom-put-route", "items-custom-openapi-route"],
         _HTTP_OPENAPI,
@@ -216,8 +216,8 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
     ),
     (_PAGE, "the-main-fastapi"): _excluded(
         "The main `FastAPI` { #the-main-fastapi }",
-        292,
-        467,
+        291,
+        466,
         (
             "This heading groups imports and module wiring with app-wide dependency setup, "
             "router inclusion/metadata, and a directly declared operation. The independently "
@@ -233,8 +233,8 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
     ),
     (_PAGE, "import-fastapi"): _workflow(
         "Import `FastAPI` { #import-fastapi }",
-        302,
-        309,
+        301,
+        308,
         [_MAIN],
         ["global-dependency-missing-token", "global-dependency-rejected-token"],
         _HTTP,
@@ -248,8 +248,8 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
     ),
     (_PAGE, "import-the-apirouter"): _excluded(
         "Import the `APIRouter` { #import-the-apirouter }",
-        310,
-        317,
+        309,
+        316,
         (
             "This section demonstrates importing local router modules and binding their "
             "objects to names. The imports themselves are Python module behavior."
@@ -261,8 +261,8 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
     ),
     (_PAGE, "how-the-importing-works"): _excluded(
         "How the importing works { #how-the-importing-works }",
-        318,
-        359,
+        317,
+        358,
         (
             "The section explains Python package names, relative imports, and module execution. "
             "Those language and packaging details do not specify FastAPI behavior."
@@ -274,8 +274,8 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
     ),
     (_PAGE, "avoid-name-collisions"): _excluded(
         "Avoid name collisions { #avoid-name-collisions }",
-        360,
-        378,
+        359,
+        377,
         (
             "The section shows aliasing Python imports to avoid local name collisions. It "
             "does not describe a FastAPI API option or request behavior."
@@ -290,8 +290,8 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
             "Include the `APIRouter`s for `users` and `items` "
             "{ #include-the-apirouters-for-users-and-items }"
         ),
-        379,
-        414,
+        378,
+        413,
         [_MAIN],
         ["users-me-route", "items-read-route", "items-openapi-route"],
         _HTTP_OPENAPI,
@@ -312,8 +312,8 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
             "`dependencies` "
             "{ #include-an-apirouter-with-a-custom-prefix-tags-responses-and-dependencies }"
         ),
-        415,
-        443,
+        414,
+        442,
         [_MAIN],
         ["admin-post-route", "admin-openapi-route"],
         _HTTP_OPENAPI,
@@ -333,8 +333,8 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
     ),
     (_PAGE, "include-a-path-operation"): _workflow(
         "Include a *path operation* { #include-a-path-operation }",
-        444,
-        467,
+        443,
+        466,
         [_MAIN],
         ["root-route", "root-openapi-route"],
         _HTTP_OPENAPI,
@@ -351,8 +351,8 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
             "Configure the `entrypoint` in `pyproject.toml` "
             "{ #configure-the-entrypoint-in-pyproject-toml }"
         ),
-        468,
-        498,
+        467,
+        497,
         (
             "The section specifies the FastAPI CLI's project entrypoint setting and command "
             "line invocation. It has no ASGI request input; process startup, project-file "
@@ -367,8 +367,8 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
     ),
     (_PAGE, "check-the-automatic-api-docs"): _workflow(
         "Check the automatic API docs { #check-the-automatic-api-docs }",
-        499,
-        518,
+        498,
+        517,
         [_MAIN],
         ["all-routes-openapi-docs"],
         ["docs.response.status", "http.status", "openapi.document", "openapi.paths"],
@@ -394,8 +394,8 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
             "Include the same router multiple times with different `prefix` "
             "{ #include-the-same-router-multiple-times-with-different-prefix }"
         ),
-        519,
-        526,
+        518,
+        525,
         [_REPEATED],
         ["first-prefix-route", "second-prefix-route"],
         _HTTP,
@@ -408,8 +408,8 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
     ),
     (_PAGE, "include-an-apirouter-in-another"): _workflow(
         "Include an `APIRouter` in another { #include-an-apirouter-in-another }",
-        527,
-        547,
+        526,
+        546,
         [_NESTED],
         ["nested-original-route", "nested-late-route", "nested-openapi-routes"],
         _HTTP_OPENAPI,
@@ -420,7 +420,7 @@ DOC_SECTION_CASE_MAPPINGS_BIGGER_APPLICATIONS_20261015 = {
             "inclusion order."
         ),
         (
-            "FastAPI 0.141.1 builds effective included-router candidates "
+            "FastAPI 0.157.0 builds effective included-router candidates "
             "(fastapi/routing.py:1590-1655), matches and dispatches the selected route "
             "(fastapi/routing.py:1728-1802), and consults router versions during iteration "
             "(fastapi/routing.py:2570-2601, 3133-3320). Starlette 1.6.0 owns "

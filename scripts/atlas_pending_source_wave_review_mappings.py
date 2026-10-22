@@ -1,4 +1,4 @@
-"""Function-level source review for the pending FastAPI 0.141.1 atlas wave.
+"""Function-level source review for the pending FastAPI 0.157.0 atlas wave.
 
 Every test function below has an independent YAML workflow link. The linked
 workloads are oracle-side input applications only; they are not imported by the
@@ -16,8 +16,8 @@ FASTAPI_ROOT = PROJECT_ROOT.parent / "fastapi"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "role": (
             "isolated source-oracle and development evidence only; FastAPI is not a target "
             "runtime dependency or import"
@@ -33,7 +33,7 @@ SOURCE_IDENTITIES = {
         "role": "pinned source-oracle and ASGI worker runtime",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned model validation, byte handling, and JSON Schema dependency",
     },
 }
@@ -60,7 +60,7 @@ def _test_span(path: str, name: str) -> dict[str, Any]:
         path,
         start,
         node.end_lineno or node.lineno,
-        f"FastAPI 0.141.1 test function {name} and its asserted behavior",
+        f"FastAPI 0.157.0 test function {name} and its asserted behavior",
     )
 
 
@@ -149,7 +149,7 @@ def _module(
         "workflow_cases": module_links,
         "stimulus_notes": (
             "Reviewed module links point to independent YAML workflows and workload modules "
-            "loaded separately by oracle and target workers. FastAPI 0.141.1 source is "
+            "loaded separately by oracle and target workers. FastAPI 0.157.0 source is "
             "development/oracle-only: the source worker uses upstream FastAPI, while the target "
             "worker uses the direct-native-re-export fastapi facade. Rust owns FastAPI control "
             "flow and the target must not import or depend on upstream FastAPI."
@@ -180,68 +180,68 @@ _ROUTE_ID = _source(
 )
 _ROUTE_ID_ASSIGNMENT = _source(
     "fastapi/routing.py",
-    1011,
-    1028,
+    1066,
+    1083,
     "FastAPI stores and invokes the route-specific ID callable while constructing APIRoute",
 )
 _ROUTER_ID_INHERITANCE = _source(
     "fastapi/routing.py",
-    1306,
-    1367,
+    1357,
+    1418,
     "FastAPI resolves include and nested-router unique-ID function inheritance",
 )
 _OPENAPI_ID_WARNING = _source(
     "fastapi/openapi/utils.py",
-    287,
-    308,
+    272,
+    293,
     "FastAPI adds operationId to OpenAPI and emits a Python warning for duplicate IDs",
 )
 _OPENAPI_PARAMETERS = _source(
     "fastapi/openapi/utils.py",
-    159,
-    228,
+    158,
+    213,
     "FastAPI flattens dependency parameters and projects path/query/header/cookie examples",
 )
 _OPENAPI_REQUEST_BODY = _source(
     "fastapi/openapi/utils.py",
-    231,
-    263,
+    216,
+    248,
     "FastAPI projects Body example and openapi_examples metadata onto requestBody content",
 )
 _OPENAPI_MODELS = _source(
     "fastapi/openapi/utils.py",
-    565,
-    582,
+    550,
+    567,
     "FastAPI gathers request, response, dependency, and callback fields before schema generation",
 )
 _MODEL_DEFINITIONS = _source(
     "fastapi/_compat/v2.py",
-    285,
-    346,
+    287,
+    348,
     "FastAPI asks Pydantic for field definitions and truncates Pydantic model descriptions at form feed",
 )
 _MODEL_FIELD_SCHEMA = _source(
     "fastapi/_compat/v2.py",
     254,
-    282,
+    284,
     "FastAPI selects the Pydantic validation or serialization schema for an OpenAPI field",
 )
 _DEPENDENCY_PARAMETER_DEDUP = _source(
     "fastapi/dependencies/utils.py",
-    169,
-    195,
+    212,
+    238,
     "FastAPI traverses dependency fields once and flattens the effective OpenAPI parameters",
 )
 _CALLBACKS_OPENAPI = _source(
     "fastapi/openapi/utils.py",
-    386,
-    402,
+    371,
+    387,
     "FastAPI recursively generates callback operations and attaches them to the owning operation",
 )
 _CALLBACK_FIELDS = _source(
     "fastapi/openapi/utils.py",
-    565,
-    582,
+    550,
+    567,
     "FastAPI includes callback route fields while building model schemas",
 )
 _SWAGGER_ESCAPE = _source(
@@ -258,14 +258,14 @@ _SWAGGER_HTML = _source(
 )
 _ROUTE_DESCRIPTION = _source(
     "fastapi/routing.py",
-    1034,
-    1037,
+    1089,
+    1092,
     "FastAPI extracts endpoint documentation and truncates route descriptions at form feed",
 )
 _JSONL_SERIALIZATION = _source(
     "fastapi/routing.py",
-    647,
-    682,
+    687,
+    722,
     "FastAPI recognizes sync/async JSONL generators and serializes each item with a newline",
 )
 _STARLETTE_STREAMING = _source(
@@ -294,9 +294,9 @@ _STARLETTE_CLIENT_CONFIG = _source(
 )
 _PYDANTIC_OPENAPI = _source(
     "fastapi/_compat/v2.py",
-    285,
-    346,
-    "FastAPI delegates model JSON Schema generation to pinned Pydantic 2.13.4",
+    287,
+    348,
+    "FastAPI delegates model JSON Schema generation to pinned Pydantic 2.13.5",
 )
 
 
@@ -478,8 +478,8 @@ PENDING_SOURCE_WAVE_REVIEW_MAPPINGS = {
                     ),
                     _source(
                         "fastapi/routing.py",
-                        413,
-                        432,
+                        439,
+                        458,
                         "FastAPI collects and parses a route body before dependency and endpoint execution",
                     ),
                 ),
@@ -513,8 +513,8 @@ PENDING_SOURCE_WAVE_REVIEW_MAPPINGS = {
                     ),
                     _source(
                         "fastapi/routing.py",
-                        413,
-                        432,
+                        439,
+                        458,
                         "FastAPI parses request body values before Pydantic field validation",
                     ),
                 ),
@@ -604,8 +604,8 @@ PENDING_SOURCE_WAVE_REVIEW_MAPPINGS = {
                 sources=(
                     _source(
                         "fastapi/routing.py",
-                        301,
-                        341,
+                        321,
+                        361,
                         "FastAPI validates and serializes endpoint response data",
                     ),
                 ),
@@ -669,8 +669,8 @@ PENDING_SOURCE_WAVE_REVIEW_MAPPINGS = {
                 sources=(
                     _source(
                         "fastapi/dependencies/utils.py",
-                        586,
-                        731,
+                        657,
+                        819,
                         "FastAPI traverses and executes subdependencies for an HTTP request",
                     ),
                 ),
@@ -771,8 +771,8 @@ PENDING_SOURCE_WAVE_REVIEW_MAPPINGS = {
                 sources=(
                     _source(
                         "fastapi/routing.py",
-                        2915,
-                        2963,
+                        3022,
+                        3070,
                         "FastAPI router route registration appends route-level callbacks",
                     ),
                 ),
@@ -1087,8 +1087,8 @@ PENDING_SOURCE_WAVE_REVIEW_MAPPINGS = {
                     ),
                     _source(
                         "fastapi/routing.py",
-                        413,
-                        473,
+                        439,
+                        500,
                         "FastAPI request parsing, dependency resolution, and response validation/serialization",
                     ),
                 ),
@@ -1205,8 +1205,8 @@ PENDING_SOURCE_WAVE_REVIEW_MAPPINGS = {
                     _MODEL_FIELD_SCHEMA,
                     _source(
                         "fastapi/openapi/utils.py",
-                        411,
-                        435,
+                        396,
+                        420,
                         "FastAPI adds JSONL response media type and itemSchema to OpenAPI",
                     ),
                 ),

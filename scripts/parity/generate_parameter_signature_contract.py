@@ -40,8 +40,8 @@ def build_contract(source_root: Path) -> dict[str, Any]:
             del sys.modules[module_name]
 
     fastapi = importlib.import_module("fastapi")
-    if fastapi.__version__ != "0.141.1":
-        raise SystemExit(f"expected FastAPI 0.141.1 at {source_root}, found {fastapi.__version__}")
+    if fastapi.__version__ != "0.157.0":
+        raise SystemExit(f"expected FastAPI 0.157.0 at {source_root}, found {fastapi.__version__}")
     factories = importlib.import_module("fastapi.param_functions")
     openapi_models = importlib.import_module("fastapi.openapi.models")
     from scripts.parity.api_worker import _signature_component

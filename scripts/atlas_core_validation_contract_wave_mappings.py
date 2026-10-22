@@ -9,8 +9,8 @@ from __future__ import annotations
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "role": "pinned development-time source oracle; not a Python runtime dependency",
     },
     "starlette": {
@@ -19,16 +19,16 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI request, response, and test-client replacement contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned model validation, serialization, and schema-generation dependency",
     },
 }
 
 BEHAVIOR_OWNERSHIP = {
-    "fastapi_control_flow": "Rust implementation; upstream FastAPI 0.141.1 is development/oracle source only",
+    "fastapi_control_flow": "Rust implementation; upstream FastAPI 0.157.0 is development/oracle source only",
     "python_runtime": "direct native re-exports and literal __all__ only; no helpers or framework control flow",
     "generic_starlette_behavior": "Starlette-RS contract, with Starlette 1.6.0 as the sole replacement contract",
-    "model_validation_and_schema": "pinned Pydantic 2.13.4 dependency behavior",
+    "model_validation_and_schema": "pinned Pydantic 2.13.5 dependency behavior",
 }
 
 
@@ -140,14 +140,14 @@ _HTTP_REQUEST_EDGES = [
 _OPENAPI_EDGES = [
     _source(
         "fastapi/openapi/utils.py",
-        311,
-        376,
+        296,
+        361,
         "FastAPI builds operation metadata and query/path parameter schemas from registered routes",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        585,
-        674,
+        570,
+        659,
         "FastAPI gathers route fields, emits path operations, and assembles OpenAPI components",
     ),
     _source(
@@ -161,14 +161,14 @@ _OPENAPI_EDGES = [
 _REQUEST_BODY_EDGES = [
     _source(
         "fastapi/routing.py",
-        425,
-        450,
+        451,
+        476,
         "FastAPI reads the request body and chooses JSON parsing from the content type",
     ),
     _source(
         "fastapi/dependencies/utils.py",
-        951,
-        998,
+        1162,
+        1234,
         "FastAPI validates one body field directly or extracts embedded fields and accumulates request errors",
     ),
     _source(
@@ -183,14 +183,14 @@ _REQUEST_BODY_EDGES = [
 _QUERY_VALIDATION_EDGES = [
     _source(
         "fastapi/dependencies/utils.py",
-        780,
-        875,
-        "FastAPI extracts multidict values, validates parameter fields, and preserves per-item list locations",
+        843,
+        989,
+        "FastAPI extracts multidict values and validates ordinary and model parameters while preserving per-item list locations",
     ),
     _source(
         "fastapi/dependencies/utils.py",
-        381,
-        471,
+        423,
+        514,
         "FastAPI selects the effective Annotated field/dependency and applies declaration defaults",
     ),
     _source(
@@ -205,14 +205,14 @@ _QUERY_VALIDATION_EDGES = [
 _RESPONSE_EDGES = [
     _source(
         "fastapi/routing.py",
-        301,
-        341,
+        321,
+        361,
         "FastAPI validates response-model values and serializes them with Pydantic field serializers",
     ),
     _source(
         "fastapi/routing.py",
-        710,
-        748,
+        750,
+        789,
         "FastAPI selects its response-model JSON byte fast path only for the default response class",
     ),
     _source(
@@ -353,14 +353,14 @@ CORE_VALIDATION_TEST_REVIEW_MAPPINGS = {
             ),
             _source(
                 "fastapi/params.py",
-                221,
-                295,
+                232,
+                313,
                 "Query forwards allow_inf_nan through FastAPI field metadata",
             ),
             _source(
                 "fastapi/params.py",
-                469,
-                545,
+                498,
+                611,
                 "Body forwards allow_inf_nan through FastAPI field metadata",
             ),
             *_QUERY_VALIDATION_EDGES,
@@ -434,14 +434,14 @@ CORE_VALIDATION_TEST_REVIEW_MAPPINGS = {
         [
             _source(
                 "fastapi/dependencies/utils.py",
-                381,
-                471,
+                423,
+                514,
                 "FastAPI resolves Annotated FieldInfo/Depends values, checks defaults, and rejects incompatible declarations",
             ),
             _source(
                 "fastapi/dependencies/utils.py",
-                271,
-                347,
+                314,
+                389,
                 "FastAPI registers dependant fields and dependencies during route construction",
             ),
             *_QUERY_VALIDATION_EDGES,
@@ -548,8 +548,8 @@ CORE_VALIDATION_TEST_REVIEW_MAPPINGS = {
             ),
             _source(
                 "fastapi/dependencies/utils.py",
-                381,
-                471,
+                423,
+                514,
                 "FastAPI selects Query metadata from Annotated and creates parameter fields",
             ),
             *_QUERY_VALIDATION_EDGES,
@@ -906,19 +906,19 @@ CORE_VALIDATION_TEST_REVIEW_MAPPINGS = {
             _source(
                 "fastapi/dependencies/models.py",
                 18,
-                65,
+                66,
                 "private callable unwrapping and identity-key internals",
             ),
             _source(
                 "fastapi/dependencies/models.py",
-                71,
-                120,
+                72,
+                121,
                 "private Dependant scope/cache derivation helpers",
             ),
             _source(
                 "fastapi/dependencies/models.py",
-                161,
-                234,
+                162,
+                235,
                 "private callable classifiers and computed-scope helper",
             ),
         ],

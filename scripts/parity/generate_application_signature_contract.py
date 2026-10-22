@@ -28,7 +28,7 @@ SIGNATURES = (
     ("middleware", "fastapi.applications", "FastAPI.middleware"),
     ("exception_handler", "fastapi.applications", "FastAPI.exception_handler"),
 )
-EXPECTED_SOURCE_REVISION = "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f"
+EXPECTED_SOURCE_REVISION = "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1"
 
 
 def _source_revision(root: Path) -> str:
@@ -49,8 +49,8 @@ def build_contract(source_root: Path) -> dict[str, Any]:
             del sys.modules[module_name]
 
     fastapi = importlib.import_module("fastapi")
-    if fastapi.__version__ != "0.141.1":
-        raise SystemExit(f"expected FastAPI 0.141.1 at {source_root}, found {fastapi.__version__}")
+    if fastapi.__version__ != "0.157.0":
+        raise SystemExit(f"expected FastAPI 0.157.0 at {source_root}, found {fastapi.__version__}")
     revision = _source_revision(source_root)
     if revision != EXPECTED_SOURCE_REVISION:
         raise SystemExit(f"expected FastAPI source {EXPECTED_SOURCE_REVISION}, found {revision}")

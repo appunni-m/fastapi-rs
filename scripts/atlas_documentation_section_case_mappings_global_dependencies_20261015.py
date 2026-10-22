@@ -48,7 +48,7 @@ DOC_SECTION_CASE_MAPPINGS_GLOBAL_DEPENDENCIES_20261015 = {
         (
             "The pinned example configures `FastAPI(dependencies=...)` and declares two "
             "operations (`../fastapi/docs_src/dependencies/tutorial012_an_py310.py:15-25`). "
-            "FastAPI 0.141.1 forwards the constructor's dependency list to its root "
+            "FastAPI 0.157.0 forwards the constructor's dependency list to its root "
             "`APIRouter` (`../fastapi/fastapi/applications.py:984-999`); `add_api_route` "
             "copies router dependencies into each `APIRoute` "
             "(`../fastapi/fastapi/routing.py:2927-2945`), whose dependency graph is built "

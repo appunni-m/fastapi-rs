@@ -1,0 +1,1174 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/body_nullable_defaults_0157.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.body-nullable-defaults.embedded-null-value
+  actions:
+  - action_id: embedded-null-value
+    kind: http_request
+    scope:
+      type: http
+      asgi: &id001
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /embedded/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: &id002
+      - 127.0.0.1
+      - 123
+      server: &id003
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: '{"value":null}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - &id004
+    path: tests/test_request_params/test_body/test_nullable_and_defaults.py
+    kind: upstream_test
+- case_id: fastapi.body-nullable-defaults.embedded-raw-null
+  actions:
+  - action_id: embedded-raw-null
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /embedded/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: 'null'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.required-embedded-absent
+  actions:
+  - action_id: required-embedded-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /embedded/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.required-model-absent
+  actions:
+  - action_id: required-model-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.required-model-field-null
+  actions:
+  - action_id: required-model-field-null
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '{"value":null}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.null-default-absent
+  actions:
+  - action_id: null-default-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /embedded/nullable-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.concrete-default-absent
+  actions:
+  - action_id: concrete-default-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /embedded/concrete-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.nonnullable-default-absent
+  actions:
+  - action_id: nonnullable-default-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /embedded/nonnullable-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.nullable-model-empty-object
+  actions:
+  - action_id: nullable-model-empty-object
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model/nullable-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.concrete-model-empty-object
+  actions:
+  - action_id: concrete-model-empty-object
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model/concrete-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.nonnullable-model-empty-object
+  actions:
+  - action_id: nonnullable-model-empty-object
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model/nonnullable-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.bare-required-absent
+  actions:
+  - action_id: bare-required-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /bare/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.bare-nullable-explicit-null
+  actions:
+  - action_id: bare-nullable-explicit-null
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /bare/nullable-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: 'null'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.bare-concrete-explicit-null
+  actions:
+  - action_id: bare-concrete-explicit-null
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /bare/concrete-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: 'null'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.falsey-integer-is-present
+  actions:
+  - action_id: falsey-integer
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /bare/concrete-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '0'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.falsey-string-is-present
+  actions:
+  - action_id: falsey-string
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /bare/string-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '""'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.falsey-list-is-present
+  actions:
+  - action_id: falsey-list
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /bare/list-factory
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '[]'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.object-invalid-for-integer
+  actions:
+  - action_id: object-invalid-integer
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /bare/concrete-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.object-invalid-for-string
+  actions:
+  - action_id: object-invalid-string
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /bare/string-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.object-invalid-for-list
+  actions:
+  - action_id: object-invalid-list
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /bare/list-factory
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.nonnullable-embedded-explicit-null
+  actions:
+  - action_id: nonnullable-embedded-null
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /embedded/nonnullable-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '{"value":null}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.nonnullable-bare-explicit-null
+  actions:
+  - action_id: nonnullable-bare-null
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /bare/nonnullable-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: 'null'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.null-does-not-fill-embedded-field
+  actions:
+  - action_id: null-does-not-fill-field
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /embedded/nullable-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: 'null'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.multiple-body-raw-null
+  actions:
+  - action_id: multiple-body-raw-null
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /body/multiple
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: 'null'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.multiple-body-empty-request
+  actions:
+  - action_id: multiple-body-empty-request
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /body/multiple
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.multiple-body-empty-object
+  actions:
+  - action_id: multiple-body-empty-object
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /body/multiple
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.multiple-body-explicit-null-fields
+  actions:
+  - action_id: multiple-body-null-fields
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /body/multiple
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '{"value":null,"other":null}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.factory-skips-null-and-fills-absent
+  actions:
+  - action_id: factory-explicit-null
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /factory/nullable
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: 'null'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: factory-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /factory/nullable
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.body-dependency-alias-null
+  actions:
+  - action_id: dependency-alias-null
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /body/dependency-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '{"input":null}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.body-dependency-alias-absent
+  actions:
+  - action_id: dependency-alias-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /body/dependency-alias
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.nullable-raw-model-explicit-null
+  actions:
+  - action_id: nullable-raw-model-null
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model/nullable-raw
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: 'null'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.nullable-raw-model-absent
+  actions:
+  - action_id: nullable-raw-model-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model/nullable-raw
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.nullable-embedded-model-explicit-null
+  actions:
+  - action_id: nullable-embedded-model-null
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model/nullable-embedded
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '{"value":null}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.nullable-embedded-model-absent
+  actions:
+  - action_id: nullable-embedded-model-absent
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /model/nullable-embedded
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: '{}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.custom-validation-error-body-missing
+  actions:
+  - action_id: custom-handler-missing-body
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /validation/required-integer
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004
+- case_id: fastapi.body-nullable-defaults.custom-validation-error-body-null
+  actions:
+  - action_id: custom-handler-null-body
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /validation/required-integer
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - content-type
+        - application/json
+      client: *id002
+      server: *id003
+    receive_events:
+    - type: http.request
+      body: 'null'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - *id004

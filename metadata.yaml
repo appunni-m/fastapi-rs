@@ -6,38 +6,38 @@ schema: fastapi-rs/api-source-authority@1
 authority:
   project: FastAPI
   repository: https://github.com/fastapi/fastapi
-  version: 0.141.1
-  tag: 0.141.1
-  commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
+  version: 0.157.0
+  tag: 0.157.0
+  commit: 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1
   checkout: ../fastapi
   python:
     requires: ">=3.10"
     oracle: {implementation: CPython, version: 3.12.13}
   pydantic:
-    version: 2.13.4
-    pydantic_core_version: 2.46.4
-    source_lock_version: 2.13.4
+    version: 2.13.5
+    pydantic_core_version: 2.46.5
+    source_lock_version: 2.13.5
     public_layer: Reuse Pydantic's public Python model API.
-    native_layer: FastAPI-RS calls the separately built pydantic-core==2.46.4 Python wheel APIs through PyO3; its Rust implementation remains Pydantic-owned and is not a FastAPI-RS Cargo dependency or public API.
+    native_layer: FastAPI-RS calls the separately built pydantic-core==2.46.5 Python wheel APIs through PyO3; its Rust implementation remains Pydantic-owned and is not a FastAPI-RS Cargo dependency or public API.
   pydantic_core_source:
     repository: https://github.com/pydantic/pydantic
-    tag: v2.13.4
-    commit: cf67d4b3193c3fe43ede18612ed62785eee11382
+    tag: v2.13.5
+    commit: 001dea020e0809844e5b17666432c9135a976f46
     checkout: ../pydantic
-    version: 2.46.4
+    version: 2.46.5
     rust_version: "1.88"
     cargo_manifest: pydantic-core/Cargo.toml
-    cargo_manifest_sha256: 20fcd4066f125dec91012a0cdb7f7c901963226c98906a7e414210a64ac1fcc3
+    cargo_manifest_sha256: 178d537feb822d845526eeac2438f817cf25ad15d15fe1261b81b9b3452edbb3
     cargo_lock: pydantic-core/Cargo.lock
-    cargo_lock_sha256: c3c27fc600d7dafd149229c6501271dbc5f6b4f7b1bfa116b32e77217c2b5038
+    cargo_lock_sha256: 5f04266831ef75fbb5eeb0acd509b85a15f6ebc8a690eed4d7fd191fd11ec108
     boundary: >-
       Separately installed Pydantic-owned Python runtime wheel; its Cargo graph
       is inventoried independently and is not a FastAPI-RS Cargo dependency.
   upstream_source_lock:
     file: uv.lock
     purpose: FastAPI source-inventory provenance only; it does not select the oracle profile.
-    sha256: 96ae079a121e11b4cc0d260df5b7f77189bb90fa23a2da368f607418c2d98165
-    components: {pydantic: 2.13.4, starlette: 1.3.1, httpx: 0.28.1}
+    sha256: 62147be0657e1be6cbe592f335f52429e814f1236524c607e1e4cf4b01913678
+    components: {pydantic: 2.13.5, starlette: 1.7.0, httpx: 0.28.1}
   starlette:
     repository: https://github.com/Kludex/starlette
     version: 1.6.0
@@ -49,7 +49,7 @@ target_runtime:
   python: CPython 3.12.13
   lock:
     path: requirements/target-runtime-cpython-3.12.13.lock
-    sha256: efb7ca633fc9a9c8587a6f59f8ee9b509151f6f77ceb75a56dd3cdeff2be99f7
+    sha256: 7618764688bedea8ca45e09409f2f50b45f21b378363cc1634695dd6439c5395
     profile: CPython 3.12.13
   optional_profiles:
     testclient:
@@ -57,7 +57,7 @@ target_runtime:
       base_profile: fastapi-rs-python-consumer
       lock:
         path: requirements/target-testclient-cpython-3.12.13.lock
-        sha256: c72266c50b04909783777ddf9949a79b4504d5af787c9ecbfe1014141f41f318
+        sha256: 8c4487070ce4f3b6609521d9581749d733f589b4c2551c3d4b5cc429249193b9
         profile: CPython 3.12.13 with HTTPX 0.28.1 fallback
       added_packages:
         certifi: 2026.1.4
@@ -66,71 +66,71 @@ target_runtime:
         httpx: 0.28.1
       fastapi_extra: testclient
       prepare_target: parity-prepare-target-testclient
-      source_profile: FastAPI 0.141.1 standard extra with HTTPX fallback
+      source_profile: FastAPI 0.157.0 standard extra with HTTPX fallback
       starlette_rs_profile: 1.6.0 test client with httpx2 absent
     standard-multipart:
       id: fastapi-rs-standard-multipart-cpython-3.12.13-python-multipart-0.0.32
       base_profile: fastapi-rs-python-consumer
       lock:
         path: requirements/target-standard-multipart-cpython-3.12.13.lock
-        sha256: 3aee8269ac560768cc04dc8bb7ad6d55db75dd042f3a1a962fc5b8b3bfa853d6
+        sha256: 13397dc94820e3f66f36c9d95862066147a617e175f5c0a19762617e7987bc9b
         profile: CPython 3.12.13 with python-multipart 0.0.32
       added_packages:
         python-multipart: 0.0.32
       fastapi_extra: standard
       prepare_target: parity-prepare-target-standard-multipart
-      source_profile: FastAPI 0.141.1 standard extra with multipart parsing enabled
+      source_profile: FastAPI 0.157.0 standard extra with multipart parsing enabled
       starlette_rs_profile: 1.6.0 form parsing with python-multipart installed
     email-validation:
       id: fastapi-rs-email-validation-cpython-3.12.13-email-validator-2.3.0
       base_profile: fastapi-rs-python-consumer
       lock:
         path: requirements/email-validation-cpython-3.12.13.lock
-        sha256: 031d2b004bf6427b8d771cf172b36878ec7fe3299a1e5806f92d7066eb1d41b3
+        sha256: 1ed45e11afe0d3db9fa600d1567e3a8fbf5b80279375ef55a2b7deaef2d63cc5
         profile: CPython 3.12.13 with email-validator 2.3.0
       added_packages:
         dnspython: 2.8.0
         email-validator: 2.3.0
       fastapi_extra: standard
       prepare_target: parity-prepare-target-email-validation
-      source_profile: FastAPI 0.141.1 EmailStr validation dependency closure
+      source_profile: FastAPI 0.157.0 EmailStr validation dependency closure
       starlette_rs_profile: 1.6.0 core runtime
     templates:
       id: fastapi-rs-templates-cpython-3.12.13-jinja2-3.1.6-markupsafe-3.0.3
       base_profile: fastapi-rs-python-consumer
       lock:
         path: requirements/templates-cpython-3.12.13.lock
-        sha256: eee2f5509c1d8645caf971998f6a777e144901b0a0847ee329c62ebd4b31fdb0
+        sha256: 0d982a3837c2462a1bf7d78b211fcc512f1e2d31a5016d9ce82e1756cf914f20
         profile: CPython 3.12.13 with Jinja2 3.1.6 and MarkupSafe 3.0.3
       added_packages:
         jinja2: 3.1.6
         markupsafe: 3.0.3
       fastapi_extra: templates
       prepare_target: parity-prepare-target-templates
-      source_profile: FastAPI 0.141.1 with only Jinja2 and MarkupSafe; no standard extra
+      source_profile: FastAPI 0.157.0 with only Jinja2 and MarkupSafe; no standard extra
       starlette_rs_profile: 1.6.0 templates integration
     json-serializers:
       id: fastapi-rs-json-serializers-cpython-3.12.13-orjson-3.13.0-ujson-6.0.0
       base_profile: fastapi-rs-python-consumer
       lock:
         path: requirements/json-serializers-cpython-3.12.13.lock
-        sha256: c43d6393010e9f0e8b95831d8cb2127dd4f4371c539bb7270675e9ba042fac86
+        sha256: bc6afe00ee120cb02e647659504884652868d6757a1fffcd0199b06be7a06f18
         profile: CPython 3.12.13 with orjson 3.13.0 and ujson 6.0.0
       added_packages:
         orjson: 3.13.0
         ujson: 6.0.0
       fastapi_extra: null
       prepare_target: parity-prepare-target-json-serializers
-      source_profile: FastAPI 0.141.1 with its two optional JSON response serializers installed
+      source_profile: FastAPI 0.157.0 with its two optional JSON response serializers installed
       starlette_rs_profile: 1.6.0 core runtime
 
 oracle_profile_extensions:
   email-validation:
-    id: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0
-    base_profile: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13
+    id: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0
+    base_profile: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13
     lock:
       path: requirements/email-validation-cpython-3.12.13.lock
-      sha256: 031d2b004bf6427b8d771cf172b36878ec7fe3299a1e5806f92d7066eb1d41b3
+      sha256: 1ed45e11afe0d3db9fa600d1567e3a8fbf5b80279375ef55a2b7deaef2d63cc5
       profile: CPython 3.12.13 with email-validator 2.3.0
     added_packages:
       dnspython: 2.8.0
@@ -138,11 +138,11 @@ oracle_profile_extensions:
     fastapi_extra: standard
     prepare_target: parity-prepare-oracle-email-validation
   templates:
-    id: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3
-    base_profile: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13
+    id: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3
+    base_profile: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13
     lock:
       path: requirements/templates-cpython-3.12.13.lock
-      sha256: eee2f5509c1d8645caf971998f6a777e144901b0a0847ee329c62ebd4b31fdb0
+      sha256: 0d982a3837c2462a1bf7d78b211fcc512f1e2d31a5016d9ce82e1756cf914f20
       profile: CPython 3.12.13 with Jinja2 3.1.6 and MarkupSafe 3.0.3
     added_packages:
       jinja2: 3.1.6
@@ -150,11 +150,11 @@ oracle_profile_extensions:
     fastapi_extra: null
     prepare_target: parity-prepare-oracle-templates
   json-serializers:
-    id: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-json-serializers-orjson-3.13.0-ujson-6.0.0
-    base_profile: fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13
+    id: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-json-serializers-orjson-3.13.0-ujson-6.0.0
+    base_profile: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13
     lock:
       path: requirements/json-serializers-cpython-3.12.13.lock
-      sha256: c43d6393010e9f0e8b95831d8cb2127dd4f4371c539bb7270675e9ba042fac86
+      sha256: bc6afe00ee120cb02e647659504884652868d6757a1fffcd0199b06be7a06f18
       profile: CPython 3.12.13 with orjson 3.13.0 and ujson 6.0.0
     added_packages:
       orjson: 3.13.0
@@ -166,8 +166,8 @@ source_optional_dependencies:
   schema: fastapi-rs/source-optional-dependency-map@1
   source_identity:
     package: FastAPI
-    version: 0.141.1
-    commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
+    version: 0.157.0
+    commit: 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1
   packages:
     orjson:
       version: 3.13.0
@@ -195,7 +195,7 @@ source_optional_dependencies:
 fastapi_cli_policy:
   command: fastapi
   oracle_packages: {fastapi-cli: 0.0.32, fastapi-cloud-cli: 0.11.0}
-  oracle_lock: {path: uv.lock, sha256: 96ae079a121e11b4cc0d260df5b7f77189bb90fa23a2da368f607418c2d98165}
+  oracle_lock: {path: uv.lock, sha256: 62147be0657e1be6cbe592f335f52429e814f1236524c607e1e4cf4b01913678}
   target_owner: fastapi-rs
   target_cli_python_dependencies: []
   target_python_surface: direct-native-re-export-only
@@ -206,7 +206,7 @@ fastapi_cli_policy:
     dependency: fastapi-cloud-cli
     version: 0.11.0
     lockfile: uv.lock
-    lockfile_sha256: 96ae079a121e11b4cc0d260df5b7f77189bb90fa23a2da368f607418c2d98165
+    lockfile_sha256: 62147be0657e1be6cbe592f335f52429e814f1236524c607e1e4cf4b01913678
     wheel_sha256: 76857b0f09d918acfcb50ade34682ba3b2079ca0c43fda10215de301f185a7f8
     sdist_sha256: ecc83a5db106be35af528eccb01aa9bced1d29783efd48c8c1c831cf111eea99
     evidence:
@@ -350,13 +350,13 @@ api_inventory:
 
 runtime_root_namespace_review:
   schema: fastapi-rs/runtime-root-namespace-review@1
-  source_identity: {package: FastAPI, version: 0.141.1, source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f}
+  source_identity: {package: FastAPI, version: 0.157.0, source_commit: 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1}
   profiles: [source_artifacts.runtime_api_surface_core, source_artifacts.runtime_api_surface_standard]
   scope: >-
     Runtime-only module attributes on the fastapi package root are reviewed
     separately from source-defined API candidates. Reflection proves runtime
     presence only; it does not prove an export or behavioral support contract.
-  counts: {candidates: 21, supported: 12, private_or_internal: 0, uncertain: 9}
+  counts: {candidates: 22, supported: 12, private_or_internal: 0, uncertain: 10}
   rows:
     - id: fastapi.applications
       classification: uncertain
@@ -494,27 +494,35 @@ runtime_root_namespace_review:
       source_path: fastapi/websockets.py
       evidence: {path: docs/en/docs/reference/websockets.md, contains: fastapi.websockets}
       reason: Pinned API reference documents WebSocket classes and state through this module.
-
+    - id: fastapi.telemetry
+      classification: uncertain
+      source_path: fastapi/telemetry/__init__.py
+      reason: >-
+        FastAPI 0.157.0 introduces a telemetry package and runtime reflection
+        exposes its module object on the package root. The pinned user
+        documentation does not establish this exact root-module attribute as a
+        public import contract, so keep it uncertain pending a direct module
+        reference.
 import_binding_classification_review:
   artifact: tests/fixtures/api-import-binding-classification-review.json
   schema: fastapi-starlette-import-binding-review/v1
-  sha256: 3f8bed1932063ff35bd5ab82fc52983475a5512dcd8cfb6c0a33fdae01605e80
+  sha256: c96dbc46f111516df04aa4a18e0d2ccff01e46d6e5f709e8304b04f092e20534
   source_identity:
     package: FastAPI
-    version: 0.141.1
-    source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
+    version: 0.157.0
+    source_commit: 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1
     selected_starlette_profile: 1.6.0
     starlette_source_commit: 4f250d6b814587e20c5365f0a5f0c4d42bcb929f
     starlette_rs_contract_commit: 4139a72449bf5751e8902fb1c7175ee7f191d338
   starlette_rs_contract_id: starlette-1.6.0-full
   counts:
-    candidates: 97
+    candidates: 96
     supported: 7
-    private_or_internal: 85
+    private_or_internal: 84
     uncertain: 5
-    starlette_rs_reviewed_candidates: 93
+    starlette_rs_reviewed_candidates: 92
     starlette_rs_unreviewed_unique_targets: 4
-  candidate_ids_sha256: fc10be5c04a97dfb4927d10471b6c94ebccf8ef2090e5bc3d511a96732898eaa
+  candidate_ids_sha256: 915d8c3c0ba4455df9e4f44f0acf8c6a5f86b4a49c2388ee0225bb73a816bc46
   pinned_starlette_rs_sources:
     metadata_sha256: 2566c40ad6fd3a12e50184f53e814a39aa32055921c06ff1110af289e747f889
     manifest_sha256: 86f69fc791088794fcd59483d6a91cc08bb9b3999586665f73c2f722f9946029
@@ -524,17 +532,17 @@ import_binding_classification_review:
 source_api_classification_review:
   artifact: tests/fixtures/api-source-classification-review.json
   schema: fastapi-rs/source-api-classification-review@2
-  sha256: 62febc7fda9106731098c252e64c6c26c5955df7be2774c2bc9a47417e3c0358
+  sha256: cd6613cfaf75533f201363132c4db5fdb9e6b83d8b362f78ab0e540061fdd2dd
   source_identity:
     package: FastAPI
-    version: 0.141.1
-    source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
+    version: 0.157.0
+    source_commit: 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1
   counts:
-    candidates: 392
+    candidates: 389
     supported: 6
-    private_or_internal: 384
+    private_or_internal: 381
     uncertain: 2
-  candidate_ids_sha256: ff9adf50efc658e26c79f0b014bf2094c487355f53b724f9785b2076a040f1eb
+  candidate_ids_sha256: 36655ae691b6f8b1677796d91af2d602be393b82f84afeae54154be5ed2c4b8e
   selection:
     uncertain_candidate_ids:
       - fastapi.__main__.main
@@ -555,7 +563,6 @@ source_api_classification_review:
       - fastapi.applications.get_swagger_ui_html
       - fastapi.applications.get_swagger_ui_oauth2_redirect_html
       - fastapi.applications.http_exception_handler
-      - fastapi.applications.logger
       - fastapi.applications.os
       - fastapi.applications.request_validation_exception_handler
       - fastapi.applications.routing
@@ -615,7 +622,6 @@ source_api_classification_review:
       - fastapi.openapi.models.TypedDict
       - fastapi.openapi.models.logger
       - fastapi.openapi.models.typing_deprecated
-      - fastapi.openapi.utils.BaseModel
       - fastapi.openapi.utils.Body
       - fastapi.openapi.utils.DefaultPlaceholder
       - fastapi.openapi.utils.Dependant
@@ -633,7 +639,6 @@ source_api_classification_review:
       - fastapi.openapi.utils.field
       - fastapi.openapi.utils.generate_operation_id_for_path
       - fastapi.openapi.utils.get_flat_params
-      - fastapi.openapi.utils.get_validation_alias
       - fastapi.openapi.utils.http
       - fastapi.openapi.utils.inspect
       - fastapi.openapi.utils.is_body_allowed_for_status_code
@@ -781,17 +786,17 @@ source_api_classification_review:
 api_public_candidate_classification_review:
   artifact: tests/fixtures/api-public-candidate-classification-review.json
   schema: fastapi-rs/public-candidate-classification-review@1
-  sha256: d78f9c3d609b4cf6ed4a673fbe17b3718e6371bbe4a9fd0a8a71107e7f800669
+  sha256: 0b15ae78e932db5e9a4fedd72bf8989549182db95226e4fa03515c4ccd8c0bb8
   source_identity:
     package: FastAPI
-    version: 0.141.1
-    source_commit: 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f
+    version: 0.157.0
+    source_commit: 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1
   counts:
-    candidates: 183
+    candidates: 185
     supported: 35
     private_or_internal: 127
-    uncertain: 21
-  candidate_ids_sha256: 0618a36c242881966e44d1d3549865abf8c86453d83f7e6620e6a6647019decd
+    uncertain: 23
+  candidate_ids_sha256: c4b313d65077e71d5c8019721b9110a80e9596185c6ff72d740134757b4c6cba
 
 classification_atlas:
   artifact: tests/fixtures/compatibility-atlas.json
@@ -905,6 +910,12 @@ starlette_rs:
         FastAPI uses Lifespan only in callback annotations. Starlette-RS reviews the
         Python context-manager alias as supported but declares no operation for it;
         lifecycle behavior is tracked through application operations and parity cases.
+    starlette.types.Message:
+      python_package_disposition: supported
+      scope_note: >-
+        FastAPI uses Message only as an ASGI message mapping annotation. Starlette-RS
+        reviews the Python alias as supported but declares no operation for the type
+        itself; message exchange remains linked to the owning ASGI operations.
     starlette.types.Receive:
       python_package_disposition: supported
       scope_note: >-
@@ -1322,7 +1333,7 @@ starlette_rs:
       starlette_symbol: starlette._utils.get_route_path
       fastapi_source_uses:
         path: fastapi/routing.py
-        call_lines: [1513, 2072, 2745]
+        call_lines: [1572, 2142, 2829]
       target_refs:
         - surface_id: starlette.routing.Router
           operation_id: route-dispatch
@@ -1339,7 +1350,7 @@ starlette_rs:
       starlette_symbol: starlette._utils.is_async_callable
       fastapi_source_uses:
         path: fastapi/routing.py
-        call_lines: [130, 6374, 6390]
+        call_lines: [139, 6481, 6497]
       target_refs:
         - surface_id: starlette.applications.Starlette
           operation_id: request-dispatch
@@ -1355,7 +1366,7 @@ starlette_rs:
       starlette_symbol: starlette._exception_handler.wrap_app_handling_exceptions
       fastapi_source_uses:
         path: fastapi/routing.py
-        call_lines: [158, 184]
+        call_lines: [167, 193]
       target_refs:
         - surface_id: starlette.applications.Starlette
           operation_id: __call__
@@ -1378,7 +1389,7 @@ starlette_rs:
       starlette_symbol: starlette.routing
       fastapi_source_uses:
         path: fastapi/routing.py
-        import_line: 91
+        import_line: 100
         alias: routing
         consumed_members: [Host, Mount, NoMatchFound, Route, Router, WebSocketRoute, replace_params]
       target_refs: []
@@ -1392,9 +1403,9 @@ starlette_rs:
     fastapi.routing.iterate_in_threadpool:
       starlette_symbol: starlette.concurrency.iterate_in_threadpool
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 556, expression: "sse_aiter = iterate_in_threadpool(gen)"}
+        - {path: fastapi/routing.py, line: 596, expression: "sse_aiter = iterate_in_threadpool(gen)"}
       target_refs:
-        - {surface_id: starlette.concurrency, operation_id: iterate_in_threadpool, source_use_lines: [556]}
+        - {surface_id: starlette.concurrency, operation_id: iterate_in_threadpool, source_use_lines: [596]}
       scope_note: >-
         FastAPI uses the sibling iterator adapter for synchronous server-sent-event
         generators. This is an operation ownership link; it does not establish
@@ -1402,42 +1413,47 @@ starlette_rs:
     fastapi.routing.run_in_threadpool:
       starlette_symbol: starlette.concurrency.run_in_threadpool
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 131, expression: "functools.partial(run_in_threadpool, func)"}
-        - {path: fastapi/routing.py, line: 319, expression: "value, errors = await run_in_threadpool("}
-        - {path: fastapi/routing.py, line: 354, expression: "return await run_in_threadpool(dependant.call, **values)"}
+        - {path: fastapi/routing.py, line: 140, expression: "functools.partial(run_in_threadpool, func)"}
+        - {path: fastapi/routing.py, line: 339, expression: "value, errors = await run_in_threadpool("}
+        - {path: fastapi/routing.py, line: 375, expression: "return await run_in_threadpool("}
       target_refs:
-        - {surface_id: starlette.concurrency, operation_id: run_in_threadpool, source_use_lines: [131, 319, 354]}
+        - {surface_id: starlette.concurrency, operation_id: run_in_threadpool, source_use_lines: [140, 339, 375]}
       scope_note: >-
         FastAPI routes synchronous endpoint and dependency calls through the sibling
         worker-thread helper. This ownership link does not establish FastAPI-RS parity.
     fastapi.dependencies.utils.run_in_threadpool:
       starlette_symbol: starlette.concurrency.run_in_threadpool
       fastapi_source_uses:
-        - {path: fastapi/dependencies/utils.py, line: 676, expression: "solved = await run_in_threadpool(call, **solved_result.values)"}
+        - {path: fastapi/dependencies/utils.py, line: 758, expression: "solved = await run_in_threadpool(call, **solved_result.values)"}
       target_refs:
-        - {surface_id: starlette.concurrency, operation_id: run_in_threadpool, source_use_lines: [676]}
+        - {surface_id: starlette.concurrency, operation_id: run_in_threadpool, source_use_lines: [758]}
       scope_note: >-
         FastAPI executes synchronous dependencies through the sibling worker-thread
         helper. This ownership link does not establish FastAPI-RS parity.
     fastapi.applications.FastAPI.__call__:
       starlette_symbol: starlette.applications.Starlette.__call__
       fastapi_source_uses:
-        - {path: fastapi/applications.py, line: 1163, expression: "await super().__call__(scope, receive, send)"}
+        - {path: fastapi/applications.py, line: 1176, expression: "if self.root_path:"}
+        - {path: fastapi/applications.py, line: 1183, expression: "app=super().__call__"}
+        - {path: fastapi/applications.py, line: 1194, expression: "await super().__call__(scope, receive, send)"}
+        - {path: fastapi/applications.py, line: 1200, expression: "app=super().__call__"}
       target_refs:
-        - {surface_id: starlette.applications.Starlette, operation_id: __call__, source_use_lines: [1163]}
+        - {surface_id: starlette.applications.Starlette, operation_id: __call__, source_use_lines: [1183, 1194, 1200]}
       scope_note: >-
-        FastAPI delegates its ASGI entrypoint to the inherited Starlette application
-        call. The link preserves the generic application boundary and makes no
-        FastAPI-RS parity claim.
+        Starlette owns generic ASGI dispatch. FastAPI 0.157.0 additionally writes its
+        configured root_path into the scope and wraps lifespan, HTTP, and WebSocket
+        dispatch with FastAPI telemetry behavior. The Starlette link covers only the
+        delegated generic ASGI operation; it does not imply FastAPI-RS parity for
+        FastAPI's root-path or telemetry semantics.
     fastapi.applications.State:
       starlette_symbol: starlette.datastructures.State
       fastapi_source_uses:
-        - {path: fastapi/applications.py, line: 966, expression: "] = State()"}
+        - {path: fastapi/applications.py, line: 963, expression: "] = State()"}
       target_refs:
         - surface_id: starlette.datastructures.State
           operation_id: consumer-sequence
           requirement_ids: [starlette.datastructures.State.attribute-set-get]
-          source_use_lines: [966]
+          source_use_lines: [963]
       scope_note: >-
         FastAPI creates its inherited app.state value with Starlette State. The
         selected requirement covers attribute assignment and retrieval; Starlette
@@ -1445,15 +1461,15 @@ starlette_rs:
     fastapi.applications.Middleware:
       starlette_symbol: starlette.middleware.Middleware
       fastapi_source_uses:
-        - {path: fastapi/applications.py, line: 1034, expression: "[Middleware(ServerErrorMiddleware, handler=error_handler, debug=debug)]"}
-        - {path: fastapi/applications.py, line: 1037, expression: "Middleware("}
-        - {path: fastapi/applications.py, line: 1061, expression: "Middleware(AsyncExitStackMiddleware)"}
-        - {path: fastapi/applications.py, line: 1066, expression: "for cls, args, kwargs in reversed(middleware):"}
+        - {path: fastapi/applications.py, line: 1047, expression: "Middleware(ServerErrorMiddleware, handler=error_handler, debug=debug),"}
+        - {path: fastapi/applications.py, line: 1048, expression: "Middleware("}
+        - {path: fastapi/applications.py, line: 1076, expression: "Middleware(AsyncExitStackMiddleware)"}
+        - {path: fastapi/applications.py, line: 1081, expression: "for cls, args, kwargs in reversed(middleware):"}
       target_refs:
         - surface_id: starlette.middleware.Middleware
           operation_id: value-formatting
           requirement_ids: [starlette.middleware.Middleware.iteration]
-          source_use_lines: [1066]
+          source_use_lines: [1081]
       scope_note: >-
         FastAPI builds Starlette Middleware records and unpacks them while composing
         its custom stack. The selected link covers generic record iteration only;
@@ -1461,10 +1477,10 @@ starlette_rs:
     fastapi.applications.BaseHTTPMiddleware:
       starlette_symbol: starlette.middleware.base.BaseHTTPMiddleware
       fastapi_source_uses:
-        - {path: fastapi/applications.py, line: 4724, expression: "self.add_middleware(BaseHTTPMiddleware, dispatch=func)"}
-        - {path: fastapi/applications.py, line: 1067, expression: "app = cls(app, *args, **kwargs)"}
+        - {path: fastapi/applications.py, line: 4766, expression: "self.add_middleware(BaseHTTPMiddleware, dispatch=func)"}
+        - {path: fastapi/applications.py, line: 1082, expression: "app = cls(app, *args, **kwargs)"}
       target_refs:
-        - {surface_id: starlette.middleware.base.BaseHTTPMiddleware, operation_id: base-http-workflow, source_use_lines: [1067, 4724]}
+        - {surface_id: starlette.middleware.base.BaseHTTPMiddleware, operation_id: base-http-workflow, source_use_lines: [1082, 4766]}
       scope_note: >-
         The documented FastAPI middleware decorator installs Starlette
         BaseHTTPMiddleware. This operation link records generic ownership only;
@@ -1473,10 +1489,10 @@ starlette_rs:
     fastapi.applications.ServerErrorMiddleware:
       starlette_symbol: starlette.middleware.errors.ServerErrorMiddleware
       fastapi_source_uses:
-        - {path: fastapi/applications.py, line: 1034, expression: "Middleware(ServerErrorMiddleware, handler=error_handler, debug=debug)"}
-        - {path: fastapi/applications.py, line: 1067, expression: "app = cls(app, *args, **kwargs)"}
+        - {path: fastapi/applications.py, line: 1047, expression: "Middleware(ServerErrorMiddleware, handler=error_handler, debug=debug)"}
+        - {path: fastapi/applications.py, line: 1082, expression: "app = cls(app, *args, **kwargs)"}
       target_refs:
-        - {surface_id: starlette.middleware.errors.ServerErrorMiddleware, operation_id: __init__, source_use_lines: [1034, 1067]}
+        - {surface_id: starlette.middleware.errors.ServerErrorMiddleware, operation_id: __init__, source_use_lines: [1047, 1082]}
       scope_note: >-
         FastAPI includes the generic ServerErrorMiddleware component in its custom
         stack and supplies handler/debug configuration. This is an ownership link;
@@ -1484,10 +1500,10 @@ starlette_rs:
     fastapi.applications.ExceptionMiddleware:
       starlette_symbol: starlette.middleware.exceptions.ExceptionMiddleware
       fastapi_source_uses:
-        - {path: fastapi/applications.py, line: 1038, expression: "ExceptionMiddleware,"}
-        - {path: fastapi/applications.py, line: 1067, expression: "app = cls(app, *args, **kwargs)"}
+        - {path: fastapi/applications.py, line: 1034, expression: "ExceptionMiddleware,"}
+        - {path: fastapi/applications.py, line: 1082, expression: "app = cls(app, *args, **kwargs)"}
       target_refs:
-        - {surface_id: starlette.middleware.exceptions.ExceptionMiddleware, operation_id: __init__, source_use_lines: [1038, 1067]}
+        - {surface_id: starlette.middleware.exceptions.ExceptionMiddleware, operation_id: __init__, source_use_lines: [1034, 1082]}
       scope_note: >-
         FastAPI installs Starlette ExceptionMiddleware with its filtered handler map.
         This is an ownership link; FastAPI's handler selection, stack order, and
@@ -1495,26 +1511,26 @@ starlette_rs:
     fastapi.routing.Request:
       starlette_symbol: starlette.requests.Request
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 135, expression: "request = Request(scope, receive, send)"}
-        - {path: fastapi/routing.py, line: 2038, expression: "request = Request(scope)"}
-        - {path: fastapi/routing.py, line: 2226, expression: "request = Request(scope, receive, send)"}
-        - {path: fastapi/routing.py, line: 408, expression: "file_stack = request.scope.get(\"fastapi_middleware_astack\")"}
-        - {path: fastapi/routing.py, line: 422, expression: "mount_path = request.scope.get(\"root_path\", \"\").rstrip(\"/\")"}
-        - {path: fastapi/routing.py, line: 423, expression: "endpoint_ctx[\"path\"] = f\"{request.method} {mount_path}{dependant.path}\""}
-        - {path: fastapi/routing.py, line: 430, expression: "body = await request.form()"}
-        - {path: fastapi/routing.py, line: 433, expression: "body_bytes = await request.body()"}
-        - {path: fastapi/routing.py, line: 436, expression: "content_type_value = request.headers.get(\"content-type\")"}
-        - {path: fastapi/routing.py, line: 439, expression: "json_body = await request.json()"}
-        - {path: fastapi/routing.py, line: 446, expression: "json_body = await request.json()"}
+        - {path: fastapi/routing.py, line: 144, expression: "request = Request(scope, receive, send)"}
+        - {path: fastapi/routing.py, line: 2108, expression: "request = Request(scope)"}
+        - {path: fastapi/routing.py, line: 2300, expression: "request = Request(scope, receive, send)"}
+        - {path: fastapi/routing.py, line: 434, expression: "file_stack = request.scope.get(\"fastapi_middleware_astack\")"}
+        - {path: fastapi/routing.py, line: 448, expression: "mount_path = request.scope.get(\"root_path\", \"\").rstrip(\"/\")"}
+        - {path: fastapi/routing.py, line: 449, expression: "endpoint_ctx[\"path\"] = f\"{request.method} {mount_path}{dependant.path}\""}
+        - {path: fastapi/routing.py, line: 456, expression: "body = await request.form()"}
+        - {path: fastapi/routing.py, line: 459, expression: "body_bytes = await request.body()"}
+        - {path: fastapi/routing.py, line: 462, expression: "content_type_value = request.headers.get(\"content-type\")"}
+        - {path: fastapi/routing.py, line: 465, expression: "json_body = await request.json()"}
+        - {path: fastapi/routing.py, line: 472, expression: "json_body = await request.json()"}
       target_refs:
-        - {surface_id: starlette.requests.Request, operation_id: constructor-contract, source_use_lines: [135, 2038, 2226]}
+        - {surface_id: starlette.requests.Request, operation_id: constructor-contract, source_use_lines: [144, 2108, 2300]}
         - surface_id: starlette.requests.Request
           operation_id: scope-mapping
           requirement_ids: [starlette.requests.Request.scope-property.supplied-mapping]
-          source_use_lines: [408, 422, 423]
-        - {surface_id: starlette.requests.Request, operation_id: header-cache-sequence, source_use_lines: [436]}
-        - {surface_id: starlette.requests.Request, operation_id: form, source_use_lines: [135, 430]}
-        - {surface_id: starlette.requests.Request, operation_id: body-stream-json, source_use_lines: [135, 433, 439, 446]}
+          source_use_lines: [434, 448, 449]
+        - {surface_id: starlette.requests.Request, operation_id: header-cache-sequence, source_use_lines: [462]}
+        - {surface_id: starlette.requests.Request, operation_id: form, source_use_lines: [144, 456]}
+        - {surface_id: starlette.requests.Request, operation_id: body-stream-json, source_use_lines: [144, 459, 465, 472]}
       scope_note: >-
         These links cover FastAPI's Request construction, consumed scope mapping,
         header-property access, and body/form parsing. The sibling contract has no
@@ -1523,18 +1539,18 @@ starlette_rs:
     fastapi.routing.URL:
       starlette_symbol: starlette.datastructures.URL
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 1956, expression: "url = URL(scope=scope)"}
-        - {path: fastapi/routing.py, line: 1957, expression: "url = url.replace(path=url.path + \"/\")"}
-        - {path: fastapi/routing.py, line: 2756, expression: "redirect_url = URL(scope=redirect_scope)"}
+        - {path: fastapi/routing.py, line: 2023, expression: "url = URL(scope=scope)"}
+        - {path: fastapi/routing.py, line: 2024, expression: "url = url.replace(path=url.path + \"/\")"}
+        - {path: fastapi/routing.py, line: 2857, expression: "redirect_url = URL(scope=redirect_scope)"}
       target_refs:
         - surface_id: starlette.datastructures.URL
           operation_id: scope-construction
           requirement_ids: [starlette.datastructures.URL.scope-construction]
-          source_use_lines: [1956, 2756]
+          source_use_lines: [2023, 2857]
         - surface_id: starlette.datastructures.URL
           operation_id: component-and-replacement-sequence
           requirement_ids: [starlette.datastructures.URL.component-replacement]
-          source_use_lines: [1957]
+          source_use_lines: [2024]
       scope_note: >-
         FastAPI constructs Starlette URLs from ASGI scopes and adjusts a path for
         frontend directory redirects. The links cover those generic URL operations;
@@ -1542,38 +1558,38 @@ starlette_rs:
     fastapi.routing.routing:
       starlette_symbol: starlette.routing
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 1510, expression: "return self.starlette_route.matches(scope)"}
-        - {path: fastapi/routing.py, line: 1531, expression: "return self.starlette_route.url_path_for(name, **path_params)"}
-        - {path: fastapi/routing.py, line: 813, expression: "self.name = get_name(endpoint) if name is None else name"}
-        - {path: fastapi/routing.py, line: 815, expression: "self.path_regex, self.path_format, self.param_convertors = compile_path(path)"}
-        - {path: fastapi/routing.py, line: 1017, expression: "route.name = get_name(endpoint) if name is None else name"}
-        - {path: fastapi/routing.py, line: 1018, expression: "route.path_regex, route.path_format, route.param_convertors = compile_path(path)"}
-        - {path: fastapi/routing.py, line: 1667, expression: "starlette_route: BaseRoute = routing.Route("}
-        - {path: fastapi/routing.py, line: 1692, expression: "if isinstance(route, routing.WebSocketRoute):"}
-        - {path: fastapi/routing.py, line: 1693, expression: "starlette_route = routing.WebSocketRoute("}
-        - {path: fastapi/routing.py, line: 1700, expression: "if isinstance(route, routing.Mount):"}
-        - {path: fastapi/routing.py, line: 1701, expression: "starlette_route = copy.copy(route)"}
-        - {path: fastapi/routing.py, line: 1702, expression: "starlette_route.path = self.include_context.path_for(route).rstrip(\"/\")"}
-        - {path: fastapi/routing.py, line: 1707, expression: ") = compile_path(starlette_route.path + \"/{path:path}\")"}
-        - {path: fastapi/routing.py, line: 1712, expression: "if isinstance(route, routing.Host):"}
-        - {path: fastapi/routing.py, line: 1714, expression: "prefixed_app: ASGIApp = routing.Router("}
-        - {path: fastapi/routing.py, line: 1715, expression: "routes=[routing.Mount(self.include_context.prefix, app=route.app)]"}
-        - {path: fastapi/routing.py, line: 1719, expression: "starlette_route = routing.Host("}
-        - {path: fastapi/routing.py, line: 1753, expression: "match, child_scope = candidate.matches(scope)"}
-        - {path: fastapi/routing.py, line: 1815, expression: "except routing.NoMatchFound:"}
-        - {path: fastapi/routing.py, line: 1817, expression: "raise routing.NoMatchFound(name, path_params)"}
-        - {path: fastapi/routing.py, line: 1536, expression: "raise routing.NoMatchFound(name, path_params)"}
-        - {path: fastapi/routing.py, line: 1537, expression: "path, remaining_params = routing.replace_params("}
-        - {path: fastapi/routing.py, line: 2100, expression: "raise NoMatchFound(name, path_params)"}
-        - {path: fastapi/routing.py, line: 2210, expression: "raise NoMatchFound(name, path_params)"}
-        - {path: fastapi/routing.py, line: 834, expression: "match, child_scope = super().matches(scope)"}
-        - {path: fastapi/routing.py, line: 835, expression: "if match != Match.NONE:"}
-        - {path: fastapi/routing.py, line: 1802, expression: "await route.handle(scope, receive, send)"}
-        - {path: fastapi/routing.py, line: 2731, expression: "match, child_scope = route.matches(scope)"}
-        - {path: fastapi/routing.py, line: 2734, expression: "await route.handle(scope, receive, send)"}
-        - {path: fastapi/routing.py, line: 2742, expression: "await route.handle(scope, receive, send)"}
+        - {path: fastapi/routing.py, line: 1569, expression: "return self.starlette_route.matches(scope)"}
+        - {path: fastapi/routing.py, line: 1590, expression: "return self.starlette_route.url_path_for(name, **path_params)"}
+        - {path: fastapi/routing.py, line: 867, expression: "self.name = get_name(endpoint) if name is None else name"}
+        - {path: fastapi/routing.py, line: 869, expression: "self.path_regex, self.path_format, self.param_convertors = compile_path(path)"}
+        - {path: fastapi/routing.py, line: 1072, expression: "route.name = get_name(endpoint) if name is None else name"}
+        - {path: fastapi/routing.py, line: 1073, expression: "route.path_regex, route.path_format, route.param_convertors = compile_path(path)"}
+        - {path: fastapi/routing.py, line: 1728, expression: "starlette_route: BaseRoute = routing.Route("}
+        - {path: fastapi/routing.py, line: 1753, expression: "if isinstance(route, routing.WebSocketRoute):"}
+        - {path: fastapi/routing.py, line: 1754, expression: "starlette_route = routing.WebSocketRoute("}
+        - {path: fastapi/routing.py, line: 1761, expression: "if isinstance(route, routing.Mount):"}
+        - {path: fastapi/routing.py, line: 1762, expression: "starlette_route = copy.copy(route)"}
+        - {path: fastapi/routing.py, line: 1763, expression: "starlette_route.path = self.include_context.path_for(route).rstrip(\"/\")"}
+        - {path: fastapi/routing.py, line: 1768, expression: ") = compile_path(starlette_route.path + \"/{path:path}\")"}
+        - {path: fastapi/routing.py, line: 1773, expression: "if isinstance(route, routing.Host):"}
+        - {path: fastapi/routing.py, line: 1775, expression: "prefixed_app: ASGIApp = routing.Router("}
+        - {path: fastapi/routing.py, line: 1776, expression: "routes=[routing.Mount(self.include_context.prefix, app=route.app)]"}
+        - {path: fastapi/routing.py, line: 1780, expression: "starlette_route = routing.Host("}
+        - {path: fastapi/routing.py, line: 1795, expression: "match, child_scope = candidate.matches(scope)"}
+        - {path: fastapi/routing.py, line: 1882, expression: "except routing.NoMatchFound:"}
+        - {path: fastapi/routing.py, line: 1884, expression: "raise routing.NoMatchFound(name, path_params)"}
+        - {path: fastapi/routing.py, line: 1595, expression: "raise routing.NoMatchFound(name, path_params)"}
+        - {path: fastapi/routing.py, line: 1596, expression: "path, remaining_params = routing.replace_params("}
+        - {path: fastapi/routing.py, line: 2170, expression: "raise NoMatchFound(name, path_params)"}
+        - {path: fastapi/routing.py, line: 2284, expression: "raise NoMatchFound(name, path_params)"}
+        - {path: fastapi/routing.py, line: 888, expression: "match, child_scope = super().matches(scope)"}
+        - {path: fastapi/routing.py, line: 889, expression: "if match != Match.NONE:"}
+        - {path: fastapi/routing.py, line: 1852, expression: "await route.handle(scope, receive, send)"}
+        - {path: fastapi/routing.py, line: 2805, expression: "match, child_scope = route.matches(scope)"}
+        - {path: fastapi/routing.py, line: 2813, expression: "await route.handle(scope, receive, send)"}
+        - {path: fastapi/routing.py, line: 2826, expression: "await route.handle(scope, receive, send)"}
       target_refs:
-        - {surface_id: starlette.routing.Route, operation_id: __init__, source_use_lines: [1667]}
+        - {surface_id: starlette.routing.Route, operation_id: __init__, source_use_lines: [1728]}
         - surface_id: starlette.routing.Route
           operation_id: __init__
           requirement_ids:
@@ -1583,9 +1599,9 @@ starlette_rs:
             - starlette.routing.Route.endpoint-name.staticmethod
             - starlette.routing.Route.endpoint-name.object
             - starlette.routing.Route.endpoint-name.lambda
-          source_use_lines: [813, 1017]
-        - {surface_id: starlette.routing.Route, operation_id: __init__, source_use_lines: [815, 1018]}
-        - {surface_id: starlette.routing.Route, operation_id: url_path_for, source_use_lines: [1531]}
+          source_use_lines: [867, 1072]
+        - {surface_id: starlette.routing.Route, operation_id: __init__, source_use_lines: [869, 1073]}
+        - {surface_id: starlette.routing.Route, operation_id: url_path_for, source_use_lines: [1590]}
         - surface_id: starlette.routing.Route
           operation_id: url_path_for
           requirement_ids:
@@ -1598,29 +1614,29 @@ starlette_rs:
             - starlette.routing.Route.url_path_for.datetime-converter
             - starlette.routing.Route.url_path_for.converter-error
             - starlette.routing.Route.url_path_for.custom-converter-override
-          source_use_lines: [1536, 1537]
-        - {surface_id: starlette.routing.WebSocketRoute, operation_id: url_path_for, source_use_lines: [1531]}
-        - {surface_id: starlette.routing.Mount, operation_id: url_path_for, source_use_lines: [1531]}
-        - {surface_id: starlette.routing.Host, operation_id: url_path_for, source_use_lines: [1531]}
+          source_use_lines: [1595, 1596]
+        - {surface_id: starlette.routing.WebSocketRoute, operation_id: url_path_for, source_use_lines: [1590]}
+        - {surface_id: starlette.routing.Mount, operation_id: url_path_for, source_use_lines: [1590]}
+        - {surface_id: starlette.routing.Host, operation_id: url_path_for, source_use_lines: [1590]}
         - surface_id: starlette.routing.Mount
           operation_id: route-dispatch
           requirement_ids:
             - starlette.routing.Mount.route-dispatch.scope-extension
             - starlette.routing.Mount.route-dispatch.nested-scope-composition
-          source_use_lines: [1510, 1700, 1701, 1702, 1707, 1753, 1802, 2731, 2734, 2742]
+          source_use_lines: [1569, 1761, 1762, 1763, 1768, 1795, 1852, 2805, 2813, 2826]
         - surface_id: starlette.routing.Router
           operation_id: route-dispatch
           requirement_ids:
             - starlette.routing.Router.route-dispatch.mount-route-dispatch
-          source_use_lines: [1714, 1715, 1802]
+          source_use_lines: [1775, 1776, 1852]
         - surface_id: starlette.routing.Router
           operation_id: url_path_for
           requirement_ids: [starlette.routing.Router.url_path_for.mismatch]
-          source_use_lines: [1815, 1817, 2100, 2210]
+          source_use_lines: [1882, 1884, 2170, 2284]
         - surface_id: starlette.routing.WebSocketRoute
           operation_id: route-dispatch
           requirement_ids: [starlette.routing.WebSocketRoute.route-dispatch.matched-root-path]
-          source_use_lines: [834, 835, 1510, 1692, 1693, 1753, 1802, 2731, 2734]
+          source_use_lines: [888, 889, 1569, 1753, 1754, 1795, 1852, 2805, 2813]
       scope_note: >-
         FastAPI clones generic Route, WebSocketRoute, Mount, and Host instances and
         delegates reverse lookup to those objects. The links cover Mount dispatch and
@@ -1638,9 +1654,9 @@ starlette_rs:
     fastapi.routing.URLPath:
       starlette_symbol: starlette.datastructures.URLPath
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 1541, expression: "return URLPath(path=path, protocol=\"http\")"}
+        - {path: fastapi/routing.py, line: 1600, expression: "return URLPath(path=path, protocol=\"http\")"}
       target_refs:
-        - {surface_id: starlette.datastructures.URLPath, operation_id: constructor-sequence, source_use_lines: [1541]}
+        - {surface_id: starlette.datastructures.URLPath, operation_id: constructor-sequence, source_use_lines: [1600]}
       scope_note: >-
         FastAPI constructs a positive HTTP URLPath for reverse routing. The target
         operation link records ownership; its only selected sibling requirement
@@ -1649,13 +1665,13 @@ starlette_rs:
     fastapi.routing.JSONResponse:
       starlette_symbol: starlette.responses.JSONResponse
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 379, expression: "response_class: type[Response] | DefaultPlaceholder = Default(JSONResponse),"}
-        - {path: fastapi/routing.py, line: 747, expression: "response = actual_response_class(content, **response_args)"}
+        - {path: fastapi/routing.py, line: 402, expression: "response_class: type[Response] | DefaultPlaceholder = Default(JSONResponse),"}
+        - {path: fastapi/routing.py, line: 788, expression: "response = actual_response_class(content, **response_args)"}
       target_refs:
         - surface_id: starlette.responses.JSONResponse
           operation_id: consumer-construction
           requirement_ids: [starlette.responses.JSONResponse.consumer-construction.public-render-and-asgi]
-          source_use_lines: [379, 747]
+          source_use_lines: [402, 788]
       scope_note: >-
         FastAPI uses generic Starlette JSONResponse as the default route response
         class. This link covers its public construction/render contract; custom
@@ -1663,12 +1679,12 @@ starlette_rs:
     fastapi.routing.PlainTextResponse:
       starlette_symbol: starlette.responses.PlainTextResponse
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 1269, expression: "response = PlainTextResponse("}
+        - {path: fastapi/routing.py, line: 1324, expression: "response = PlainTextResponse("}
       target_refs:
         - surface_id: starlette.responses.PlainTextResponse
           operation_id: consumer-construction
           requirement_ids: [starlette.responses.PlainTextResponse.consumer-construction.public-render-and-asgi]
-          source_use_lines: [1269]
+          source_use_lines: [1324]
       scope_note: >-
         FastAPI uses Starlette PlainTextResponse for its generic route method-miss
         response. The link covers generic response construction/rendering, while
@@ -1676,13 +1692,13 @@ starlette_rs:
     fastapi.routing.RedirectResponse:
       starlette_symbol: starlette.responses.RedirectResponse
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 1958, expression: "return RedirectResponse(url=url)"}
-        - {path: fastapi/routing.py, line: 2757, expression: "response = RedirectResponse(url=str(redirect_url))"}
+        - {path: fastapi/routing.py, line: 2025, expression: "return RedirectResponse(url=url)"}
+        - {path: fastapi/routing.py, line: 2858, expression: "response = RedirectResponse(url=str(redirect_url))"}
       target_refs:
         - surface_id: starlette.responses.RedirectResponse
           operation_id: consumer-construction
           requirement_ids: [starlette.responses.RedirectResponse.consumer-construction.public-render-and-asgi]
-          source_use_lines: [1958, 2757]
+          source_use_lines: [2025, 2858]
       scope_note: >-
         FastAPI constructs generic redirects for frontend directory and slash
         handling. The link covers RedirectResponse construction/rendering; the
@@ -1690,12 +1706,12 @@ starlette_rs:
     fastapi.routing.WebSocket:
       starlette_symbol: starlette.websockets.WebSocket
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 174, expression: "session = WebSocket(scope, receive=receive, send=send)"}
+        - {path: fastapi/routing.py, line: 183, expression: "session = WebSocket(scope, receive=receive, send=send)"}
       target_refs:
         - surface_id: starlette.websockets.WebSocket
           operation_id: constructor-contract
           requirement_ids: [starlette.websockets.WebSocket.constructor.required-callables]
-          source_use_lines: [174]
+          source_use_lines: [183]
       scope_note: >-
         FastAPI constructs the Starlette WebSocket protocol object before its
         dependency-aware endpoint handling. This links required callback inputs;
@@ -1703,53 +1719,44 @@ starlette_rs:
     fastapi.routing.HTTPException:
       starlette_symbol: starlette.exceptions.HTTPException
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 470, expression: "http_error = HTTPException("}
-        - {path: fastapi/routing.py, line: 1268, expression: "raise HTTPException(status_code=405, headers=headers)"}
-        - {path: fastapi/routing.py, line: 1949, expression: "raise HTTPException(status_code=405)"}
-        - {path: fastapi/routing.py, line: 1950, expression: "raise HTTPException(status_code=404)"}
-        - {path: fastapi/routing.py, line: 1972, expression: "raise HTTPException(status_code=404)"}
-        - {path: fastapi/routing.py, line: 1978, expression: "raise HTTPException(status_code=401) from None"}
-        - {path: fastapi/routing.py, line: 1981, expression: "raise HTTPException(status_code=404) from None"}
-        - {path: fastapi/routing.py, line: 1984, expression: "raise HTTPException(status_code=404) from None"}
-        - {path: fastapi/routing.py, line: 2190, expression: "raise HTTPException(status_code=404)"}
+        - {path: fastapi/routing.py, line: 497, expression: "http_error = HTTPException("}
+        - {path: fastapi/routing.py, line: 1323, expression: "raise HTTPException(status_code=405, headers=headers)"}
+        - {path: fastapi/routing.py, line: 2016, expression: "raise HTTPException(status_code=405)"}
+        - {path: fastapi/routing.py, line: 2017, expression: "raise HTTPException(status_code=404)"}
+        - {path: fastapi/routing.py, line: 2042, expression: "raise HTTPException(status_code=404)"}
+        - {path: fastapi/routing.py, line: 2048, expression: "raise HTTPException(status_code=401) from None"}
+        - {path: fastapi/routing.py, line: 2051, expression: "raise HTTPException(status_code=404) from None"}
+        - {path: fastapi/routing.py, line: 2054, expression: "raise HTTPException(status_code=404) from None"}
+        - {path: fastapi/routing.py, line: 2260, expression: "raise HTTPException(status_code=404)"}
       target_refs:
-        - {surface_id: starlette.exceptions, operation_id: value-formatting, source_use_lines: [470, 1268, 1949, 1950, 1972, 1978, 1981, 1984, 2190]}
+        - {surface_id: starlette.exceptions, operation_id: value-formatting, source_use_lines: [497, 1323, 2016, 2017, 2042, 2048, 2051, 2054, 2260]}
       scope_note: >-
         FastAPI routing raises the canonical Starlette HTTPException for parse,
         method, frontend, and route-miss failures. The operation link records the
         generic exception value owner; FastAPI response-handler integration is
         tracked separately.
-    fastapi.routing.FormData:
-      starlette_symbol: starlette.datastructures.FormData
-      fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 484, expression: "body=cast(dict[str, Any] | FormData | bytes | None, body)"}
-      target_refs:
-        - {surface_id: starlette.datastructures.FormData, operation_id: multidict-lookups, source_use_lines: [484]}
-      scope_note: >-
-        FastAPI carries the parsed form value through its route/dependency boundary.
-        The uncertain FormData.close behavior has no exact link here.
     fastapi.dependencies.utils.FormData:
       starlette_symbol: starlette.datastructures.FormData
       fastapi_source_uses:
-        - {path: fastapi/dependencies/utils.py, line: 590, expression: "body: dict[str, Any] | FormData | bytes | None = None,"}
-        - {path: fastapi/dependencies/utils.py, line: 914, expression: "received_body: FormData,"}
-        - {path: fastapi/dependencies/utils.py, line: 953, expression: "received_body: dict[str, Any] | FormData | bytes | None,"}
-        - {path: fastapi/dependencies/utils.py, line: 968, expression: "and isinstance(received_body, FormData)"}
-        - {path: fastapi/dependencies/utils.py, line: 972, expression: "if isinstance(received_body, FormData):"}
+        - {path: fastapi/dependencies/utils.py, line: 1033, expression: "form_data = FormData("}
+        - {path: fastapi/dependencies/utils.py, line: 1080, expression: "received_body: FormData,"}
+        - {path: fastapi/dependencies/utils.py, line: 1140, expression: "received_body: FormData,"}
+        - {path: fastapi/dependencies/utils.py, line: 1180, expression: "and isinstance(received_body, FormData)"}
+        - {path: fastapi/dependencies/utils.py, line: 1184, expression: "if isinstance(received_body, FormData):"}
       target_refs:
-        - {surface_id: starlette.datastructures.FormData, operation_id: multidict-lookups, source_use_lines: [590, 914, 953, 968, 972]}
+        - {surface_id: starlette.datastructures.FormData, operation_id: multidict-lookups, source_use_lines: [1033, 1080, 1140, 1180, 1184]}
       scope_note: >-
         FastAPI preserves and branches on Starlette FormData values during dependency
         extraction. The uncertain FormData.close behavior has no exact link here.
     fastapi.dependencies.utils.Headers:
       starlette_symbol: starlette.datastructures.Headers
       fastapi_source_uses:
-        - {path: fastapi/dependencies/utils.py, line: 756, expression: "and isinstance(values, (ImmutableMultiDict, Headers))"}
-        - {path: fastapi/dependencies/utils.py, line: 782, expression: "received_params: Mapping[str, Any] | QueryParams | Headers,"}
-        - {path: fastapi/dependencies/utils.py, line: 811, expression: "if isinstance(received_params, Headers):"}
-        - {path: fastapi/dependencies/utils.py, line: 832, expression: "if isinstance(received_params, (ImmutableMultiDict, Headers)):"}
+        - {path: fastapi/dependencies/utils.py, line: 849, expression: "and isinstance(values, (ImmutableMultiDict, Headers))"}
+        - {path: fastapi/dependencies/utils.py, line: 954, expression: "received_params: Mapping[str, Any] | QueryParams | Headers,"}
+        - {path: fastapi/dependencies/utils.py, line: 907, expression: "if isinstance(received_params, Headers):"}
+        - {path: fastapi/dependencies/utils.py, line: 924, expression: "if isinstance(received_params, (ImmutableMultiDict, Headers)):"}
       target_refs:
-        - {surface_id: starlette.datastructures.Headers, operation_id: consumer-sequence, source_use_lines: [756, 782, 811, 832]}
+        - {surface_id: starlette.datastructures.Headers, operation_id: consumer-sequence, source_use_lines: [849, 907, 924, 954]}
       scope_note: >-
         FastAPI recognizes Headers as a dependency input and delegates generic
         sequence/mapping behavior to Starlette. FastAPI also checks the
@@ -1761,14 +1768,14 @@ starlette_rs:
     fastapi.dependencies.utils.QueryParams:
       starlette_symbol: starlette.datastructures.QueryParams
       fastapi_source_uses:
-        - {path: fastapi/dependencies/utils.py, line: 685, expression: "dependant.query_params, request.query_params"}
-        - {path: fastapi/dependencies/utils.py, line: 758, expression: "value = values.getlist(alias)"}
-        - {path: fastapi/dependencies/utils.py, line: 760, expression: "value = values.get(alias, None)"}
-        - {path: fastapi/dependencies/utils.py, line: 782, expression: "received_params: Mapping[str, Any] | QueryParams | Headers,"}
-        - {path: fastapi/dependencies/utils.py, line: 830, expression: "for key in received_params.keys():"}
-        - {path: fastapi/dependencies/utils.py, line: 833, expression: "value = received_params.getlist(key)"}
+        - {path: fastapi/dependencies/utils.py, line: 768, expression: "request.query_params,"}
+        - {path: fastapi/dependencies/utils.py, line: 851, expression: "value = values.getlist(alias)"}
+        - {path: fastapi/dependencies/utils.py, line: 855, expression: "value = values.get(alias, None)"}
+        - {path: fastapi/dependencies/utils.py, line: 954, expression: "received_params: Mapping[str, Any] | QueryParams | Headers,"}
+        - {path: fastapi/dependencies/utils.py, line: 920, expression: "for key in received_params.keys():"}
+        - {path: fastapi/dependencies/utils.py, line: 925, expression: "value = received_params.getlist(key)"}
       target_refs:
-        - {surface_id: starlette.datastructures.QueryParams, operation_id: construction-and-mapping-sequence, requirement_ids: [starlette.datastructures.QueryParams.immutable-multidict-lookup-and-iteration], source_use_lines: [685, 758, 760, 830, 833]}
+        - {surface_id: starlette.datastructures.QueryParams, operation_id: construction-and-mapping-sequence, requirement_ids: [starlette.datastructures.QueryParams.immutable-multidict-lookup-and-iteration], source_use_lines: [768, 851, 855, 920, 925]}
       scope_note: >-
         FastAPI passes request.query_params into dependency parameter extraction
         and consumes scalar lookup, repeated-value lookup, and key iteration
@@ -1778,22 +1785,22 @@ starlette_rs:
     fastapi.routing.Response:
       starlette_symbol: starlette.responses.Response
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 145, expression: "await response(scope, receive, send)"}
-        - {path: fastapi/routing.py, line: 741, expression: "response = Response("}
-        - {path: fastapi/routing.py, line: 750, expression: "response.headers.raw.extend(solved_result.response.headers.raw)"}
+        - {path: fastapi/routing.py, line: 154, expression: "await response(scope, receive, send)"}
+        - {path: fastapi/routing.py, line: 782, expression: "response = Response("}
+        - {path: fastapi/routing.py, line: 744, expression: "response.headers.raw.extend(solved_result.response.headers.raw)"}
       target_refs:
         - surface_id: starlette.responses.Response
           operation_id: asgi-call
           requirement_ids: [starlette.responses.Response.asgi-call.bytes-content]
-          source_use_lines: [145, 741]
+          source_use_lines: [154, 782]
         - surface_id: starlette.responses.Response
           operation_id: asgi-call
           requirement_ids: [starlette.responses.Response.asgi-call.headers-property-cache-and-raw-alias]
-          source_use_lines: [145, 750]
+          source_use_lines: [154, 744]
         - surface_id: starlette.responses.Response
           operation_id: consumer-construction
           requirement_ids: [starlette.responses.Response.consumer-construction.public-render-and-asgi]
-          source_use_lines: [741]
+          source_use_lines: [782]
       scope_note: >-
         FastAPI constructs a generic Response in its route wrapper and invokes the
         resulting ASGI response. FastAPI-specific response serialization remains
@@ -1801,32 +1808,32 @@ starlette_rs:
     fastapi.routing.StreamingResponse:
       starlette_symbol: starlette.responses.StreamingResponse
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 145, expression: "await response(scope, receive, send)"}
-        - {path: fastapi/routing.py, line: 638, expression: "response = StreamingResponse("}
-        - {path: fastapi/routing.py, line: 677, expression: "response = StreamingResponse("}
+        - {path: fastapi/routing.py, line: 154, expression: "await response(scope, receive, send)"}
+        - {path: fastapi/routing.py, line: 678, expression: "response = StreamingResponse("}
+        - {path: fastapi/routing.py, line: 717, expression: "response = StreamingResponse("}
       target_refs:
-        - {surface_id: starlette.responses.StreamingResponse, operation_id: asgi-call, source_use_lines: [145, 638, 677]}
+        - {surface_id: starlette.responses.StreamingResponse, operation_id: asgi-call, source_use_lines: [154, 678, 717]}
         - surface_id: starlette.responses.StreamingResponse
           operation_id: consumer-construction
           requirement_ids: [starlette.responses.StreamingResponse.consumer-construction.public-render-and-asgi]
-          source_use_lines: [638, 677]
+          source_use_lines: [678, 717]
       scope_note: >-
         FastAPI constructs Starlette streaming responses in its route wrapper and
         invokes the resulting ASGI response. This is an ownership link only.
     fastapi.dependencies.utils.ImmutableMultiDict:
       starlette_symbol: starlette.datastructures.ImmutableMultiDict
       fastapi_source_uses:
-        - {path: fastapi/dependencies/utils.py, line: 756, expression: "and isinstance(values, (ImmutableMultiDict, Headers))"}
-        - {path: fastapi/dependencies/utils.py, line: 832, expression: "if isinstance(received_params, (ImmutableMultiDict, Headers)):"}
+        - {path: fastapi/dependencies/utils.py, line: 849, expression: "and isinstance(values, (ImmutableMultiDict, Headers))"}
+        - {path: fastapi/dependencies/utils.py, line: 924, expression: "if isinstance(received_params, (ImmutableMultiDict, Headers)):"}
       target_refs:
         - surface_id: starlette.datastructures.QueryParams
           operation_id: construction-and-mapping-sequence
           requirement_ids: [starlette.datastructures.QueryParams.immutable-multidict-lookup-and-iteration]
-          source_use_lines: [756, 832]
+          source_use_lines: [849, 924]
         - surface_id: starlette.datastructures.FormData
           operation_id: multidict-lookups
           requirement_ids: [starlette.datastructures.FormData.multidict-lookups]
-          source_use_lines: [756, 832]
+          source_use_lines: [849, 924]
       scope_note: >-
         FastAPI detects the shared immutable multi-value container base and calls
         getlist when collecting repeated request parameters. QueryParams and FormData
@@ -1835,9 +1842,9 @@ starlette_rs:
     fastapi.routing.compile_path:
       starlette_symbol: starlette.routing.compile_path
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 815, expression: "self.path_regex, self.path_format, self.param_convertors = compile_path(path)"}
-        - {path: fastapi/routing.py, line: 1018, expression: "route.path_regex, route.path_format, route.param_convertors = compile_path(path)"}
-        - {path: fastapi/routing.py, line: 1707, expression: ") = compile_path(starlette_route.path + \"/{path:path}\")"}
+        - {path: fastapi/routing.py, line: 869, expression: "self.path_regex, self.path_format, self.param_convertors = compile_path(path)"}
+        - {path: fastapi/routing.py, line: 1073, expression: "route.path_regex, route.path_format, route.param_convertors = compile_path(path)"}
+        - {path: fastapi/routing.py, line: 1768, expression: ") = compile_path(starlette_route.path + \"/{path:path}\")"}
       target_refs:
         - surface_id: starlette.routing.Route
           operation_id: __init__
@@ -1845,11 +1852,11 @@ starlette_rs:
             - starlette.routing.Route.__init__.duplicate-parameter-name-single
             - starlette.routing.Route.__init__.duplicate-parameter-name-multiple
             - starlette.routing.Route.__init__.lone-surrogate-path
-          source_use_lines: [815, 1018]
+          source_use_lines: [869, 1073]
         - surface_id: starlette.routing.Router
           operation_id: route-dispatch
           requirement_ids: [starlette.routing.Router.route-dispatch.path-converter-match]
-          source_use_lines: [1707]
+          source_use_lines: [1768]
       scope_note: >-
         FastAPI calls the same pinned path compiler when building API routes and a
         prefixed catch-all route. The compiler is private/internal in Starlette-RS;
@@ -1859,8 +1866,8 @@ starlette_rs:
     fastapi.routing.get_name:
       starlette_symbol: starlette.routing.get_name
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 813, expression: "self.name = get_name(endpoint) if name is None else name"}
-        - {path: fastapi/routing.py, line: 1017, expression: "route.name = get_name(endpoint) if name is None else name"}
+        - {path: fastapi/routing.py, line: 867, expression: "self.name = get_name(endpoint) if name is None else name"}
+        - {path: fastapi/routing.py, line: 1072, expression: "route.name = get_name(endpoint) if name is None else name"}
       target_refs:
         - surface_id: starlette.routing.Route
           operation_id: __init__
@@ -1871,7 +1878,7 @@ starlette_rs:
             - starlette.routing.Route.endpoint-name.staticmethod
             - starlette.routing.Route.endpoint-name.object
             - starlette.routing.Route.endpoint-name.lambda
-          source_use_lines: [813, 1017]
+          source_use_lines: [867, 1072]
       scope_note: >-
         FastAPI uses Starlette's private endpoint-name helper for default API route
         names. The generic Route constructor requirements cover the supported
@@ -1879,21 +1886,21 @@ starlette_rs:
     fastapi.routing.Match:
       starlette_symbol: starlette.routing.Match
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 835, expression: "if match != Match.NONE:"}
-        - {path: fastapi/routing.py, line: 1257, expression: "if match != Match.NONE:"}
-        - {path: fastapi/routing.py, line: 1512, expression: "return Match.NONE, {}"}
-        - {path: fastapi/routing.py, line: 1516, expression: "return Match.NONE, {}"}
-        - {path: fastapi/routing.py, line: 1525, expression: "return Match.PARTIAL, child_scope"}
-        - {path: fastapi/routing.py, line: 1526, expression: "return Match.FULL, child_scope"}
-        - {path: fastapi/routing.py, line: 1755, expression: "if match == Match.FULL:"}
-        - {path: fastapi/routing.py, line: 1757, expression: "if match == Match.PARTIAL and partial is None:"}
-        - {path: fastapi/routing.py, line: 1761, expression: "return Match.PARTIAL, child_scope, route, route_context"}
-        - {path: fastapi/routing.py, line: 1762, expression: "return Match.NONE, {}, None, None"}
+        - {path: fastapi/routing.py, line: 889, expression: "if match != Match.NONE:"}
+        - {path: fastapi/routing.py, line: 1312, expression: "if match != Match.NONE:"}
+        - {path: fastapi/routing.py, line: 1571, expression: "return Match.NONE, {}"}
+        - {path: fastapi/routing.py, line: 1575, expression: "return Match.NONE, {}"}
+        - {path: fastapi/routing.py, line: 1584, expression: "return Match.PARTIAL, child_scope"}
+        - {path: fastapi/routing.py, line: 1585, expression: "return Match.FULL, child_scope"}
+        - {path: fastapi/routing.py, line: 1816, expression: "if match == Match.FULL:"}
+        - {path: fastapi/routing.py, line: 1818, expression: "if match == Match.PARTIAL and partial is None:"}
+        - {path: fastapi/routing.py, line: 1822, expression: "return Match.PARTIAL, child_scope, route, route_context"}
+        - {path: fastapi/routing.py, line: 1823, expression: "return Match.NONE, {}, None, None"}
       target_refs:
         - surface_id: starlette.routing.WebSocketRoute
           operation_id: route-dispatch
           requirement_ids: [starlette.routing.WebSocketRoute.route-dispatch.standalone-match]
-          source_use_lines: [835]
+          source_use_lines: [889]
         - surface_id: starlette.routing.Router
           operation_id: route-dispatch
           requirement_ids:
@@ -1901,7 +1908,7 @@ starlette_rs:
             - starlette.routing.Router.route-dispatch.duplicate-path-method-fallthrough
             - starlette.routing.Router.route-dispatch.base-route-subclass-matches
             - starlette.routing.Router.route-dispatch.instance-matches-override
-          source_use_lines: [1257, 1512, 1516, 1525, 1526, 1755, 1757, 1761, 1762]
+          source_use_lines: [1312, 1571, 1575, 1584, 1585, 1816, 1818, 1822, 1823]
       scope_note: >-
         Match is private/internal in the sibling API review. FastAPI consumes its
         NONE, PARTIAL, and FULL states in custom HTTP and WebSocket route classes;
@@ -1910,20 +1917,20 @@ starlette_rs:
     fastapi.routing.NoMatchFound:
       starlette_symbol: starlette.routing.NoMatchFound
       fastapi_source_uses:
-        - {path: fastapi/routing.py, line: 1536, expression: "raise routing.NoMatchFound(name, path_params)"}
-        - {path: fastapi/routing.py, line: 1815, expression: "except routing.NoMatchFound:"}
-        - {path: fastapi/routing.py, line: 1817, expression: "raise routing.NoMatchFound(name, path_params)"}
-        - {path: fastapi/routing.py, line: 2100, expression: "raise NoMatchFound(name, path_params)"}
-        - {path: fastapi/routing.py, line: 2210, expression: "raise NoMatchFound(name, path_params)"}
+        - {path: fastapi/routing.py, line: 1595, expression: "raise routing.NoMatchFound(name, path_params)"}
+        - {path: fastapi/routing.py, line: 1882, expression: "except routing.NoMatchFound:"}
+        - {path: fastapi/routing.py, line: 1884, expression: "raise routing.NoMatchFound(name, path_params)"}
+        - {path: fastapi/routing.py, line: 2170, expression: "raise NoMatchFound(name, path_params)"}
+        - {path: fastapi/routing.py, line: 2284, expression: "raise NoMatchFound(name, path_params)"}
       target_refs:
         - surface_id: starlette.routing.Route
           operation_id: url_path_for
           requirement_ids: [starlette.routing.Route.url_path_for.parameter-mismatch]
-          source_use_lines: [1536]
+          source_use_lines: [1595]
         - surface_id: starlette.routing.Router
           operation_id: url_path_for
           requirement_ids: [starlette.routing.Router.url_path_for.mismatch]
-          source_use_lines: [1815, 1817, 2100, 2210]
+          source_use_lines: [1882, 1884, 2170, 2284]
       scope_note: >-
         FastAPI raises and catches Starlette's public reverse-lookup exception in
         route and router URL generation. These links cover the generic mismatch
@@ -2318,14 +2325,14 @@ reviewed_api_contract_overlay:
       symbol_id: fastapi.applications.FastAPI.on_event
       deprecation_symbol_id: fastapi.applications.FastAPI
       source_path: fastapi/applications.py
-      source_line: 4654
-      source_end_line: 4661
+      source_line: 4696
+      source_end_line: 4703
     - id: fastapi-router-on-event
       symbol_id: fastapi.routing.APIRouter.on_event
       deprecation_symbol_id: fastapi.routing.APIRouter
       source_path: fastapi/routing.py
-      source_line: 6415
-      source_end_line: 6422
+      source_line: 6522
+      source_end_line: 6529
   operations:
     fastapi.applications.FastAPI.__init__:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::new
@@ -2365,6 +2372,10 @@ reviewed_api_contract_overlay:
             gate.
           - Other FastAPI.__init__ options beyond the reviewed constructor slices
             remain unimplemented or unproven.
+          - >-
+            The telemetry constructor inputs compare configuration acceptance and the
+            signature only. Native tracing, metrics, logs, context lifetime, exporter
+            effects, and telemetry-aware lifespan behavior remain unobserved.
           - &response_field_traversal_gap >-
             Visited included branches must prepare all own effective fields before
             publishing the vector, retry the whole unpublished branch after a later
@@ -2397,8 +2408,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/applications.py
           symbol: __init__
           kind: source-definition
-          start_line: 58
-          end_line: 1018
+          start_line: 68
+          end_line: 1030
         - path: tests/test_tutorial/test_metadata/test_tutorial003.py
           symbol: test_swagger_ui_custom_url
           kind: source-definition
@@ -2467,6 +2478,18 @@ reviewed_api_contract_overlay:
         - {path: docs_src/metadata/tutorial004_py310.py}
         - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, symbol: test_openapi_schema}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
+          case_id: fastapi.telemetry.constructor-tracing-disabled
+          workload_path: tests/fixtures/workloads/telemetry_constructor.py
+          observation_selectors: [python.signature, python.call_outcome]
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
+          case_id: fastapi.telemetry.constructor-operation-spans-disabled
+          workload_path: tests/fixtures/workloads/telemetry_constructor.py
+          observation_selectors: [python.call_outcome]
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
+          case_id: fastapi.telemetry.constructor-signals-disabled
+          workload_path: tests/fixtures/workloads/telemetry_constructor.py
+          observation_selectors: [python.call_outcome]
         - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
           case_id: fastapi.application-callable-signatures.surface
           workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
@@ -2495,21 +2518,13 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.constructor.starlette-route-dispatch
           workload_path: tests/fixtures/workloads/application_constructor_starlette_route.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-root-path-tutorial-review.yaml
           case_id: fastapi.applications.root-path.configured-over-incoming-scope
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          workload_path: tests/fixtures/workloads/fastapi_root_path_tutorial_review.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, construction.outcome, construction.exception_class, construction.exception_message]
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
-          case_id: fastapi.applications.root-path.deprecated-prefix-fallback
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
-          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
-          case_id: fastapi.applications.root-path.precedence-and-server-gate
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
-          observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-root-path-tutorial-review.yaml
           case_id: fastapi.applications.root-path.mutable-public-attributes
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          workload_path: tests/fixtures/workloads/fastapi_root_path_tutorial_review.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
           case_id: fastapi.applications.constructor.openapi-tags
@@ -3191,8 +3206,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/applications.py
           symbol: exception_handler
           kind: source-definition
-          start_line: 4729
-          end_line: 4774
+          start_line: 4771
+          end_line: 4816
         - path: starlette/applications.py
           kind: source-definition
           source_authority: Starlette 1.6.0
@@ -3301,10 +3316,10 @@ reviewed_api_contract_overlay:
         included.
         The exception-handler-after-stack-cache input first dispatches ASGI
         lifespan, then registers one class handler through this decorator and
-        sends a matching request. FastAPI 0.141.1 and FastAPI-RS both retain
-        the already-built middleware handler snapshot: the request returns the
-        default 500 response and reports the propagated exception. This proves
-        the selected registration sequence only; other post-cache mutations
+        sends a matching request. The previously recorded identity-checked result exercised this registration
+        sequence against FastAPI 0.141.1 and FastAPI-RS; that result is historical
+        and is not evidence for the active 0.157.0 baseline. The input recipe remains
+        mapped, but no 0.157.0 parity receipt is recorded. Other post-cache mutations
         and exception classes remain unverified.
         Identity-checked inputs cover path, body, malformed-JSON and form
         RequestValidationError dispatch plus the default 422 response even
@@ -4207,7 +4222,7 @@ reviewed_api_contract_overlay:
       feature_ids: [response-serialization]
       observation_selectors: [http.status, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 directly re-exports the exact starlette.status module object.
+        FastAPI 0.157.0 directly re-exports the exact starlette.status module object.
         The identity-checked workflow compares module identity, ordered __all__ names
         and integer values, dir(), all deprecated aliases and their warning category,
         message and callsite, and the unknown-attribute exception class and arguments.
@@ -4233,7 +4248,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/root_alias_identity.py
           observation_selectors: [http.status, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 directly imports URL from starlette.datastructures, and
+        FastAPI 0.157.0 directly imports URL from starlette.datastructures, and
         FastAPI-RS registers the canonical Starlette-RS class. The
         root-alias-identity workflow checks exact FastAPI-to-Starlette object
         identity. Starlette-RS's Python-package contract supports scope
@@ -4287,7 +4302,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/root_alias_identity.py
           observation_selectors: [http.status, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 directly imports FormData from starlette.datastructures,
+        FastAPI 0.157.0 directly imports FormData from starlette.datastructures,
         and FastAPI-RS registers the canonical Starlette-RS class. The
         root-alias-identity workflow checks exact FastAPI-to-Starlette object
         identity. Starlette-RS's Python-package contract supports multi-dict
@@ -4308,7 +4323,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/root_alias_identity.py
           observation_selectors: [http.status, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 directly imports Headers from starlette.datastructures,
+        FastAPI 0.157.0 directly imports Headers from starlette.datastructures,
         and FastAPI-RS registers the canonical Starlette-RS class. The
         root-alias-identity workflow checks exact FastAPI-to-Starlette object
         identity. Starlette-RS's Python-package contract supports the complete
@@ -4329,7 +4344,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/root_alias_identity.py
           observation_selectors: [http.status, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 directly imports QueryParams from starlette.datastructures,
+        FastAPI 0.157.0 directly imports QueryParams from starlette.datastructures,
         and FastAPI-RS registers the canonical Starlette-RS class. The
         root-alias-identity workflow observes exact identity for
         fastapi.datastructures.QueryParams and starlette.datastructures.QueryParams.
@@ -4354,7 +4369,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/root_alias_identity.py
           observation_selectors: [http.status, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 directly imports State from starlette.datastructures,
+        FastAPI 0.157.0 directly imports State from starlette.datastructures,
         and FastAPI-RS registers the canonical Starlette-RS class. The
         root-alias-identity workflow checks exact FastAPI-to-Starlette object
         identity. Starlette-RS's Python-package contract supports the complete
@@ -4374,7 +4389,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/root_alias_identity.py
           observation_selectors: [http.status, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 directly re-exports CORSMiddleware from
+        FastAPI 0.157.0 directly re-exports CORSMiddleware from
         starlette.middleware.cors, and FastAPI-RS registers that canonical
         Starlette-RS class. The root-alias-identity workflow compares exact
         FastAPI-to-Starlette object identity. The pinned Starlette-RS
@@ -4394,7 +4409,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/root_alias_identity.py
           observation_selectors: [http.status, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 directly re-exports GZipMiddleware from
+        FastAPI 0.157.0 directly re-exports GZipMiddleware from
         starlette.middleware.gzip, and FastAPI-RS registers that canonical
         Starlette-RS class. The root-alias-identity workflow compares exact
         FastAPI-to-Starlette object identity. The pinned Starlette-RS
@@ -4414,7 +4429,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/root_alias_identity.py
           observation_selectors: [http.status, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 directly re-exports HTTPSRedirectMiddleware from
+        FastAPI 0.157.0 directly re-exports HTTPSRedirectMiddleware from
         starlette.middleware.httpsredirect, and FastAPI-RS registers that
         canonical Starlette-RS class. The root-alias-identity workflow compares
         exact FastAPI-to-Starlette object identity. The pinned Starlette-RS
@@ -4434,7 +4449,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/root_alias_identity.py
           observation_selectors: [http.status, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 directly re-exports TrustedHostMiddleware from
+        FastAPI 0.157.0 directly re-exports TrustedHostMiddleware from
         starlette.middleware.trustedhost, and FastAPI-RS registers that
         canonical Starlette-RS class. The root-alias-identity workflow compares
         exact FastAPI-to-Starlette object identity. The pinned Starlette-RS
@@ -4456,7 +4471,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/root_alias_identity.py
           observation_selectors: [http.status, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 directly re-exports WSGIMiddleware from
+        FastAPI 0.157.0 directly re-exports WSGIMiddleware from
         starlette.middleware.wsgi, and FastAPI-RS registers that canonical
         Starlette-RS class. The root-alias-identity workflow compares exact
         FastAPI-to-Starlette object identity. The pinned Starlette-RS
@@ -4479,7 +4494,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/root_alias_identity.py
           observation_selectors: [http.status, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 directly imports Request from starlette.requests and
+        FastAPI 0.157.0 directly imports Request from starlette.requests and
         exposes the same class at fastapi.Request. FastAPI-RS registers the
         canonical Starlette-RS Request class. The root-alias-identity workflow
         checks exact root, module, and Starlette object identity. Starlette-RS's
@@ -4520,7 +4535,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/starlette_response_runtime.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 imports FileResponse directly from starlette.responses.
+        FastAPI 0.157.0 imports FileResponse directly from starlette.responses.
         The module identity workflow compares its public import path and object
         identity, and the root-alias workflow checks public-module-to-Starlette
         identity. The two file-response runtime cases exercise the public class
@@ -4561,7 +4576,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/starlette_response_runtime.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 imports HTMLResponse directly from starlette.responses.
+        FastAPI 0.157.0 imports HTMLResponse directly from starlette.responses.
         The module identity workflow compares its public import path and object
         identity, and the root-alias workflow checks public-module-to-Starlette
         identity. The tutorial response workflow selects HTMLResponse through
@@ -4735,7 +4750,7 @@ reviewed_api_contract_overlay:
       feature_ids: [response-serialization]
       observation_selectors: [python.import_path, python.object_identity, http.status, http.body.bytes, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message, validation.error_details, error.public_attributes]
       full_contract: >-
-        FastAPI 0.141.1 imports JSONResponse directly from starlette.responses.
+        FastAPI 0.157.0 imports JSONResponse directly from starlette.responses.
         The module identity workflow compares its public import path and object
         identity, and the root-alias workflow checks public-module-to-Starlette
         identity. The direct response-surface case constructs JSONResponse
@@ -4779,7 +4794,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/response_surface.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
       full_contract: >-
-        FastAPI 0.141.1 imports PlainTextResponse directly from
+        FastAPI 0.157.0 imports PlainTextResponse directly from
         starlette.responses. The module identity workflow compares the public
         import path and object identity, and the root-alias workflow checks the
         public-module-to-Starlette identity. The direct response-surface case
@@ -4822,7 +4837,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/starlette_response_runtime.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 imports RedirectResponse directly from
+        FastAPI 0.157.0 imports RedirectResponse directly from
         starlette.responses. The module identity workflow compares its public
         import path and object identity, and the root-alias workflow checks
         public-module-to-Starlette identity. The response-runtime case returns
@@ -4863,7 +4878,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/fastapi_response_direct_asgi.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
       full_contract: >-
-        FastAPI 0.141.1 binds `fastapi.responses.Response` directly to the exact
+        FastAPI 0.157.0 binds `fastapi.responses.Response` directly to the exact
         `starlette.responses.Response` object. The root-alias workflow checks the
         FastAPI module-to-Starlette identity chain, the documented-module workflow
         checks the public import path and object identity, and the direct ASGI
@@ -4910,7 +4925,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/starlette_response_runtime.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 imports StreamingResponse directly from
+        FastAPI 0.157.0 imports StreamingResponse directly from
         starlette.responses. The module identity workflow compares its public
         import path and object identity, and the root-alias workflow checks
         public-module-to-Starlette identity. The streaming runtime cases use
@@ -4935,7 +4950,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/root_alias_identity.py
           observation_selectors: [http.status, http.body.bytes]
       full_contract: >-
-        FastAPI 0.141.1 directly re-exports StaticFiles from starlette.staticfiles,
+        FastAPI 0.157.0 directly re-exports StaticFiles from starlette.staticfiles,
         and FastAPI-RS registers that canonical Starlette-RS class. The
         root-alias-identity workflow compares exact FastAPI-to-Starlette object
         identity. The pinned Starlette-RS Python-package contract supports
@@ -4973,7 +4988,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/fastapi_templating_asgi.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
       full_contract: >-
-        FastAPI 0.141.1 directly re-exports the exact starlette.templating.Jinja2Templates
+        FastAPI 0.157.0 directly re-exports the exact starlette.templating.Jinja2Templates
         class. The templates-profile API workflow compares its public import path,
         canonical object identity, and exact callable signature; the core-profile
         workflow compares the missing-Jinja import outcome. A focused FastAPI ASGI
@@ -5025,7 +5040,7 @@ reviewed_api_contract_overlay:
           observation_selectors: [http.status, http.body.bytes, asgi.lifespan.workload_trace]
       observation_selectors: [python.binding_identity, python.signature, python.import_path, python.object_identity, python.warnings, python.call_outcome, http.status, http.body.bytes, asgi.lifespan.workload_trace, websocket.messages]
       full_contract: >-
-        FastAPI 0.141.1 directly re-exports the exact starlette.testclient.TestClient
+        FastAPI 0.157.0 directly re-exports the exact starlette.testclient.TestClient
         class. The isolated workflows compare the public module and object identity,
         exact signature, pinned httpx2-to-httpx fallback warning, core-profile
         missing-client failure, and one FastAPI HTTP/lifespan interaction. Generic
@@ -5066,7 +5081,7 @@ reviewed_api_contract_overlay:
       feature_ids: [websocket-lifecycle]
       observation_selectors: [python.import_path, python.object_identity, python.binding_identity, python.signature, websocket.messages]
       full_contract: >-
-        FastAPI 0.141.1 directly re-exports the exact
+        FastAPI 0.157.0 directly re-exports the exact
         starlette.websockets.WebSocket object as fastapi.websockets.WebSocket.
         The isolated API workflow compares its import path, canonical object
         identity, and exact signature; the documented-module and ASGI identity
@@ -5645,7 +5660,7 @@ reviewed_api_contract_overlay:
       feature_ids: [public-api-errors]
       observation_selectors: [python.import_path, python.object_identity, python.signature, error.args, error.class, error.public_attributes, construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes]
       supported_slice: >-
-        FastAPI 0.141.1 documents `HTTPException` as a top-level `fastapi` import.
+        FastAPI 0.157.0 documents `HTTPException` as a top-level `fastapi` import.
         Direct API probes capture its class and annotated initializer
         signatures, while the identity workflow compares the root and module
         objects and the Starlette superclass relation. The linked constructor
@@ -5699,8 +5714,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/applications.py
           symbol: websocket
           kind: source-definition
-          start_line: 1376
-          end_line: 1439
+          start_line: 1418
+          end_line: 1481
         - {path: fastapi/routing.py, symbol: get_websocket_app}
         - {path: tests/test_ws_dependencies.py, symbol: test_index}
         - {path: tests/test_tutorial/test_websockets/test_tutorial001.py, symbol: test_websocket}
@@ -5794,8 +5809,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/routing.py
           symbol: websocket
           kind: source-definition
-          start_line: 3057
-          end_line: 3122
+          start_line: 3164
+          end_line: 3229
         - {path: fastapi/routing.py, symbol: get_websocket_app}
         - {path: tests/test_ws_dependencies.py, symbol: test_routerindex}
         - {path: tests/test_ws_dependencies.py, symbol: test_routerprefixindex}
@@ -5858,13 +5873,13 @@ reviewed_api_contract_overlay:
         - path: fastapi/routing.py
           symbol: websocket_route
           kind: source-definition
-          start_line: 3124
-          end_line: 3131
+          start_line: 3231
+          end_line: 3238
         - path: fastapi/routing.py
           symbol: add_websocket_route
           kind: source-definition
-          start_line: 2621
-          end_line: 2628
+          start_line: 2695
+          end_line: 2702
         - {path: tests/test_ws_router.py, symbol: test_router}
         - {path: tests/test_ws_router.py, symbol: test_prefix_router}
       rust_binding: >-
@@ -5900,8 +5915,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/routing.py
           symbol: APIRoute
           kind: source-definition
-          start_line: 1126
-          end_line: 1281
+          start_line: 1181
+          end_line: 1332
         - {path: tests/test_additional_responses_custom_model_in_callback.py}
         - {path: tests/test_router_include_context.py, symbol: test_iter_route_contexts_returns_direct_route_context}
         - {path: tests/test_tutorial/test_request_forms/test_tutorial001.py, symbol: test_post_body_form}
@@ -6098,8 +6113,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/routing.py
           symbol: iter_route_contexts
           kind: source-definition
-          start_line: 1828
-          end_line: 1839
+          start_line: 1895
+          end_line: 1906
         - {path: tests/test_router_include_context.py, symbol: test_iter_route_contexts_returns_direct_route_context}
         - {path: tests/test_router_include_context.py, symbol: test_iter_route_contexts_supports_nested_conflict_detection}
         - {path: tests/test_router_include_context.py, symbol: test_effective_route_context_is_available_in_scope_during_request}
@@ -6146,8 +6161,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/routing.py
           symbol: RouteContext
           kind: source-definition
-          start_line: 1545
-          end_line: 1582
+          start_line: 1604
+          end_line: 1643
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
           case_id: fastapi.routing.apiroute-state.direct
@@ -6174,8 +6189,8 @@ reviewed_api_contract_overlay:
           symbol: endpoint
           owner: RouteContext
           kind: source-definition
-          start_line: 1578
-          end_line: 1579
+          start_line: 1639
+          end_line: 1640
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
           case_id: fastapi.routing.apiroute-state.direct
@@ -6205,8 +6220,8 @@ reviewed_api_contract_overlay:
           symbol: methods
           owner: RouteContext
           kind: source-definition
-          start_line: 1574
-          end_line: 1575
+          start_line: 1635
+          end_line: 1636
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
           case_id: fastapi.routing.apiroute-state.direct
@@ -6235,8 +6250,8 @@ reviewed_api_contract_overlay:
           symbol: name
           owner: RouteContext
           kind: source-definition
-          start_line: 1570
-          end_line: 1571
+          start_line: 1631
+          end_line: 1632
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
           case_id: fastapi.routing.apiroute-state.direct
@@ -6265,8 +6280,8 @@ reviewed_api_contract_overlay:
           symbol: original_route
           owner: RouteContext
           kind: source-definition
-          start_line: 1550
-          end_line: 1553
+          start_line: 1609
+          end_line: 1612
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
           case_id: fastapi.routing.apiroute-state.direct
@@ -6295,8 +6310,8 @@ reviewed_api_contract_overlay:
           symbol: path
           owner: RouteContext
           kind: source-definition
-          start_line: 1562
-          end_line: 1563
+          start_line: 1623
+          end_line: 1624
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
           case_id: fastapi.routing.apiroute-state.direct
@@ -6325,8 +6340,8 @@ reviewed_api_contract_overlay:
           symbol: path_format
           owner: RouteContext
           kind: source-definition
-          start_line: 1566
-          end_line: 1567
+          start_line: 1627
+          end_line: 1628
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/router-apiroute-context-upstream.yaml
           case_id: fastapi.routing.apiroute-state.direct
@@ -6362,8 +6377,8 @@ reviewed_api_contract_overlay:
           symbol: get_route_handler
           owner: APIRoute
           kind: source-definition
-          start_line: 1225
-          end_line: 1249
+          start_line: 1280
+          end_line: 1304
         - {path: fastapi/routing.py, symbol: get_request_handler}
         - {path: tests/test_custom_route_class.py, symbol: test_get_path}
         - path: docs/en/docs/how-to/custom-request-and-route.md
@@ -6722,18 +6737,18 @@ reviewed_api_contract_overlay:
         - path: fastapi/openapi/utils.py
           symbol: get_openapi
           kind: source-definition
-          start_line: 585
-          end_line: 679
+          start_line: 570
+          end_line: 664
         - path: tests/test_router_include_context.py
           symbol: test_get_openapi_accepts_filtered_route_contexts_with_effective_paths
           kind: source-definition
-          start_line: 82
-          end_line: 109
+          start_line: 151
+          end_line: 178
         - path: tests/test_router_include_context.py
           symbol: test_get_openapi_accepts_webhook_route_contexts
           kind: source-definition
-          start_line: 112
-          end_line: 135
+          start_line: 181
+          end_line: 204
         - path: docs/en/docs/how-to/extending-openapi.md
           kind: documentation-text
           start_line: 19
@@ -6910,10 +6925,12 @@ reviewed_api_contract_overlay:
         known_gaps:
           - >-
             The linked constructor workflow covers the exact signature, debug=True construction,
-            capture of extra keyword arguments, and empty-version behavior with OpenAPI enabled or
-            disabled. The linked ASGI workflow additionally checks deprecated/include_in_schema
-            defaults, extra kwargs, one route's inherited metadata, and its OpenAPI omission; other
-            constructor options and error branches remain unproven.
+            rejection of removed openapi_prefix and arbitrary extra keywords, and empty-version
+            behavior with OpenAPI enabled or disabled. The linked telemetry workflow checks
+            configuration acceptance only; emitted signals, context, exporters, and lifespan
+            effects are not observed. The linked ASGI workflow checks selected route defaults,
+            metadata, and OpenAPI omission; other constructor options and error branches remain
+            unproven.
           - >-
             Application routing, lifecycle, middleware, dependency resolution, serialization, and
             OpenAPI behavior outside the linked cases are not established by this constructor slice.
@@ -6923,17 +6940,27 @@ reviewed_api_contract_overlay:
         rust_binding: "fastapi-rs/src/application_runtime.rs::PyFastApi::new"
       supported_slice: >-
         The root export resolves to `fastapi.applications.FastAPI`. The linked direct API workflow
-        compares the exact constructor signature, debug=True construction, extra-keyword capture,
-        and empty-version validation with OpenAPI enabled and disabled. The linked ASGI workflow
-        compares deprecated/include_in_schema defaults and extra kwargs through one GET route,
-        including route metadata and OpenAPI exclusion. Other constructor options and application
-        behavior are outside this bounded slice.
+        compares the exact constructor signature, debug=True construction, rejection of the removed
+        `openapi_prefix` keyword and arbitrary extra keywords, and empty-version validation with
+        OpenAPI enabled and disabled. A separate input checks acceptance of selected disabled
+        telemetry configurations; it does not observe telemetry signals or establish telemetry
+        runtime parity. The linked ASGI workflow compares selected route defaults, metadata, and
+        OpenAPI exclusion. Other constructor options and application behavior are outside this
+        bounded slice.
       source_evidence:
         - {path: fastapi/__init__.py}
         - {path: fastapi/applications.py, symbol: FastAPI}
+        - {path: fastapi/telemetry/_api.py, symbol: TelemetryConfig}
+        - {path: fastapi/telemetry/_api.py, symbol: TelemetryData}
+        - {path: fastapi/telemetry/_api.py, symbol: get_telemetry_data}
+        - {path: docs/en/docs/advanced/opentelemetry.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
           case_id: fastapi.applications.constructor-debug
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
+          case_id: fastapi.applications.constructor-openapi-prefix-rejected
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
+          case_id: fastapi.applications.constructor-arbitrary-extra-keyword-rejected
         - recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
           case_id: fastapi.applications.constructor-empty-version-rejected
         - recipe_path: tests/fixtures/input-recipes/parity/fastapi-constructor-debug.yaml
@@ -7005,6 +7032,18 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/applications.py, symbol: FastAPI}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
+          case_id: fastapi.telemetry.constructor-tracing-disabled
+          workload_path: tests/fixtures/workloads/telemetry_constructor.py
+          observation_selectors: [python.signature, python.call_outcome]
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
+          case_id: fastapi.telemetry.constructor-operation-spans-disabled
+          workload_path: tests/fixtures/workloads/telemetry_constructor.py
+          observation_selectors: [python.call_outcome]
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml
+          case_id: fastapi.telemetry.constructor-signals-disabled
+          workload_path: tests/fixtures/workloads/telemetry_constructor.py
+          observation_selectors: [python.call_outcome]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml
           case_id: fastapi.openapi-extra.full-document-merge-add-override
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
@@ -7087,6 +7126,10 @@ reviewed_api_contract_overlay:
         - {path: docs/en/docs/tutorial/dependencies/sub-dependencies.md}
         - {path: docs/en/docs/tutorial/dependencies/dependencies-with-yield.md}
         - {path: fastapi/applications.py, symbol: __call__}
+        - {path: fastapi/telemetry/_asgi.py, symbol: NativeTelemetry}
+        - {path: fastapi/telemetry/_runtime.py, symbol: lifespan}
+        - {path: fastapi/telemetry/_api.py, symbol: get_telemetry_data}
+        - {path: docs/en/docs/advanced/opentelemetry.md}
         - {path: fastapi/routing.py, symbol: serialize_response}
         - {path: fastapi/openapi/utils.py, symbol: get_openapi_path}
         - {path: fastapi/utils.py, symbol: is_body_allowed_for_status_code}
@@ -7097,8 +7140,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/routing.py
           symbol: get_request_handler
           kind: source-definition
-          start_line: 375
-          end_line: 761
+          start_line: 398
+          end_line: 805
         - {path: fastapi/encoders.py, symbol: jsonable_encoder}
         - {path: tests/test_response_model_as_return_annotation.py, symbol: test_no_response_model_annotation_return_class}
         - path: docs/en/docs/advanced/custom-response.md
@@ -7322,7 +7365,10 @@ reviewed_api_contract_overlay:
         FastAPI(root_path=...) also writes its configured prefix into an empty ASGI
         scope before route execution; the proxy-root-path-without-auto-server input
         observes that scope value in the endpoint response and the associated
-        OpenAPI request.
+        OpenAPI request. FastAPI 0.157.0 also wraps HTTP, WebSocket, and lifespan
+        execution with native telemetry. The linked workloads do not observe spans,
+        metrics, logs, request-local telemetry context, exporter effects, or
+        telemetry lifecycle behavior, so those behaviors remain unproven.
         Four additional-response cases cover media-type content merging, model-derived
         response schemas, preserved examples, and status-description defaults for
         declared responses; they do not establish arbitrary metadata-key or malformed
@@ -7362,6 +7408,10 @@ reviewed_api_contract_overlay:
             live source/target execution evidence.
           - *response_field_traversal_gap
           - *response_field_traversal_history_gap
+          - >-
+            FastAPI's telemetry middleware and lifespan wrapper are source-backed
+            but no linked workload observes spans, metrics, logs, request-local
+            context, exporter effects, or telemetry lifecycle behavior.
     fastapi.Response:
       target_binding:
         implementation_owner: starlette-rs
@@ -7398,7 +7448,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/fastapi_response_direct_asgi.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, asgi.send.message_types]
       full_contract: >-
-        FastAPI 0.141.1 re-exports `fastapi.responses.Response` as the root
+        FastAPI 0.157.0 re-exports `fastapi.responses.Response` as the root
         `fastapi.Response` binding, and the module alias is the exact
         `starlette.responses.Response` class. The root-alias workflow checks
         root-to-module, root-to-Starlette, and module-to-Starlette object identity;
@@ -7858,8 +7908,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/applications.py
           symbol: on_event
           kind: source-definition
-          start_line: 4662
-          end_line: 4681
+          start_line: 4704
+          end_line: 4723
         - {path: tests/test_router_events.py, symbol: test_router_events}
         - {path: docs/en/docs/advanced/events.md}
       feature_ids: [websocket-lifecycle, public-api-errors]
@@ -7892,13 +7942,13 @@ reviewed_api_contract_overlay:
         - path: fastapi/applications.py
           kind: source-definition
           symbol: middleware
-          start_line: 4683
-          end_line: 4727
+          start_line: 4725
+          end_line: 4769
         - path: fastapi/applications.py
           kind: source-definition
           symbol: build_middleware_stack
-          start_line: 1020
-          end_line: 1068
+          start_line: 1032
+          end_line: 1083
         - path: starlette/applications.py
           kind: source-definition
           source_authority: Starlette 1.6.0
@@ -7983,20 +8033,20 @@ reviewed_api_contract_overlay:
           kind: source-definition
           owner: FastAPI
           symbol: __init__
-          start_line: 58
-          end_line: 1018
+          start_line: 68
+          end_line: 1030
         - path: fastapi/applications.py
           kind: instance-assignment
           symbol: openapi_url
           owner: FastAPI
           initializer: __init__
-          start_line: 881
-          end_line: 881
+          start_line: 879
+          end_line: 879
         - path: fastapi/applications.py
           kind: source-definition
           symbol: setup
-          start_line: 1105
-          end_line: 1158
+          start_line: 1120
+          end_line: 1173
         - path: docs/en/docs/tutorial/metadata.md
           kind: documentation-text
           start_line: 95
@@ -8040,8 +8090,8 @@ reviewed_api_contract_overlay:
           symbol: router
           owner: FastAPI
           initializer: __init__
-          start_line: 984
-          end_line: 999
+          start_line: 981
+          end_line: 996
         - {path: fastapi/applications.py, symbol: __call__}
         - {path: fastapi/applications.py, symbol: get}
       supported_slice: >-
@@ -8081,15 +8131,15 @@ reviewed_api_contract_overlay:
           kind: source-definition
           owner: FastAPI
           symbol: __init__
-          start_line: 58
-          end_line: 1018
+          start_line: 68
+          end_line: 1030
         - path: fastapi/applications.py
           kind: instance-assignment
           symbol: swagger_ui_oauth2_redirect_url
           owner: FastAPI
           initializer: __init__
-          start_line: 886
-          end_line: 886
+          start_line: 884
+          end_line: 884
         - path: fastapi/applications.py
           kind: source-use
           symbol: setup
@@ -8128,15 +8178,15 @@ reviewed_api_contract_overlay:
           kind: source-definition
           owner: FastAPI
           symbol: __init__
-          start_line: 58
-          end_line: 1018
+          start_line: 68
+          end_line: 1030
         - path: fastapi/applications.py
           kind: instance-assignment
           symbol: title
           owner: FastAPI
           initializer: __init__
-          start_line: 874
-          end_line: 874
+          start_line: 872
+          end_line: 872
         - path: fastapi/applications.py
           kind: source-use
           symbol: openapi
@@ -8204,8 +8254,8 @@ reviewed_api_contract_overlay:
           symbol: openapi_version
           owner: FastAPI
           initializer: __init__
-          start_line: 893
-          end_line: 923
+          start_line: 890
+          end_line: 920
         - {path: docs/en/docs/how-to/extending-openapi.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/instance-openapi-version.yaml
@@ -8232,8 +8282,8 @@ reviewed_api_contract_overlay:
           symbol: summary
           owner: FastAPI
           initializer: __init__
-          start_line: 875
-          end_line: 875
+          start_line: 873
+          end_line: 873
         - path: fastapi/applications.py
           kind: source-use
           symbol: openapi
@@ -8242,8 +8292,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/openapi/utils.py
           kind: source-definition
           symbol: get_openapi
-          start_line: 585
-          end_line: 679
+          start_line: 570
+          end_line: 664
         - {path: docs/en/docs/tutorial/metadata.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
@@ -8282,8 +8332,8 @@ reviewed_api_contract_overlay:
           symbol: description
           owner: FastAPI
           initializer: __init__
-          start_line: 876
-          end_line: 876
+          start_line: 874
+          end_line: 874
         - {path: docs/en/docs/tutorial/metadata.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
@@ -8311,8 +8361,8 @@ reviewed_api_contract_overlay:
           symbol: version
           owner: FastAPI
           initializer: __init__
-          start_line: 877
-          end_line: 877
+          start_line: 875
+          end_line: 875
         - path: fastapi/applications.py
           kind: source-use
           symbol: openapi
@@ -8321,8 +8371,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/openapi/utils.py
           kind: source-definition
           symbol: get_openapi
-          start_line: 585
-          end_line: 679
+          start_line: 570
+          end_line: 664
         - {path: docs/en/docs/tutorial/metadata.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
@@ -8354,8 +8404,8 @@ reviewed_api_contract_overlay:
           symbol: terms_of_service
           owner: FastAPI
           initializer: __init__
-          start_line: 878
-          end_line: 878
+          start_line: 876
+          end_line: 876
         - {path: docs/en/docs/tutorial/metadata.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
@@ -8383,18 +8433,18 @@ reviewed_api_contract_overlay:
           symbol: contact
           owner: FastAPI
           initializer: __init__
-          start_line: 879
-          end_line: 879
+          start_line: 877
+          end_line: 877
         - path: fastapi/applications.py
           kind: source-definition
           symbol: openapi
-          start_line: 1070
-          end_line: 1103
+          start_line: 1085
+          end_line: 1118
         - path: fastapi/openapi/utils.py
           kind: source-definition
           symbol: get_openapi
-          start_line: 585
-          end_line: 679
+          start_line: 570
+          end_line: 664
         - {path: docs/en/docs/tutorial/metadata.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
@@ -8435,8 +8485,8 @@ reviewed_api_contract_overlay:
           symbol: license_info
           owner: FastAPI
           initializer: __init__
-          start_line: 880
-          end_line: 880
+          start_line: 878
+          end_line: 878
         - {path: docs/en/docs/tutorial/metadata.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
@@ -8464,8 +8514,8 @@ reviewed_api_contract_overlay:
           symbol: docs_url
           owner: FastAPI
           initializer: __init__
-          start_line: 884
-          end_line: 884
+          start_line: 882
+          end_line: 882
         - path: fastapi/applications.py
           kind: source-use
           symbol: setup
@@ -8509,8 +8559,8 @@ reviewed_api_contract_overlay:
           symbol: redoc_url
           owner: FastAPI
           initializer: __init__
-          start_line: 885
-          end_line: 885
+          start_line: 883
+          end_line: 883
         - path: fastapi/applications.py
           kind: source-use
           symbol: setup
@@ -8554,8 +8604,8 @@ reviewed_api_contract_overlay:
           symbol: swagger_ui_parameters
           owner: FastAPI
           initializer: __init__
-          start_line: 888
-          end_line: 888
+          start_line: 886
+          end_line: 886
         - path: fastapi/applications.py
           kind: source-use
           symbol: setup
@@ -8601,8 +8651,8 @@ reviewed_api_contract_overlay:
           symbol: state
           owner: FastAPI
           initializer: __init__
-          start_line: 950
-          end_line: 966
+          start_line: 947
+          end_line: 963
         - {path: docs/en/docs/reference/fastapi.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/http-connection-injection-websocket.yaml
@@ -8631,8 +8681,8 @@ reviewed_api_contract_overlay:
           symbol: dependency_overrides
           owner: FastAPI
           initializer: __init__
-          start_line: 967
-          end_line: 983
+          start_line: 964
+          end_line: 980
         - {path: docs/en/docs/advanced/testing-dependencies.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-lifecycle.yaml
@@ -8668,8 +8718,8 @@ reviewed_api_contract_overlay:
           symbol: openapi_schema
           owner: FastAPI
           initializer: __init__
-          start_line: 924
-          end_line: 924
+          start_line: 921
+          end_line: 921
         - {path: docs/en/docs/how-to/extending-openapi.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/instance-openapi-schema.yaml
@@ -8697,8 +8747,8 @@ reviewed_api_contract_overlay:
           symbol: webhooks
           owner: FastAPI
           initializer: __init__
-          start_line: 937
-          end_line: 948
+          start_line: 926
+          end_line: 937
         - path: docs/en/docs/advanced/openapi-webhooks.md
           kind: documentation-text
           start_line: 33
@@ -8772,8 +8822,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/applications.py
           symbol: openapi
           kind: source-definition
-          start_line: 1070
-          end_line: 1103
+          start_line: 1085
+          end_line: 1118
         - path: tests/test_router_include_context.py
           symbol: test_openapi_cache_updates_after_live_route_addition
         - path: tests/test_router_include_context.py
@@ -8800,29 +8850,21 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml
           case_id: fastapi.schema-extra-example.openapi-examples.named-body-external-value
         - *first_asgi_openapi
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-root-path-tutorial-review.yaml
           case_id: fastapi.applications.root-path.configured-over-incoming-scope
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          workload_path: tests/fixtures/workloads/fastapi_root_path_tutorial_review.py
           observation_selectors: [http.status, openapi.document]
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
-          case_id: fastapi.applications.root-path.deprecated-prefix-fallback
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
-          observation_selectors: [http.status, openapi.document]
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
-          case_id: fastapi.applications.root-path.precedence-and-server-gate
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
-          observation_selectors: [http.status, openapi.document]
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-root-path-tutorial-review.yaml
           case_id: fastapi.applications.root-path.mutable-public-attributes
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          workload_path: tests/fixtures/workloads/fastapi_root_path_tutorial_review.py
           observation_selectors: [http.status, openapi.document]
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-root-path-tutorial-review.yaml
           case_id: fastapi.applications.root-path.request-local-server-isolation
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          workload_path: tests/fixtures/workloads/fastapi_root_path_tutorial_review.py
           observation_selectors: [http.status, openapi.document, http.headers.ordered, http.body.bytes]
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-root-path-tutorial-review.yaml
           case_id: fastapi.applications.root-path.existing-server-deduplicated
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          workload_path: tests/fixtures/workloads/fastapi_root_path_tutorial_review.py
           observation_selectors: [http.status, openapi.document]
         - recipe_path: tests/fixtures/input-recipes/parity/middleware-proxy-root-path-source-review.yaml
           case_id: fastapi.middleware-proxy.proxy-root-path-without-auto-server
@@ -9270,23 +9312,23 @@ reviewed_api_contract_overlay:
         - path: fastapi/routing.py
           symbol: __init__
           kind: source-definition
-          start_line: 2282
-          end_line: 2568
+          start_line: 2356
+          end_line: 2642
         - path: fastapi/routing.py
           symbol: add_api_route
           kind: source-definition
-          start_line: 2889
-          end_line: 2971
+          start_line: 2996
+          end_line: 3078
         - path: fastapi/openapi/utils.py
           symbol: get_openapi_operation_metadata
           kind: source-definition
-          start_line: 287
-          end_line: 308
+          start_line: 272
+          end_line: 293
         - path: fastapi/routing.py
           symbol: app
           kind: source-definition
-          start_line: 2719
-          end_line: 2781
+          start_line: 2793
+          end_line: 2888
         - path: starlette/routing.py
           kind: source-definition
           source_authority: Starlette 1.6.0
@@ -9463,17 +9505,17 @@ reviewed_api_contract_overlay:
         explicit lax option is checked by
         `apiroute-strict-content-type-constructor`. Direct inspection of the
         default placeholder remains outside this slice.
-        FastAPI 0.141.1 also accepts inherited `routes`, `redirect_slashes`, and
-        `default` constructor arguments. `routes` is explicitly deprecated in
-        the source signature. The FastAPI constructor now snapshots the supplied
-        iterable and dispatches the first generic route with a full match; the
-        linked workflow covers one direct Starlette `Route` HTTP request. The
-        APIRouter constructor also snapshots `routes`; linked inputs observe
-        prefixed HTTP dispatch, included raw WebSocket dispatch through nested
-        APIRouter and FastAPI inclusion, include-slot ordering against API
-        routes, nested constructor-route prefixes, and generic HTTP
-        partial-match fallback both after a later API full match and when no
-        later route fully matches.
+        The FastAPI 0.157.0 constructor accepts inherited `routes` and
+        `redirect_slashes`; `routes` carries deprecation metadata. The `default`
+        constructor argument belongs to `APIRouter`, not `FastAPI`. The FastAPI
+        constructor snapshots supplied routes and dispatches the first generic
+        route with a full match; the linked workflow covers one direct Starlette
+        `Route` HTTP request. The APIRouter constructor also snapshots `routes`;
+        linked inputs observe prefixed HTTP dispatch, included raw WebSocket
+        dispatch through nested APIRouter and FastAPI inclusion, include-slot
+        ordering against API routes, nested constructor-route prefixes, and
+        generic HTTP partial-match fallback both after a later API full match
+        and when no later route fully matches.
         APIRouter slash redirects are covered for the exact route and missing
         trailing slash with the default and disabled policy. Other redirect
         combinations, route families beyond the sampled Starlette Route,
@@ -9524,8 +9566,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/routing.py
           symbol: add_event_handler
           kind: source-definition
-          start_line: 6396
-          end_line: 6413
+          start_line: 6503
+          end_line: 6520
       feature_ids: [websocket-lifecycle, public-api-errors]
       observation_selectors: [asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.shutdown, asgi.lifespan.workload_trace, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
@@ -9570,8 +9612,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/routing.py
           symbol: on_event
           kind: source-definition
-          start_line: 6423
-          end_line: 6447
+          start_line: 6530
+          end_line: 6554
         - {path: tests/test_router_events.py, symbol: test_router_events}
         - {path: docs/en/docs/advanced/events.md}
       feature_ids: [websocket-lifecycle, public-api-errors]
@@ -10836,28 +10878,28 @@ reviewed_api_contract_overlay:
         - path: fastapi/param_functions.py
           symbol: Cookie
           kind: source-definition
-          start_line: 1018
-          end_line: 1320
+          start_line: 1066
+          end_line: 1383
         - path: fastapi/params.py
           symbol: Cookie
           kind: source-definition
-          start_line: 387
-          end_line: 466
+          start_line: 410
+          end_line: 495
         - path: fastapi/dependencies/utils.py
           symbol: analyze_param
           kind: source-definition
-          start_line: 381
-          end_line: 547
+          start_line: 423
+          end_line: 618
         - path: fastapi/dependencies/utils.py
           symbol: add_param_to_fields
           kind: source-definition
-          start_line: 550
-          end_line: 563
+          start_line: 621
+          end_line: 634
         - path: fastapi/dependencies/utils.py
           symbol: request_params_to_args
           kind: source-definition
-          start_line: 780
-          end_line: 866
+          start_line: 952
+          end_line: 989
         - path: tests/test_request_params/test_cookie/test_required_str.py
           symbol: test_required_str_alias_schema
           kind: upstream_test
@@ -10916,13 +10958,13 @@ reviewed_api_contract_overlay:
         case selects the parameter arrays at
         `/paths/~1cookies~1required/get/parameters` and
         `/paths/~1cookies~1optional/get/parameters`. The recipe specifies
-        stimuli and selectors. The parameter-factory-signatures direct API
-        workflow matched all eight cases on 2026-10-17 against FastAPI 0.141.1 /
-        Starlette 1.6.0, with FastAPI-RS commit 608ace3 and Starlette-RS commit
-        4139a724; this includes exact root and module Cookie signature probes.
-        Constructor identity,
-        validation_alias, model-valued cookies, other field types, and other
-        Cookie options remain outside this reviewed scope.
+        stimuli and selectors. The recorded eight-case result on 2026-10-17 used FastAPI 0.141.1,
+        Starlette 1.6.0, FastAPI-RS commit 608ace3, and Starlette-RS commit
+        4139a724. It is historical and does not establish parity for FastAPI
+        0.157.0. The current recipe retains input-only root and module Cookie
+        signature probes. Constructor identity, validation_alias, model-valued
+        cookies, other field types, and other Cookie options remain outside
+        this reviewed scope.
     fastapi.Depends:
       rust_binding: fastapi-rs/src/parameters.rs::depends
       source_evidence:
@@ -10941,33 +10983,33 @@ reviewed_api_contract_overlay:
         - path: fastapi/dependencies/models.py
           symbol: _get_cache_key
           kind: source-definition
-          start_line: 82
-          end_line: 96
+          start_line: 83
+          end_line: 97
         - path: fastapi/dependencies/utils.py
           symbol: solve_dependencies
           kind: source-definition
-          start_line: 586
-          end_line: 731
+          start_line: 657
+          end_line: 819
         - path: fastapi/dependencies/models.py
           symbol: _get_computed_scope
           kind: source-definition
-          start_line: 229
-          end_line: 234
+          start_line: 230
+          end_line: 235
         - path: fastapi/dependencies/utils.py
           symbol: get_dependant
           kind: source-definition
-          start_line: 271
-          end_line: 347
+          start_line: 314
+          end_line: 389
         - path: fastapi/routing.py
           symbol: request_response
           kind: source-definition
-          start_line: 121
-          end_line: 160
+          start_line: 130
+          end_line: 169
         - path: fastapi/routing.py
           symbol: websocket_session
           kind: source-definition
-          start_line: 165
-          end_line: 186
+          start_line: 174
+          end_line: 195
         - path: tests/test_dependency_yield_scope.py
           symbol: test_two_scopes
           kind: source-definition
@@ -11680,6 +11722,21 @@ reviewed_api_contract_overlay:
           case_id: fastapi.parameter-runtime-defaults.default-factory-value-invalid
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-runtime-defaults.yaml
           case_id: fastapi.parameter-runtime-defaults.annotated-default-factory
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml
+          case_id: fastapi.parameter-models.combined-locations.defaults
+          workload_path: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml
+          case_id: fastapi.parameter-models.combined-locations.independent-values
+          workload_path: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml
+          case_id: fastapi.parameter-models.combined-locations.independent-validation
+          workload_path: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml
+          case_id: fastapi.parameter-models.combined-locations.forbid-extras-around-dependencies
+          workload_path: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml
+          case_id: fastapi.parameter-models.combined-locations.openapi-parameters
+          workload_path: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
       feature_ids: [request-validation]
       observation_selectors: [http.body.bytes, python.signature, python.parameter_metadata, python.warnings]
       supported_slice: >-
@@ -11709,6 +11766,21 @@ reviewed_api_contract_overlay:
           case_id: fastapi.parameter-factory-signatures.header
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-metadata-projection.yaml
           case_id: fastapi.parameter-metadata-projection.header-alias
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml
+          case_id: fastapi.parameter-models.combined-locations.defaults
+          workload_path: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml
+          case_id: fastapi.parameter-models.combined-locations.independent-values
+          workload_path: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml
+          case_id: fastapi.parameter-models.combined-locations.independent-validation
+          workload_path: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml
+          case_id: fastapi.parameter-models.combined-locations.forbid-extras-around-dependencies
+          workload_path: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml
+          case_id: fastapi.parameter-models.combined-locations.openapi-parameters
+          workload_path: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
       feature_ids: [request-validation]
       observation_selectors: [http.body.bytes, python.signature, python.parameter_metadata]
       supported_slice: >-
@@ -11743,6 +11815,120 @@ reviewed_api_contract_overlay:
           case_id: fastapi.parameter-runtime-defaults.body-default-factory
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-runtime-defaults.yaml
           case_id: fastapi.parameter-runtime-defaults.body-default-factory-value-provided
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.embedded-null-value
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.embedded-raw-null
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.required-embedded-absent
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.required-model-absent
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.required-model-field-null
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.null-default-absent
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.concrete-default-absent
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.nonnullable-default-absent
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.nullable-model-empty-object
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.concrete-model-empty-object
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.nonnullable-model-empty-object
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.bare-required-absent
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.bare-nullable-explicit-null
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.bare-concrete-explicit-null
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.falsey-integer-is-present
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.falsey-string-is-present
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.falsey-list-is-present
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.object-invalid-for-integer
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.object-invalid-for-string
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.object-invalid-for-list
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.nonnullable-embedded-explicit-null
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.nonnullable-bare-explicit-null
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.null-does-not-fill-embedded-field
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.multiple-body-raw-null
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.multiple-body-empty-request
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.multiple-body-empty-object
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.multiple-body-explicit-null-fields
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.factory-skips-null-and-fills-absent
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.body-dependency-alias-null
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.body-dependency-alias-absent
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.nullable-raw-model-explicit-null
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.nullable-raw-model-absent
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.nullable-embedded-model-explicit-null
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.nullable-embedded-model-absent
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.custom-validation-error-body-missing
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/body-nullable-defaults-0157.yaml
+          case_id: fastapi.body-nullable-defaults.custom-validation-error-body-null
+          workload_path: tests/fixtures/workloads/body_nullable_defaults_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/union-body-discriminator-annotated-review.yaml
+          case_id: fastapi.request-union-body.callable-discriminator.explicit-body.cat
+          workload_path: tests/fixtures/workloads/union_body_discriminator_annotated_review.py
+        - recipe_path: tests/fixtures/input-recipes/parity/union-body-discriminator-annotated-review.yaml
+          case_id: fastapi.request-union-body.callable-discriminator.explicit-body.dog
+          workload_path: tests/fixtures/workloads/union_body_discriminator_annotated_review.py
       feature_ids: [request-validation, openapi-docs]
       observation_selectors: [http.body.bytes, python.signature, python.parameter_metadata]
       supported_slice: >-
@@ -12020,13 +12206,28 @@ reviewed_api_contract_overlay:
         - path: fastapi/param_functions.py
           symbol: Cookie
           kind: source-definition
-          start_line: 1018
-          end_line: 1320
+          start_line: 1066
+          end_line: 1383
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-factory-signatures.yaml
           case_id: fastapi.parameter-factory-signatures.cookie
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-metadata-projection.yaml
           case_id: fastapi.parameter-metadata-projection.cookie-alias-default
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml
+          case_id: fastapi.parameter-models.combined-locations.defaults
+          workload_path: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml
+          case_id: fastapi.parameter-models.combined-locations.independent-values
+          workload_path: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml
+          case_id: fastapi.parameter-models.combined-locations.independent-validation
+          workload_path: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml
+          case_id: fastapi.parameter-models.combined-locations.forbid-extras-around-dependencies
+          workload_path: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
+        - recipe_path: tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml
+          case_id: fastapi.parameter-models.combined-locations.openapi-parameters
+          workload_path: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
       feature_ids: [request-validation]
       observation_selectors: [python.signature, python.parameter_metadata]
       supported_slice: >-
@@ -12046,8 +12247,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/param_functions.py
           symbol: File
           kind: source-definition
-          start_line: 1968
-          end_line: 2280
+          start_line: 2061
+          end_line: 2388
         - {path: fastapi/dependencies/utils.py, symbol: _extract_form_body}
         - {path: fastapi/dependencies/utils.py, symbol: _get_multidict_value}
         - {path: fastapi/dependencies/utils.py, symbol: request_body_to_args}
@@ -12087,8 +12288,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/param_functions.py
           symbol: Form
           kind: source-definition
-          start_line: 1653
-          end_line: 1965
+          start_line: 1731
+          end_line: 2058
         - {path: fastapi/dependencies/utils.py, symbol: _extract_form_body}
         - {path: fastapi/dependencies/utils.py, symbol: _get_multidict_value}
         - {path: fastapi/dependencies/utils.py, symbol: request_body_to_args}
@@ -12132,8 +12333,8 @@ reviewed_api_contract_overlay:
           symbol: __init__
           kind: source-definition
           owner: Path
-          start_line: 140
-          end_line: 218
+          start_line: 145
+          end_line: 229
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
           case_id: fastapi.parameter-class-constructor-signatures.path
@@ -12158,8 +12359,8 @@ reviewed_api_contract_overlay:
           symbol: __init__
           kind: source-definition
           owner: Query
-          start_line: 224
-          end_line: 300
+          start_line: 235
+          end_line: 317
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
           case_id: fastapi.parameter-class-constructor-signatures.query
@@ -12190,8 +12391,8 @@ reviewed_api_contract_overlay:
           symbol: __init__
           kind: source-definition
           owner: Header
-          start_line: 306
-          end_line: 384
+          start_line: 323
+          end_line: 407
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
           case_id: fastapi.parameter-class-constructor-signatures.header
@@ -12216,8 +12417,8 @@ reviewed_api_contract_overlay:
           symbol: __init__
           kind: source-definition
           owner: Body
-          start_line: 470
-          end_line: 575
+          start_line: 499
+          end_line: 608
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
           case_id: fastapi.parameter-class-constructor-signatures.body
@@ -12242,8 +12443,8 @@ reviewed_api_contract_overlay:
           symbol: __init__
           kind: source-definition
           owner: Cookie
-          start_line: 390
-          end_line: 466
+          start_line: 413
+          end_line: 495
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
           case_id: fastapi.parameter-class-constructor-signatures.cookie
@@ -12268,8 +12469,8 @@ reviewed_api_contract_overlay:
           symbol: __init__
           kind: source-definition
           owner: File
-          start_line: 664
-          end_line: 742
+          start_line: 703
+          end_line: 787
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
           case_id: fastapi.parameter-class-constructor-signatures.file
@@ -12294,8 +12495,8 @@ reviewed_api_contract_overlay:
           symbol: __init__
           kind: source-definition
           owner: Form
-          start_line: 582
-          end_line: 660
+          start_line: 615
+          end_line: 699
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/parameter-class-constructor-signatures.yaml
           case_id: fastapi.parameter-class-constructor-signatures.form
@@ -12333,8 +12534,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/param_functions.py
           symbol: Security
           kind: source-definition
-          start_line: 2372
-          end_line: 2460
+          start_line: 2480
+          end_line: 2568
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
           case_id: fastapi.dependencies.dynamic-cache-policy.raw-capture
@@ -12413,8 +12614,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/param_functions.py
           symbol: Security
           kind: source-definition
-          start_line: 2372
-          end_line: 2460
+          start_line: 2480
+          end_line: 2568
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/dependency-dynamic-cache-policy.yaml
           case_id: fastapi.dependencies.dynamic-cache-policy.raw-capture
@@ -12531,8 +12732,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/security/http.py
           symbol: HTTPBearer
           kind: source-definition
-          start_line: 222
-          end_line: 316
+          start_line: 224
+          end_line: 320
       documentation_contract_refs:
         - source_path: docs/en/docs/how-to/authentication-error-status-code.md
           fixture_id: fastapi.docs.how-to-authentication-error-status-code
@@ -12580,8 +12781,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/security/http.py
           symbol: __init__
           kind: source-definition
-          start_line: 254
-          end_line: 301
+          start_line: 256
+          end_line: 303
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
           case_id: fastapi.docs.auth-error-status.legacy-forbidden
@@ -12624,8 +12825,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/security/http.py
           symbol: __call__
           kind: source-definition
-          start_line: 303
-          end_line: 316
+          start_line: 305
+          end_line: 320
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/authentication-error-status-code-tutorial.yaml
           case_id: fastapi.docs.auth-error-status.legacy-forbidden
@@ -12703,8 +12904,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/security/http.py
           symbol: HTTPBasic
           kind: source-definition
-          start_line: 105
-          end_line: 219
+          start_line: 107
+          end_line: 221
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
           case_id: fastapi.security-wave.http-basic-tutorial-006.test-security-http-basic
@@ -12750,8 +12951,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/security/http.py
           symbol: __init__
           kind: source-definition
-          start_line: 140
-          end_line: 195
+          start_line: 142
+          end_line: 197
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
           case_id: fastapi.security-wave.http-basic-tutorial-006.test-security-http-basic
@@ -12782,8 +12983,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/security/http.py
           symbol: __call__
           kind: source-definition
-          start_line: 202
-          end_line: 219
+          start_line: 204
+          end_line: 221
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/security-wave.yaml
           case_id: fastapi.security-wave.http-basic-tutorial-006.test-security-http-basic
@@ -12861,8 +13062,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/security/http.py
           symbol: HTTPDigest
           kind: source-definition
-          start_line: 319
-          end_line: 417
+          start_line: 323
+          end_line: 423
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
@@ -12912,8 +13113,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/security/http.py
           symbol: __init__
           kind: source-definition
-          start_line: 357
-          end_line: 402
+          start_line: 361
+          end_line: 406
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
@@ -12941,8 +13142,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/security/http.py
           symbol: __call__
           kind: source-definition
-          start_line: 404
-          end_line: 417
+          start_line: 408
+          end_line: 423
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/http-digest-auth-upstream.yaml
           case_id: fastapi.test.test-security-http-digest-description.test-security-http-digest-no-credentials
@@ -13589,8 +13790,8 @@ reviewed_api_contract_overlay:
           symbol: __init__
           owner: FastAPI
           kind: source-definition
-          start_line: 58
-          end_line: 1018
+          start_line: 68
+          end_line: 1030
         - path: fastapi/exception_handlers.py
           symbol: websocket_request_validation_exception_handler
           kind: source-definition
@@ -13598,7 +13799,7 @@ reviewed_api_contract_overlay:
           end_line: 34
         - path: docs/en/docs/release-notes.md
           kind: release-note
-          line: 4331
+          line: 4708
           section: 0.97.0 (2023-06-11)
           statement: Add exception handler for WebSocketRequestValidationError (which also allows to override it).
       fixture_refs:
@@ -13721,7 +13922,7 @@ reviewed_api_contract_overlay:
         - websocket.close_reason
         - websocket.workload_trace
       supported_slice: >-
-        FastAPI 0.141.1 documents `WebSocketException` as a top-level `fastapi`
+        FastAPI 0.157.0 documents `WebSocketException` as a top-level `fastapi`
         import. Direct API workflows capture both root and `fastapi.exceptions`
         signatures, the initializer signature, and the module import metadata;
         the identity workflow records root-to-module class identity. The
@@ -13971,6 +14172,12 @@ reviewed_api_contract_overlay:
           case_id: fastapi.security.api-key-header.fastapi-http-exception-handler-boundary
         - recipe_path: tests/fixtures/input-recipes/parity/security-oauth-public-api.yaml
           case_id: fastapi.security.public-api.api-key-header
+        - recipe_path: tests/fixtures/input-recipes/parity/security-api-key-header-constructor-edge-cases.yaml
+          case_id: fastapi.security.apikeyheader.invalid-name-type
+        - recipe_path: tests/fixtures/input-recipes/parity/security-api-key-header-constructor-edge-cases.yaml
+          case_id: fastapi.security.apikeyheader.invalid-description-type
+        - recipe_path: tests/fixtures/input-recipes/parity/security-api-key-header-constructor-edge-cases.yaml
+          case_id: fastapi.security.apikeyheader.falsey-options-missing-header-openapi
       feature_ids: [dependency-security, openapi-docs]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, openapi.security, python.signature]
       supported_slice: >-
@@ -13981,8 +14188,8 @@ reviewed_api_contract_overlay:
         OpenAPI security scheme and requirement output. The root-alias identity
         workflow checks that `fastapi.security.APIKeyHeader` and
         `fastapi.security.api_key.APIKeyHeader` are the same object. Invalid
-        constructor values and less common parameter combinations remain
-        unverified.
+        constructor types or values and truthy/falsey combinations beyond the
+        sampled inputs remain unverified.
     fastapi.security.APIKeyQuery:
       target_binding:
         implementation_owner: fastapi-rs
@@ -14136,8 +14343,8 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            Invalid constructor values and less common truthy/falsey parameter combinations remain
-            unverified.
+            Other invalid constructor types or values and truthy/falsey combinations beyond the
+            sampled inputs remain unverified.
         rust_binding: "fastapi-rs/src/security.rs::PyApiKeyHeader"
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyHeader
       source_evidence:
@@ -14157,7 +14364,8 @@ reviewed_api_contract_overlay:
         APIKey challenge for a missing required key. Selected OpenAPI cases
         cover default and configured scheme names, the header scheme and
         operation requirements, and `auto_error=False`. Invalid constructor
-        values and less common parameter combinations remain unverified.
+        types or values and truthy/falsey combinations beyond the sampled
+        inputs remain unverified.
     fastapi.security.api_key.APIKeyHeader.__call__:
       target_binding:
         implementation_owner: fastapi-rs
@@ -14188,8 +14396,8 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            Invalid constructor values and less common truthy/falsey parameter combinations remain
-            unverified.
+            Other invalid constructor types or values and truthy/falsey combinations beyond the
+            sampled inputs remain unverified.
         rust_binding: "fastapi-rs/src/security.rs::PyApiKeyHeader::new"
       rust_binding: fastapi-rs/src/security.rs::PyApiKeyHeader::new
       source_evidence:
@@ -14205,8 +14413,8 @@ reviewed_api_contract_overlay:
         Partial constructor slice accepts the required keyword-only header
         name, optional scheme name and description, and `auto_error`. Selected
         exact-signature probes, request cases, and OpenAPI cases exercise those
-        values. Invalid constructor values and less common truthy/falsey
-        parameter combinations remain unverified.
+        values. Two invalid value types and one falsey-value combination are
+        sampled; other constructor values and combinations remain unverified.
     fastapi.security.api_key.APIKeyQuery:
       target_binding:
         implementation_owner: fastapi-rs
@@ -16025,13 +16233,16 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
           observation_selectors: [http.status, http.body.bytes]
       supported_slice: >-
-        The root alias is the same class as `fastapi.datastructures.UploadFile`. Its constructor
-        and four method signatures match FastAPI 0.141.1. The linked cases sample class and method
-        metadata, Pydantic schema and validation, selected invalid values, BytesIO and spooled-file
-        operations, metadata mutation, propagated I/O errors, OpenAPI contribution, and multipart
-        request-object identity. A standalone APIRoute.app case also observes one UploadFile
-        multipart request and its original filename. This remains a partial contract; see the
-        canonical module-class overlay for the exact supported slice and remaining gaps.
+        The root alias is the same class as `fastapi.datastructures.UploadFile` in the
+        pinned source. The linked input cases map constructor and four method
+        signatures, class and method metadata, Pydantic schema and validation,
+        selected invalid values, BytesIO and spooled-file operations, metadata
+        mutation, propagated I/O errors, OpenAPI contribution, and multipart
+        request-object identity. A standalone APIRoute.app case maps one
+        UploadFile multipart request and its original filename. The prior
+        0.141.1 signature result is historical; a 0.157.0 target parity receipt
+        is not recorded. This remains a partial contract; see the canonical
+        module-class overlay for the supported slice and remaining gaps.
 
     fastapi.WebSocket:
       target_binding:
@@ -16059,7 +16270,7 @@ reviewed_api_contract_overlay:
       feature_ids: [websocket-lifecycle]
       observation_selectors: [python.binding_identity, python.signature, websocket.messages]
       full_contract: >-
-        FastAPI 0.141.1 directly re-exports the exact
+        FastAPI 0.157.0 directly re-exports the exact
         fastapi.websockets.WebSocket object as fastapi.WebSocket. The isolated
         API workflow compares this root binding with the canonical
         starlette.websockets.WebSocket object and checks its exact signature;
@@ -16124,12 +16335,12 @@ reviewed_api_contract_overlay:
           observation_selectors: [python.attribute_value]
       observation_selectors: [python.attribute_value]
       full_contract: >-
-        The complete public behavior of fastapi.__version__ for the pinned FastAPI 0.141.1
-        source is its string value, `0.141.1`, assigned in fastapi/__init__.py. The Python
+        The complete public behavior of fastapi.__version__ for the pinned FastAPI 0.157.0
+        source is its string value, `0.157.0`, assigned in fastapi/__init__.py. The Python
         facade directly re-exports the native module attribute. The input-only workflow
-        compares the exact value in an identity-checked isolated source and target process;
-        this contract is scoped to the pinned version and does not claim distribution
-        metadata or version discovery behavior.
+        compares the exact value in isolated source and target processes; this contract
+        is scoped to the pinned version and does not claim distribution metadata or
+        version discovery behavior.
 
     fastapi.background.BackgroundTasks:
       rust_binding: fastapi-rs/src/datastructures.rs::register_background_tasks
@@ -16137,8 +16348,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/background.py
           kind: source-definition
           symbol: BackgroundTasks
-          start_line: 11
-          end_line: 61
+          start_line: 12
+          end_line: 67
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/background-tasks-public-api.yaml
           case_id: fastapi.background.background-tasks-class
@@ -16867,8 +17078,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/routing.py
           kind: source-definition
           symbol: APIRoute
-          start_line: 1126
-          end_line: 1281
+          start_line: 1181
+          end_line: 1332
       fixture_refs:
         - *generate_unique_id_callback_state
         - *apiroute_response_class_default
@@ -16904,8 +17115,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/routing.py
           kind: source-definition
           symbol: APIRoute
-          start_line: 1126
-          end_line: 1281
+          start_line: 1181
+          end_line: 1332
       fixture_refs:
         - *generate_unique_id_callback_mutation
       supported_slice: >-
@@ -16931,8 +17142,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/routing.py
           kind: source-definition
           symbol: APIRouter
-          start_line: 2255
-          end_line: 6447
+          start_line: 2329
+          end_line: 6554
         - {path: tests/test_router_redirect_slashes.py, kind: upstream_test}
       fixture_refs:
         - *generate_unique_id_multi_methods
@@ -16958,7 +17169,7 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/apirouter_dependency_overrides_provider_asgi.py
       supported_slice: >-
         Constructor introspection compares the complete public
-        `inspect.signature(APIRouter)` contract against FastAPI 0.141.1. Direct ASGI
+        `inspect.signature(APIRouter)` contract against FastAPI 0.157.0. Direct ASGI
         inputs compare `redirect_slashes` on exact and slash-mismatched paths, a
         configured `default` on unmatched HTTP and WebSocket scopes, plus dependency
         solving through an explicit dependency-overrides provider.
@@ -24213,15 +24424,15 @@ reviewed_api_contract_overlay:
           kind: source-definition
           owner: APIRouter
           symbol: __init__
-          start_line: 2282
-          end_line: 2568
+          start_line: 2356
+          end_line: 2642
         - path: fastapi/routing.py
           kind: instance-assignment
           symbol: route_class
           owner: APIRouter
           initializer: __init__
-          start_line: 2562
-          end_line: 2562
+          start_line: 2636
+          end_line: 2636
         - path: fastapi/routing.py
           kind: source-use
           symbol: add_api_route
@@ -24266,9 +24477,10 @@ reviewed_api_contract_overlay:
         back to the stored class. The dedicated input workflow observes both
         selections through ASGI response headers and bodies. A separate fixture
         maps the custom `get_route_handler` Request-to-Response wrapper
-        behavior; identity-checked live parity matched all 16 cases in the
-        `routing-upstream` workflow against FastAPI 0.141.1 and the pinned
-        Starlette-RS commit. The recipes contain no frozen expected outputs.
+        behavior; a historical identity-checked comparison matched all 16
+        `routing-upstream` cases against FastAPI 0.141.1 and the pinned
+        Starlette-RS commit. It does not establish parity for FastAPI 0.157.0.
+        The recipes contain no frozen expected outputs.
         Arbitrary subclass state and behavior outside the selected observations
         remain unproven.
     fastapi.routing.APIRouter.default_response_class:
@@ -24277,8 +24489,8 @@ reviewed_api_contract_overlay:
         - path: fastapi/routing.py
           kind: source-definition
           symbol: APIRouter
-          start_line: 2255
-          end_line: 6447
+          start_line: 2329
+          end_line: 6554
         - {path: docs/en/docs/advanced/custom-response.md}
         - {path: docs/en/docs/release-notes.md}
       fixture_refs:
@@ -24331,7 +24543,7 @@ reviewed_api_contract_overlay:
 
     fastapi.applications.FastAPI.openapi_tags:
       source_evidence:
-        - {path: fastapi/applications.py, kind: instance-assignment, symbol: openapi_tags, owner: FastAPI, initializer: __init__, start_line: 882, end_line: 882}
+        - {path: fastapi/applications.py, kind: instance-assignment, symbol: openapi_tags, owner: FastAPI, initializer: __init__, start_line: 880, end_line: 880}
         - {path: fastapi/applications.py, kind: source-use, symbol: openapi, start_line: 1084, end_line: 1103}
         - {path: docs/en/docs/tutorial/metadata.md}
       fixture_refs:
@@ -24356,21 +24568,17 @@ reviewed_api_contract_overlay:
 
     fastapi.applications.FastAPI.root_path:
       source_evidence:
-        - {path: fastapi/applications.py, kind: instance-assignment, symbol: root_path, owner: FastAPI, initializer: __init__, start_line: 949, end_line: 949}
+        - {path: fastapi/applications.py, kind: instance-assignment, symbol: root_path, owner: FastAPI, initializer: __init__, start_line: 946, end_line: 946}
         - {path: fastapi/applications.py, kind: source-use, symbol: __call__, start_line: 1160, end_line: 1163}
         - {path: docs/en/docs/advanced/behind-a-proxy.md}
       fixture_refs:
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-root-path-tutorial-review.yaml
           case_id: fastapi.applications.root-path.configured-over-incoming-scope
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          workload_path: tests/fixtures/workloads/fastapi_root_path_tutorial_review.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes, openapi.document]
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
-          case_id: fastapi.applications.root-path.precedence-and-server-gate
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
-          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes, openapi.document]
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-root-path-tutorial-review.yaml
           case_id: fastapi.applications.root-path.mutable-public-attributes
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          workload_path: tests/fixtures/workloads/fastapi_root_path_tutorial_review.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes, openapi.document]
       feature_ids: [openapi-docs]
       observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes, openapi.document]
@@ -24390,21 +24598,17 @@ reviewed_api_contract_overlay:
 
     fastapi.applications.FastAPI.root_path_in_servers:
       source_evidence:
-        - {path: fastapi/applications.py, kind: instance-assignment, symbol: root_path_in_servers, owner: FastAPI, initializer: __init__, start_line: 883, end_line: 883}
+        - {path: fastapi/applications.py, kind: instance-assignment, symbol: root_path_in_servers, owner: FastAPI, initializer: __init__, start_line: 881, end_line: 881}
         - {path: fastapi/applications.py, kind: source-use, symbol: setup, start_line: 1105, end_line: 1118}
         - {path: docs/en/docs/advanced/behind-a-proxy.md}
       fixture_refs:
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-root-path-tutorial-review.yaml
           case_id: fastapi.applications.root-path.configured-over-incoming-scope
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          workload_path: tests/fixtures/workloads/fastapi_root_path_tutorial_review.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, openapi.document]
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
-          case_id: fastapi.applications.root-path.precedence-and-server-gate
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
-          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes, openapi.document]
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-root-path-tutorial-review.yaml
           case_id: fastapi.applications.root-path.mutable-public-attributes
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial-review.py
+          workload_path: tests/fixtures/workloads/fastapi_root_path_tutorial_review.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes, openapi.document]
       feature_ids: [openapi-docs]
       observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes, openapi.document]
@@ -24423,7 +24627,7 @@ reviewed_api_contract_overlay:
 
     fastapi.applications.FastAPI.separate_input_output_schemas:
       source_evidence:
-        - {path: fastapi/applications.py, kind: instance-assignment, symbol: separate_input_output_schemas, owner: FastAPI, initializer: __init__, start_line: 890, end_line: 890}
+        - {path: fastapi/applications.py, kind: instance-assignment, symbol: separate_input_output_schemas, owner: FastAPI, initializer: __init__, start_line: 888, end_line: 888}
         - {path: fastapi/applications.py, kind: source-use, symbol: openapi, start_line: 1084, end_line: 1103}
         - {path: docs/en/docs/how-to/separate-openapi-schemas.md}
       fixture_refs:
@@ -24465,17 +24669,17 @@ reviewed_api_contract_overlay:
 
     fastapi.applications.FastAPI.servers:
       source_evidence:
-        - {path: fastapi/applications.py, kind: instance-assignment, symbol: servers, owner: FastAPI, initializer: __init__, start_line: 889, end_line: 889}
+        - {path: fastapi/applications.py, kind: instance-assignment, symbol: servers, owner: FastAPI, initializer: __init__, start_line: 887, end_line: 887}
         - {path: fastapi/applications.py, kind: source-use, symbol: openapi, start_line: 1084, end_line: 1103}
         - {path: docs/en/docs/advanced/behind-a-proxy.md}
       fixture_refs:
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-root-path-tutorial-review.yaml
           case_id: fastapi.applications.root-path.existing-server-deduplicated
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          workload_path: tests/fixtures/workloads/fastapi_root_path_tutorial_review.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes, openapi.document]
-        - recipe_path: tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml
+        - recipe_path: tests/fixtures/input-recipes/parity/fastapi-root-path-tutorial-review.yaml
           case_id: fastapi.applications.root-path.request-local-server-isolation
-          workload_path: tests/fixtures/workloads/deprecated_openapi_prefix_tutorial_review.py
+          workload_path: tests/fixtures/workloads/fastapi_root_path_tutorial_review.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes, openapi.document]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-configured-servers-reference-review.yaml
           case_id: fastapi.openapi.openapi-cache-root-path.caller-servers-remain-unchanged-review
@@ -24505,7 +24709,7 @@ reviewed_api_contract_overlay:
       classification_evidence_rule: >-
         Starlette-RS source review identifies Router.host as application-level delegation machinery; pinned Starlette docs establish Starlette.host rather than this direct Router member path.
       source_evidence:
-        - {path: fastapi/routing.py, kind: class-inheritance, symbol: APIRouter, base_class: Router, base_expression: routing.Router, base_import_module: starlette, base_import_name: routing, base_import_alias: routing, base_import_line: 91, line: 2255}
+        - {path: fastapi/routing.py, kind: class-inheritance, symbol: APIRouter, base_class: Router, base_expression: routing.Router, base_import_module: starlette, base_import_name: routing, base_import_alias: routing, base_import_line: 100, line: 2329}
         - {path: starlette/routing.py, kind: source-definition, source_authority: Starlette 1.6.0, owner: Router, symbol: host, line: 729, start_line: 729, end_line: 731}
       starlette_rs_review:
         qualified_name: starlette.routing.Router.host
@@ -24517,7 +24721,7 @@ reviewed_api_contract_overlay:
       classification_evidence_rule: >-
         Starlette-RS source review identifies Router.lifespan as internal ASGI-message translation; pinned Starlette docs promise a lifespan context manager, not direct invocation of this ASGI callable.
       source_evidence:
-        - {path: fastapi/routing.py, kind: class-inheritance, symbol: APIRouter, base_class: Router, base_expression: routing.Router, base_import_module: starlette, base_import_name: routing, base_import_alias: routing, base_import_line: 91, line: 2255}
+        - {path: fastapi/routing.py, kind: class-inheritance, symbol: APIRouter, base_class: Router, base_expression: routing.Router, base_import_module: starlette, base_import_name: routing, base_import_alias: routing, base_import_line: 100, line: 2329}
         - {path: starlette/routing.py, kind: source-definition, source_authority: Starlette 1.6.0, owner: Router, symbol: lifespan, line: 639, start_line: 639, end_line: 664}
       starlette_rs_review:
         qualified_name: starlette.routing.Router.lifespan
@@ -24529,7 +24733,7 @@ reviewed_api_contract_overlay:
       classification_evidence_rule: >-
         Starlette-RS source review identifies Router.mount as route-list construction delegated from Starlette.mount; pinned docs cover application-level mounting and Mount route objects, not this direct Router method path.
       source_evidence:
-        - {path: fastapi/routing.py, kind: class-inheritance, symbol: APIRouter, base_class: Router, base_expression: routing.Router, base_import_module: starlette, base_import_name: routing, base_import_alias: routing, base_import_line: 91, line: 2255}
+        - {path: fastapi/routing.py, kind: class-inheritance, symbol: APIRouter, base_class: Router, base_expression: routing.Router, base_import_module: starlette, base_import_name: routing, base_import_alias: routing, base_import_line: 100, line: 2329}
         - {path: starlette/routing.py, kind: source-definition, source_authority: Starlette 1.6.0, owner: Router, symbol: mount, line: 725, start_line: 725, end_line: 727}
       starlette_rs_review:
         qualified_name: starlette.routing.Router.mount
@@ -24543,7 +24747,7 @@ reviewed_api_contract_overlay:
         the pinned API review classifies it as private/internal rather than a
         direct consumer-facing method.
       source_evidence:
-        - {path: fastapi/routing.py, kind: class-inheritance, symbol: APIRouter, base_class: Router, base_expression: routing.Router, base_import_module: starlette, base_import_name: routing, base_import_alias: routing, base_import_line: 91, line: 2255}
+        - {path: fastapi/routing.py, kind: class-inheritance, symbol: APIRouter, base_class: Router, base_expression: routing.Router, base_import_module: starlette, base_import_name: routing, base_import_alias: routing, base_import_line: 100, line: 2329}
         - {path: starlette/routing.py, kind: source-definition, source_authority: Starlette 1.6.0, owner: Router, symbol: not_found, line: 616, start_line: 616, end_line: 629}
       starlette_rs_review:
         qualified_name: starlette.routing.Router.not_found
@@ -24557,7 +24761,7 @@ reviewed_api_contract_overlay:
           kind: class-inheritance
           symbol: FastAPI
           base_class: Starlette
-          line: 42
+          line: 52
         - path: docs/en/docs/tutorial/first-steps.md
           kind: documentation-text
           start_line: 239
@@ -24592,7 +24796,7 @@ reviewed_api_contract_overlay:
           kind: class-inheritance
           symbol: FastAPI
           base_class: Starlette
-          line: 42
+          line: 52
         - path: docs/en/docs/tutorial/first-steps.md
           kind: documentation-text
           start_line: 239
@@ -24640,7 +24844,7 @@ reviewed_api_contract_overlay:
           kind: class-inheritance
           symbol: FastAPI
           base_class: Starlette
-          line: 42
+          line: 52
         - path: docs/en/docs/tutorial/first-steps.md
           kind: documentation-text
           start_line: 239
@@ -24703,8 +24907,8 @@ reviewed_api_contract_overlay:
           base_import_module: starlette
           base_import_name: routing
           base_import_alias: routing
-          base_import_line: 91
-          line: 2255
+          base_import_line: 100
+          line: 2329
         - path: docs/en/docs/tutorial/bigger-applications.md
           kind: documentation-text
           start_line: 90
@@ -24742,12 +24946,12 @@ reviewed_api_contract_overlay:
           base_import_module: starlette
           base_import_name: routing
           base_import_alias: routing
-          base_import_line: 91
-          line: 2255
+          base_import_line: 100
+          line: 2329
         - path: docs/en/docs/tutorial/bigger-applications.md
           kind: documentation-text
-          start_line: 541
-          end_line: 545
+          start_line: 540
+          end_line: 544
           required_text:
             - Avoid directly mutating `router.routes` after including a router.
             - Treat `router.routes` as a lower-level route tree that can contain route definitions and included routers, and avoid relying on it as a flat list of final path operations.
@@ -24790,7 +24994,7 @@ reviewed_api_contract_overlay:
           kind: class-inheritance
           symbol: FastAPI
           base_class: Starlette
-          line: 42
+          line: 52
         - path: docs/en/docs/advanced/middleware.md
           kind: documentation-text
           start_line: 29
@@ -24829,12 +25033,12 @@ reviewed_api_contract_overlay:
           kind: class-inheritance
           symbol: FastAPI
           base_class: Starlette
-          line: 42
+          line: 52
         - path: fastapi/applications.py
           kind: source-definition
           symbol: exception_handler
-          start_line: 4729
-          end_line: 4774
+          start_line: 4771
+          end_line: 4816
         - path: starlette/applications.py
           kind: source-definition
           source_authority: Starlette 1.6.0
@@ -24895,7 +25099,7 @@ reviewed_api_contract_overlay:
           kind: class-inheritance
           symbol: FastAPI
           base_class: Starlette
-          line: 42
+          line: 52
         - path: docs/en/docs/advanced/sub-applications.md
           kind: documentation-text
           start_line: 25
@@ -24965,13 +25169,13 @@ reviewed_api_contract_overlay:
       feature_ids: [app-routing]
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, websocket.event_order, websocket.messages, websocket.close_code]
       supported_slice: >-
-        Identity-checked input-only parity passed for two HTTP/WebSocket route
-        order cases and one included-router WebSocket case against FastAPI
-        0.141.1, Starlette 1.6.0, and Starlette-RS 4139a72449bf. The cases
-        compare HTTP status/headers/body and WebSocket event order/messages/close
-        code for a mounted FastAPI child alongside direct and included routes.
-        Named-mount reverse lookup and other Mount options remain outside this
-        slice.
+        The active inputs map two HTTP/WebSocket route-order cases and one
+        included-router WebSocket case. The recorded comparison against FastAPI
+        0.141.1, Starlette 1.6.0, and Starlette-RS 4139a72449bf is historical;
+        no 0.157.0 parity result is established by it. The cases compare HTTP
+        status/headers/body and WebSocket event order/messages/close code for a
+        mounted FastAPI child alongside direct and included routes. Named-mount
+        reverse lookup and other Mount options remain outside this slice.
     fastapi.applications.FastAPI.routes:
       kind: inherited_property
       fastapi_exposure_candidate_id: fastapi.applications.FastAPI
@@ -24981,12 +25185,12 @@ reviewed_api_contract_overlay:
           kind: class-inheritance
           symbol: FastAPI
           base_class: Starlette
-          line: 42
+          line: 52
         - path: fastapi/applications.py
           kind: source-definition
           symbol: openapi
-          start_line: 1070
-          end_line: 1103
+          start_line: 1085
+          end_line: 1118
         - path: docs/en/docs/how-to/extending-openapi.md
           kind: documentation-text
           start_line: 28
@@ -25052,6 +25256,6 @@ reviewed_api_contract_overlay:
           statement: 'pytest.warns(FastAPIDeprecationWarning, match="UJSONResponse is deprecated")'
         - kind: release-note
           path: docs/en/docs/release-notes.md
-          line: 1073
+          line: 1450
           section: 0.127.1 (2025-12-26)
           statement: Add a custom FastAPIDeprecationWarning.

@@ -1,7 +1,7 @@
 """Reviewed section mappings for OpenAPI callbacks and webhooks documentation.
 
-All source paths in ``SOURCE_SPANS`` are relative to the pinned FastAPI 0.141.1
-checkout at 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f. Workflow links reuse
+All source paths in ``SOURCE_SPANS`` are relative to the pinned FastAPI 0.157.0
+checkout at 386a28af2f87af1a32ac26d88f07b7f58ab2dfb. Workflow links reuse
 existing independent recipe/workload inputs; this sidecar adds no expected
 outputs and does not copy upstream tests.
 """
@@ -57,7 +57,7 @@ _WEBHOOK_ROUTE_CASE = "fastapi.atlas-openapi-tutorial.webhook-adjacent-route"
 _CALLBACK_SCHEMA_RATIONALE = (
     "The pinned example declares a callback APIRouter route and passes its routes to an "
     "owning operation (docs_src/openapi_callbacks/tutorial001_py310.py:23-34). FastAPI "
-    "0.141.1 accepts callback routes on APIRoute "
+    "0.157.0 accepts callback routes on APIRoute "
     "(fastapi/routing.py:1187-1222), stores them on route state "
     "(fastapi/routing.py:961-1012), and "
     "projects each callback into the owning OpenAPI operation "
@@ -72,10 +72,10 @@ _WEBHOOK_SCHEMA_RATIONALE = (
     "whose request body uses the Subscription model declared at "
     "docs_src/openapi_webhooks/tutorial001_py310.py:9-24; its upstream tutorial test "
     "requests /openapi.json (tests/test_tutorial/test_openapi_webhooks/test_tutorial001.py:23-26). "
-    "FastAPI 0.141.1 stores webhooks in a separate APIRouter "
+    "FastAPI 0.157.0 stores webhooks in a separate APIRouter "
     "(fastapi/applications.py:937-948), passes its routes to get_openapi "
     "(fastapi/applications.py:1084-1101), and emits them under the OpenAPI webhooks member "
-    "(fastapi/openapi/utils.py:648-675). The linked independent recipe samples one POST "
+    "(fastapi/openapi/utils.py:633-659). The linked independent recipe samples one POST "
     "webhook schema; it does not execute webhook delivery, test other methods, or render a "
     "browser UI."
 )

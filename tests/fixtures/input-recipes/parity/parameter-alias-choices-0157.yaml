@@ -1,0 +1,204 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/parameter_alias_choices_0157.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.parameter-alias-choices-0157.query-choice
+  actions:
+  - action_id: query-choice
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /query
+      query_string: second=7
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_query_alias_choices.py, kind: upstream_test}
+- case_id: fastapi.parameter-alias-choices-0157.body-choice
+  actions:
+  - action_id: body-choice
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /body
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, application/json]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"second":7}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_body_alias_choices.py, kind: upstream_test}
+- case_id: fastapi.parameter-alias-choices-0157.header-choice
+  actions:
+  - action_id: header-choice
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /header
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [x-second, '7']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_header_cookie_alias_choices.py, kind: upstream_test}
+- case_id: fastapi.parameter-alias-choices-0157.cookie-choice
+  actions:
+  - action_id: cookie-choice
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /cookie
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [cookie, legacy_session=7]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_header_cookie_alias_choices.py, kind: upstream_test}
+- case_id: fastapi.parameter-alias-choices-0157.path-choice
+  actions:
+  - action_id: path-choice
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /path/7
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_path_alias_choices.py, kind: upstream_test}
+- case_id: fastapi.parameter-alias-choices-0157.websocket-security
+  actions:
+  - action_id: websocket-security
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /ws
+      query_string: ''
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [authorization, Bearer fir-17]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: websocket, selector: messages, comparison: ordered}
+    - {kind: websocket, selector: event_order, comparison: ordered}
+    - {kind: websocket, selector: close_code, comparison: exact}
+  source_evidence:
+  - {path: tests/test_security_websockets.py, kind: upstream_test}
+- case_id: fastapi.parameter-alias-choices-0157.stream-non-finite
+  actions:
+  - action_id: stream-non-finite
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /stream
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, headers, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_stream_non_finite_floats.py, kind: upstream_test}
+- case_id: fastapi.parameter-alias-choices-0157.openapi
+  actions:
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers:
+      - /paths/~1query/get/parameters
+      - /paths/~1body/post/requestBody
+      - /paths/~1header/get/parameters
+      - /paths/~1cookie/get/parameters
+      - /paths/~1path~1{item_id}/get/parameters
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_body_alias_choices.py, kind: upstream_test}
+  - {path: tests/test_header_cookie_alias_choices.py, kind: upstream_test}
+  - {path: tests/test_path_alias_choices.py, kind: upstream_test}
+  - {path: tests/test_query_alias_choices.py, kind: upstream_test}

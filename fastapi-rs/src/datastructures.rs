@@ -397,7 +397,7 @@ fn upload_file_validate(
     Ok(input_value.clone().unbind())
 }
 
-/// Build the same info-aware plain-validator schema used by FastAPI 0.141.1.
+/// Build the same info-aware plain-validator schema used by FastAPI 0.157.0.
 #[pyfunction]
 fn upload_file_core_schema(
     py: Python<'_>,

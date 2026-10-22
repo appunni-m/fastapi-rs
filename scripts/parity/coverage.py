@@ -1809,21 +1809,21 @@ def validate_runtime_api_surfaces(
     ).hexdigest()
 
     expected_authorities = {
-        "fastapi": {"version": "0.141.1", "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f"},
+        "fastapi": {"version": "0.157.0", "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1"},
         "starlette": {"version": "1.6.0", "commit": "4f250d6b814587e20c5365f0a5f0c4d42bcb929f"},
         "python": {"implementation": "CPython", "version": "3.12.13"},
-        "pydantic": {"version": "2.13.4", "pydantic_core_version": "2.46.4"},
+        "pydantic": {"version": "2.13.5", "pydantic_core_version": "2.46.5"},
     }
     expected_standard_packages = {
         "email-validator": "2.3.0",
         "fastapi-cli": "0.0.32",
         "fastapi-cloud-cli": "0.11.0",
-        "fastar": "0.11.0",
+        "fastar": "0.12.0",
         "httpx": "0.28.1",
-        "httpx2": "2.5.0",
+        "httpx2": "2.13.1",
         "jinja2": "3.1.6",
         "pydantic-extra-types": "2.11.0",
-        "pydantic-settings": "2.14.2",
+        "pydantic-settings": "2.15.0",
         "python-multipart": "0.0.32",
         "uvicorn": "0.40.0",
     }
@@ -2152,8 +2152,8 @@ def validate_compatibility_artifacts(
     fastapi_authority = atlas.get("authorities", {}).get("fastapi", {})
     _require(
         (fastapi_authority.get("version"), fastapi_authority.get("commit"))
-        == ("0.141.1", "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f"),
-        "FastAPI 0.141.1 must remain the pinned source authority",
+        == ("0.157.0", "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1"),
+        "FastAPI 0.157.0 must remain the pinned source authority",
     )
     starlette_authority = atlas.get("authorities", {}).get("starlette", {})
     _require(
@@ -2252,15 +2252,15 @@ def validate_compatibility_artifacts(
     )
     pydantic_authority = atlas.get("authorities", {}).get("pydantic", {})
     _require(
-        pydantic_authority.get("selected_version") == "2.13.4",
-        "Pydantic 2.13.4 must remain the selected source-lock baseline",
+        pydantic_authority.get("selected_version") == "2.13.5",
+        "Pydantic 2.13.5 must remain the selected source-lock baseline",
     )
     _require(
         selector_catalog.get("schema") == "fastapi-rs/observation-selector-catalog@1",
         "unsupported observation selector catalog schema",
     )
     _require(
-        selector_catalog.get("authority") == {"fastapi": "0.141.1", "starlette": "1.6.0"},
+        selector_catalog.get("authority") == {"fastapi": "0.157.0", "starlette": "1.6.0"},
         "observation selector catalog does not match the pinned source contracts",
     )
     _require(
@@ -2471,7 +2471,7 @@ def validate_compatibility_artifacts(
                 and inheritance_ref.get("base_import_module") == "starlette"
                 and inheritance_ref.get("base_import_name") == "routing"
                 and inheritance_ref.get("base_import_alias") == "routing"
-                and inheritance_ref.get("base_import_line") == 91,
+                and inheritance_ref.get("base_import_line") == 100,
                 f"{identifier} does not bind APIRouter's Router base through Starlette",
             )
         if classification != "supported":

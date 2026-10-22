@@ -533,7 +533,7 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         _HTTP_BASIC,
         "HTTP Basic Auth { #http-basic-auth }",
         1,
-        107,
+        109,
         ["fastapi.advanced.security.http-basic.missing"],
         ["missing-basic-credentials"],
         _HTTP,
@@ -576,7 +576,7 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         _HTTP_BASIC,
         "Check the username { #check-the-username }",
         29,
-        107,
+        109,
         ["fastapi.advanced.security.http-basic.valid"],
         ["valid-basic-credentials"],
         _HTTP,
@@ -596,8 +596,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
     ),
     ("advanced/security/http-basic-auth.md", "timing-attacks"): _excluded(
         "Timing Attacks { #timing-attacks }",
-        55,
-        102,
+        57,
+        104,
         (
             "This section explains a threat model and the timing behavior of application "
             "string comparisons. The selected inputs do not run those comparisons or "
@@ -612,8 +612,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
     ),
     ("advanced/security/http-basic-auth.md", "fix-it-with-secrets-compare-digest"): _excluded(
         "Fix it with `secrets.compare_digest()` { #fix-it-with-secrets-compare-digest }",
-        95,
-        102,
+        97,
+        104,
         (
             "The section's claimed comparison-time property is implemented by Python's "
             "standard-library `secrets.compare_digest()` in user application code. The "
@@ -628,8 +628,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
     ("advanced/security/http-basic-auth.md", "return-the-error"): _workflow(
         _HTTP_BASIC,
         "Return the error { #return-the-error }",
-        103,
-        107,
+        105,
+        109,
         ["fastapi.advanced.security.http-basic.missing"],
         ["missing-basic-credentials"],
         _HTTP,

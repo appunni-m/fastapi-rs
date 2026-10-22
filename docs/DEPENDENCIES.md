@@ -1,6 +1,6 @@
 # Dependency and license maps
 
-FastAPI 0.141.1 is the source oracle. Starlette 1.6.0 is the sole Starlette
+FastAPI 0.157.0 is the source oracle. Starlette 1.6.0 is the sole Starlette
 compatibility oracle; the sibling Starlette-RS checkout is the implementation
 contract. FastAPI's lock graph describes its own runtime, extras, and
 development tooling. It does not define FastAPI-RS's runtime dependencies.
@@ -101,7 +101,7 @@ packages in the profile lock.
 | `orjson` | `3.13.0`; added only to the `json-serializers` parity profile | Serializes `ORJSONResponse` content with FastAPI's non-string-key and NumPy options. | Python API backed by a Rust native extension. | MPL-2.0 AND (Apache-2.0 OR MIT) ([3.13.0 PyPI metadata](https://pypi.org/project/orjson/3.13.0/)). |
 | `ujson` | `6.0.0`; added only to the `json-serializers` parity profile | Serializes `UJSONResponse` content as UTF-8 with `ensure_ascii=False`. | Python API backed by a C native extension. | BSD-3-Clause AND TCL ([6.0.0 PyPI metadata](https://pypi.org/project/ujson/6.0.0/)). |
 
-Dependency signature resolution also uses the pinned Pydantic 2.13.4 private
+Dependency signature resolution also uses the pinned Pydantic 2.13.5 private
 `pydantic._internal._typing_extra.try_eval_type` helper through PyO3. It
 resolves string annotations from `inspect.signature` in the unwrapped
 callable's globals, matching FastAPI's `_compat/v2.py::evaluate_forwardref`
@@ -119,5 +119,5 @@ metadata interfaces require review before changing the Python pin.
 
 Generated dependency records are refreshed from pinned source and lockfiles;
 do not edit generated tables by hand. Review their evidence in
-`docs/audit-locks/fastapi-0.141.1-source-use.yaml` and
+`docs/audit-locks/fastapi-0.157.0-source-use.yaml` and
 `metadata.yaml`.

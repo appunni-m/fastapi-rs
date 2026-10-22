@@ -38,7 +38,7 @@ type SchemaDescriptor = (
     SchemaConstraint,
 );
 
-// Python field names and declaration order match FastAPI 0.141.1. Alias names
+// Python field names and declaration order match FastAPI 0.157.0. Alias names
 // belong to Field metadata; they are not substituted for the Python names.
 const SCHEMA_FIELDS: [SchemaDescriptor; 61] = {
     use SchemaAnnotation as A;

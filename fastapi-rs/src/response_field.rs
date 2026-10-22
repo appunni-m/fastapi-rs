@@ -4,7 +4,7 @@ use pyo3::exceptions::{PyImportError, PyTypeError, PyUserWarning, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::{PyBytes, PyDict, PyList, PyModule, PyString, PyTuple, PyType};
 
-// FastAPI 0.141.1's compatibility decomposition deliberately omits Undefined
+// FastAPI 0.157.0's compatibility decomposition deliberately omits Undefined
 // values. Pydantic's FieldInfo.asdict() retains them on the pinned version.
 const FIELD_ATTRIBUTES: [&str; 21] = [
     "default",
@@ -80,7 +80,7 @@ impl ResponseField {
         let schema_generation_error = pydantic.getattr("PydanticSchemaGenerationError")?;
 
         let constructed = with_warnings_context(py, |warnings| {
-            // The pinned Pydantic 2.13.4 selects FastAPI's >= 2.12 branch.
+            // The pinned Pydantic 2.13.5 selects FastAPI's >= 2.12 branch.
             let category = py
                 .import("pydantic.warnings")?
                 .getattr("UnsupportedFieldAttributeWarning")?;

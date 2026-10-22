@@ -3,7 +3,7 @@
 The mapping rows identify independently authored input workflows, or record
 per-function scope exclusions. They do not claim parity results. Starlette
 1.6.0 remains the sole generic ASGI/router/response oracle; Pydantic owns model
-validation and generated model-schema details. FastAPI 0.141.1 owns the
+validation and generated model-schema details. FastAPI 0.157.0 owns the
 OpenAPI assembly and FastAPI security integration represented here.
 """
 
@@ -18,8 +18,8 @@ FASTAPI_ROOT = PROJECT_ROOT.parent / "fastapi"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "role": "source oracle and development-time source only; never a target runtime dependency",
     },
     "starlette": {
@@ -28,7 +28,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI routing, HTTP/WebSocket transport, and Response contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned model validation/serialization and JSON Schema generation dependency",
     },
 }
@@ -68,7 +68,7 @@ def _test_function_span(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         min(starts),
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 test function {function_name} and its assertions",
+        f"pinned FastAPI 0.157.0 test function {function_name} and its assertions",
     )
 
 
@@ -167,80 +167,80 @@ def _exclusion(
 
 _OPENAPI_OPERATION_PARAMETERS = _source(
     "fastapi/openapi/utils.py",
-    159,
-    228,
+    158,
+    213,
     "FastAPI groups path/query/header/cookie fields and emits OpenAPI parameter example values",
 )
 _OPENAPI_REQUEST_BODY = _source(
     "fastapi/openapi/utils.py",
-    231,
-    263,
+    216,
+    248,
     "FastAPI creates the requestBody object and encodes Body.openapi_examples or Body.example",
 )
 _OPENAPI_EXTRA_MERGE = _source(
     "fastapi/openapi/utils.py",
-    537,
-    539,
+    522,
+    524,
     "FastAPI deep-merges APIRoute.openapi_extra into the generated operation",
 )
 _OPENAPI_PATHS_AND_SCHEMAS = _source(
     "fastapi/openapi/utils.py",
-    618,
-    674,
+    603,
+    659,
     "FastAPI gathers route/webhook fields, generates component definitions, and assembles paths/webhooks",
 )
 _OPENAPI_SECURITY = _source(
     "fastapi/openapi/utils.py",
-    132,
-    156,
+    131,
+    155,
     "FastAPI translates dependency security schemes and scopes into OpenAPI components and requirements",
 )
 _OPENAPI_SPLIT_SCHEMAS = _source(
     "fastapi/_compat/v2.py",
     254,
-    345,
+    347,
     "FastAPI selects validation/serialization model-field definitions and asks Pydantic GenerateJsonSchema to build them",
 )
 _OPENAPI_MODEL_NAMES = _source(
     "fastapi/_compat/v2.py",
-    425,
-    435,
+    430,
+    440,
     "FastAPI flattens model references and normalizes component names before OpenAPI generation",
 )
 _FASTAPI_OPENAPI_ENTRY = _source(
     "fastapi/applications.py",
-    1070,
-    1103,
+    1085,
+    1118,
     "FastAPI.openapi passes its registered routes, webhook routes, and split-schema option to get_openapi",
 )
 _FASTAPI_WEBHOOK_REGISTRATION = _source(
     "fastapi/applications.py",
+    926,
     937,
-    948,
     "FastAPI exposes a dedicated APIRouter for OpenAPI-only webhook operations",
 )
 _FASTAPI_APP_ROUTER = _source(
     "fastapi/applications.py",
-    984,
-    999,
+    981,
+    996,
     "FastAPI constructs the request router separately from its documentation-only webhook router",
 )
 _FASTAPI_ROUTE_OPENAPI_EXTRA = _source(
     "fastapi/routing.py",
-    1188,
-    1223,
+    1243,
+    1278,
     "FastAPI APIRoute accepts openapi_extra and passes it into route state",
 )
 _FASTAPI_HTTP_BEARER = _source(
     "fastapi/security/http.py",
-    254,
-    316,
+    256,
+    320,
     "FastAPI HTTPBearer defines the HTTP bearer security scheme and validates Authorization headers",
 )
 _FASTAPI_HTTP_BASE = _source(
     "fastapi/security/http.py",
     69,
-    102,
+    104,
     "FastAPI HTTPBase constructs the default 401 exception and parses Authorization credentials",
 )
 _FASTAPI_HTTP_EXCEPTION_HANDLER = _source(
@@ -251,20 +251,20 @@ _FASTAPI_HTTP_EXCEPTION_HANDLER = _source(
 )
 _FASTAPI_HTTP_EXCEPTION_REGISTRATION = _source(
     "fastapi/applications.py",
-    1000,
-    1006,
+    997,
+    1003,
     "FastAPI registers its HTTPException and request-validation handlers",
 )
 _FASTAPI_RESPONSE_SERIALIZATION = _source(
     "fastapi/routing.py",
-    301,
-    342,
+    321,
+    362,
     "FastAPI validates and serializes response-model values through the field adapter or jsonable_encoder",
 )
 _FASTAPI_REQUEST_HANDLER = _source(
     "fastapi/routing.py",
-    375,
-    455,
+    398,
+    481,
     "FastAPI builds endpoint request handling and invokes dependency/body processing",
 )
 _STARLETTE_ROUTE_MATCHING = _source(
@@ -342,9 +342,9 @@ OPENAPI_EXAMPLES_SECURITY_SOURCE_REVIEW = {
     "starlette_identity": SOURCE_IDENTITIES["starlette"],
     "pydantic_identity": SOURCE_IDENTITIES["pydantic"],
     "ownership_notes": [
-        "FastAPI 0.141.1 owns route/dependency projection into OpenAPI, operation extensions, parameter/body example placement, security requirements, and webhook registration. The FastAPI source checkout is oracle/dev-only; the target runtime must not import or depend on upstream FastAPI.",
+        "FastAPI 0.157.0 owns route/dependency projection into OpenAPI, operation extensions, parameter/body example placement, security requirements, and webhook registration. The FastAPI source checkout is oracle/dev-only; the target runtime must not import or depend on upstream FastAPI.",
         "Starlette 1.6.0 is the sole generic ASGI routing, HTTP transport, TestClient, and Response contract. HTTP request/response smoke checks do not assign generic router or response behavior to FastAPI.",
-        "Pydantic 2.13.4 owns model validation/serialization and the model-schema fragments produced through its public schema generator. FastAPI owns when those fragments are selected, named, and inserted into paths/components, including the separate-input/output switch.",
+        "Pydantic 2.13.5 owns model validation/serialization and the model-schema fragments produced through its public schema generator. FastAPI owns when those fragments are selected, named, and inserted into paths/components, including the separate-input/output switch.",
     ],
     "input_only_additions": [
         {

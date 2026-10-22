@@ -5051,6 +5051,64 @@
       "kind": "generic",
       "origin": "collections.abc.Callable",
       "python_type": "collections.abc._CallableGenericAlias"
+    },
+    {
+      "alias_name": "Annotated",
+      "base": {
+        "alias_name": null,
+        "arguments": [
+          {
+            "kind": "type",
+            "python_type": "builtins.type",
+            "qualified_name": "fastapi.telemetry._api.TelemetryConfig"
+          },
+          {
+            "kind": "type",
+            "python_type": "builtins.type",
+            "qualified_name": "builtins.NoneType"
+          }
+        ],
+        "kind": "generic",
+        "origin": "types.UnionType",
+        "python_type": "types.UnionType"
+      },
+      "kind": "annotated",
+      "metadata": [
+        {
+          "documentation_ref": 86,
+          "kind": "doc",
+          "qualified_name": "annotated_doc.main.Doc"
+        }
+      ],
+      "python_type": "typing._AnnotatedAlias"
+    },
+    {
+      "alias_name": "Annotated",
+      "base": {
+        "kind": "type",
+        "python_type": "builtins.type",
+        "qualified_name": "builtins.str"
+      },
+      "kind": "annotated",
+      "metadata": [
+        {
+          "documentation_ref": 87,
+          "kind": "doc",
+          "qualified_name": "annotated_doc.main.Doc"
+        },
+        {
+          "category": {
+            "kind": "type",
+            "python_type": "builtins.type",
+            "qualified_name": "builtins.DeprecationWarning"
+          },
+          "kind": "deprecated",
+          "message": "\n                The `root_path` parameter is deprecated. Configure the server's\n                root path instead, for example with\n                `fastapi run --root-path /api/v1`.\n                ",
+          "qualified_name": "typing_extensions.deprecated",
+          "stacklevel": 1
+        }
+      ],
+      "python_type": "typing._AnnotatedAlias"
     }
   ],
   "callables": {
@@ -6153,6 +6211,13 @@
           "name": "self"
         },
         {
+          "annotation_ref": 136,
+          "has_default": true,
+          "kind": "KEYWORD_ONLY",
+          "name": "telemetry",
+          "default": null
+        },
+        {
           "annotation_ref": 0,
           "has_default": true,
           "kind": "KEYWORD_ONLY",
@@ -6327,14 +6392,7 @@
           "default": null
         },
         {
-          "annotation_ref": 24,
-          "has_default": true,
-          "kind": "KEYWORD_ONLY",
-          "name": "openapi_prefix",
-          "default": ""
-        },
-        {
-          "annotation_ref": 25,
+          "annotation_ref": 137,
           "has_default": true,
           "kind": "KEYWORD_ONLY",
           "name": "root_path",
@@ -6422,12 +6480,6 @@
           "kind": "KEYWORD_ONLY",
           "name": "strict_content_type",
           "default": true
-        },
-        {
-          "annotation_ref": 123,
-          "has_default": false,
-          "kind": "VAR_KEYWORD",
-          "name": "extra"
         }
       ],
       "return_annotation_ref": 38
@@ -6987,7 +7039,9 @@
     "\n                Check that the frontend directory exists when the app is created. When\n                set to `\"auto\"`, skip the check with a warning when `FASTAPI_ENV` is\n                `\"development\"`, and check it otherwise. The `fastapi dev` command\n                sets `FASTAPI_ENV` to `\"development\"` if it is not already set.\n                ",
     "\n                The type of event. `startup` or `shutdown`.\n                ",
     "\n                The type of middleware. Currently only supports `http`.\n                ",
-    "\n                The Exception class this would handle, or a status code.\n                "
+    "\n                The Exception class this would handle, or a status code.\n                ",
+    "\n                Native OpenTelemetry configuration as a dictionary. Uses global\n                providers by default. Omitted options keep their defaults.\n\n                ```python\n                app = FastAPI(telemetry={\"tracing\": False})\n                ```\n                ",
+    "\n                Deprecated. Configure the server with\n                `fastapi run --root-path /api/v1` instead.\n\n                Read more in the\n                [FastAPI docs for Behind a Proxy](https://fastapi.tiangolo.com/advanced/behind-a-proxy/).\n                "
   ],
   "schema": "fastapi-rs/application-signature-contract@1",
   "source": {
@@ -6995,15 +7049,15 @@
     "files": [
       {
         "path": "fastapi/applications.py",
-        "sha256": "38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c"
+        "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca"
       },
       {
         "path": "fastapi/routing.py",
-        "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55"
+        "sha256": "9333eeb41b247fea4039bb38c5be7f85d1f90d6828a12981c649a44182eead15"
       }
     ],
-    "release": "0.141.1",
+    "release": "0.157.0",
     "repository": "https://github.com/fastapi/fastapi",
-    "revision": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f"
+    "revision": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1"
   }
 }

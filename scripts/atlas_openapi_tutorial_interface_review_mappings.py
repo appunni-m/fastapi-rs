@@ -4,7 +4,7 @@ The recipes are independent ASGI stimuli with selected observations only. This
 sidecar does not claim live parity and does not copy upstream snapshot values.
 FastAPI owns framework routing integration and OpenAPI assembly; Starlette 1.6.0
 is the sole generic ASGI, response, mount, and TestClient contract; Pydantic
-2.13.4 owns model schema generation.
+2.13.5 owns model schema generation.
 """
 
 from __future__ import annotations
@@ -23,8 +23,8 @@ STARLETTE_ROOT = PROJECT_ROOT.parent / "starlette"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "role": "pinned development/source oracle only; no target runtime import or dependency",
     },
     "starlette": {
@@ -44,19 +44,19 @@ SOURCE_IDENTITIES = {
         "minimum_for_selected_tutorial_apps": "3.10",
     },
     "pydantic": {
-        "version": "2.13.4",
-        "pydantic_core_version": "2.46.4",
+        "version": "2.13.5",
+        "pydantic_core_version": "2.46.5",
         "role": "model validation/serialization and model JSON Schema generation",
     },
 }
 
 VERSION_CONSTRAINTS = {
-    "source_oracle": "FastAPI 0.141.1 at 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+    "source_oracle": "FastAPI 0.157.0 at 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     "generic_contract": "Starlette 1.6.0 at 4f250d6b814587e20c5365f0a5f0c4d42bcb929f",
     "generic_target_contract": "Starlette-RS 0.1.0 at b4c8a65c85e1b0d251ca05874412811eaa3ac7b8",
     "python": "CPython 3.12.13 oracle; selected _py310 documentation apps require Python >=3.10",
-    "pydantic": "Pydantic 2.13.4 with pydantic-core 2.46.4",
-    "separate_input_output_schemas": "FastAPI support is documented as added in 0.102.0; this review pins 0.141.1",
+    "pydantic": "Pydantic 2.13.5 with pydantic-core 2.46.5",
+    "separate_input_output_schemas": "FastAPI support is documented as added in 0.102.0; this review pins 0.157.0",
 }
 
 VERSION_CONSTRAINT_SOURCES = [
@@ -113,14 +113,14 @@ API_NAME_REVIEW = {
         }
     ],
     "deprecated_names_exercised": [],
-    "nearby_deprecations_outside_scope": [
+    "nearby_removed_apis_outside_scope": [
         {
             "name": "FastAPI(openapi_prefix=...)",
-            "reason": "The constructor contains a deprecation warning, but none of the selected tutorial tests or workloads use openapi_prefix.",
+            "reason": "FastAPI 0.157.0 removed openapi_prefix and unused **extra** in 0.145.0; the selected tutorial tests and workflows do not exercise the removed constructor arguments.",
             "source": {
-                "path": "fastapi/applications.py",
-                "start_line": 929,
-                "end_line": 936,
+                "path": "docs/en/docs/release-notes.md",
+                "start_line": 176,
+                "end_line": 176,
             },
         }
     ],
@@ -130,7 +130,7 @@ OWNERSHIP_NOTES = [
     "Rust owns FastAPI route behavior, automatic docs registration, custom OpenAPI integration, callback/webhook projection, and schema-mode selection.",
     "Python runtime files remain direct native re-exports plus literal __all__; FastAPI behavior and control flow stay in Rust.",
     "Starlette 1.6.0 is the sole generic routing, mount, HTTP response, and TestClient oracle; the target delegates this contract to Starlette-RS.",
-    "Pydantic 2.13.4 owns model validation/serialization and JSON Schema generation; FastAPI selects and inserts model schemas into OpenAPI.",
+    "Pydantic 2.13.5 owns model validation/serialization and JSON Schema generation; FastAPI selects and inserts model schemas into OpenAPI.",
     "The disabled-docs input uses the documented empty openapi_url setting directly. It does not claim to test pydantic-settings environment parsing or module reload behavior.",
 ]
 
@@ -171,7 +171,7 @@ def _test_function_source(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         min(starts),
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 test function {function_name} and its assertions",
+        f"pinned FastAPI 0.157.0 test function {function_name} and its assertions",
     )
 
 
@@ -257,56 +257,56 @@ def _excluded(
 
 _FASTAPI_SETUP = _source(
     "fastapi/applications.py",
-    1105,
-    1158,
+    1120,
+    1173,
     "FastAPI registers the OpenAPI, Swagger UI, OAuth redirect, and ReDoc routes based on configured URLs",
 )
 _FASTAPI_OPENAPI_CACHE = _source(
     "fastapi/applications.py",
-    1070,
-    1103,
+    1085,
+    1118,
     "FastAPI generates and caches the schema, passing routes, webhooks, and the separate-schema setting to get_openapi",
 )
 _FASTAPI_WEBHOOKS = _source(
     "fastapi/applications.py",
+    926,
     937,
-    948,
     "FastAPI exposes its documentation-only webhook APIRouter on app.webhooks",
 )
 _FASTAPI_GET_OPENAPI = _source(
     "fastapi/openapi/utils.py",
-    585,
-    679,
+    570,
+    664,
     "FastAPI assembles metadata, routes, callback operations, webhook operations, and model definitions into OpenAPI",
 )
 _FASTAPI_CALLBACKS = _source(
     "fastapi/openapi/utils.py",
-    386,
-    402,
+    371,
+    387,
     "FastAPI projects callback APIRoute definitions under their owning path operation",
 )
 _FASTAPI_ROUTE_CALLBACKS = _source(
     "fastapi/routing.py",
-    1187,
-    1223,
+    1242,
+    1278,
     "FastAPI APIRoute accepts callback routes and stores route configuration for OpenAPI projection",
 )
 _FASTAPI_REQUEST_HANDLER = _source(
     "fastapi/routing.py",
-    375,
-    455,
+    398,
+    481,
     "FastAPI builds request handling, resolves route inputs, and invokes the endpoint",
 )
 _FASTAPI_SCHEMA_BRIDGE = _source(
     "fastapi/_compat/v2.py",
-    285,
-    346,
+    287,
+    348,
     "FastAPI selects validation and serialization fields and delegates definitions to Pydantic GenerateJsonSchema",
 )
 _FASTAPI_SCHEMA_NAMES = _source(
     "fastapi/_compat/v2.py",
-    425,
-    435,
+    430,
+    440,
     "FastAPI normalizes Pydantic model names for OpenAPI schema references",
 )
 _FASTAPI_SWAGGER_HTML = _source(
@@ -345,13 +345,6 @@ _STARLETTE_MOUNT = _source(
     445,
     "Starlette 1.6.0 owns generic Mount prefix matching and child root_path scope construction used by independent mounted workloads",
 )
-_FASTAPI_DEPRECATED_PREFIX = _source(
-    "fastapi/applications.py",
-    929,
-    936,
-    "FastAPI marks openapi_prefix deprecated; the selected tutorials do not use it",
-)
-
 _HTTP = ("http.status", "http.body.bytes")
 _STATUS = ("http.status",)
 _DOCUMENT = ("http.status", "openapi.document")
@@ -1137,7 +1130,7 @@ def validate_static_links() -> dict[str, int]:
         _validate_source_span(source)
     for row in API_NAME_REVIEW["aliases"]:
         _validate_source_span({**row["source"], "role": row["ownership"]})
-    for row in API_NAME_REVIEW["nearby_deprecations_outside_scope"]:
+    for row in API_NAME_REVIEW["nearby_removed_apis_outside_scope"]:
         _validate_source_span({**row["source"], "role": row["reason"]})
 
     if test_function_count != mapped_count + exclusion_count:

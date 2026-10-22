@@ -15,8 +15,8 @@ FASTAPI_ROOT = PROJECT_ROOT.parent / "fastapi"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "role": "source oracle and development-time source only; never a target runtime dependency",
     },
     "starlette": {
@@ -29,7 +29,7 @@ SOURCE_IDENTITIES = {
         "role": "target under review",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "model validation and response serialization called by FastAPI",
     },
 }
@@ -62,7 +62,7 @@ def _test_function_span(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         node.lineno,
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 test function {function_name} and its response assertion",
+        f"pinned FastAPI 0.157.0 test function {function_name} and its response assertion",
     )
 
 
@@ -114,14 +114,14 @@ _FUNCTION = {
         ),
         _source(
             "fastapi/routing.py",
-            301,
-            338,
+            321,
+            358,
             "FastAPI validates response content and forwards include, exclude, unset, default, and null flags to serialization",
         ),
         _source(
             "fastapi/routing.py",
-            961,
-            1007,
+            1016,
+            1062,
             "FastAPI stores the response-model serialization policies on route state",
         ),
         _source(
@@ -150,8 +150,8 @@ _MODULE_REVIEW = {
     "supporting_sources": [
         _source(
             "fastapi/routing.py",
-            301,
-            338,
+            321,
+            358,
             "FastAPI response serialization applies the selected filter flags",
         ),
         _source(

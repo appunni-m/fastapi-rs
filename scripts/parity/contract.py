@@ -516,21 +516,21 @@ def read_manifest() -> dict[str, Any]:
         raise ContractError("manifest schema identity is missing or unsupported")
     profile = manifest.get("oracle_profile")
     if not isinstance(profile, dict) or profile.get("id") != (
-        "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13"
+        "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13"
     ):
         raise ContractError("manifest must define the fixed FastAPI/Starlette 1.6.0 oracle profile")
     selected = manifest.get("selected_contracts")
     if not isinstance(selected, dict):
         raise ContractError("manifest selected_contracts must be a mapping")
     expected_commits = {
-        "fastapi": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "fastapi": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "starlette": "4f250d6b814587e20c5365f0a5f0c4d42bcb929f",
     }
     for contract_name, commit in expected_commits.items():
         contract = selected.get(contract_name)
         if not isinstance(contract, dict):
             raise ContractError(f"manifest selected contract {contract_name} must be a mapping")
-        expected_version = "0.141.1" if contract_name == "fastapi" else "1.6.0"
+        expected_version = "0.157.0" if contract_name == "fastapi" else "1.6.0"
         if contract.get("version") != expected_version or contract.get("commit") != commit:
             raise ContractError(
                 f"manifest {contract_name} contract changed without updating "
@@ -544,20 +544,20 @@ def read_manifest() -> dict[str, Any]:
     if not isinstance(pydantic, dict):
         raise ContractError("manifest Pydantic contract must be a mapping")
     if (pydantic.get("version"), pydantic.get("pydantic_core_version")) != (
-        "2.13.4",
-        "2.46.4",
+        "2.13.5",
+        "2.46.5",
     ):
         raise ContractError(
             "manifest Pydantic baseline changed without updating the oracle profile"
         )
     expected_packages = {
-        "annotated-doc": "0.0.4",
+        "annotated-doc": "0.0.5",
         "annotated-types": "0.7.0",
         "anyio": "4.12.1",
-        "fastapi": "0.141.1",
+        "fastapi": "0.157.0",
         "idna": "3.18",
-        "pydantic": "2.13.4",
-        "pydantic-core": "2.46.4",
+        "pydantic": "2.13.5",
+        "pydantic-core": "2.46.5",
         "starlette": "1.6.0",
         "typing-extensions": "4.16.0",
         "typing-inspection": "0.4.2",
@@ -566,14 +566,14 @@ def read_manifest() -> dict[str, Any]:
         raise ContractError("manifest oracle runtime package pins are incomplete or changed")
     expected_extensions = {
         "standard-multipart": {
-            "id": "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32",
+            "id": "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32",
             "base_profile": profile["id"],
             "added_packages": {"python-multipart": "0.0.32"},
             "fastapi_extra": "standard",
             "prepare_target": "parity-prepare-oracle-standard",
         },
         "testclient": {
-            "id": "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-httpx-0.28.1",
+            "id": "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-standard-httpx-0.28.1",
             "base_profile": profile["id"],
             "added_packages": {
                 "certifi": "2026.1.4",
@@ -585,11 +585,11 @@ def read_manifest() -> dict[str, Any]:
             "prepare_target": "parity-prepare-oracle-testclient",
         },
         "email-validation": {
-            "id": "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0",
+            "id": "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0",
             "base_profile": profile["id"],
             "lock": {
                 "path": "requirements/email-validation-cpython-3.12.13.lock",
-                "sha256": "031d2b004bf6427b8d771cf172b36878ec7fe3299a1e5806f92d7066eb1d41b3",
+                "sha256": "1ed45e11afe0d3db9fa600d1567e3a8fbf5b80279375ef55a2b7deaef2d63cc5",
                 "profile": "CPython 3.12.13 with email-validator 2.3.0",
             },
             "added_packages": {"dnspython": "2.8.0", "email-validator": "2.3.0"},
@@ -598,13 +598,13 @@ def read_manifest() -> dict[str, Any]:
         },
         "templates": {
             "id": (
-                "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-templates-"
+                "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-templates-"
                 "jinja2-3.1.6-markupsafe-3.0.3"
             ),
             "base_profile": profile["id"],
             "lock": {
                 "path": "requirements/templates-cpython-3.12.13.lock",
-                "sha256": "eee2f5509c1d8645caf971998f6a777e144901b0a0847ee329c62ebd4b31fdb0",
+                "sha256": "0d982a3837c2462a1bf7d78b211fcc512f1e2d31a5016d9ce82e1756cf914f20",
                 "profile": "CPython 3.12.13 with Jinja2 3.1.6 and MarkupSafe 3.0.3",
             },
             "added_packages": {"jinja2": "3.1.6", "markupsafe": "3.0.3"},
@@ -613,13 +613,13 @@ def read_manifest() -> dict[str, Any]:
         },
         "json-serializers": {
             "id": (
-                "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-json-serializers-"
+                "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-json-serializers-"
                 "orjson-3.13.0-ujson-6.0.0"
             ),
             "base_profile": profile["id"],
             "lock": {
                 "path": "requirements/json-serializers-cpython-3.12.13.lock",
-                "sha256": "c43d6393010e9f0e8b95831d8cb2127dd4f4371c539bb7270675e9ba042fac86",
+                "sha256": "bc6afe00ee120cb02e647659504884652868d6757a1fffcd0199b06be7a06f18",
                 "profile": "CPython 3.12.13 with orjson 3.13.0 and ujson 6.0.0",
             },
             "added_packages": {"orjson": "3.13.0", "ujson": "6.0.0"},
@@ -665,7 +665,7 @@ def read_manifest() -> dict[str, Any]:
             "base_profile": target["id"],
             "lock": {
                 "path": "requirements/target-standard-multipart-cpython-3.12.13.lock",
-                "sha256": "3aee8269ac560768cc04dc8bb7ad6d55db75dd042f3a1a962fc5b8b3bfa853d6",
+                "sha256": "13397dc94820e3f66f36c9d95862066147a617e175f5c0a19762617e7987bc9b",
                 "profile": "CPython 3.12.13 with python-multipart 0.0.32",
             },
             "added_packages": {"python-multipart": "0.0.32"},
@@ -677,7 +677,7 @@ def read_manifest() -> dict[str, Any]:
             "base_profile": target["id"],
             "lock": {
                 "path": "requirements/target-testclient-cpython-3.12.13.lock",
-                "sha256": "c72266c50b04909783777ddf9949a79b4504d5af787c9ecbfe1014141f41f318",
+                "sha256": "8c4487070ce4f3b6609521d9581749d733f589b4c2551c3d4b5cc429249193b9",
                 "profile": "CPython 3.12.13 with HTTPX 0.28.1 fallback",
             },
             "added_packages": {
@@ -694,7 +694,7 @@ def read_manifest() -> dict[str, Any]:
             "base_profile": target["id"],
             "lock": {
                 "path": "requirements/email-validation-cpython-3.12.13.lock",
-                "sha256": "031d2b004bf6427b8d771cf172b36878ec7fe3299a1e5806f92d7066eb1d41b3",
+                "sha256": "1ed45e11afe0d3db9fa600d1567e3a8fbf5b80279375ef55a2b7deaef2d63cc5",
                 "profile": "CPython 3.12.13 with email-validator 2.3.0",
             },
             "added_packages": {"dnspython": "2.8.0", "email-validator": "2.3.0"},
@@ -706,7 +706,7 @@ def read_manifest() -> dict[str, Any]:
             "base_profile": target["id"],
             "lock": {
                 "path": "requirements/templates-cpython-3.12.13.lock",
-                "sha256": "eee2f5509c1d8645caf971998f6a777e144901b0a0847ee329c62ebd4b31fdb0",
+                "sha256": "0d982a3837c2462a1bf7d78b211fcc512f1e2d31a5016d9ce82e1756cf914f20",
                 "profile": "CPython 3.12.13 with Jinja2 3.1.6 and MarkupSafe 3.0.3",
             },
             "added_packages": {"jinja2": "3.1.6", "markupsafe": "3.0.3"},
@@ -718,7 +718,7 @@ def read_manifest() -> dict[str, Any]:
             "base_profile": target["id"],
             "lock": {
                 "path": "requirements/json-serializers-cpython-3.12.13.lock",
-                "sha256": "c43d6393010e9f0e8b95831d8cb2127dd4f4371c539bb7270675e9ba042fac86",
+                "sha256": "bc6afe00ee120cb02e647659504884652868d6757a1fffcd0199b06be7a06f18",
                 "profile": "CPython 3.12.13 with orjson 3.13.0 and ujson 6.0.0",
             },
             "added_packages": {"orjson": "3.13.0", "ujson": "6.0.0"},

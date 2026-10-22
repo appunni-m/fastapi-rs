@@ -69,21 +69,21 @@ _EXTEND_SELECTORS = [
 
 
 _SCHEMA_COMPONENT_RATIONALE = (
-    "The pinned page embeds the named model example. FastAPI 0.141.1 gathers route fields, "
+    "The pinned page embeds the named model example. FastAPI 0.157.0 gathers route fields, "
     "builds model definitions, and returns the assembled OpenAPI document in "
-    "fastapi/openapi/utils.py:585-679; Pydantic supplies JSON Schema field generation."
+    "fastapi/openapi/utils.py:570-664; Pydantic supplies JSON Schema field generation."
 )
 _BODY_RATIONALE = (
-    "The pinned page embeds this Body example. FastAPI 0.141.1 projects the body field and "
+    "The pinned page embeds this Body example. FastAPI 0.157.0 projects the body field and "
     "its JSON Schema in fastapi/openapi/utils.py:231-263 and :377-385; the selected JSON "
     "pointers are request-body schemas, not parameter-location or browser observations."
 )
 _MODE_RATIONALE = (
     "The pinned page describes validation-mode input schemas and serialization-mode output "
-    "schemas for a model with a default. FastAPI 0.141.1 passes "
+    "schemas for a model with a default. FastAPI 0.157.0 passes "
     "separate_input_output_schemas through fastapi/applications.py:780-814, :890, and "
-    ":1090-1101 into OpenAPI generation at fastapi/openapi/utils.py:585-679. On the pinned "
-    "FastAPI 0.141.1/Pydantic 2.13.4 observation, both `/split/openapi.json` and "
+    ":1090-1101 into OpenAPI generation at fastapi/openapi/utils.py:570-664. On the pinned "
+    "FastAPI 0.157.0/Pydantic 2.13.5 observation, both `/split/openapi.json` and "
     "`/shared/openapi.json` contain one `Record` component with `label` required; neither "
     "shows a `Record-Input`/`Record-Output` pair. These cases observe the configured modes, "
     "requests, responses, and documents, but do not demonstrate distinct input/output schema "
@@ -93,9 +93,9 @@ _MODE_RATIONALE = (
 )
 _EXTEND_RATIONALE = (
     "The pinned page describes FastAPI's app.openapi() method, its generated-schema cache, "
-    "and get_openapi(). FastAPI 0.141.1 implements the default method and /openapi.json "
+    "and get_openapi(). FastAPI 0.157.0 implements the default method and /openapi.json "
     "route in fastapi/applications.py:1070-1120 and assembles info, paths, and schemas in "
-    "fastapi/openapi/utils.py:585-679. Starlette 1.6.0 owns generic route dispatch and HTTP "
+    "fastapi/openapi/utils.py:570-664. Starlette 1.6.0 owns generic route dispatch and HTTP "
     "transport; ReDoc/Swagger UI rendering is outside these ASGI observations."
 )
 
@@ -145,8 +145,8 @@ DOC_SECTION_CASE_MAPPINGS_OPENAPI_SCHEMA_20261015 = {
             "`Field` option."
         ),
         (
-            "The pinned section embeds the Pydantic `Field` example. FastAPI 0.141.1 gathers "
-            "the route's model definitions for OpenAPI in fastapi/openapi/utils.py:620-679; "
+            "The pinned section embeds the Pydantic `Field` example. FastAPI 0.157.0 gathers "
+            "the route's model definitions for OpenAPI in fastapi/openapi/utils.py:570-664; "
             "Pydantic supplies the field JSON Schema content."
         ),
     ),
@@ -193,7 +193,7 @@ DOC_SECTION_CASE_MAPPINGS_OPENAPI_SCHEMA_20261015 = {
             "interface. It does not render Swagger UI or compare the screenshot."
         ),
         (
-            "FastAPI 0.141.1 serves generated schema data through its OpenAPI endpoint "
+            "FastAPI 0.157.0 serves generated schema data through its OpenAPI endpoint "
             "(fastapi/applications.py:1105-1120); the selected request-schema pointers carry "
             "the example field. Starlette 1.6.0 owns HTTP transport and Swagger UI is an "
             "external browser renderer."
@@ -229,7 +229,7 @@ DOC_SECTION_CASE_MAPPINGS_OPENAPI_SCHEMA_20261015 = {
             "are not covered by this case."
         ),
         (
-            "FastAPI 0.141.1 puts `openapi_examples` on the request Media Type at "
+            "FastAPI 0.157.0 puts `openapi_examples` on the request Media Type at "
             "fastapi/openapi/utils.py:249-263. The selected pointer is the operation's "
             "Media Type examples object, not its JSON Schema."
         ),
@@ -248,7 +248,7 @@ DOC_SECTION_CASE_MAPPINGS_OPENAPI_SCHEMA_20261015 = {
             "sampled. It does not launch Swagger UI or verify its visual rendering."
         ),
         (
-            "FastAPI 0.141.1 emits the OpenAPI-specific examples into the request Media Type "
+            "FastAPI 0.157.0 emits the OpenAPI-specific examples into the request Media Type "
             "at fastapi/openapi/utils.py:249-263. The docs page describes their UI use, but "
             "the independent action observes only the generated document."
         ),
@@ -261,10 +261,10 @@ DOC_SECTION_CASE_MAPPINGS_OPENAPI_SCHEMA_20261015 = {
             "This parent is a standards and version-history discussion. Its current concrete "
             "model and request-example behavior is mapped under the anchored child sections; "
             "pre-0.99/0.103 FastAPI behavior and Swagger UI version claims are outside the "
-            "pinned 0.141.1 contract."
+            "pinned 0.157.0 contract."
         ),
         (
-            "FastAPI 0.141.1 generates OpenAPI 3.1.0 documents and its current examples are "
+            "FastAPI 0.157.0 generates OpenAPI 3.1.0 documents and its current examples are "
             "mapped in the child rows. This exclusion does not exclude those child inputs or "
             "claim historical compatibility."
         ),
@@ -302,8 +302,8 @@ DOC_SECTION_CASE_MAPPINGS_OPENAPI_SCHEMA_20261015 = {
         ),
         (
             "The pinned section distinguishes model-config extras from `Field(examples=...)`. "
-            "FastAPI 0.141.1 gathers both models into the OpenAPI definitions at "
-            "fastapi/openapi/utils.py:620-679; Pydantic generates their field schemas."
+            "FastAPI 0.157.0 gathers both models into the OpenAPI definitions at "
+            "fastapi/openapi/utils.py:570-664; Pydantic generates their field schemas."
         ),
     ),
     (_SCHEMA_PAGE, "swagger-ui-and-openapi-specific-examples"): _workflow(
@@ -321,7 +321,7 @@ DOC_SECTION_CASE_MAPPINGS_OPENAPI_SCHEMA_20261015 = {
             "version."
         ),
         (
-            "FastAPI 0.141.1 emits `openapi_examples` at the request Media Type in "
+            "FastAPI 0.157.0 emits `openapi_examples` at the request Media Type in "
             "fastapi/openapi/utils.py:249-263. Swagger UI is a separate browser renderer; "
             "only the generated OpenAPI document is observed."
         ),
@@ -335,7 +335,7 @@ DOC_SECTION_CASE_MAPPINGS_OPENAPI_SCHEMA_20261015 = {
             "input or schema option."
         ),
         (
-            "The current FastAPI 0.141.1 model, Body, and OpenAPI-specific examples are "
+            "The current FastAPI 0.157.0 model, Body, and OpenAPI-specific examples are "
             "mapped above; this recap adds only historical version advice."
         ),
     ),
@@ -450,7 +450,7 @@ DOC_SECTION_CASE_MAPPINGS_OPENAPI_SCHEMA_20261015 = {
             "FastAPI response-model behavior."
         ),
         (
-            "FastAPI 0.141.1 attaches response fields and performs response serialization "
+            "FastAPI 0.157.0 attaches response fields and performs response serialization "
             "before returning the ASGI response; generic HTTP response transport belongs to "
             "Starlette 1.6.0. The selected action is the fixture's GET response."
         ),
@@ -538,7 +538,7 @@ DOC_SECTION_CASE_MAPPINGS_OPENAPI_SCHEMA_20261015 = {
             "individually below or under the existing cache section."
         ),
         (
-            "FastAPI 0.141.1 owns OpenAPI generation and the schema endpoint; child rows "
+            "FastAPI 0.157.0 owns OpenAPI generation and the schema endpoint; child rows "
             "separately select the default and custom documents. The ReDoc browser rendering "
             "is external and is not combined with the schema inputs."
         ),

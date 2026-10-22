@@ -41,7 +41,7 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_REMAINING_20261015 = {
     ("tutorial/response-model.md", "response-model-return-type"): _excluded(
         "Response Model - Return Type { #response-model-return-type }",
         1,
-        344,
+        348,
         (
             "This page-level overview combines response validation, OpenAPI schema generation, "
             "serialization, and filtering that its child sections discuss separately. Its speed "
@@ -165,7 +165,7 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_REMAINING_20261015 = {
     ("tutorial/response-model.md", "response-model-encoding-parameters"): _excluded(
         "Response Model encoding parameters { #response-model-encoding-parameters }",
         223,
-        339,
+        343,
         (
             "This section is an umbrella for default-field omission, include/exclude options, "
             "and list-based filters. Its concrete behaviors are represented by the nested "
@@ -183,8 +183,8 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_REMAINING_20261015 = {
         "data-with-the-same-values-as-the-defaults",
     ): _workflow(
         "Data with the same values as the defaults { #data-with-the-same-values-as-the-defaults }",
-        280,
-        305,
+        282,
+        309,
         _TUTORIAL_REVIEW,
         ["fastapi.response-model-review.tutorial004-explicit-null-defaults"],
         ["read-record-with-explicit-null-and-default-values"],
@@ -202,8 +202,8 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_REMAINING_20261015 = {
     ),
     ("tutorial/response-model.md", "using-lists-instead-of-sets"): _workflow(
         "Using `list`s instead of `set`s { #using-lists-instead-of-sets }",
-        334,
-        339,
+        338,
+        343,
         _TUTORIAL_REVIEW,
         ["fastapi.response-model-review.tutorial006-list-based-filters"],
         ["include-selected-fields-from-list-option"],

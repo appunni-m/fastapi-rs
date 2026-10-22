@@ -6,11 +6,13 @@ does not include implementing or benchmarking Starlette-RS itself.
 
 ## Reference and target boundary
 
-Use the released FastAPI **0.141.1** source at commit
-`95f8322ee1dcda7ceace7b1c4f6c9915b36d748f` with **Starlette 1.6.0 only**, at
+Use the released FastAPI **0.157.0** source at commit
+`386a28af2f87af1a32ac26d88f07b7f58ab2dfb1` with **Starlette 1.6.0 only**, at
 `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`. FastAPI declares
-`starlette>=0.46.0`, which admits this selected contract. Pin Pydantic 2.13.4,
-pydantic-core 2.46.4, AnyIO 4.12.1, the Python patch, and all other
+`starlette>=0.46.0`, which admits this selected contract. The FastAPI 0.157.0
+source lock resolves Starlette 1.7.0; benchmark and parity profiles override
+that dependency with the sole Starlette 1.6.0 oracle. Pin Pydantic 2.13.5,
+pydantic-core 2.46.5, AnyIO 4.14.2, the Python patch, and all other
 behavior-relevant package versions in each run identity. FastAPI's benchmark
 CI uses CPython 3.13; `.python-version` in the source tag is 3.11, so choose
 and record the benchmark runtime explicitly rather than inheriting the
@@ -52,6 +54,10 @@ consumer-surface benchmark results.
 
 ## Benchmark evidence freshness
 
+All recorded results below still use the previous FastAPI 0.141.1 source pin.
+Keep their identities and measured values as historical evidence; they do not
+establish parity or performance for the current 0.157.0 protocol baseline.
+
 The latest focused first-slice parity comparison passed 14/14 selected
 observations on FastAPI-RS `f9a345fdce889c6a837b188367b1c43a1acdf331` with
 FastAPI 0.141.1, Starlette 1.6.0, and Starlette-RS
@@ -59,9 +65,9 @@ FastAPI 0.141.1, Starlette 1.6.0, and Starlette-RS
 `parity-results/comparisons/4706de12-4e64-4780-a36d-636d9c3f737e.json` (SHA-256
 `fff67e79b6ed951243d8a2edc6cf1739be2b2162f5b16a52291c494876a2a016`).
 
-The latest current-main, current-manifest direct-ASGI timing evidence is the
-[seven-workload refresh](benchmarks/2026-10-22-f9a345f.md). All seven workloads
-completed with fresh identity-checked parity gates: 48/48 selected
+The latest recorded direct-ASGI timing evidence on that previous source pin is
+the [seven-workload refresh](benchmarks/2026-10-22-f9a345f.md). All seven
+workloads completed with fresh identity-checked parity gates: 48/48 selected
 observations. The runs bind FastAPI-RS `f9a345fdce889c6a837b188367b1c43a1acdf331`,
 FastAPI 0.141.1, Starlette 1.6.0, and Starlette-RS
 `4139a72449bf5751e8902fb1c7175ee7f191d338`; the fixture manifest SHA-256 is
@@ -206,7 +212,7 @@ Each report applies only to the measured revision and workload.
 measurement. `make benchmark-first-slice` rebuilds the pinned target extension
 with Cargo's release profile, runs the complete fourteen-case identity-checked
 parity gate, then measures the valid item request in three
-isolated processes: FastAPI 0.141.1 with Starlette 1.6.0, the FastAPI-RS release
+isolated processes: FastAPI 0.157.0 with Starlette 1.6.0, the FastAPI-RS release
 extension with the pinned Starlette-RS source, and a plain Starlette 1.6.0
 route/response control. The untimed output must match exactly across all three
 subjects before timing proceeds.
@@ -244,7 +250,7 @@ dependency execution, response serialization, and status/body extraction are
 inside it. The TestClient profile pins HTTPX 0.28.1. This lane has a separate
 workload/result contract and stays outside the fixed direct-ASGI suite. A plain
 Starlette route cannot execute the FastAPI validation and dependency work in
-this scenario, so results compare FastAPI 0.141.1 with FastAPI-RS only.
+this scenario, so results compare FastAPI 0.157.0 with FastAPI-RS only.
 
 The repeated-sequence-query lane is also executable after its three-action
 identity-checked workflow passes. Run
@@ -280,7 +286,7 @@ FastAPI's established work while the additional workloads isolate costs that
 the upstream suite does not measure. Upstream has 20 in-process request
 benchmarks, one OpenAPI generation benchmark, and three memory benchmarks.
 
-Measure three subjects where the workload supports them: FastAPI 0.141.1 with
+Measure three subjects where the workload supports them: FastAPI 0.157.0 with
 Starlette 1.6.0, FastAPI-RS through its public Python `fastapi` import with
 Starlette-RS, and a raw Starlette 1.6.0 control. The FastAPI-RS result measures
 the complete pass-through Python/PyO3/Rust call path; never substitute the
@@ -1198,7 +1204,7 @@ evidence, incompatible identities, or hidden unsupported cases.
 ## Source pointers
 
 - FastAPI release reference: `fastapi/`, `tests/`, `docs/en/docs/`, and
-  `docs_src/` at commit `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`.
+  `docs_src/` at commit `386a28af2f87af1a32ac26d88f07b7f58ab2dfb1`.
 - Upstream request/OpenAPI workloads:
   `tests/benchmarks/test_general_performance.py`,
   `tests/benchmarks/test_openapi.py`, and `tests/benchmarks/utils.py`.

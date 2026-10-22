@@ -1,6 +1,7 @@
 """Exact materialized workflow links for the first reviewed documentation-page gap wave.
 
-Keys are paths relative to FastAPI 0.141.1's ``docs/en/docs`` tree. Each row
+Keys are paths relative to FastAPI 0.157.0 at
+``386a28af2f87af1a32ac26d88f07b7f58ab2dfb1``'s ``docs/en/docs`` tree. Each row
 copies one indexed workflow mapping and its partial selector scope.
 """
 

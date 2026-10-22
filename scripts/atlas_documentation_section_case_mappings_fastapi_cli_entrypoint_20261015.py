@@ -21,7 +21,7 @@ DOC_SECTION_CASE_MAPPINGS_FASTAPI_CLI_ENTRYPOINT_20261015 = {
             "auto-discovery, terminal output, and reload behavior are outside this mapping."
         ),
         "rationale": (
-            "FastAPI 0.141.1's optional `standard` extra requires "
+            "FastAPI 0.157.0's optional `standard` extra requires "
             "`fastapi-cli[standard] >=0.0.32` (../fastapi/pyproject.toml:59-61), and its "
             "console script is `fastapi = fastapi.cli:main` "
             "(../fastapi/pyproject.toml:119-120). The standard oracle pins fastapi-cli "

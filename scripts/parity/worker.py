@@ -59,54 +59,54 @@ RESULT_SCHEMA_V14_ID = "fastapi-rs/python-asgi-workflow-result@14"
 RESULT_SCHEMA_V15_ID = "fastapi-rs/python-asgi-workflow-result@15"
 RESULT_SCHEMA_V16_ID = "fastapi-rs/python-asgi-workflow-result@16"
 RESULT_SCHEMA_V17_ID = "fastapi-rs/python-asgi-workflow-result@17"
-ORACLE_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13"
+ORACLE_PROFILE_ID = "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13"
 ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
-    "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
+    "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
         "python-multipart": "0.0.32"
     },
-    "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard-httpx-0.28.1": {
+    "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-standard-httpx-0.28.1": {
         "certifi": "2026.1.4",
         "h11": "0.16.0",
         "httpcore": "1.0.9",
         "httpx": "0.28.1",
     },
-    "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0": {
+    "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0": {
         "email-validator": "2.3.0",
         "dnspython": "2.8.0",
     },
-    "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3": {
+    "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3": {
         "jinja2": "3.1.6",
         "markupsafe": "3.0.3",
     },
-    "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-json-serializers-orjson-3.13.0-ujson-6.0.0": {
+    "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-json-serializers-orjson-3.13.0-ujson-6.0.0": {
         "orjson": "3.13.0",
         "ujson": "6.0.0",
     },
 }
 ORACLE_EXACT_PACKAGE_SET_PROFILE_IDS = frozenset(
     {
-        "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0",
-        "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3",
-        "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-json-serializers-orjson-3.13.0-ujson-6.0.0",
+        "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0",
+        "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3",
+        "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-json-serializers-orjson-3.13.0-ujson-6.0.0",
     }
 )
 ORACLE_BASE_PACKAGES = {
     "annotated-doc": "0.0.4",
     "annotated-types": "0.7.0",
     "anyio": "4.12.1",
-    "fastapi": "0.141.1",
+    "fastapi": "0.157.0",
     "idna": "3.18",
-    "pydantic": "2.13.4",
-    "pydantic-core": "2.46.4",
+    "pydantic": "2.13.5",
+    "pydantic-core": "2.46.5",
     "starlette": "1.6.0",
     "typing-extensions": "4.16.0",
     "typing-inspection": "0.4.2",
 }
 PINNED_SOURCE_COMMITS = {
-    "fastapi": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+    "fastapi": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     "starlette": "4f250d6b814587e20c5365f0a5f0c4d42bcb929f",
 }
-PINNED_SOURCE_VERSIONS = {"fastapi": "0.141.1", "starlette": "1.6.0"}
+PINNED_SOURCE_VERSIONS = {"fastapi": "0.157.0", "starlette": "1.6.0"}
 
 
 class WorkerError(ValueError):

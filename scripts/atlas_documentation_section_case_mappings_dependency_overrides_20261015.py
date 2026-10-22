@@ -34,7 +34,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_OVERRIDES_20261015 = {
             "(`../fastapi/docs/en/docs/advanced/testing-dependencies.md:25-30`); "
             "its example assigns that mapping directly "
             "(`../fastapi/docs_src/dependency_testing/tutorial001_an_py310.py:26-31`). "
-            "FastAPI 0.141.1 initializes `dependency_overrides` as a dictionary "
+            "FastAPI 0.157.0 initializes `dependency_overrides` as a dictionary "
             "(`../fastapi/fastapi/applications.py:967-983`). During request resolution, "
             "`solve_dependencies` looks up the original callable and builds a dependant "
             "from the selected override callable "
@@ -49,7 +49,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_OVERRIDES_20261015 = {
             "supply the corresponding query inputs and observe HTTP status and body bytes. "
             "The identity-checked oracle artifact `parity-results/oracle/"
             "bd14cdf1-f552-4eec-8b0f-44add4a0b1f1.json` records both actions as completed "
-            "under FastAPI 0.141.1 and Starlette 1.6.0. This maps the path-operation "
+            "under FastAPI 0.157.0 and Starlette 1.6.0. This maps the path-operation "
             "override resolution shown by those inputs, not every override location or "
             "the section's reset and test setup guidance."
         ),

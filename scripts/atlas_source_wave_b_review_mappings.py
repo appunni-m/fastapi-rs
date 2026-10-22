@@ -1,4 +1,4 @@
-"""Source-backed mapping for the FastAPI 0.141.1 pending test wave B.
+"""Source-backed mapping for the FastAPI 0.157.0 pending test wave B.
 
 This sidecar records function-level source spans, selected workflow observations,
 and explicit exclusions. The workflows are independently authored inputs; this
@@ -17,8 +17,8 @@ STARLETTE_ROOT = PROJECT_ROOT.parent / "starlette"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "role": "source oracle and development evidence only",
     },
     "starlette": {
@@ -27,8 +27,8 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI routing, request, response, and exception oracle",
     },
     "pydantic": {
-        "version": "2.13.4",
-        "pydantic_core_version": "2.46.4",
+        "version": "2.13.5",
+        "pydantic_core_version": "2.46.5",
         "role": "pinned public model and serialization dependency",
     },
 }
@@ -64,7 +64,7 @@ def _test_span(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         node.lineno,
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 test function {function_name}",
+        f"pinned FastAPI 0.157.0 test function {function_name}",
     )
 
 
@@ -165,74 +165,74 @@ def _module(test_path: str, rationale: str, functions: dict[str, dict[str, Any]]
 
 _ROUTER_INCLUDE = _source(
     "fastapi/routing.py",
-    3133,
-    3312,
+    3240,
+    3419,
     "FastAPI APIRouter.include_router records nested path and metadata context",
 )
 _ROUTER_CONTEXT = _source(
     "fastapi/routing.py",
-    1305,
-    1370,
+    1356,
+    1421,
     "FastAPI composes nested prefixes, tags, dependencies, response defaults, and overlays",
 )
 _ROUTE_CONTEXT = _source(
     "fastapi/routing.py",
-    1425,
-    1478,
+    1477,
+    1537,
     "FastAPI projects effective include context onto each API route",
 )
 _ROUTE_REGISTRATION = _source(
     "fastapi/routing.py",
-    2889,
-    2971,
+    2996,
+    3078,
     "FastAPI registers API routes and resolves route-level defaults",
 )
 _OPENAPI_BUILD = _source(
     "fastapi/openapi/utils.py",
-    287,
-    366,
+    272,
+    351,
     "FastAPI projects API route metadata and response declarations into OpenAPI",
 )
 _OPENAPI_DOCUMENT = _source(
     "fastapi/openapi/utils.py",
-    585,
-    679,
+    570,
+    664,
     "FastAPI assembles the OpenAPI document from selected API routes",
 )
 _REQUEST_HANDLER_CONTENT_TYPE = _source(
     "fastapi/routing.py",
-    375,
-    455,
+    398,
+    481,
     "FastAPI request handling parses JSON only when strict content-type policy permits it",
 )
 _STRICT_CONTENT_TYPE_FLOW = _source(
     "fastapi/routing.py",
-    1300,
-    1478,
+    1351,
+    1537,
     "FastAPI preserves strict_content_type defaults through nested router includes",
 )
 _FASTAPI_APP_ROUTER_OPTIONS = _source(
     "fastapi/applications.py",
-    960,
-    1005,
+    957,
+    1002,
     "FastAPI forwards router options including redirect_slashes and strict_content_type",
 )
 _TYPED_SIGNATURE = _source(
     "fastapi/dependencies/utils.py",
-    213,
-    248,
+    256,
+    291,
     "FastAPI unwraps callables and resolves string parameter and return annotations",
 )
 _DEPENDANT_SIGNATURES = _source(
     "fastapi/dependencies/utils.py",
-    271,
-    370,
+    314,
+    412,
     "FastAPI classifies Request, dependency, and field parameters from resolved signatures",
 )
 _DEPENDENCY_LIFETIME = _source(
     "fastapi/dependencies/utils.py",
-    566,
-    574,
+    637,
+    645,
     "FastAPI enters generator dependencies through the request exit stack",
 )
 _RESPONSE_ENCODER = _source(
@@ -243,8 +243,8 @@ _RESPONSE_ENCODER = _source(
 )
 _RESPONSE_SERIALIZATION = _source(
     "fastapi/routing.py",
-    686,
-    761,
+    726,
+    805,
     "FastAPI serializes endpoint results and invokes the selected response class",
 )
 _NO_BODY_POLICY = _source(
@@ -261,8 +261,8 @@ _HTTP_EXCEPTION_HANDLER = _source(
 )
 _EXCEPTION_REGISTRATION = _source(
     "fastapi/applications.py",
-    986,
-    1005,
+    983,
+    1002,
     "FastAPI registers its HTTP and validation exception handlers",
 )
 _STARLETTE_ROUTE_MATCH = _source(
@@ -473,7 +473,7 @@ _INHERITED_MAPPINGS = _module(
             "test_pydanticv2",
             ["response-serialization", "public-api-errors"],
             "Two independent GET requests exercise FastAPI response encoding for a custom object with a spoofed class and a Pydantic field serializer.",
-            "Only response bytes are selected; the source's isinstance/vars checks, exact UUID values, and Pydantic serializer internals are not claimed. Pydantic model and field serialization remain delegated to pinned Pydantic 2.13.4.",
+            "Only response bytes are selected; the source's isinstance/vars checks, exact UUID values, and Pydantic serializer internals are not claimed. Pydantic model and field serialization remain delegated to pinned Pydantic 2.13.5.",
             [
                 _link(
                     ANNOTATION_RECIPE,

@@ -24,11 +24,18 @@ cases:
           - kind: python_signature
             selector: signature
             comparison: exact
-      - probe_id: constructor-captures-extra-keywords
+    source_evidence:
+      - path: fastapi/applications.py
+        kind: upstream_api_definition
+        symbol_id: fastapi.FastAPI
+        sha256: a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca
+  - case_id: fastapi.applications.constructor-openapi-prefix-rejected
+    probes:
+      - probe_id: removed-openapi-prefix-keyword
         public_callable:
           module: fastapi
           attribute: FastAPI
-        argument_bundle: fastapi-extra-kwargs
+        argument_bundle: openapi-prefix-removed
         observations:
           - kind: python_call_outcome
             selector: outcome
@@ -37,7 +44,23 @@ cases:
       - path: fastapi/applications.py
         kind: upstream_api_definition
         symbol_id: fastapi.FastAPI
-        sha256: 38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c
+        sha256: a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca
+  - case_id: fastapi.applications.constructor-arbitrary-extra-keyword-rejected
+    probes:
+      - probe_id: arbitrary-extra-constructor-keyword
+        public_callable:
+          module: fastapi
+          attribute: FastAPI
+        argument_bundle: arbitrary-extra-keyword
+        observations:
+          - kind: python_call_outcome
+            selector: outcome
+            comparison: exact
+    source_evidence:
+      - path: fastapi/applications.py
+        kind: upstream_api_definition
+        symbol_id: fastapi.FastAPI
+        sha256: a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca
   - case_id: fastapi.applications.constructor-empty-version-rejected
     probes:
       - probe_id: empty-version-with-openapi-enabled
@@ -53,7 +76,7 @@ cases:
       - path: fastapi/applications.py
         kind: upstream_api_definition
         symbol_id: fastapi.FastAPI
-        sha256: 38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c
+        sha256: a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca
   - case_id: fastapi.applications.constructor-empty-version-allowed-when-openapi-disabled
     probes:
       - probe_id: empty-version-with-openapi-disabled
@@ -69,4 +92,4 @@ cases:
       - path: fastapi/applications.py
         kind: upstream_api_definition
         symbol_id: fastapi.FastAPI
-        sha256: 38dccb19b2a0b0b984c8d7541263842954a37c087cf96b4463aea17873c6183c
+        sha256: a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca

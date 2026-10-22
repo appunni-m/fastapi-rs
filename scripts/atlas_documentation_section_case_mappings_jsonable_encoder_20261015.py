@@ -17,7 +17,7 @@ DOC_SECTION_CASE_MAPPINGS_JSONABLE_ENCODER_20261015 = {
             "input types, or encoder option behavior."
         ),
         "rationale": (
-            "FastAPI 0.141.1's pinned docs/en/docs/tutorial/encoder.md:11-29 describe "
+            "FastAPI 0.157.0's pinned docs/en/docs/tutorial/encoder.md:11-29 describe "
             "converting the tutorial's Pydantic model and datetime to JSON-compatible "
             "Python data, and docs_src/encoder/tutorial001_py310.py:10-13,19-22 define "
             "and call the example. The active case uses the same Item field types and "

@@ -4,6 +4,11 @@ The `upstream_documentation_example` evidence kind binds a case to one exact
 `docs_src` file. These links remain partial: they describe only the listed
 case IDs and observation selectors, not the entire example or documentation
 page.
+
+The FastAPI documentation and examples were checked at version 0.157.0, commit
+386a28af2f87af1a32ac26d88f07b7f58ab2dfb1. Version labels on unchanged examples
+were rebased only after comparing their supporting files; the behind-a-proxy
+source, tests, and deprecation changes are reviewed explicitly below.
 """
 
 if __package__:
@@ -70,7 +75,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/authentication_error_status_code/tutorial001_an_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example overrides HTTPBearer's missing-credentials error to "
+            "The FastAPI 0.157.0 example overrides HTTPBearer's missing-credentials error to "
             "return HTTP 403. The independent requests exercise that unauthenticated branch and "
             "a valid bearer credential on a separately named route with different detail and "
             "token values. They observe status, ordered headers, and body bytes only; they do not "
@@ -101,7 +106,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/cors/tutorial001_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example installs credentialed CORSMiddleware with allowed "
+            "The FastAPI 0.157.0 example installs credentialed CORSMiddleware with allowed "
             "origins, methods, and headers. The independent cases use different origins, an "
             "explicit method/header allowlist, and a separate records route to sample allowed "
             "and rejected preflights plus simple requests. The mapping claims only status and "
@@ -140,7 +145,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/body_updates/tutorial001_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example encodes and stores a complete model for a PUT request. "
+            "The FastAPI 0.157.0 example encodes and stores a complete model for a PUT request. "
             "The independent records workflow sends a partial body to a separate route and "
             "observes the full replacement result, including model defaults; it uses different "
             "field names and values from the tutorial."
@@ -163,7 +168,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/body_updates/tutorial002_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example applies only explicitly supplied fields when handling "
+            "The FastAPI 0.157.0 example applies only explicitly supplied fields when handling "
             "PATCH. Independent cases use a separately named records route and model to verify "
             "that omitted fields remain stored while an explicit null is applied; the tutorial's "
             "identifiers, field names, and values are not reused."
@@ -189,7 +194,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/first_steps/tutorial001_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example registers an async root route and returns a JSON "
+            "The FastAPI 0.157.0 example registers an async root route and returns a JSON "
             "object. The application-testing recipe samples an independently authored "
             "`/welcome` route with different data. The First Steps section recipe uses a "
             "separate app and different response data at `/`; it compares status, headers, and "
@@ -218,7 +223,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/first_steps/tutorial003_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example registers a synchronous root route with a JSON return "
+            "The FastAPI 0.157.0 example registers a synchronous root route with a JSON return "
             "value. The application-testing recipe samples an independently authored "
             "`/portal` route with different data. The First Steps section recipe uses a "
             "separate app and different response data at `/`; it compares status, headers, and "
@@ -247,7 +252,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/additional_status_codes/tutorial001_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example upserts an item: an existing item returns the normal "
+            "The FastAPI 0.157.0 example upserts an item: an existing item returns the normal "
             "response, while a new item returns JSONResponse with HTTP 201. The independent "
             "cases exercise those two branches with separate identifiers and payloads, observing "
             "exact status and body bytes only; they do not claim the tutorial's literal values, "
@@ -274,7 +279,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/additional_status_codes/tutorial001_an_py310.py": {
         "rationale": (
-            "The Annotated FastAPI 0.141.1 example upserts an item: an existing item returns the "
+            "The Annotated FastAPI 0.157.0 example upserts an item: an existing item returns the "
             "normal response, while a new item returns JSONResponse with HTTP 201. The independent "
             "cases exercise those two branches with separate identifiers and payloads, observing "
             "exact status and body bytes only; they do not claim the tutorial's literal values, "
@@ -301,7 +306,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/handling_errors/tutorial001_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example returns an existing item and raises HTTPException "
+            "The FastAPI 0.157.0 example returns an existing item and raises HTTPException "
             "for an unknown item. The independent cases sample those success and default-error "
             "response paths on an entries route; they observe status and body only and do not "
             "claim the source route, literal values, or OpenAPI snapshot."
@@ -327,7 +332,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/handling_errors/tutorial002_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example supplies custom headers on an HTTPException. The "
+            "The FastAPI 0.157.0 example supplies custom headers on an HTTPException. The "
             "independent case samples status, response headers, and body on a different archive "
             "route with another header name and value; it does not claim the source literals, "
             "success branch, or OpenAPI snapshot."
@@ -354,7 +359,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/handling_errors/tutorial003_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example registers a handler for an application-defined "
+            "The FastAPI 0.157.0 example registers a handler for an application-defined "
             "exception and returns JSON with a non-default status. The independent case samples "
             "registered exception dispatch and the resulting status/body using a separate "
             "exception type, route, and payload; it does not cover the exact interpolated text "
@@ -384,7 +389,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/handling_errors/tutorial004_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example registers custom Starlette HTTP and FastAPI request-"
+            "The FastAPI 0.157.0 example registers custom Starlette HTTP and FastAPI request-"
             "validation handlers, then exercises an integer path route with success, HTTP error, "
             "and validation branches. The independent cases exercise analogous handler dispatch "
             "and a successful typed route using different paths and values. They observe response "
@@ -424,7 +429,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/handling_errors/tutorial005_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example customizes RequestValidationError handling to encode "
+            "The FastAPI 0.157.0 example customizes RequestValidationError handling to encode "
             "both validation details and the parsed request body, and returns a Pydantic model "
             "for valid input. The independent cases sample invalid-body handling, valid model "
             "input/output, and the related OpenAPI request/422 schemas with a separately named "
@@ -474,7 +479,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/handling_errors/tutorial006_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example registers HTTP and request-validation handlers that "
+            "The FastAPI 0.157.0 example registers HTTP and request-validation handlers that "
             "delegate to FastAPI's defaults. The original independent cases trigger those two "
             "handler categories and observe response status/body only. A separate probe registers "
             "a distinctive Starlette HTTP exception handler and samples dispatch for an "
@@ -526,7 +531,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/security/tutorial003_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example extracts a bearer token, resolves a current user through "
+            "The FastAPI 0.157.0 example extracts a bearer token, resolves a current user through "
             "nested dependencies, and applies an app-owned inactive-user policy. The independent "
             "case sends an authenticated token through the same dependency shape and observes the "
             "resulting HTTP response. It samples FastAPI bearer parsing and dependency dispatch; "
@@ -554,10 +559,16 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/behind_a_proxy/tutorial002_py310.py": {
         "rationale": (
-            "FastAPI 0.141.1 configures this app with root_path=/api/v1. The listed input cases "
-            "request /app, read the resulting root_path response, and inspect the selected "
-            "OpenAPI server document. They do not cover proxy-header processing or deployment "
-            "server behavior."
+            "FastAPI 0.157.0 retains this source and upstream test as a legacy example of "
+            "FastAPI(root_path=...), which is now deprecated; the current page replaces the "
+            "old setup section with a warning to use `fastapi run --root-path` "
+            "(docs/en/docs/advanced/behind-a-proxy.md:211-215; "
+            "fastapi/applications.py:938-946). The upstream test expects the deprecation "
+            "warning and checks the scope-visible value and OpenAPI server "
+            "(tests/test_tutorial/test_behind_a_proxy/test_tutorial002.py:7-17,20-42). "
+            "The linked independent inputs still exercise the deprecated constructor path; "
+            "they do not cover CLI startup, proxy-header processing, or deployment server "
+            "behavior."
         ),
         "supporting_sources": [
             {
@@ -586,17 +597,23 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/behind_a_proxy/tutorial003_py310.py": {
         "rationale": (
-            "FastAPI 0.141.1 configures root_path plus explicit staging and production servers. "
-            "The listed input cases observe the /app root_path response and the generated "
-            "OpenAPI server list. They do not cover proxy-header processing or deployment "
-            "server behavior."
+            "FastAPI 0.157.0's current tutorial003 source declares staging and production "
+            "servers and returns the incoming ASGI scope root_path; it does not set the "
+            "FastAPI(root_path=...) constructor option "
+            "(docs_src/behind_a_proxy/tutorial003_py310.py:1-13). Its upstream test supplies "
+            "root_path through TestClient and checks that the OpenAPI server list prepends "
+            "that value (tests/test_tutorial/test_behind_a_proxy/test_tutorial003.py:4-6,"
+            "15-47). The linked independent workflow's older factory still uses the now-"
+            "deprecated constructor option, so its selected cases sample the resulting "
+            "scope/OpenAPI behavior but do not exercise the current CLI configuration, "
+            "proxy-header processing, or deployment server behavior."
         ),
         "supporting_sources": [
             {
                 "path": "docs_src/behind_a_proxy/tutorial003_py310.py",
                 "start_line": 1,
-                "end_line": 14,
-                "role": "documented configured servers, root_path, and response",
+                "end_line": 13,
+                "role": "documented custom servers and response derived from incoming scope root_path",
             }
         ],
         "workflow_cases": [
@@ -618,17 +635,23 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/behind_a_proxy/tutorial004_py310.py": {
         "rationale": (
-            "FastAPI 0.141.1 configures root_path, explicit servers, and "
-            "root_path_in_servers=False. The listed input cases observe the /app root_path "
-            "response and selected OpenAPI server paths. They do not cover proxy-header "
-            "processing or deployment server behavior."
+            "FastAPI 0.157.0's current tutorial004 source declares staging and production "
+            "servers with root_path_in_servers=False, then returns the incoming ASGI scope "
+            "root_path; it does not set the FastAPI(root_path=...) constructor option "
+            "(docs_src/behind_a_proxy/tutorial004_py310.py:1-14). Its upstream test supplies "
+            "root_path through TestClient and verifies the generated server list omits that "
+            "root path (tests/test_tutorial/test_behind_a_proxy/test_tutorial004.py:4-6,"
+            "15-47). The linked independent workflow's older factory still uses the now-"
+            "deprecated constructor option, so its selected cases sample the root_path "
+            "server-gate behavior but do not exercise the current CLI configuration, "
+            "proxy-header processing, or deployment server behavior."
         ),
         "supporting_sources": [
             {
                 "path": "docs_src/behind_a_proxy/tutorial004_py310.py",
                 "start_line": 1,
-                "end_line": 15,
-                "role": "documented configured servers, root_path, and root_path_in_servers",
+                "end_line": 14,
+                "role": "documented custom servers, root_path_in_servers, and scope-derived root_path",
             }
         ],
         "workflow_cases": [
@@ -738,7 +761,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/path_operation_advanced_configuration/tutorial003_py310.py": {
         "rationale": (
-            "FastAPI 0.141.1 serves the documented GET /items/ route while excluding it from the "
+            "FastAPI 0.157.0 serves the documented GET /items/ route while excluding it from the "
             "selected OpenAPI paths because include_in_schema=False. The linked case observes "
             "that route response and the paths projection only; it does not claim other route "
             "configuration behavior or full application parity."
@@ -788,7 +811,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/cookie_params/tutorial001_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 direct example declares optional ads_id with "
+            "The FastAPI 0.157.0 direct example declares optional ads_id with "
             "Cookie(default=None). The mapped case includes requests to its separately "
             "declared direct route with the cookie omitted and supplied, observing response "
             "status and body bytes. The same case separately exercises the Annotated route "
@@ -813,7 +836,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/cookie_params/tutorial001_an_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 Annotated example declares optional ads_id with Cookie() "
+            "The FastAPI 0.157.0 Annotated example declares optional ads_id with Cookie() "
             "and a Python default of None. The mapped case includes requests to its separately "
             "declared Annotated route with the cookie omitted and supplied, observing response "
             "status and body bytes. The same case separately exercises the direct route "
@@ -944,7 +967,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/header_params/tutorial002_py310.py": {
         "rationale": (
-            "This FastAPI 0.141.1 example declares an optional header with "
+            "This FastAPI 0.157.0 example declares an optional header with "
             "convert_underscores=False and returns its value. The independent cases sample the "
             "missing, irrelevant, underscore-name, and hyphen-name branches with exact response "
             "status/body observations; they do not claim the OpenAPI parameter schema or other "
@@ -1077,7 +1100,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/path_operation_configuration/tutorial002b_py310.py": {
         "rationale": (
-            "This FastAPI 0.141.1 example assigns Enum members as tags for GET /items/ and "
+            "This FastAPI 0.157.0 example assigns Enum members as tags for GET /items/ and "
             "GET /users/. The independent case observes HTTP response status and selects the tag "
             "arrays for those methods, sampling Enum-to-OpenAPI tag serialization. A separate "
             "APIRouter-constructor input derives the same string-valued Enum behavior through the "
@@ -1182,7 +1205,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/query_params/tutorial001_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example declares integer skip and limit query parameters "
+            "The FastAPI 0.157.0 example declares integer skip and limit query parameters "
             "with defaults and slices the item list. The linked cases exercise the default "
             "request, skip=1, and skip=1 with limit=1, observing only response status and "
             "body bytes. This is a partial mapping of those pagination inputs; it does not "
@@ -1210,7 +1233,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/query_params/tutorial002_py310.py": {
         "rationale": (
-            "FastAPI 0.141.1 declares GET /items/{item_id} with optional q and returns q only "
+            "FastAPI 0.157.0 declares GET /items/{item_id} with optional q and returns q only "
             "when it is truthy. The linked cases request the route with q absent and present, "
             "and observe the HTTP response. This partial mapping does not cover other query "
             "types, empty q, or broader routing behavior."
@@ -1442,7 +1465,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/request_files/tutorial001_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example accepts a bytes file and an UploadFile on two POST "
+            "The FastAPI 0.157.0 example accepts a bytes file and an UploadFile on two POST "
             "routes. The independent cases sample the resulting file length and filename with "
             "different route paths, observing HTTP status and response bytes only. This mapping "
             "does not claim the source route paths, exact OpenAPI, parser-missing behavior, or "
@@ -1469,7 +1492,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/request_files/tutorial001_02_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example declares an optional UploadFile parameter. The linked "
+            "The FastAPI 0.157.0 example declares an optional UploadFile parameter. The linked "
             "independent request omits the multipart body and observes the HTTP response only; "
             "its route additionally declares separate File.alias and validation_alias values, "
             "but this documentation mapping claims only the omitted optional-upload branch. "
@@ -1788,7 +1811,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/body/tutorial001_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example accepts a typed model body with two required and two "
+            "The FastAPI 0.157.0 example accepts a typed model body with two required and two "
             "optional fields, then returns that model. The independent catalog cases exercise "
             "a complete body and the required-fields-only form on another route, observing "
             "response status and body only; they do not claim the source field names, exact "
@@ -1815,7 +1838,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/body/tutorial002_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example binds a model body, dumps its fields, and conditionally "
+            "The FastAPI 0.157.0 example binds a model body, dumps its fields, and conditionally "
             "adds a computed response field when the optional tax value is supplied. The "
             "independent quote cases sample both optional-value branches with another model "
             "and route, observing status/body only. The arithmetic is application-owned and "
@@ -1843,7 +1866,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/body/tutorial004_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example binds an integer path parameter, a Pydantic request "
+            "The FastAPI 0.157.0 example binds an integer path parameter, a Pydantic request "
             "body, and an optional query value. The independent revision cases exercise those "
             "three request inputs with and without the optional query value, observing response "
             "status/body only. The route's result assembly is application-owned; exact source "
@@ -1870,7 +1893,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS = {
     },
     "docs_src/body_fields/tutorial001_py310.py": {
         "rationale": (
-            "The FastAPI 0.141.1 example embeds a model body under a named property and uses "
+            "The FastAPI 0.157.0 example embeds a model body under a named property and uses "
             "Pydantic field constraints. The independent supply cases exercise the embedded "
             "JSON envelope, positive-value validation, and the generated request schema on a "
             "different route/model. They observe status/body and a selected OpenAPI path "
@@ -1921,7 +1944,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
     {
         "docs_src/response_change_status_code/tutorial001_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example returns an existing task at the declared default "
+                "The FastAPI 0.157.0 example returns an existing task at the declared default "
                 "status and changes the response status to 201 when it creates a task. The "
                 "independent case samples the existing-record and new-record branches and "
                 "observes status and body only. Its route path and literal task values differ; "
@@ -2976,7 +2999,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
     {
         "docs_src/cookie_param_models/tutorial001_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example binds a Pydantic cookie model at an item route. "
+                "The FastAPI 0.157.0 example binds a Pydantic cookie model at an item route. "
                 "The independent cookie-model case observes response status, headers, body, and "
                 "the route parameter schema on a separate session route. This is a partial "
                 "binding/schema sample: it does not establish the source field names and literals, "
@@ -3007,7 +3030,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/custom_docs_ui/tutorial001_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example disables built-in documentation routes and defines "
+                "The FastAPI 0.157.0 example disables built-in documentation routes and defines "
                 "a custom Swagger UI HTML route. The independent case observes a separately named "
                 "custom-docs response and an OpenAPI info projection. It does not establish the "
                 "source route path or HTML/assets, OAuth redirect route, ReDoc route, or disabled-route misses."
@@ -3044,7 +3067,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/custom_response/tutorial006c_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example declares a RedirectResponse with status 302. "
+                "The FastAPI 0.157.0 example declares a RedirectResponse with status 302. "
                 "The selected case retrieves OpenAPI and observes the response-status slot for "
                 "the source path plus the retrieval status. It does not send a request to the "
                 "redirect route or establish Location, response-body, or redirect-follow behavior."
@@ -3067,7 +3090,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/dataclasses_/tutorial003_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example nests dataclass items inside an author dataclass, "
+                "The FastAPI 0.157.0 example nests dataclass items inside an author dataclass, "
                 "uses a default factory, accepts nested request items, and declares response models. "
                 "The independent case samples nested request/response projection and the related "
                 "OpenAPI schemas. It does not establish all source records, omission/default "
@@ -3103,7 +3126,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/dependencies/tutorial008b_an_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example catches a yielded-resource OwnerError and translates "
+                "The FastAPI 0.157.0 example catches a yielded-resource OwnerError and translates "
                 "it to an HTTP exception in an Annotated dependency route. The independent case "
                 "samples this exception-translation behavior through response body and status. "
                 "It does not claim cleanup ordering, suppression/re-raise variants, exact source "
@@ -3135,7 +3158,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/dependencies/tutorial011_an_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example uses a callable FixedContentQueryChecker dependency "
+                "The FastAPI 0.157.0 example uses a callable FixedContentQueryChecker dependency "
                 "whose predicate checks whether configured text occurs in a non-empty query value. "
                 "The independent matching and nonmatching cases observe response body, ordered "
                 "headers, and status for two query samples. They do not cover an absent/empty query, "
@@ -3166,7 +3189,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/dependencies/tutorial012_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example installs two required header dependencies globally "
+                "The FastAPI 0.157.0 example installs two required header dependencies globally "
                 "for its item and user routes. The independent case exercises the global-dependency "
                 "wiring on those route shapes and observes response status/body plus selected path "
                 "schema. It does not claim the source header literals, every missing/invalid-header "
@@ -3194,7 +3217,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/dependency_testing/tutorial001_an_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example replaces a common query-parameter dependency through "
+                "The FastAPI 0.157.0 example replaces a common query-parameter dependency through "
                 "dependency_overrides. The independent ASGI case samples override effects on item "
                 "and user routes, including plain and Annotated dependency declarations, and "
                 "observes response body/status. It does not execute the source TestClient assertions "
@@ -3230,7 +3253,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/generate_clients/tutorial001_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example defines request/response models and item routes used "
+                "The FastAPI 0.157.0 example defines request/response models and item routes used "
                 "as an API input for client generation. The independent case samples POST/GET "
                 "responses and the related OpenAPI paths/schemas. It does not perform code "
                 "generation, compile generated clients, or exercise a client-language runtime."
@@ -3261,7 +3284,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/path_operation_advanced_configuration/tutorial002_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example supplies a custom unique-operation-ID function "
+                "The FastAPI 0.157.0 example supplies a custom unique-operation-ID function "
                 "that derives the identifier from a route name. The independent case samples "
                 "one route response and its OpenAPI operation identifier. It does not establish "
                 "collision handling across arbitrary route names, routers, or tags."
@@ -3289,7 +3312,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/path_operation_advanced_configuration/tutorial006_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example reads the raw request body and supplies a manual "
+                "The FastAPI 0.157.0 example reads the raw request body and supplies a manual "
                 "OpenAPI requestBody schema for a route that returns parsed data. The independent "
                 "case observes one request/response and that requestBody projection. It does not "
                 "establish arbitrary extension merging, malformed-body behavior, or every source "
@@ -3324,7 +3347,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/path_params/tutorial004_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example declares a path converter and returns the captured "
+                "The FastAPI 0.157.0 example declares a path converter and returns the captured "
                 "suffix as data. The independent file-path and root-file-path cases observe route "
                 "status/body, while a separate OpenAPI case observes the path parameter projection. "
                 "This does not claim general path normalization, filesystem access/security, or "
@@ -3364,7 +3387,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/schema_extra_example/tutorial002_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example attaches example metadata to Pydantic fields. The "
+                "The FastAPI 0.157.0 example attaches example metadata to Pydantic fields. The "
                 "independent case observes the corresponding OpenAPI schema projection and an "
                 "HTTP status sample. The schema observation does not establish acceptance or "
                 "rejection for each illustrated value, response bodies, or Swagger rendering."
@@ -3387,7 +3410,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/schema_extra_example/tutorial004_an_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example declares multiple examples on an Annotated Body "
+                "The FastAPI 0.157.0 example declares multiple examples on an Annotated Body "
                 "parameter. The independent case observes the requestBody schema projection and "
                 "HTTP status for selected requests; it does not submit every documented example "
                 "or claim their validation outcomes, response bodies, or Swagger rendering."
@@ -3410,7 +3433,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/schema_extra_example/tutorial005_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example declares named OpenAPI example objects for a body "
+                "The FastAPI 0.157.0 example declares named OpenAPI example objects for a body "
                 "parameter. The independent case observes the examples projection and HTTP status "
                 "for selected requests. It does not establish request acceptance/rejection for "
                 "each named value, response bodies, or Swagger rendering."
@@ -3433,7 +3456,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/server_sent_events/tutorial001_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example exposes four sync/async and annotated/unannotated "
+                "The FastAPI 0.157.0 example exposes four sync/async and annotated/unannotated "
                 "generator routes returning event-stream responses. The independent stream-routes "
                 "case observes aggregate response body bytes, ordered headers, and status for its "
                 "selected routes. It does not establish send-chunk boundaries, timing, backpressure, "
@@ -3468,7 +3491,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/server_sent_events/tutorial005_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example maps prompt words to token events and then emits a "
+                "The FastAPI 0.157.0 example maps prompt words to token events and then emits a "
                 "terminal event. The independent case observes aggregate response bytes, ordered "
                 "headers, and status for a stream request. It does not establish chunk boundaries, "
                 "timing, backpressure, disconnect/cancellation, reconnect behavior, or other prompt "
@@ -3499,7 +3522,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/using_request_directly/tutorial001_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example reads the client host from a Request and returns it "
+                "The FastAPI 0.157.0 example reads the client host from a Request and returns it "
                 "with a path parameter. The independent case observes its route response/status and "
                 "a selected OpenAPI path projection. It does not establish absent-client behavior "
                 "or other Request attributes and scope values."
@@ -3529,7 +3552,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/websockets_/tutorial002_py310.py": {
             "rationale": (
-                "The FastAPI 0.141.1 example serves an HTTP page and a WebSocket route with "
+                "The FastAPI 0.157.0 example serves an HTTP page and a WebSocket route with "
                 "cookie-or-query authentication, an optional integer query value, path data, and "
                 "a message loop. The independent case observes the page response and selected "
                 "WebSocket message/order/close behavior across representative sessions. It does "
@@ -3689,7 +3712,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
     {
         "docs_src/extra_models/tutorial001_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1 accepts the flat UserIn model, creates a UserInDB value with a hashed_password, "
+                "FastAPI 0.157.0 accepts the flat UserIn model, creates a UserInDB value with a hashed_password, "
                 "and returns it through response_model=UserOut. The independent workflow uses the same model "
                 "shape with different user/password values and a separate hash prefix; it observes response "
                 "status/body and selected OpenAPI paths and schemas. This maps request/response model filtering "
@@ -3723,7 +3746,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/extra_models/tutorial002_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1 builds UserIn, UserOut, and UserInDB from a shared UserBase model and returns "
+                "FastAPI 0.157.0 builds UserIn, UserOut, and UserInDB from a shared UserBase model and returns "
                 "the database-shaped value through response_model=UserOut. The independent workflow reproduces "
                 "that inheritance shape with separate values and hashing; it observes response status/body and "
                 "selected OpenAPI paths and schemas. This maps model inheritance, response filtering, and the "
@@ -3757,7 +3780,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/extra_models/tutorial003_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1 declares PlaneItem | CarItem as the route response model. The independent "
+                "FastAPI 0.157.0 declares PlaneItem | CarItem as the route response model. The independent "
                 "workflow uses the same union model shape and exercises one car-shaped and one plane-shaped "
                 "response with different item IDs and data, then inspects the selected OpenAPI paths and model "
                 "schemas. It maps the observed union response filtering and schema only, not the tutorial's item "
@@ -3791,7 +3814,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/extra_models/tutorial004_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1 returns a list of dictionaries through response_model=list[Item]. The independent "
+                "FastAPI 0.157.0 returns a list of dictionaries through response_model=list[Item]. The independent "
                 "workflow uses the same Item fields and typed-list route with different catalog values; it observes "
                 "the response status/body and selected OpenAPI path and Item schema. This maps list response "
                 "validation/filtering and its selected schema, not the tutorial's literal rows or TestClient semantics."
@@ -3818,7 +3841,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/extra_models/tutorial005_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1 declares dict[str, float] as the response model. The independent workflow uses "
+                "FastAPI 0.157.0 declares dict[str, float] as the response model. The independent workflow uses "
                 "the same typed-map route with different keys and values; it observes response status/body and the "
                 "OpenAPI paths containing the map response schema. This maps the typed mapping response and its "
                 "path-level schema only, not the tutorial's literal values or TestClient semantics."
@@ -3852,7 +3875,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
     {
         "docs_src/dependencies/tutorial008c_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1's direct-parameter example injects an exception into a yield dependency, "
+                "FastAPI 0.157.0's direct-parameter example injects an exception into a yield dependency, "
                 "catches InternalError without re-raising, and has an endpoint branch that raises it. The "
                 "independent workflow exercises the corresponding direct-signature route and observes HTTP "
                 "status/body; it separately records an application-exception outcome, which this mapping does "
@@ -3877,7 +3900,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/dependencies/tutorial008c_an_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1's Annotated example injects an exception into a yield dependency, catches "
+                "FastAPI 0.157.0's Annotated example injects an exception into a yield dependency, catches "
                 "InternalError without re-raising, and has an endpoint branch that raises it. The independent "
                 "workflow exercises the corresponding Annotated route and observes HTTP status/body; it separately "
                 "records an application-exception outcome, which this mapping does not claim. The case also "
@@ -3902,7 +3925,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/dependencies/tutorial008d_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1's direct-parameter example injects an exception into a yield dependency, "
+                "FastAPI 0.157.0's direct-parameter example injects an exception into a yield dependency, "
                 "records it, and re-raises it. The independent workflow exercises the corresponding "
                 "direct-signature route and observes HTTP status/body. Although the case also records an "
                 "application error class, this mapping does not claim that selector. The case contains a separate "
@@ -3927,7 +3950,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/dependencies/tutorial008d_an_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1's Annotated example injects an exception into a yield dependency, records it, "
+                "FastAPI 0.157.0's Annotated example injects an exception into a yield dependency, records it, "
                 "and re-raises it. The independent workflow exercises the corresponding Annotated route and "
                 "observes HTTP status/body. Although the case also records an application error class, this "
                 "mapping does not claim that selector. The case contains a separate direct-signature route; this "
@@ -3951,7 +3974,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/security/tutorial003_an_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1's Annotated example wires OAuth2 bearer extraction through nested current-user "
+                "FastAPI 0.157.0's Annotated example wires OAuth2 bearer extraction through nested current-user "
                 "and active-user dependencies. The independent case uses the same Annotated dependency shape and "
                 "sends a token for a disabled user; it substitutes a small dict-backed user store for the "
                 "tutorial's Pydantic models and observes response status, ordered headers, and body bytes. This "
@@ -3985,7 +4008,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/body_multiple_params/tutorial004_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1 declares the importance field as a direct Body(gt=0) scalar inside a request "
+                "FastAPI 0.157.0 declares the importance field as a direct Body(gt=0) scalar inside a request "
                 "that also contains Item and User models. The independent workflow isolates that same "
                 "positive-integer constraint on a scalar JSON body and observes status/body for a positive value and zero. "
                 "It does not claim multi-body embedding, Item/User parsing, the optional q parameter, or the "
@@ -4012,7 +4035,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/body_multiple_params/tutorial004_an_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1 declares the importance field as Annotated[int, Body(gt=0)] inside a request "
+                "FastAPI 0.157.0 declares the importance field as Annotated[int, Body(gt=0)] inside a request "
                 "that also contains Item and User models. The independent workflow isolates that same "
                 "positive-integer constraint on a scalar JSON body and observes status/body for a positive value and zero. "
                 "It does not claim multi-body embedding, Item/User parsing, the optional q parameter, or the "
@@ -4039,7 +4062,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/dependencies/tutorial005_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1's direct/default-parameter example nests a query extractor and a cookie fallback. "
+                "FastAPI 0.157.0's direct/default-parameter example nests a query extractor and a cookie fallback. "
                 "The independent workload covers query precedence, cookie fallback, absence of both values, and "
                 "the query/cookie OpenAPI parameters, but its Python signatures use Annotated declarations. This "
                 "is a behavior-level mapping only; it does not establish parity for the direct declaration style."
@@ -4071,7 +4094,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/dependencies/tutorial005_an_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1's Annotated example nests the same query extractor and cookie fallback. The "
+                "FastAPI 0.157.0's Annotated example nests the same query extractor and cookie fallback. The "
                 "independent workload uses Annotated dependency declarations and covers query precedence, cookie "
                 "fallback, absence of both values, and the query/cookie OpenAPI parameters. The mapping is limited "
                 "to those inputs and observations; it does not claim unrelated dependency behavior."
@@ -4103,7 +4126,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/app_testing/tutorial003_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1 registers startup work with on_event and the example runs a request inside a "
+                "FastAPI 0.157.0 registers startup work with on_event and the example runs a request inside a "
                 "TestClient context. The independent workflow observes startup/shutdown through raw ASGI lifespan "
                 "events and also requests the initialized item, but this mapping claims only the lifecycle "
                 "selectors. Direct ASGI lifecycle inputs do not establish TestClient context-manager parity or "
@@ -4135,7 +4158,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/app_testing/tutorial004_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1 defines a context-manager lifespan that adds items before yield and clears them "
+                "FastAPI 0.157.0 defines a context-manager lifespan that adds items before yield and clears them "
                 "afterward; its example asserts those states around a TestClient context. The independent workflow "
                 "drives startup/shutdown with raw ASGI lifespan events and requests an item while the app is "
                 "started. This mapping claims only lifecycle events and the workload trace; it does not claim the "
@@ -4680,7 +4703,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/dependencies/tutorial008e_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1 yields Rick from a function-scoped dependency and prints from its cleanup. "
+                "FastAPI 0.157.0 yields Rick from a function-scoped dependency and prints from its cleanup. "
                 "The independent tutorial case sends the same `/users/me` request and has a follow-up "
                 "request that exposes a workload cleanup event; only the first response's status and body "
                 "match the upstream test assertions. The separate `first-response` action in the lifecycle "
@@ -4711,7 +4734,7 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
         "docs_src/dependencies/tutorial008e_an_py310.py": {
             "rationale": (
-                "FastAPI 0.141.1 expresses the same function-scoped yield dependency with Annotated: it "
+                "FastAPI 0.157.0 expresses the same function-scoped yield dependency with Annotated: it "
                 "yields Rick and prints from cleanup. The independent tutorial case sends a separate "
                 "`/users/me-annotated` request and has a follow-up request that exposes a workload cleanup event; "
                 "only the first response's status and body match the upstream test assertions. The separate "
@@ -5374,6 +5397,45 @@ DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS.update(
         },
     }
 )
+
+for _query_model_example, _query_model_example_end_line in (
+    ("docs_src/query_param_models/tutorial003_py310.py", 22),
+    ("docs_src/query_param_models/tutorial003_an_py310.py", 24),
+):
+    DOCUMENTATION_EXAMPLE_REVIEW_MAPPINGS[_query_model_example] = {
+        "rationale": (
+            "The FastAPI 0.157.0 example declares query parameter models and returns their "
+            "values with optional search input. The independent combined-location cases cover "
+            "query model defaults, selected values, invalid values, extra parameters, and "
+            "OpenAPI parameter projection using new model names and values."
+        ),
+        "supporting_sources": [
+            {
+                "path": _query_model_example,
+                "start_line": 1,
+                "end_line": _query_model_example_end_line,
+                "role": "FastAPI query parameter model declarations and route response",
+            }
+        ],
+        "workflow_cases": [
+            {
+                "recipe_path": "tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml",
+                "case_ids": [
+                    "fastapi.parameter-models.combined-locations.defaults",
+                    "fastapi.parameter-models.combined-locations.independent-values",
+                    "fastapi.parameter-models.combined-locations.independent-validation",
+                    "fastapi.parameter-models.combined-locations.forbid-extras-around-dependencies",
+                    "fastapi.parameter-models.combined-locations.openapi-parameters",
+                ],
+                "observation_selectors": [
+                    "http.body.bytes",
+                    "http.status",
+                    "openapi.document",
+                    "openapi.paths",
+                ],
+            }
+        ],
+    }
 
 
 def _extend_documentation_example_workflow_case(

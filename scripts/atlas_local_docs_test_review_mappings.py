@@ -6,8 +6,8 @@ from typing import Any
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -45,7 +45,7 @@ def _function(
                 "tests/test_local_docs.py",
                 start,
                 end,
-                f"pinned FastAPI 0.141.1 assertion function {name}",
+                f"pinned FastAPI 0.157.0 assertion function {name}",
             ),
             *sources,
         ],

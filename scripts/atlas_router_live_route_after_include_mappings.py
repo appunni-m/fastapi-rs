@@ -6,15 +6,15 @@ from typing import Any
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
         "commit": "4f250d6b814587e20c5365f0a5f0c4d42bcb929f",
         "role": "sole generic ASGI routing and HTTP transport contract",
     },
-    "pydantic": {"version": "2.13.4", "role": "pinned validation dependency"},
+    "pydantic": {"version": "2.13.5", "role": "pinned validation dependency"},
 }
 
 _TEST = "tests/test_router_include_context.py"
@@ -163,7 +163,7 @@ _OPENAPI_CACHE_LIVE_ROUTE_MAPPING = {
             _TEST,
             249,
             263,
-            "pinned FastAPI 0.141.1 test_openapi_cache_updates_after_live_route_addition and its absent-then-present path assertion",
+            "pinned FastAPI 0.157.0 test_openapi_cache_updates_after_live_route_addition and its absent-then-present path assertion",
         ),
     ],
 }
@@ -204,20 +204,20 @@ _OPENAPI_NESTED_CACHE_MAPPING = {
         ),
         _source(
             "fastapi/applications.py",
-            1070,
-            1103,
+            1085,
+            1118,
             "FastAPI.openapi refreshes the schema cache when the recursive router route version changes",
         ),
         _source(
             "fastapi/routing.py",
-            2570,
-            2584,
+            2644,
+            2658,
             "APIRouter route versions recursively include original routers",
         ),
         _source(
             "fastapi/routing.py",
-            3296,
-            3312,
+            3403,
+            3419,
             "APIRouter.include_router records nested router inclusion context",
         ),
     ],
@@ -249,36 +249,36 @@ _LIVE_ROUTE_MAPPING = {
             _TEST,
             218,
             247,
-            "pinned FastAPI 0.141.1 test_live_route_addition_uses_include_metadata_for_runtime_and_openapi and its assertions",
+            "pinned FastAPI 0.157.0 test_live_route_addition_uses_include_metadata_for_runtime_and_openapi and its assertions",
         ),
         _source(
             "fastapi/routing.py",
-            2889,
-            2971,
+            2996,
+            3078,
             "APIRouter.add_api_route combines router-level metadata, appends the route, and marks the route collection changed",
         ),
         _source(
             "fastapi/routing.py",
-            2570,
-            2584,
+            2644,
+            2658,
             "APIRouter tracks route changes and recursively derives versions for included routers",
         ),
         _source(
             "fastapi/routing.py",
-            1601,
-            1623,
+            1662,
+            1684,
             "_IncludedRouter rebuilds effective route candidates when the included router changes",
         ),
         _source(
             "fastapi/routing.py",
-            3296,
-            3312,
+            3403,
+            3419,
             "APIRouter.include_router records the include context and registers the included router",
         ),
         _source(
             "fastapi/applications.py",
-            1070,
-            1103,
+            1085,
+            1118,
             "FastAPI.openapi refreshes the cached schema when the router route version changes",
         ),
     ],

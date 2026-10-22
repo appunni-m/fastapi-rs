@@ -48,6 +48,50 @@ cases:
     - {kind: http_response, selectors: [status, body], comparison: exact}
   source_evidence:
   - {path: tests/test_union_body_discriminator_annotated.py, kind: upstream_test}
+- case_id: fastapi.request-union-body.callable-discriminator.explicit-body.cat
+  actions:
+  - action_id: explicit-body-discriminator-cat
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /pet/explicit-discriminator
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [content-type, application/json]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"pet_type":"cat","meows":5}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_union_body_discriminator_annotated.py, kind: upstream_test}
+- case_id: fastapi.request-union-body.callable-discriminator.explicit-body.dog
+  actions:
+  - action_id: explicit-body-discriminator-dog
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /pet/explicit-discriminator
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver], [content-type, application/json]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '{"pet_type":"dog","barks":3.5}', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: tests/test_union_body_discriminator_annotated.py, kind: upstream_test}
 - case_id: fastapi.request-union-body.callable-discriminator.openapi
   actions:
   - action_id: callable-discriminator-openapi

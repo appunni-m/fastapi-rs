@@ -96,8 +96,8 @@ DOC_SECTION_CASE_MAPPINGS_ASYNC_20261015 = {
         (
             "The pinned page recommends `async def` when the called library is awaitable, "
             "`def` for blocking libraries, and says the forms can be mixed (lines 9-55). "
-            "FastAPI 0.141.1 classifies and dispatches path-operation callables in "
-            "`../fastapi/fastapi/routing.py:344-354,394,706`; the independent workflow "
+            "FastAPI 0.157.0 classifies path-operation callables and dispatches them in "
+            "`../fastapi/fastapi/routing.py:417-423,364-377,746-750`; the independent workflow "
             "samples one successful route of each declaration form."
         ),
     ),
@@ -148,8 +148,8 @@ DOC_SECTION_CASE_MAPPINGS_ASYNC_20261015 = {
         ),
         (
             "The page's `/burgers` example is an async path operation that awaits a helper "
-            "(lines 343-350). FastAPI 0.141.1 awaits coroutine-classified path operations "
-            "in `../fastapi/fastapi/routing.py:344-350,394,706`; ordinary Python `await` "
+            "(lines 343-350). FastAPI 0.157.0 awaits coroutine-classified path operations "
+            "in `../fastapi/fastapi/routing.py:364-377,746-750`; ordinary Python `await` "
             "semantics and the external helper remain outside this mapped sample."
         ),
     ),
@@ -168,7 +168,7 @@ DOC_SECTION_CASE_MAPPINGS_ASYNC_20261015 = {
         (
             "The section says FastAPI calls the first async function when it is a path "
             "operation (lines 354-360). FastAPI's coroutine classification and endpoint "
-            "dispatch are implemented in `../fastapi/fastapi/routing.py:344-350,394,706`; "
+            "dispatch are implemented in `../fastapi/fastapi/routing.py:417-423,364-377,746-750`; "
             "the linked input observes only the response from one async route."
         ),
     ),
@@ -219,9 +219,9 @@ DOC_SECTION_CASE_MAPPINGS_ASYNC_20261015 = {
         (
             "The page states that a normal `def` path operation runs in an external "
             "threadpool and that trivial compute-only handlers generally should use "
-            "`async def` (lines 418-422). FastAPI 0.141.1 awaits a coroutine path operation "
+            "`async def` (lines 418-422). FastAPI 0.157.0 awaits a coroutine path operation "
             "or delegates a sync one to Starlette's `run_in_threadpool` from "
-            "`../fastapi/fastapi/routing.py:344-354`; thread-pool implementation and generic "
+            "`../fastapi/fastapi/routing.py:364-377`; thread-pool implementation and generic "
             "ASGI behavior belong to the pinned Starlette 1.6.0 contract."
         ),
     ),
@@ -241,9 +241,9 @@ DOC_SECTION_CASE_MAPPINGS_ASYNC_20261015 = {
         ),
         (
             "The page applies the same `def` versus `async def` rule to dependencies "
-            "(lines 424-426). FastAPI 0.141.1 recursively solves dependencies and awaits "
+            "(lines 424-426). FastAPI 0.157.0 recursively solves dependencies and awaits "
             "coroutine dependencies or calls synchronous ones through `run_in_threadpool` "
-            "in `../fastapi/fastapi/dependencies/utils.py:640-676`; Starlette owns the "
+            "in `../fastapi/fastapi/dependencies/utils.py:657-758`; Starlette owns the "
             "generic worker-pool implementation."
         ),
     ),
@@ -263,8 +263,9 @@ DOC_SECTION_CASE_MAPPINGS_ASYNC_20261015 = {
         ),
         (
             "The source says nested dependencies may mix normal and async functions "
-            "(lines 428-430). FastAPI constructs and recursively solves dependency nodes in "
-            "`../fastapi/fastapi/dependencies/utils.py:271-349,619-676`; the linked input "
+            "(lines 428-430). FastAPI 0.157.0 constructs and recursively solves "
+            "dependency nodes in "
+            "`../fastapi/fastapi/dependencies/utils.py:314-389,657-758`; the linked input "
             "uses an independent mixed sync/async graph and records only its public response."
         ),
     ),

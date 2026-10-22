@@ -6,8 +6,8 @@ from typing import Any
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -15,7 +15,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI exception dispatch, server-error middleware, and TestClient contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned parameter-validation dependency for the invalid path input",
     },
 }
@@ -89,7 +89,7 @@ def _function(
                 "tests/test_exception_handlers.py",
                 start,
                 end,
-                f"pinned FastAPI 0.141.1 test function {name} and its assertions",
+                f"pinned FastAPI 0.157.0 test function {name} and its assertions",
             ),
             *sources,
         ],
@@ -151,8 +151,8 @@ _HTTP_HANDLER_SOURCES = (
     ),
     _source(
         "fastapi/applications.py",
-        1000,
-        1041,
+        997,
+        1056,
         "FastAPI retains supplied exception handlers and places non-server handlers in ExceptionMiddleware",
     ),
     _source(
@@ -179,14 +179,14 @@ _VALIDATION_HANDLER_SOURCES = (
     ),
     _source(
         "fastapi/applications.py",
-        1000,
-        1041,
+        997,
+        1056,
         "FastAPI retains the custom RequestValidationError handler in ExceptionMiddleware",
     ),
     _source(
         "fastapi/routing.py",
-        751,
-        755,
+        792,
+        799,
         "FastAPI raises RequestValidationError when parsed path or dependency validation fails",
     ),
     _source(
@@ -219,8 +219,8 @@ _SERVER_ERROR_SOURCES = (
     ),
     _source(
         "fastapi/applications.py",
-        1020,
-        1041,
+        1032,
+        1056,
         "FastAPI assigns an Exception handler to its outer ServerErrorMiddleware",
     ),
     _source(
@@ -240,8 +240,8 @@ _SERVER_ERROR_SOURCES = (
 _DEPENDENCY_ERROR_SOURCES = (
     _source(
         "fastapi/dependencies/utils.py",
-        566,
-        574,
+        637,
+        645,
         "FastAPI enters generator dependencies through an async exit stack",
     ),
     _source(

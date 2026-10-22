@@ -14,8 +14,8 @@ PROJECT = Path(__file__).resolve().parents[1]
 FASTAPI_ROOT = PROJECT.parent / "fastapi"
 
 SOURCE_IDENTITY = {
-    "fastapi_version": "0.141.1",
-    "fastapi_commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+    "fastapi_version": "0.157.0",
+    "fastapi_commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     "starlette_version": "1.6.0",
     "starlette_commit": "4f250d6b814587e20c5365f0a5f0c4d42bcb929f",
 }
@@ -44,7 +44,7 @@ def _test_span(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         node.lineno,
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 test function {function_name}",
+        f"pinned FastAPI 0.157.0 test function {function_name}",
     )
 
 
@@ -127,56 +127,56 @@ def _module(rationale: str, functions: dict[str, dict[str, Any]]) -> dict[str, A
 
 _SOLVER = _source(
     "fastapi/dependencies/utils.py",
-    619,
-    705,
+    700,
+    793,
     "FastAPI recursively resolves dependency callables and extracts request parameters",
 )
 _REQUEST_PARAMS = _source(
     "fastapi/dependencies/utils.py",
-    780,
-    849,
-    "FastAPI extracts and validates path, query, header, and cookie parameters",
+    843,
+    989,
+    "FastAPI extracts multidict values and validates path, query, header, and cookie parameters",
 )
 _YIELD_DEPENDENCY = _source(
     "fastapi/dependencies/utils.py",
-    566,
-    574,
+    637,
+    645,
     "FastAPI enters generator dependencies as context managers on an exit stack",
 )
 _ROUTE_STACKS = _source(
     "fastapi/routing.py",
-    134,
-    158,
+    143,
+    167,
     "FastAPI owns request/function exit-stack lifetime and reports swallowed dependency exceptions",
 )
 _ROUTE_SOLVE = _source(
     "fastapi/routing.py",
-    475,
-    490,
+    505,
+    524,
     "FastAPI invokes dependency solving before calling the endpoint",
 )
 _VALIDATION_RAISE = _source(
     "fastapi/routing.py",
-    751,
-    755,
+    792,
+    799,
     "FastAPI raises RequestValidationError when dependency and field resolution yields errors",
 )
 _OPENAPI_PARAMS = _source(
     "fastapi/openapi/utils.py",
-    331,
-    385,
+    316,
+    370,
     "FastAPI emits flattened dependency parameters and request-body metadata in OpenAPI",
 )
 _OPENAPI_RESPONSES = _source(
     "fastapi/openapi/utils.py",
-    403,
-    472,
+    388,
+    457,
     "FastAPI emits operation response and validation-error schema references",
 )
 _FASTAPI_SWALLOWED_YIELD = _source(
     "fastapi/routing.py",
-    140,
-    158,
+    149,
+    167,
     "FastAPI detects a response suppressed by a yield dependency that does not re-raise",
 )
 _STARLETTE_CLIENT_ERROR = _source(

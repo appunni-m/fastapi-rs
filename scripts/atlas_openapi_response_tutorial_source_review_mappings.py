@@ -19,8 +19,8 @@ FASTAPI_ROOT = PROJECT_ROOT.parent / "fastapi"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "role": "source oracle and development-time source only; never a target runtime dependency",
     },
     "starlette": {
@@ -29,7 +29,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI, response-class, FileResponse, and TestClient transport contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned request-model validation and generated model-schema dependency",
     },
 }
@@ -66,7 +66,7 @@ def _span(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         decorated_start,
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 test function {function_name} and its assertions",
+        f"pinned FastAPI 0.157.0 test function {function_name} and its assertions",
     )
 
 
@@ -200,38 +200,38 @@ def _function(
 _SCHEMA_RECIPE = "tests/fixtures/input-recipes/parity/schema-extra-examples-upstream.yaml"
 _SCHEMA_FASTAPI_BODY = _source(
     "fastapi/routing.py",
-    425,
-    475,
+    451,
+    505,
     "FastAPI reads/parses a declared request body and proceeds to dependency and endpoint handling",
 )
 _OPENAPI_ENTRY = _source(
     "fastapi/applications.py",
-    1070,
-    1103,
+    1085,
+    1118,
     "FastAPI.openapi caches or regenerates the document using its registered routes",
 )
 _OPENAPI_REQUEST_BODY = _source(
     "fastapi/openapi/utils.py",
-    231,
-    263,
+    216,
+    248,
     "FastAPI encodes request-body schema, Body.example, and Body.openapi_examples into the operation",
 )
 _OPENAPI_MODEL_SCHEMA = _source(
     "fastapi/_compat/v2.py",
     254,
-    345,
+    347,
     "FastAPI selects generated model fields and delegates JSON Schema generation to the Pydantic v2 adapter",
 )
 _OPENAPI_OPERATION = _source(
     "fastapi/openapi/utils.py",
-    311,
-    418,
+    296,
+    403,
     "FastAPI assembles the route operation, summary/id, parameters, request body, and initial response description",
 )
 _DIRECT_RESPONSE = _source(
     "fastapi/routing.py",
-    706,
-    714,
+    746,
+    754,
     "FastAPI preserves a returned Starlette Response instance and attaches pending background work when needed",
 )
 _STARLETTE_TESTCLIENT = (
@@ -290,7 +290,7 @@ _SCHEMA_FUNCTIONS: dict[str, dict[str, Any]] = {
                     ("http.status", "openapi.document"),
                 ),
             ),
-            "The independent case selects one component schema and does not compare the source's complete OpenAPI document, path metadata, or exact model names. FastAPI controls placement; Pydantic 2.13.4 owns model JSON Schema mechanics.",
+            "The independent case selects one component schema and does not compare the source's complete OpenAPI document, path metadata, or exact model names. FastAPI controls placement; Pydantic 2.13.5 owns model JSON Schema mechanics.",
             (_OPENAPI_ENTRY, _OPENAPI_REQUEST_BODY, _OPENAPI_MODEL_SCHEMA),
         ),
     },
@@ -481,8 +481,8 @@ OPENAPI_RESPONSE_TUTORIAL_SOURCE_REVIEW = {
     "starlette_identity": SOURCE_IDENTITIES["starlette"],
     "pydantic_identity": SOURCE_IDENTITIES["pydantic"],
     "ownership_notes": [
-        "FastAPI 0.141.1 owns request-body integration into route handling, direct returned-Response passthrough, and assembly/placement of route and request-body data in OpenAPI. The original FastAPI checkout is source-oracle/dev-only.",
-        "Pydantic 2.13.4 owns model validation and generated JSON Schema details. FastAPI selects fields and places Pydantic schema results into the OpenAPI document.",
+        "FastAPI 0.157.0 owns request-body integration into route handling, direct returned-Response passthrough, and assembly/placement of route and request-body data in OpenAPI. The original FastAPI checkout is source-oracle/dev-only.",
+        "Pydantic 2.13.5 owns model validation and generated JSON Schema details. FastAPI selects fields and places Pydantic schema results into the OpenAPI document.",
         "Starlette 1.6.0 owns generic FileResponse metadata/body transfer and TestClient HTTP transport. FastAPI directly re-exports TestClient. The tests do not inspect HTTPX request construction or backend-specific transport behavior.",
         "No FastAPI alias or deprecation behavior is asserted by these source functions. Starlette 1.6.0's legacy `httpx` fallback warning is documented as a harness boundary, not mapped behavior; the default TestClient contract prefers `httpx2`.",
     ],

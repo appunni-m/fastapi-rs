@@ -15,7 +15,7 @@ FastAPI, Starlette, Pydantic, or third-party material.
 
 ## Upstream and dependency material
 
-- FastAPI 0.141.1 is MIT-licensed. Its upstream notice credits original author
+- FastAPI 0.157.0 is MIT-licensed. Its upstream notice credits original author
   Sebastián Ramírez with Copyright (c) 2018. Its implementation modules are not
   copied into this repository. The repository does include selected signature
   and annotation metadata from the pinned source; its complete MIT notice,
@@ -26,7 +26,7 @@ FastAPI, Starlette, Pydantic, or third-party material.
   dependency. Its complete BSD-3-Clause notice is reproduced in
   [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md), which the Python
   package declares as a license file.
-- Pydantic 2.13.4 and `pydantic-core` 2.46.4 are MIT-licensed Python runtime
+- Pydantic 2.13.5 and `pydantic-core` 2.46.5 are MIT-licensed Python runtime
   dependencies. Both are explicitly pinned by the target package; Core is a
   separately distributed wheel with a Rust native extension, and FastAPI-RS
   calls its APIs directly. Their wheel license files remain with those
@@ -48,7 +48,7 @@ FastAPI, Starlette, Pydantic, or third-party material.
   [`RUST_TARGET_DEPENDENCIES.md`](RUST_TARGET_DEPENDENCIES.md). The FastAPI
   source dependency graph is documented separately in
   [`DEPENDENCY_GRAPH.md`](DEPENDENCY_GRAPH.md).
-- The Pydantic Core 2.46.4 wheel's Pydantic-owned native Cargo closure is
+- The Pydantic Core 2.46.5 wheel's Pydantic-owned native Cargo closure is
   inventoried separately in
   [`PYDANTIC_CORE_DEPENDENCIES.md`](PYDANTIC_CORE_DEPENDENCIES.md). That graph
   is not part of FastAPI-RS's Cargo workspace or package bundle.
@@ -69,8 +69,8 @@ and [lock](../requirements/target-runtime-cpython-3.12.13.lock).
 
 | Package | Pinned version and role | Purpose / dependency path | Implementation and native parts | License evidence |
 |---|---|---|---|---|
-| `pydantic` | `2.13.4`; direct target runtime dependency | Reused public Python model, field, and schema API. | Python package; the validation engine is the separate `pydantic-core` wheel. | MIT, `License-Expression` in the [2.13.4 wheel metadata](https://pypi.org/pypi/pydantic/2.13.4/json) and [upstream license](https://github.com/pydantic/pydantic/blob/v2.13.4/LICENSE). |
-| `pydantic-core` | `2.46.4`; direct target runtime dependency and required by Pydantic | Supplies Pydantic's validation and serialization engine; FastAPI-RS calls its Python wheel API through PyO3. | Python API with a Rust native extension. Its Rust implementation and internal crate graph remain Pydantic-owned, not a FastAPI-RS Cargo dependency. | MIT, `License-Expression` in the [2.46.4 wheel metadata](https://pypi.org/pypi/pydantic-core/2.46.4/json) and [upstream license](https://github.com/pydantic/pydantic/blob/v2.13.4/pydantic-core/LICENSE). |
+| `pydantic` | `2.13.5`; direct target runtime dependency | Reused public Python model, field, and schema API. | Python package; the validation engine is the separate `pydantic-core` wheel. | MIT, `License-Expression` in the [2.13.5 wheel metadata](https://pypi.org/pypi/pydantic/2.13.5/json) and [upstream license](https://github.com/pydantic/pydantic/blob/v2.13.5/LICENSE). |
+| `pydantic-core` | `2.46.5`; direct target runtime dependency and required by Pydantic | Supplies Pydantic's validation and serialization engine; FastAPI-RS calls its Python wheel API through PyO3. | Python API with a Rust native extension. Its Rust implementation and internal crate graph remain Pydantic-owned, not a FastAPI-RS Cargo dependency. | MIT, `License-Expression` in the [2.46.5 wheel metadata](https://pypi.org/pypi/pydantic-core/2.46.5/json) and [upstream license](https://github.com/pydantic/pydantic/blob/v2.13.5/pydantic-core/LICENSE). |
 | `starlette-rs-py` | `0.1.0`; direct target runtime dependency, installed from the pinned local source | Provides the selected Starlette-RS Python package and declares `anyio>=3.6.2,<5` and `typing-extensions>=4.12.0`; the selected source is commit `4139a72449bf5751e8902fb1c7175ee7f191d338`. | Python package and PyO3 extension backed by Rust. | BSD-3-Clause declared by its [pinned project metadata](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/pyproject.toml); version is in the [pinned Cargo workspace manifest](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/Cargo.toml), and its license files are declared in project metadata. |
 | `anyio` | `4.12.1`; external runtime dependency of Starlette-RS-Py | AnyIO task groups, streams, cancellation, and thread offload are called from the pinned Rust runtime; see [`runtime_calls.rs`](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/starlette-rs-py/src/runtime_calls.rs#L690) and [`request_runtime.rs`](https://github.com/appunni-m/starlette-rs/blob/4139a72449bf5751e8902fb1c7175ee7f191d338/starlette-rs-py/src/runtime_calls.rs#L904). | Python wheel; no native component is identified by the locked wheel metadata. | MIT, `License-Expression` in the [4.12.1 wheel metadata](https://pypi.org/pypi/anyio/4.12.1/json). |
 | `annotated-types` | `0.7.0`; Pydantic transitive runtime dependency | Supplies `Annotated` constraint metadata consumed by Pydantic's field/type handling. | Python wheel; no native component is identified by the locked wheel metadata. | The wheel metadata has an MIT license classifier and a `LICENSE` file, but no `License-Expression`; the exact [v0.7.0 tagged `LICENSE`](https://github.com/annotated-types/annotated-types/blob/v0.7.0/LICENSE) is MIT. See [0.7.0 wheel metadata](https://pypi.org/pypi/annotated-types/0.7.0/json). |
@@ -408,9 +408,9 @@ trademark, or distribution determination.
 
 ## References
 
-- [FastAPI 0.141.1 license](https://github.com/fastapi/fastapi/blob/0.141.1/LICENSE)
+- [FastAPI 0.157.0 license](https://github.com/fastapi/fastapi/blob/0.157.0/LICENSE)
 - [Starlette 1.6.0 license](https://github.com/Kludex/starlette/blob/1.6.0/LICENSE.md)
-- [Pydantic 2.13.4 license](https://github.com/pydantic/pydantic/blob/v2.13.4/LICENSE)
-- [pydantic-core 2.46.4 license](https://github.com/pydantic/pydantic/blob/v2.13.4/pydantic-core/LICENSE)
-- [Pydantic v2.13.4 architecture](https://github.com/pydantic/pydantic/blob/v2.13.4/docs/internals/architecture.md)
+- [Pydantic 2.13.5 license](https://github.com/pydantic/pydantic/blob/v2.13.5/LICENSE)
+- [pydantic-core 2.46.5 license](https://github.com/pydantic/pydantic/blob/v2.13.5/pydantic-core/LICENSE)
+- [Pydantic v2.13.5 architecture](https://github.com/pydantic/pydantic/blob/v2.13.5/docs/internals/architecture.md)
 - [zlib 1.3.2 license notice](https://github.com/madler/zlib/blob/v1.3.2/README)

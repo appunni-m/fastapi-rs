@@ -62,7 +62,7 @@ DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018 = {
             "local Uvicorn process output shown in the surrounding tutorial."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/tutorial/first-steps.md:65-74 tells the reader "
+            "Pinned FastAPI 0.157.0 docs/en/docs/tutorial/first-steps.md:65-74 tells the reader "
             "to request `/` and shows `{'message': 'Hello World'}`. The linked "
             "docs_src/first_steps/tutorial001_py310.py:6-8 defines that GET route and"
             " return value; "
@@ -79,7 +79,7 @@ DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018 = {
             "FastAPI option, model declaration, request, or generated-schema behavior."
         ),
         (
-            "Pinned FastAPI 0.141.1 lines 105-110 give standards vocabulary only. The "
+            "Pinned FastAPI 0.157.0 lines 105-110 give standards vocabulary only. The "
             "application's concrete OpenAPI generation is covered by the separate "
             "`Check the openapi.json` section, and this paragraph adds no runtime contract."
         ),
@@ -93,7 +93,7 @@ DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018 = {
             "observable output."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/tutorial/first-steps.md:95-98 explains schema "
+            "Pinned FastAPI 0.157.0 docs/en/docs/tutorial/first-steps.md:95-98 explains schema "
             "as an abstract description. The FastAPI OpenAPI document and API-specific schema "
             "behavior are reviewed in the neighboring OpenAPI sections."
         ),
@@ -108,7 +108,7 @@ DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018 = {
             "an already constructed FastAPI application."
         ),
         (
-            "Pinned FastAPI 0.141.1 lines 209-227 describe a CLI process that discovers and "
+            "Pinned FastAPI 0.157.0 lines 209-227 describe a CLI process that discovers and "
             "deploys user code to the external FastAPI Cloud service. CLI, browser, and cloud "
             "deployment behavior is outside the FastAPI library's ASGI runtime contract."
         ),
@@ -128,7 +128,7 @@ DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018 = {
             "outcomes are not attributed to this heading."
         ),
         (
-            "Pinned FastAPI 0.141.1 lines 231-244 identify the root `FastAPI` import as a "
+            "Pinned FastAPI 0.157.0 lines 231-244 identify the root `FastAPI` import as a "
             "class and state its direct Starlette inheritance. The independent input observes "
             "those public class and identity facts in the exact response body; generic ASGI "
             "behavior remains Starlette's contract."
@@ -149,7 +149,7 @@ DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018 = {
             "body, not every method on the application."
         ),
         (
-            "Pinned FastAPI 0.141.1 lines 245-252 describe the result of calling `FastAPI()` "
+            "Pinned FastAPI 0.157.0 lines 245-252 describe the result of calling `FastAPI()` "
             "as the application instance used to define an API. The case observes construction "
             "and the resulting public instance type under the `app-routing` feature."
         ),
@@ -163,7 +163,7 @@ DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018 = {
             "providers; no input exercises FastAPI library behavior."
         ),
         (
-            "Pinned FastAPI 0.141.1 lines 400-419 contain a `fastapi deploy` instruction and "
+            "Pinned FastAPI 0.157.0 lines 400-419 contain a `fastapi deploy` instruction and "
             "external cloud-provider guidance. The CLI and hosting process are outside the "
             "FastAPI application's ASGI runtime contract."
         ),
@@ -177,7 +177,7 @@ DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018 = {
             "and sponsorship; it specifies no behavior of the FastAPI library."
         ),
         (
-            "Pinned FastAPI 0.141.1 lines 404-413 are service description and sponsorship "
+            "Pinned FastAPI 0.157.0 lines 404-413 are service description and sponsorship "
             "information. FastAPI Cloud's build, deployment, and access behavior belongs to "
             "that external service."
         ),
@@ -191,7 +191,7 @@ DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018 = {
             "guides; it defines no FastAPI runtime input or output."
         ),
         (
-            "Pinned FastAPI 0.141.1 lines 414-419 discuss where user applications may be "
+            "Pinned FastAPI 0.157.0 lines 414-419 discuss where user applications may be "
             "deployed. Cloud-provider deployment behavior is outside the package's library "
             "contract."
         ),
@@ -215,7 +215,7 @@ DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018 = {
             "type."
         ),
         (
-            "Pinned FastAPI 0.141.1 lines 238-244 direct users to import and reuse "
+            "Pinned FastAPI 0.157.0 lines 238-244 direct users to import and reuse "
             "`http_exception_handler` and `request_validation_exception_handler`. The linked "
             "workload performs those imports and registrations, then selects both response "
             "behaviors; Starlette 1.6.0 owns generic exception dispatch."
@@ -236,7 +236,7 @@ DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018 = {
             "run a browser or claim UI rendering behavior."
         ),
         (
-            "Pinned FastAPI 0.141.1 lines 89-94 state that the order of `openapi_tags` "
+            "Pinned FastAPI 0.157.0 lines 89-94 state that the order of `openapi_tags` "
             "metadata controls the order exposed to the docs UI. The case compares the full "
             "generated OpenAPI tag list for deliberately nonalphabetic metadata, tying the "
             "documented behavior to the `openapi-docs` feature."
@@ -257,7 +257,7 @@ DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018 = {
             "Swagger UI Markdown rendering."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/tutorial/metadata.md:83-88 states that configured "
+            "Pinned FastAPI 0.157.0 docs/en/docs/tutorial/metadata.md:83-88 states that configured "
             "tag metadata appears in the docs. The linked"
             " docs_src/metadata/tutorial004_py310.py:3-18 "
             "sets names, descriptions, and externalDocs through `FastAPI(openapi_tags=...)`; the "
@@ -274,7 +274,7 @@ DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018 = {
             "does not describe a FastAPI runtime action."
         ),
         (
-            "Pinned FastAPI 0.141.1 lines 151-160 discuss the static subtype relation between "
+            "Pinned FastAPI 0.157.0 lines 151-160 discuss the static subtype relation between "
             "`BaseUser` and `UserIn` as understood by Python tooling. Runtime response "
             "filtering is separately covered by the adjacent FastAPI data-filtering section."
         ),
@@ -288,7 +288,7 @@ DOC_SECTION_CASE_MAPPINGS_CORE_HEADINGS_20261018 = {
             "it states no security or FastAPI runtime behavior."
         ),
         (
-            "Pinned FastAPI 0.141.1 lines 15-18 only tell readers to run an example before "
+            "Pinned FastAPI 0.157.0 lines 15-18 only tell readers to run an example before "
             "returning to its explanation. The OAuth2 behavior and OpenAPI security projection "
             "are described in the later sections."
         ),

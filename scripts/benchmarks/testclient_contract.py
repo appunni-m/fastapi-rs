@@ -40,7 +40,7 @@ BENCHMARK_RESULT_ROOT = (ROOT / "benchmark-results").resolve()
 CASE_ID = "fastapi.benchmarks.sync-validated.testclient-request"
 ACTION_ID = "sync-validated-post"
 _EXPECTED_SUBJECTS = {
-    "fastapi": ("fastapi-0.141.1", "oracle"),
+    "fastapi": ("fastapi-0.157.0", "oracle"),
     "fastapi-rs": ("fastapi-rs-release", "target"),
 }
 _EXPECTED_METRICS = {

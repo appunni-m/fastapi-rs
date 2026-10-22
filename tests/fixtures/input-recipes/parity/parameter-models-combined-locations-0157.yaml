@@ -1,0 +1,169 @@
+schema: fastapi-rs/python-asgi-workflow@2
+workload:
+  file: tests/fixtures/workloads/parameter_models_combined_locations_0157.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.parameter-models.combined-locations.defaults
+  actions:
+  - action_id: defaults
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /combined/
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: docs/en/docs/tutorial/query-param-models.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/header-param-models.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/cookie-param-models.md, kind: upstream_documentation}
+  - {path: docs/en/docs/release-notes.md, kind: upstream_documentation}
+  - {path: tests/test_multiple_parameter_models.py, kind: upstream_test}
+  - {path: tests/test_tutorial/test_query_param_models/test_tutorial003.py, kind: upstream_test}
+  - {path: docs_src/query_param_models/tutorial003_py310.py, kind: upstream_documentation_example}
+  - {path: docs_src/query_param_models/tutorial003_an_py310.py, kind: upstream_documentation_example}
+- case_id: fastapi.parameter-models.combined-locations.independent-values
+  actions:
+  - action_id: independent-values
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /combined/
+      query_string: shared=5&page=4&search=linen
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [shared, '25']
+      - [client-build, build-12]
+      - [x-partner-key, partner-7]
+      - [legacy_code, v3]
+      - [x-origin, edge]
+      - [cookie, 'shared=35; theme=dark; session_tag=mobile']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: docs/en/docs/tutorial/query-param-models.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/header-param-models.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/cookie-param-models.md, kind: upstream_documentation}
+  - {path: docs/en/docs/release-notes.md, kind: upstream_documentation}
+  - {path: tests/test_multiple_parameter_models.py, kind: upstream_test}
+  - {path: tests/test_tutorial/test_query_param_models/test_tutorial003.py, kind: upstream_test}
+  - {path: docs_src/query_param_models/tutorial003_py310.py, kind: upstream_documentation_example}
+  - {path: docs_src/query_param_models/tutorial003_an_py310.py, kind: upstream_documentation_example}
+- case_id: fastapi.parameter-models.combined-locations.independent-validation
+  actions:
+  - action_id: independent-validation
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /combined/
+      query_string: shared=0
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [shared, '31']
+      - [legacy_code, v3]
+      - [cookie, 'shared=29']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: docs/en/docs/tutorial/query-param-models.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/header-param-models.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/cookie-param-models.md, kind: upstream_documentation}
+  - {path: docs/en/docs/release-notes.md, kind: upstream_documentation}
+  - {path: tests/test_multiple_parameter_models.py, kind: upstream_test}
+  - {path: tests/test_tutorial/test_query_param_models/test_tutorial003.py, kind: upstream_test}
+  - {path: docs_src/query_param_models/tutorial003_py310.py, kind: upstream_documentation_example}
+  - {path: docs_src/query_param_models/tutorial003_an_py310.py, kind: upstream_documentation_example}
+- case_id: fastapi.parameter-models.combined-locations.forbid-extras-around-dependencies
+  actions:
+  - action_id: forbid-extras
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /combined/
+      query_string: search=linen&unclaimed_query=x
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [x-origin, edge]
+      - [x-unclaimed-header, x]
+      - [cookie, 'session_tag=mobile; unclaimed_cookie=x']
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body], comparison: exact}
+  source_evidence:
+  - {path: docs/en/docs/tutorial/query-param-models.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/header-param-models.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/cookie-param-models.md, kind: upstream_documentation}
+  - {path: docs/en/docs/release-notes.md, kind: upstream_documentation}
+  - {path: tests/test_multiple_parameter_models.py, kind: upstream_test}
+  - {path: docs_src/query_param_models/tutorial003_py310.py, kind: upstream_documentation_example}
+  - {path: docs_src/query_param_models/tutorial003_an_py310.py, kind: upstream_documentation_example}
+- case_id: fastapi.parameter-models.combined-locations.openapi-parameters
+  actions:
+  - action_id: openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - kind: openapi
+      json_pointers:
+      - /paths/~1combined~1/get/parameters
+      comparison: exact
+  source_evidence:
+  - {path: docs/en/docs/tutorial/query-param-models.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/header-param-models.md, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/cookie-param-models.md, kind: upstream_documentation}
+  - {path: docs/en/docs/release-notes.md, kind: upstream_documentation}
+  - {path: tests/test_multiple_parameter_models.py, kind: upstream_test}
+  - {path: tests/test_tutorial/test_query_param_models/test_tutorial003.py, kind: upstream_test}
+  - {path: docs_src/query_param_models/tutorial003_py310.py, kind: upstream_documentation_example}
+  - {path: docs_src/query_param_models/tutorial003_an_py310.py, kind: upstream_documentation_example}

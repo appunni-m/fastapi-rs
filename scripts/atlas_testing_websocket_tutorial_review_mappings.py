@@ -15,8 +15,8 @@ FASTAPI_ROOT = PROJECT.parent / "fastapi"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "role": "pinned source oracle only; the target runtime is FastAPI-RS",
     },
     "starlette": {
@@ -25,8 +25,8 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI, TestClient, WebSocket, and mount contract",
     },
     "pydantic": {
-        "version": "2.13.4",
-        "pydantic_core_version": "2.46.4",
+        "version": "2.13.5",
+        "pydantic_core_version": "2.46.5",
         "role": "FastAPI's field validation and parameter conversion backend",
     },
     "python": {
@@ -45,8 +45,8 @@ SOURCE_IDENTITIES = {
 # The task named this path, but it does not exist at the pinned FastAPI commit.
 # The tutorial module below is the extant WebSocket TestClient source reviewed.
 SOURCE_REVIEW_SCOPE_NOTE = (
-    "tests/test_websockets.py is absent from the pinned FastAPI 0.141.1 source tree "
-    "at 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f; it has no top-level functions "
+    "tests/test_websockets.py is absent from the pinned FastAPI 0.157.0 source tree "
+    "at 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1; it has no top-level functions "
     "to map and is intentionally omitted from module mappings and exclusion counts. "
     "The extant WebSocket tutorial TestClient module in this review is "
     "tests/test_tutorial/test_websockets/test_tutorial002.py."
@@ -99,7 +99,7 @@ def _function_source(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         node.lineno,
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 top-level function {function_name}",
+        f"pinned FastAPI 0.157.0 top-level function {function_name}",
     )
 
 
@@ -214,44 +214,44 @@ def _module(
 
 _FASTAPI_HTTP_ROUTES = _source(
     "fastapi/applications.py",
-    1646,
-    1815,
+    1688,
+    1857,
     "FastAPI registers HTTP path operations and their response metadata",
 )
 _FASTAPI_DEPENDENCIES = _source(
     "fastapi/dependencies/utils.py",
-    619,
-    698,
+    700,
+    786,
     "FastAPI resolves dependencies and query/path/header/cookie parameters; ModelField validation uses the pinned Pydantic layer",
 )
 _FASTAPI_HTTP_EXECUTION = _source(
     "fastapi/routing.py",
-    475,
-    489,
+    505,
+    523,
     "FastAPI solves endpoint dependencies before invoking the endpoint",
 )
 _FASTAPI_RESPONSE = _source(
     "fastapi/routing.py",
-    706,
-    759,
+    746,
+    803,
     "FastAPI turns returned values into configured responses and raises request validation errors",
 )
 _FASTAPI_OPENAPI = _source(
     "fastapi/applications.py",
-    1070,
-    1120,
+    1085,
+    1135,
     "FastAPI generates the OpenAPI document and serves it at the configured path",
 )
 _FASTAPI_WS_ROUTE = _source(
     "fastapi/applications.py",
-    1361,
-    1438,
+    1403,
+    1480,
     "FastAPI's websocket decorator registers an APIWebSocketRoute",
 )
 _FASTAPI_WS_RESOLUTION = _source(
     "fastapi/routing.py",
-    764,
-    837,
+    808,
+    891,
     "FastAPI resolves WebSocket dependencies and raises WebSocketRequestValidationError for invalid parameters",
 )
 _FASTAPI_WS_VALIDATION_CLOSE = _source(
@@ -618,7 +618,7 @@ TESTING_WEBSOCKET_TUTORIAL_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
         },
     ),
     "tests/test_tutorial/test_testing_dependencies/test_tutorial001.py": _module(
-        "The fixture selects both plain and Annotated dependency syntax. FastAPI owns override lookup, dependency resolution, parameter conversion and endpoint values; Pydantic 2.13.4 supplies typed query validation. Starlette-RS owns only generic ASGI/TestClient transport and response delivery.",
+        "The fixture selects both plain and Annotated dependency syntax. FastAPI owns override lookup, dependency resolution, parameter conversion and endpoint values; Pydantic 2.13.5 supplies typed query validation. Starlette-RS owns only generic ASGI/TestClient transport and response delivery.",
         {
             "get_test_module": _review(
                 "tests/test_tutorial/test_testing_dependencies/test_tutorial001.py",
@@ -840,7 +840,7 @@ TESTING_WEBSOCKET_TUTORIAL_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
         },
     ),
     "tests/test_tutorial/test_websockets/test_tutorial002.py": _module(
-        "This parametrized source covers plain and Annotated WebSocket dependencies, cookie/query credentials, q conversion, and pre-accept closes. FastAPI owns WebSocket route/dependency validation; Pydantic 2.13.4 validates q. Starlette-RS owns generic WebSocket event/session semantics.",
+        "This parametrized source covers plain and Annotated WebSocket dependencies, cookie/query credentials, q conversion, and pre-accept closes. FastAPI owns WebSocket route/dependency validation; Pydantic 2.13.5 validates q. Starlette-RS owns generic WebSocket event/session semantics.",
         {
             "get_app": _review(
                 "tests/test_tutorial/test_websockets/test_tutorial002.py",

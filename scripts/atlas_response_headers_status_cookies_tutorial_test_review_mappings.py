@@ -6,8 +6,8 @@ from typing import Any
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -15,7 +15,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic response and TestClient/ASGI transport contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned dependency; the selected response tutorials do not exercise model behavior",
     },
 }
@@ -74,7 +74,7 @@ def _function(
                 test_path,
                 start,
                 end,
-                "pinned FastAPI 0.141.1 test function and asserted observations",
+                "pinned FastAPI 0.157.0 test function and asserted observations",
             ),
             *sources,
         ],
@@ -133,26 +133,26 @@ _TESTCLIENT = (
 _FASTAPI_INJECTED_RESPONSE = (
     _source(
         "fastapi/dependencies/utils.py",
-        611,
-        615,
+        683,
+        687,
         "FastAPI creates the temporary Response injected into path operations",
     ),
     _source(
         "fastapi/dependencies/utils.py",
-        719,
-        730,
+        807,
+        818,
         "FastAPI injects and returns the temporary Response in SolvedDependency",
     ),
     _source(
         "fastapi/routing.py",
-        357,
-        372,
+        380,
+        395,
         "FastAPI selects the temporary Response status override when building response arguments",
     ),
     _source(
         "fastapi/routing.py",
-        716,
-        750,
+        756,
+        791,
         "FastAPI constructs the route response and copies injected raw headers to it",
     ),
 )
@@ -200,8 +200,8 @@ RESPONSE_HEADERS_STATUS_COOKIES_TUTORIAL_REVIEW_MAPPINGS = {
                     ),
                     _source(
                         "fastapi/routing.py",
-                        711,
-                        714,
+                        751,
+                        754,
                         "FastAPI preserves an endpoint-returned Response instance",
                     ),
                     _source(

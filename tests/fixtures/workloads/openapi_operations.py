@@ -47,16 +47,6 @@ def _make_invalid_schema_app() -> FastAPI:
     return broken
 
 
-def _make_prefixed_app() -> FastAPI:
-    prefixed = FastAPI(openapi_prefix="/gateway/v3")
-
-    @prefixed.get("/catalog")
-    async def prefixed_catalog() -> dict[str, str]:
-        return {"state": "available"}
-
-    return prefixed
-
-
 def _id(prefix: str) -> Any:
     def generate(route: Any) -> str:
         safe_path = route.path_format.strip("/").replace("/", "_") or "root"
@@ -265,12 +255,6 @@ def create_app() -> FastAPI:
     @app.get("/openapi-invalid.json", include_in_schema=False)
     async def invalid_openapi() -> dict[str, Any]:
         return _make_invalid_schema_app().openapi()
-
-    prefixed_app = _make_prefixed_app()
-
-    @app.get("/openapi-prefixed.json", include_in_schema=False)
-    async def prefixed_openapi() -> dict[str, Any]:
-        return prefixed_app.openapi()
 
     @app.get("/health")
     async def health() -> dict[str, str]:

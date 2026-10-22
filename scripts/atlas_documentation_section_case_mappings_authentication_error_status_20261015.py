@@ -1,7 +1,7 @@
 """Reviewed mapping for the old authentication error status how-to section.
 
-Source identities: FastAPI 0.141.1 at
-95f8322ee1dcda7ceace7b1c4f6c9915b36d748f, Starlette 1.6.0 at
+Source identities: FastAPI 0.157.0 at
+386a28af2f87af1a32ac26d88f07b7f58ab2dfb, Starlette 1.6.0 at
 4f250d6b814587e20c5365f0a5f0c4d42bcb929f, and Starlette-RS at
 b4c8a65c85e1b0d251ca05874412811eaa3ac7b8. Starlette is the oracle for generic
 exception responses; Starlette-RS owns the corresponding target behavior.
@@ -38,12 +38,12 @@ DOC_SECTION_CASE_MAPPINGS_AUTHENTICATION_ERROR_STATUS_20261015 = {
             "or other security utilities."
         ),
         "rationale": (
-            "The pinned FastAPI 0.141.1 page is "
+            "The pinned FastAPI 0.157.0 page is "
             "docs/en/docs/how-to/authentication-error-status-code.md#L1-L17: it describes the "
             "403 override and says the method returns an exception for the dependency to raise. "
             "Its linked example is docs_src/authentication_error_status_code/"
-            "tutorial001_an_py310.py#L9-L21. FastAPI 0.141.1 at "
-            "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f defines the hook at "
+            "tutorial001_an_py310.py#L9-L21. FastAPI 0.157.0 at "
+            "386a28af2f87af1a32ac26d88f07b7f58ab2dfb defines the hook at "
             "fastapi/security/http.py#L87-L92 and invokes it for missing bearer credentials "
             "in HTTPBearer.__call__ at fastapi/security/http.py#L303-L316. Starlette 1.6.0 at "
             "4f250d6b814587e20c5365f0a5f0c4d42bcb929f dispatches HTTPException responses in "

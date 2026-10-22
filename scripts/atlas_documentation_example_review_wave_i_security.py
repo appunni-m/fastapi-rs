@@ -1,6 +1,7 @@
 """Reviewed partial links for security tutorial examples to input-only cases.
 
-The mappings were checked against FastAPI 0.141.1 source. Their selected
+The mappings were checked against FastAPI 0.157.0 source at
+386a28af2f87af1a32ac26d88f07b7f58ab2dfb1. Their selected
 workflows are independent ASGI inputs; each mapping documents only the listed
 cases and selectors, not the complete tutorial example or its page.
 """

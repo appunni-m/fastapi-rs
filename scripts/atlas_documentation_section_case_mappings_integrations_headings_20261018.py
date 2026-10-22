@@ -1,6 +1,6 @@
 """Reviewed no-signal documentation headings for database and custom integrations.
 
-FastAPI 0.141.1 is the source oracle. Database persistence, browser execution,
+FastAPI 0.157.0 is the source oracle. Database persistence, browser execution,
 and custom extension code are kept outside the mapped FastAPI observations.
 """
 
@@ -138,7 +138,7 @@ DOC_SECTION_CASE_MAPPINGS_INTEGRATIONS_HEADINGS_20261018 = {
             "FastAPI builds route parameters and validates query values through "
             "`fastapi/dependencies/utils.py:554-556,681-690,780-866`, then serializes the "
             "annotated response in `fastapi/routing.py:301-342,706-750`. Its OpenAPI path "
-            "construction is in `fastapi/openapi/utils.py:620-673`. The new recipe observes "
+            "construction is in `fastapi/openapi/utils.py:570-664`. The new recipe observes "
             "those request, response, and schema surfaces while replacing SQLModel's query with "
             "a fixed Pydantic-shaped in-memory list."
         ),
@@ -270,7 +270,7 @@ DOC_SECTION_CASE_MAPPINGS_INTEGRATIONS_HEADINGS_20261018 = {
             "83 of that example. FastAPI creates a serialization response field in "
             "`fastapi/routing.py:1081-1113`, validates and serializes it in "
             "`fastapi/routing.py:301-342,706-750`, and collects the models for OpenAPI in "
-            "`fastapi/openapi/utils.py:620-673`. The existing independent cases select the "
+            "`fastapi/openapi/utils.py:570-664`. The existing independent cases select the "
             "schemas and HTTP response projections; they do not claim SQLModel inheritance."
         ),
     ),
@@ -331,7 +331,7 @@ DOC_SECTION_CASE_MAPPINGS_INTEGRATIONS_HEADINGS_20261018 = {
             "lines 83-93. FastAPI's request parameter validation and response serialization "
             "are in `fastapi/dependencies/utils.py:681-690` and "
             "`fastapi/routing.py:301-342,706-750`; the OpenAPI builder records route request "
-            "and response schemas in `fastapi/openapi/utils.py:620-673`. The selected inputs "
+            "and response schemas in `fastapi/openapi/utils.py:570-664`. The selected inputs "
             "exercise the schema and one-field PATCH response, not `sqlmodel_update` or storage."
         ),
     ),
@@ -391,7 +391,7 @@ DOC_SECTION_CASE_MAPPINGS_INTEGRATIONS_HEADINGS_20261018 = {
             " `docs_src/sql_databases/tutorial002_an_py310.py:83-93`. "
             "FastAPI validates the request model and response model at "
             "`fastapi/dependencies/utils.py:681-690` and `fastapi/routing.py:301-342,706-750`; "
-            "the OpenAPI builder emits both schemas at `fastapi/openapi/utils.py:620-673`. "
+            "the OpenAPI builder emits both schemas at `fastapi/openapi/utils.py:570-664`. "
             "The independent sparse-PATCH input covers the HTTP boundary while the SQLModel "
             "update and transaction code remain excluded."
         ),

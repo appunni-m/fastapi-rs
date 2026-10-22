@@ -17,8 +17,8 @@ FASTAPI_ROOT = PROJECT_ROOT.parent / "fastapi"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -26,7 +26,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI, HTTP/WebSocket response, streaming, Mount, and TestClient contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "owns BaseModel field validation and schema semantics in duplicate-body cases",
     },
 }
@@ -80,7 +80,7 @@ def _test_function_span(test_path: str, name: str) -> dict[str, Any]:
         test_path,
         node.lineno,
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 source test function {name}",
+        f"pinned FastAPI 0.157.0 source test function {name}",
     )
 
 
@@ -161,8 +161,8 @@ def _excluded(
 
 _DEPENDENCY_SCOPE_BUILD = _source(
     "fastapi/dependencies/utils.py",
-    279,
-    320,
+    322,
+    362,
     "FastAPI builds dependency nodes, enforces valid yield-scope nesting, and propagates security scopes",
 )
 _DEPENDENCY_SCOPE_ERROR_CLASS = _source(
@@ -173,38 +173,38 @@ _DEPENDENCY_SCOPE_ERROR_CLASS = _source(
 )
 _DEPENDENCY_SOLVER = _source(
     "fastapi/dependencies/utils.py",
-    586,
-    680,
+    657,
+    762,
     "FastAPI resolves dependencies, consults the request-local cache, and enters yield dependencies on the function or request exit stack",
 )
 _SECURITY_CACHE_KEY = _source(
     "fastapi/dependencies/models.py",
-    82,
-    96,
+    83,
+    97,
     "FastAPI includes applicable OAuth scopes and computed cleanup scope in a dependency cache key",
 )
 _HTTP_EXIT_STACKS = _source(
     "fastapi/routing.py",
-    137,
-    158,
+    146,
+    167,
     "FastAPI closes the function stack before sending the response and the request stack after response dispatch",
 )
 _WEBSOCKET_EXIT_STACKS = _source(
     "fastapi/routing.py",
-    163,
-    184,
+    172,
+    193,
     "FastAPI wraps WebSocket endpoint dispatch in function and request dependency exit stacks",
 )
 _WEBSOCKET_DEPENDENCY_SOLVER = _source(
     "fastapi/routing.py",
-    775,
-    794,
+    822,
+    845,
     "FastAPI solves dependencies from a WebSocket connection before calling the endpoint",
 )
 _OVERRIDE_REBUILD = _source(
     "fastapi/dependencies/utils.py",
-    623,
-    638,
+    704,
+    719,
     "FastAPI substitutes an override callable and rebuilds its dependency signature with inherited security scopes",
 )
 _STARLETTE_STREAMING = _source(
@@ -235,11 +235,11 @@ _PYTHON_PROFILE = _source(
     "pyproject.toml",
     5,
     12,
-    "FastAPI 0.141.1 declares Python >=3.10",
+    "FastAPI 0.157.0 declares Python >=3.10",
 )
 
 _ASGI_CLIENT_GATE = "Partial: the linked input runs the public ASGI application directly, not FastAPI/Starlette TestClient or HTTPX. It compares response events and any surfaced ASGI exception; it does not claim TestClient raise_server_exceptions behavior, buffered stream/session mechanics, or HTTPX transport compatibility. Starlette 1.6.0 owns those generic client and transport semantics."
-_PYDANTIC_GATE = "Partial: the independent inputs use fresh names, fields, and values. Pydantic 2.13.4 owns BaseModel validation and generated model schema details; FastAPI owns body-field composition and dependency reuse. Only the linked HTTP observations and selected schema pointers are claimed."
+_PYDANTIC_GATE = "Partial: the independent inputs use fresh names, fields, and values. Pydantic 2.13.5 owns BaseModel validation and generated model schema details; FastAPI owns body-field composition and dependency reuse. Only the linked HTTP observations and selected schema pointers are claimed."
 _WEBSOCKET_GATE = "Partial: the workflow sends explicit ASGI WebSocket connect/disconnect events and observes messages, send order, close code, and a follow-up cleanup read. It does not reproduce TestClient.websocket_connect context-manager or HTTPX behavior; those transport semantics belong to Starlette 1.6.0."
 _MOUNT_GATE = "Partial: the new app/router scope case reaches independent FastAPI routes under a mounted child app so one input recipe can exercise both app-level and router-level dependencies. Starlette 1.6.0 owns Mount path/scope mechanics. Direct ASGI error capture does not reproduce TestClient raise_server_exceptions=False."
 
@@ -354,7 +354,7 @@ _FUNCTIONS: dict[str, dict[str, dict[str, Any]]] = {
             ],
             gate=(
                 _ASGI_CLIENT_GATE
-                + " The source comment allows ValueError or ExceptionGroup across Pydantic major versions; this profile is pinned to Pydantic 2.13.4, but the linked independent stream uses a different exception class."
+                + " The source comment allows ValueError or ExceptionGroup across Pydantic major versions; this profile is pinned to Pydantic 2.13.5, but the linked independent stream uses a different exception class."
             ),
             evidence=(_DEPENDENCY_SOLVER, _HTTP_EXIT_STACKS, _STARLETTE_STREAMING),
         ),
@@ -549,12 +549,12 @@ _FUNCTIONS: dict[str, dict[str, dict[str, Any]]] = {
                     ["openapi.request_schema"],
                 ),
             ],
-            gate="Partial: the source snapshot includes complete paths, operations, responses, and component schemas. The existing cases select only the relevant requestBody schema pointers; Pydantic 2.13.4 owns model schema construction.",
+            gate="Partial: the source snapshot includes complete paths, operations, responses, and component schemas. The existing cases select only the relevant requestBody schema pointers; Pydantic 2.13.5 owns model schema construction.",
             evidence=(
                 _source(
                     "fastapi/openapi/utils.py",
-                    290,
-                    400,
+                    275,
+                    385,
                     "FastAPI composes route dependency body fields and model references into OpenAPI operations",
                 ),
             ),
@@ -1017,8 +1017,8 @@ _FUNCTIONS: dict[str, dict[str, dict[str, Any]]] = {
             evidence=(
                 _source(
                     "fastapi/openapi/utils.py",
-                    290,
-                    400,
+                    275,
+                    385,
                     "FastAPI composes dependency declarations and route metadata into OpenAPI operations",
                 ),
             ),
@@ -1029,7 +1029,7 @@ _FUNCTIONS: dict[str, dict[str, dict[str, Any]]] = {
 _MODULE_RATIONALES = {
     "tests/test_dependency_after_yield_streaming.py": "Public yielded-dependency behavior across normal responses, streamed resource consumption, and failures; Starlette 1.6.0 owns generic StreamingResponse and TestClient transport behavior.",
     "tests/test_dependency_cache.py": "FastAPI dependency-cache reuse, use_cache bypass, and security-scope-sensitive cache keys, sampled through public HTTP routes.",
-    "tests/test_dependency_duplicates.py": "FastAPI dependency graph body-field composition and duplicate body reuse; Pydantic 2.13.4 owns model validation and schema details.",
+    "tests/test_dependency_duplicates.py": "FastAPI dependency graph body-field composition and duplicate body reuse; Pydantic 2.13.5 owns model validation and schema details.",
     "tests/test_dependency_security_overrides.py": "Security and ordinary dependency overrides, including inherited SecurityScopes on an override callable.",
     "tests/test_dependency_yield_scope.py": "Yield dependencies across function/request scope, nested scope validity, app/router placement, HTTP responses, and streamed bodies.",
     "tests/test_dependency_yield_scope_websockets.py": "Yield dependency scope behavior during WebSocket endpoint execution and after disconnect; Starlette 1.6.0 owns generic WebSocket ASGI/TestClient behavior.",
@@ -1074,7 +1074,7 @@ for _test_path, _function_names in SOURCE_VISIBLE_FUNCTIONS.items():
 REVIEW_LIMITS = {
     "python": {
         "minimum": "3.10",
-        "source": "FastAPI 0.141.1 pyproject.toml requires Python >=3.10",
+        "source": "FastAPI 0.157.0 pyproject.toml requires Python >=3.10",
         "exact_execution_version": "not asserted by this source-only review",
     },
     "testclient": {
@@ -1086,7 +1086,7 @@ REVIEW_LIMITS = {
         "workload_boundary": "new and existing linked workloads are direct ASGI inputs; they do not run TestClient or HTTPX",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "limit": "the upstream stream test's ValueError/ExceptionGroup compatibility note is not generalized across Pydantic major versions",
     },
     "static_review_only": True,

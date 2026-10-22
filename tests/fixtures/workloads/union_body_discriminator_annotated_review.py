@@ -24,6 +24,7 @@ Pet = Annotated[
     Annotated[Cat, Tag("cat")] | Annotated[Dog, Tag("dog")],
     Discriminator(get_pet_type),
 ]
+PetVariants = Annotated[Cat, Tag("cat")] | Annotated[Dog, Tag("dog")]
 
 
 def create_app() -> FastAPI:
@@ -35,6 +36,15 @@ def create_app() -> FastAPI:
 
     @app.post("/pet/annotated")
     async def create_pet_annotated(pet: Annotated[Pet, Body()]):
+        return pet
+
+    @app.post("/pet/explicit-discriminator")
+    async def create_pet_explicit_discriminator(
+        pet: Annotated[
+            PetVariants,
+            Body(discriminator=Discriminator(get_pet_type)),
+        ],
+    ):
         return pet
 
     return app

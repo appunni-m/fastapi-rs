@@ -24,8 +24,8 @@ from scripts.parity.contract import (
     sha256_file,
 )
 
-ORACLE_PROCESS_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard"
-ORACLE_PROCESS_CORE_PROFILE_ID = "fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-core"
+ORACLE_PROCESS_PROFILE_ID = "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-standard"
+ORACLE_PROCESS_CORE_PROFILE_ID = "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-core"
 ORACLE_PROCESS_PROFILE_IDS = frozenset({ORACLE_PROCESS_PROFILE_ID, ORACLE_PROCESS_CORE_PROFILE_ID})
 TARGET_PROCESS_PROFILE_ID = "fastapi-rs-python-consumer"
 PROCESS_TREE_MAX_FILES = 128
@@ -436,13 +436,13 @@ def _verify_profiles(workflow: dict[str, Any]) -> None:
     surface = read_json(surface_path)
     authority = surface.get("authority", {}) if isinstance(surface, dict) else {}
     expected_authority = {
-        "fastapi": {"version": "0.141.1", "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f"},
+        "fastapi": {"version": "0.157.0", "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1"},
         "starlette": {"version": "1.6.0", "commit": "4f250d6b814587e20c5365f0a5f0c4d42bcb929f"},
         "python": {"implementation": "CPython", "version": "3.12.13"},
     }
     optional_versions = authority.get("optional_package_versions", {})
     if authority.get("fastapi") != expected_authority["fastapi"]:
-        raise ContractError(f"{profile_name} process profile does not identify FastAPI 0.141.1")
+        raise ContractError(f"{profile_name} process profile does not identify FastAPI 0.157.0")
     if authority.get("starlette") != expected_authority["starlette"]:
         raise ContractError(f"{profile_name} process profile does not identify Starlette 1.6.0")
     if authority.get("python") != expected_authority["python"]:

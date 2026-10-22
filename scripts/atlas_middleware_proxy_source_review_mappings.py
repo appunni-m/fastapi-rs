@@ -19,8 +19,8 @@ STARLETTE_ROOT = PROJECT_ROOT.parent / "starlette"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "role": "behavior source oracle and development-only source; never a target runtime dependency or import",
     },
     "starlette": {
@@ -33,11 +33,11 @@ SOURCE_IDENTITIES = {
         "role": "Rust owner of the ported Starlette 1.6.0 generic contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned model dependency; Pydantic model semantics are not claimed by these workflows",
     },
     "pydantic-settings": {
-        "version": "2.14.2",
+        "version": "2.15.0",
         "role": "locked optional settings dependency used by the source-only environment-loading test",
     },
 }
@@ -88,7 +88,7 @@ def _test_span(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         min(starts),
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 test function {function_name} and its assertions",
+        f"pinned FastAPI 0.157.0 test function {function_name} and its assertions",
     )
 
 
@@ -193,8 +193,8 @@ _TESTCLIENT_REEXPORT = _source(
 )
 _APP_MIDDLEWARE_STACK = _source(
     "fastapi/applications.py",
-    1020,
-    1045,
+    1032,
+    1060,
     "FastAPI owns construction of its application middleware stack and inserts its dependency exit-stack middleware",
 )
 _STARLETTE_MIDDLEWARE_REGISTRATION = _source(
@@ -247,32 +247,32 @@ _GZIP_IMPLEMENTATION = _source(
 )
 _ROOT_PATH_CONFIG = _source(
     "fastapi/applications.py",
-    881,
-    885,
+    879,
+    883,
     "FastAPI stores root_path_in_servers and its configured server list on the application",
 )
 _ROOT_PATH_INIT = _source(
     "fastapi/applications.py",
-    928,
-    950,
-    "FastAPI resolves deprecated openapi_prefix and stores the configured root_path",
+    925,
+    947,
+    "FastAPI stores the configured root_path and warns that app-level configuration is deprecated in favor of server configuration",
 )
 _ROOT_PATH_SCOPE = _source(
     "fastapi/applications.py",
-    1160,
-    1163,
+    1175,
+    1178,
     "FastAPI applies its configured root_path to request scopes before dispatch",
 )
 _ROOT_PATH_OPENAPI = _source(
     "fastapi/applications.py",
-    1105,
-    1118,
+    1120,
+    1133,
     "FastAPI adds a request root_path server to OpenAPI when root_path_in_servers is enabled",
 )
 _OPENAPI_GENERATION = _source(
     "fastapi/applications.py",
-    1070,
-    1103,
+    1085,
+    1118,
     "FastAPI generates and caches the OpenAPI document from its route set and configured servers",
 )
 _STARLETTE_TESTCLIENT_ROOT = _source(
@@ -289,8 +289,8 @@ _STARLETTE_TESTCLIENT_SCOPE = _source(
 )
 _MIDDLEWARE_DECORATOR = _source(
     "fastapi/applications.py",
-    4683,
-    4727,
+    4725,
+    4769,
     "FastAPI's middleware decorator registers dispatch through Starlette BaseHTTPMiddleware",
 )
 _BASE_HTTP_MIDDLEWARE = _source(
@@ -325,14 +325,14 @@ _STARLETTE_MOUNT = _source(
 )
 _DEPENDENCY_OVERRIDES = _source(
     "fastapi/applications.py",
-    967,
-    983,
+    964,
+    980,
     "FastAPI initializes the application dependency_overrides mapping",
 )
 _DEPENDENCY_RESOLUTION = _source(
     "fastapi/dependencies/utils.py",
-    600,
-    643,
+    672,
+    724,
     "FastAPI resolves dependency callables and consults application overrides during request solving",
 )
 _SETTINGS_CONFIG = _source(
@@ -350,15 +350,21 @@ _ADVANCED_DOCS = _source(
 )
 _PROXY_DOCS = _source(
     "docs/en/docs/advanced/behind-a-proxy.md",
-    190,
-    227,
-    "FastAPI documentation explains reading request root_path and configuring it on the application",
+    184,
+    216,
+    "FastAPI documentation explains reading request root_path, configuring it through the server, and deprecating app-level root_path configuration",
 )
 _PROXY_OPENAPI_DOCS = _source(
     "docs/en/docs/advanced/behind-a-proxy.md",
-    395,
-    456,
+    358,
+    432,
     "FastAPI documentation explains root_path server insertion and disabling its automatic OpenAPI server",
+)
+_ROOT_PATH_DEPRECATION_FIXTURE = _source(
+    "tests/test_tutorial/test_behind_a_proxy/test_tutorial002.py",
+    7,
+    11,
+    "The module-scoped client fixture asserts FastAPIDeprecationWarning for app-level root_path configuration",
 )
 _MIDDLEWARE_DOCS = _source(
     "docs/en/docs/tutorial/middleware.md",
@@ -386,15 +392,15 @@ _SETTINGS_OVERRIDE_DOCS = _source(
 )
 _PYDANTIC_SETTINGS_LOCK = _source(
     "uv.lock",
-    3099,
-    3108,
-    "FastAPI's pinned development lock resolves pydantic-settings 2.14.2 and its pydantic dependency",
+    3228,
+    3240,
+    "FastAPI's pinned development lock resolves pydantic-settings 2.15.0 and its Pydantic 2.13.5 dependency",
 )
 _PYDANTIC_LOCK = _source(
     "uv.lock",
-    2852,
-    2857,
-    "FastAPI's pinned development lock resolves Pydantic 2.13.4",
+    2982,
+    2995,
+    "FastAPI's pinned development lock resolves Pydantic 2.13.5",
 )
 
 _HTTP_STATUS = ("http.status",)
@@ -553,8 +559,8 @@ MIDDLEWARE_PROXY_SOURCE_REVIEW_MAPPINGS = {
                 "tests/test_tutorial/test_behind_a_proxy/test_tutorial002.py",
                 "test_main",
                 ("root-path",),
-                "FastAPI's configured root_path is applied before the independent service route reads its scope.",
-                "The recipe uses a distinct path/message and raw JSON-byte observation; Starlette TestClient defaults to an empty configured root_path in the source, while the workflow supplies the HTTP scope directly.",
+                "FastAPI's deprecated app-level root_path is applied before the independent service route reads its scope.",
+                "The source module-scoped fixture asserts the FastAPI deprecation warning, which the input workflow does not observe. The recipe uses a distinct path/message and raw JSON-byte observation; Starlette TestClient defaults to an empty configured root_path in the source, while the workflow supplies the HTTP scope directly.",
                 (
                     _workflow(
                         _PROXY_RECIPE,
@@ -569,6 +575,7 @@ MIDDLEWARE_PROXY_SOURCE_REVIEW_MAPPINGS = {
                     _ROOT_PATH_CONFIG,
                     _ROOT_PATH_INIT,
                     _ROOT_PATH_SCOPE,
+                    _ROOT_PATH_DEPRECATION_FIXTURE,
                     _TESTCLIENT_REEXPORT,
                 ),
             ),
@@ -577,7 +584,7 @@ MIDDLEWARE_PROXY_SOURCE_REVIEW_MAPPINGS = {
                 "test_openapi",
                 ("root-path", "openapi-docs"),
                 "OpenAPI includes the configured root_path in servers and retains the independent service operation.",
-                "The source compares a complete OpenAPI snapshot; the workflow selects only /servers and the service operation. FastAPI owns the dynamic root_path server projection; the request transport is represented by direct ASGI scope input.",
+                "The source module-scoped fixture asserts the FastAPI deprecation warning, which the input workflow does not observe. The source compares a complete OpenAPI snapshot; the workflow selects only /servers and the service operation. FastAPI owns the dynamic root_path server projection; the request transport is represented by direct ASGI scope input.",
                 (
                     _workflow(
                         _PROXY_RECIPE,
@@ -593,6 +600,7 @@ MIDDLEWARE_PROXY_SOURCE_REVIEW_MAPPINGS = {
                     _ROOT_PATH_CONFIG,
                     _ROOT_PATH_OPENAPI,
                     _OPENAPI_GENERATION,
+                    _ROOT_PATH_DEPRECATION_FIXTURE,
                     _TESTCLIENT_REEXPORT,
                 ),
             ),
@@ -836,7 +844,7 @@ MIDDLEWARE_PROXY_SOURCE_REVIEW_MAPPINGS = {
                 "tests/test_tutorial/test_settings/test_app02.py",
                 "test_settings",
                 "The function sets ADMIN_EMAIL and calls the tutorial's get_settings() directly, then reads BaseSettings fields. It does not construct FastAPI or issue an HTTP/ASGI request; environment parsing, defaults, and cached Settings construction belong to pydantic-settings, outside the FastAPI contract.",
-                "pydantic-settings 2.14.2 optional settings dependency",
+                "pydantic-settings 2.15.0 optional settings dependency",
                 (
                     _SETTINGS_ENV_DOCS,
                     _SETTINGS_CONFIG,

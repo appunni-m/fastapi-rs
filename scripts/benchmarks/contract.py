@@ -49,7 +49,7 @@ _EXPECTED_METRICS = {
 }
 _EXPECTED_KINDS = {"fastapi", "fastapi-rs"}
 _SUBJECT_IDS = {
-    "fastapi": "fastapi-0.141.1",
+    "fastapi": "fastapi-0.157.0",
     "fastapi-rs": "fastapi-rs-release",
     "starlette-control": "starlette-1.6.0-control",
 }

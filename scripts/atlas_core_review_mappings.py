@@ -844,7 +844,7 @@ CORE_TEST_REVIEW_MAPPINGS = {
             {
                 "path": "fastapi/openapi/utils.py",
                 "start_line": 613,
-                "end_line": 672,
+                "end_line": 664,
                 "role": "FastAPI assembles route paths and component schemas in the generated OpenAPI document",
             },
             {

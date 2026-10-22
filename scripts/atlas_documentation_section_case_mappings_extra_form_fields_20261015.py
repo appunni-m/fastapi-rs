@@ -3,8 +3,8 @@
 DOC_SECTION_CASE_MAPPINGS_EXTRA_FORM_FIELDS_20261015 = {
     ("tutorial/request-form-models.md", "forbid-extra-form-fields"): {
         "heading": "Forbid Extra Form Fields { #forbid-extra-form-fields }",
-        "start_line": 39,
-        "end_line": 75,
+        "start_line": 41,
+        "end_line": 77,
         "recipe_path": (
             "tests/fixtures/input-recipes/parity/docs-example-wave-f-form-file-inputs.yaml"
         ),
@@ -22,10 +22,10 @@ DOC_SECTION_CASE_MAPPINGS_EXTRA_FORM_FIELDS_20261015 = {
             "multipart parsing, or OpenAPI output."
         ),
         "rationale": (
-            "The pinned FastAPI 0.141.1 section at "
-            "docs/en/docs/tutorial/request-form-models.md:39-74 explains forbidding "
+            "The pinned FastAPI 0.157.0 section at "
+            "docs/en/docs/tutorial/request-form-models.md:41-76 explains forbidding "
             "undeclared form fields and shows the extra-field error; its included snippet "
-            "is docs_src/request_form_models/tutorial002_an_py310.py:9-16, whose model "
+            "is docs_src/request_form_models/tutorial002_an_py310.py:9-17, whose model "
             "sets `extra` to `forbid` and whose route uses `Annotated[FormData, Form()]`. "
             "The existing input-only case "
             "fastapi.docs-example-wave-f.request-form-models.extra-forbidden selects "
@@ -36,18 +36,18 @@ DOC_SECTION_CASE_MAPPINGS_EXTRA_FORM_FIELDS_20261015 = {
             "217-221). "
             "That action observes recipe selectors `status` and `body`, projected here to "
             "`http.status` and `http.body.bytes`; the recipe contains no expected output. "
-            "FastAPI 0.141.1 calls `request.form()` for Form bodies "
-            "(fastapi/routing.py:425-432), collects model fields and preserves remaining "
+            "FastAPI 0.157.0 calls `request.form()` for Form bodies "
+            "(fastapi/routing.py:398-457), extracts model fields and retains remaining "
             "form keys before model validation "
-            "(fastapi/dependencies/utils.py:912-948,965-979); Pydantic owns rejection "
+            "(fastapi/dependencies/utils.py:1080-1127, 1162-1206); Pydantic owns rejection "
             "under the model's `extra=forbid` configuration. Starlette 1.6.0 is the sole "
             "generic form-parsing oracle: `Request._get_form` selects `FormParser` for "
             "URL-encoded input (starlette/requests.py:296-310), and the parser returns "
             "the received name/value pairs as `FormData` "
-            "(starlette/formparsers.py:105-143). The repository pins FastAPI 0.141.1 "
-            "and Starlette 1.6.0 in metadata.yaml:9-12,41-46; the checked source "
-            "checkout commits are 95f8322ee1dcda7ceace7b1c4f6c9915b36d748f and "
-            "4f250d6b814587e20c5365f0a5f0c4d42bcb929f, respectively."
+            "(starlette/formparsers.py:105-143). The checked FastAPI source checkout is "
+            "pinned at 0.157.0 commit 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1; "
+            "Starlette remains pinned at 1.6.0 commit "
+            "4f250d6b814587e20c5365f0a5f0c4d42bcb929f."
         ),
     },
 }

@@ -1,6 +1,6 @@
 """Source-reviewed mapping for nested required query parameters in overrides.
 
-The recipe links independent HTTP stimuli to the selected FastAPI 0.141.1
+The recipe links independent HTTP stimuli to the selected FastAPI 0.157.0
 source functions. It records no expected response values and makes no claim
 about the unselected route-placement and parameter variants.
 """
@@ -16,8 +16,8 @@ FASTAPI_ROOT = PROJECT_ROOT.parent / "fastapi"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -25,7 +25,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI and HTTP transport contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned required-query-field validation dependency",
     },
 }
@@ -88,20 +88,20 @@ _REPLACEMENT_CHAIN = _source(
 )
 _OVERRIDE_RESOLUTION = _source(
     "fastapi/dependencies/utils.py",
-    623,
-    639,
+    704,
+    720,
     "FastAPI selects a dependency override and rebuilds the dependant from the replacement callable's signature",
 )
 _REQUIRED_QUERY_VALIDATION = _source(
     "fastapi/dependencies/utils.py",
-    492,
-    505,
+    535,
+    548,
     "FastAPI infers an ordinary required scalar dependency parameter as a query field",
 )
 _QUERY_VALUE_VALIDATION = _source(
     "fastapi/dependencies/utils.py",
-    852,
-    866,
+    964,
+    989,
     "FastAPI validates extracted request query fields and collects missing-field errors",
 )
 

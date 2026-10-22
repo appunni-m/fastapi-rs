@@ -1,0 +1,892 @@
+schema: fastapi-rs/python-asgi-workflow@17
+oracle_profile_extension: standard-multipart
+workload:
+  file: tests/fixtures/workloads/request_nullable_defaults_0157.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.request-parameters.nullable-defaults.file
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: file-required-omitted
+    kind: http_request
+    scope:
+      type: http
+      asgi: &id001
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /file/required
+      query_string: ''
+      root_path: ''
+      headers: &id005
+      - &id002
+        - host
+        - testserver
+      client: &id003
+      - 127.0.0.1
+      - 123
+      server: &id004
+      - testserver
+      - 80
+    receive_events:
+    - &id006
+      type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: file-required-empty-selection
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /file/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - multipart/form-data; boundary=nullable-default-boundary
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: "--nullable-default-boundary\r\nContent-Disposition: form-data; name=\"\
+        file\"; filename=\"\"\r\nContent-Type: application/octet-stream\r\n\r\n\r\n\
+        --nullable-default-boundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"\"\r\nContent-Type: application/octet-stream\r\n\r\n\r\n--nullable-default-boundary--\r\
+        \n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: file-optional-empty-selection
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /file/optional
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - multipart/form-data; boundary=nullable-default-boundary
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: "--nullable-default-boundary\r\nContent-Disposition: form-data; name=\"\
+        file\"; filename=\"\"\r\nContent-Type: application/octet-stream\r\n\r\n\r\n\
+        --nullable-default-boundary\r\nContent-Disposition: form-data; name=\"files\"\
+        ; filename=\"\"\r\nContent-Type: application/octet-stream\r\n\r\n\r\n--nullable-default-boundary--\r\
+        \n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: file-named-empty
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /file/required
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - multipart/form-data; boundary=nullable-default-boundary
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: "--nullable-default-boundary\r\nContent-Disposition: form-data; name=\"\
+        file\"; filename=\"empty.txt\"\r\nContent-Type: application/octet-stream\r\
+        \n\r\n\r\n--nullable-default-boundary\r\nContent-Disposition: form-data; name=\"\
+        files\"; filename=\"empty.txt\"\r\nContent-Type: application/octet-stream\r\
+        \n\r\n\r\n--nullable-default-boundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: file-defaults-omitted
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /file/defaults
+      query_string: ''
+      root_path: ''
+      headers: *id005
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: file-alias-choice
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /file/alias-choice
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - multipart/form-data; boundary=nullable-default-boundary
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: "--nullable-default-boundary\r\nContent-Disposition: form-data; name=\"\
+        primary\"; filename=\"hello.txt\"\r\nContent-Type: text/plain\r\n\r\nhello\r\
+        \n--nullable-default-boundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: file-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: *id005
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1file~1required/post/requestBody
+      - /paths/~1file~1optional/post/requestBody
+      - /paths/~1file~1alias-choice/post/requestBody
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_file/test_nullable_and_defaults.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.nullable-defaults.form
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: form-empty-default
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form/empty-default
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/x-www-form-urlencoded
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: value=
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: form-empty-model
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form/empty-model
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/x-www-form-urlencoded
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: value=
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: form-empty-required
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form/required-empty
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/x-www-form-urlencoded
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: value=
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: form-checkbox-default
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form/checkbox-default
+      query_string: ''
+      root_path: ''
+      headers: *id005
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: form-empty-model-multipart
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /form/empty-model
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - multipart/form-data; boundary=nullable-default-boundary
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: "--nullable-default-boundary\r\nContent-Disposition: form-data; name=\"\
+        value\"\r\n\r\n\r\n--nullable-default-boundary--\r\n"
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: form-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: *id005
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1form~1empty-default/post/requestBody
+      - /paths/~1form~1empty-model/post/requestBody
+      - /paths/~1form~1required-empty/post/requestBody
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_form/test_nullable_and_defaults.py
+    kind: upstream_test
+  - path: docs/en/docs/tutorial/request-forms.md
+    kind: upstream_documentation
+- case_id: fastapi.request-parameters.nullable-defaults.header
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: header-nullable
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /header/nullable
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - int-val
+        - '0'
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: header-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /header/model
+      query_string: ''
+      root_path: ''
+      headers: *id005
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: header-raw-model
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /header/raw-model
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - int_val
+        - '1'
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: header-alias-model
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /header/alias-model
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - int-val
+        - '1'
+      - - x_count
+        - '2'
+      - - x_total
+        - '3'
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: header-list-error
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /header/list-model
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - item-ids
+        - '1'
+      - - item-ids
+        - invalid
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: header-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: *id005
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1header~1nullable/get/parameters
+      - /paths/~1header~1model/get/parameters
+      - /paths/~1header~1alias-model/get/parameters
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_header/test_nullable_and_defaults.py
+    kind: upstream_test
+- case_id: fastapi.request-parameters.nullable-defaults.locations
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: request-query-supplied
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /request/query-required
+      query_string: value=0
+      root_path: ''
+      headers: *id005
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: request-query-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /request/query-required
+      query_string: ''
+      root_path: ''
+      headers: *id005
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: request-query-default-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /request/query-default
+      query_string: ''
+      root_path: ''
+      headers: *id005
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: request-cookie-supplied
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /request/cookie-required
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - cookie
+        - value=0
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: request-cookie-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /request/cookie-required
+      query_string: ''
+      root_path: ''
+      headers: *id005
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: request-header-supplied
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /request/header-required
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - value
+        - '0'
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: request-header-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /request/header-required
+      query_string: ''
+      root_path: ''
+      headers: *id005
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: request-form-supplied
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /request/form-required
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/x-www-form-urlencoded
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: value=0
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: request-form-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /request/form-required
+      query_string: ''
+      root_path: ''
+      headers: *id005
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: request-body-supplied
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /request/body-required
+      query_string: ''
+      root_path: ''
+      headers:
+      - *id002
+      - - content-type
+        - application/json
+      client: *id003
+      server: *id004
+    receive_events:
+    - type: http.request
+      body: '{"value":0}'
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: request-body-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /request/body-required
+      query_string: ''
+      root_path: ''
+      headers: *id005
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: request-body-default-missing
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /request/body-default
+      query_string: ''
+      root_path: ''
+      headers: *id005
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  - action_id: request-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: *id001
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: *id005
+      client: *id003
+      server: *id004
+    receive_events:
+    - *id006
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      comparison: exact
+    - kind: openapi
+      json_pointers:
+      - /paths/~1request~1query-required/post/parameters
+      - /paths/~1request~1cookie-required/post/parameters
+      - /paths/~1request~1header-required/post/parameters
+      - /paths/~1request~1form-required/post/requestBody
+      - /paths/~1request~1body-required/post/requestBody
+      comparison: exact
+  source_evidence:
+  - path: tests/test_request_params/test_nullable_and_defaults.py
+    kind: upstream_test

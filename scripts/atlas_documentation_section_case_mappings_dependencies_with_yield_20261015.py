@@ -134,8 +134,10 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCIES_WITH_YIELD_20261015 = {
         "tutorial/dependencies/dependencies-with-yield.md",
         "dependencies-with-yield-and-httpexception",
     ): _workflow(
-        "Dependencies with `yield` and `HTTPException` "
-        "{ #dependencies-with-yield-and-httpexception }",
+        (
+            "Dependencies with `yield` and `HTTPException` "
+            "{ #dependencies-with-yield-and-httpexception }"
+        ),
         96,
         115,
         _ERRORS,
@@ -172,13 +174,13 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCIES_WITH_YIELD_20261015 = {
         _HTTP_ERROR,
         (
             "The default and `Annotated` inputs catch and suppress the endpoint error, then "
-            "read the dependency's captured exception. FastAPI 0.141.1 additionally raises "
+            "read the dependency's captured exception. FastAPI 0.157.0 additionally raises "
             "its `FastAPIError` guard when suppression prevents response creation; the "
             "generic 500 response is Starlette-owned. Logs are not observed."
         ),
         (
             "The pinned `tutorial008c` example suppresses `InternalError` in the generator "
-            "(`../fastapi/docs_src/dependencies/tutorial008c_py310.py:10-15`). In 0.141.1, "
+            "(`../fastapi/docs_src/dependencies/tutorial008c_py310.py:10-15`). In 0.157.0, "
             "routing detects that the response was never awaited and raises `FastAPIError` "
             "(`../fastapi/fastapi/routing.py:137-155`); Starlette 1.6.0 owns its generic "
             "server-error response."
@@ -188,8 +190,10 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCIES_WITH_YIELD_20261015 = {
         "tutorial/dependencies/dependencies-with-yield.md",
         "always-raise-in-dependencies-with-yield-and-except",
     ): _workflow(
-        "Always `raise` in Dependencies with `yield` and `except` "
-        "{ #always-raise-in-dependencies-with-yield-and-except }",
+        (
+            "Always `raise` in Dependencies with `yield` and `except` "
+            "{ #always-raise-in-dependencies-with-yield-and-except }"
+        ),
         124,
         133,
         _ERRORS,
@@ -288,8 +292,10 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCIES_WITH_YIELD_20261015 = {
         "tutorial/dependencies/dependencies-with-yield.md",
         "dependencies-with-yield-httpexception-except-and-background-tasks",
     ): _excluded(
-        "Dependencies with `yield`, `HTTPException`, `except` and Background Tasks "
-        "{ #dependencies-with-yield-httpexception-except-and-background-tasks }",
+        (
+            "Dependencies with `yield`, `HTTPException`, `except` and Background Tasks "
+            "{ #dependencies-with-yield-httpexception-except-and-background-tasks }"
+        ),
         232,
         237,
         (
@@ -297,7 +303,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCIES_WITH_YIELD_20261015 = {
             "it does not add a separate pinned request workflow."
         ),
         (
-            "FastAPI-RS targets the pinned 0.141.1 contract. Current exception and lifecycle "
+            "FastAPI-RS targets the pinned 0.157.0 contract. Current exception and lifecycle "
             "inputs are mapped above and in the linked advanced guide; no pre/post-version "
             "comparison is included."
         ),
@@ -340,8 +346,10 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCIES_WITH_YIELD_20261015 = {
         "tutorial/dependencies/dependencies-with-yield.md",
         "using-context-managers-in-dependencies-with-yield",
     ): _workflow(
-        "Using context managers in dependencies with `yield` "
-        "{ #using-context-managers-in-dependencies-with-yield }",
+        (
+            "Using context managers in dependencies with `yield` "
+            "{ #using-context-managers-in-dependencies-with-yield }"
+        ),
         258,
         290,
         _TUTORIAL,

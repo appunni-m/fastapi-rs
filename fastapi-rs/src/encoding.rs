@@ -93,7 +93,7 @@ impl JsonableEncoderOptions {
     }
 }
 
-/// Convert one value according to the selected FastAPI 0.141.1 encoder rules.
+/// Convert one value according to the selected FastAPI 0.157.0 encoder rules.
 pub(crate) fn jsonable_encoder<'py>(
     py: Python<'py>,
     obj: &Bound<'py, PyAny>,

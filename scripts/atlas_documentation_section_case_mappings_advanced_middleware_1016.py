@@ -175,7 +175,7 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_MIDDLEWARE_1016 = {
         (
             "Those middleware implementations and their contracts are owned by their respective "
             "projects, not FastAPI "
-            "0.141.1. The generic ASGI protocol is covered by the Starlette-RS contract."
+            "0.157.0. The generic ASGI protocol is covered by the Starlette-RS contract."
         ),
     ),
 }

@@ -1,7 +1,7 @@
 """Reviewed source mappings for pending advanced testing documentation sections.
 
-Source identities: FastAPI 0.141.1 at
-95f8322ee1dcda7ceace7b1c4f6c9915b36d748f, Starlette 1.6.0 at
+Source identities: FastAPI 0.157.0 at
+386a28af2f87af1a32ac26d88f07b7f58ab2dfb, Starlette 1.6.0 at
 4f250d6b814587e20c5365f0a5f0c4d42bcb929f, and Starlette-RS at
 b4c8a65c85e1b0d251ca05874412811eaa3ac7b8.
 
@@ -71,7 +71,7 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_TESTING_20261015 = {
             "general async-function advice have their own child dispositions."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/advanced/async-tests.md:1-99 introduces "
+            "Pinned FastAPI 0.157.0 docs/en/docs/advanced/async-tests.md:1-99 introduces "
             "testing async applications, while the independent route sample is isolated at "
             "lines 21-40 and the test-runner/tooling material is isolated at lines 9-19, 41-90, "
             "and 91-98. A second H1 workflow would duplicate the narrower Example mapping and "
@@ -92,10 +92,10 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_TESTING_20261015 = {
             "exercise the example's pytest/AnyIO/HTTPX client setup or test lifecycle."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/advanced/async-tests.md:21-40 includes "
+            "Pinned FastAPI 0.157.0 docs/en/docs/advanced/async-tests.md:21-40 includes "
             "docs_src/async_tests/app_a_py310/main.py:1-8 and test_main.py:1-14. The independent "
             "recipe selects only async-root (async_tests.yaml:7-52; workload "
-            "async_tests.py:6-13). FastAPI 0.141.1 classifies coroutine path operations in "
+            "async_tests.py:6-13). FastAPI 0.157.0 classifies coroutine path operations in "
             "fastapi/routing.py:394 and dispatches them in fastapi/routing.py:344-354; "
             "pytest.mark.anyio, AsyncClient, and "
             "ASGITransport setup in the sample test are outside this response mapping."
@@ -111,7 +111,7 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_TESTING_20261015 = {
             "are not FastAPI route inputs or outputs."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/advanced/async-tests.md:55-90 points to "
+            "Pinned FastAPI 0.157.0 docs/en/docs/advanced/async-tests.md:55-90 points to "
             "docs_src/async_tests/app_a_py310/test_main.py:1-14 and describes external pytest, "
             "AnyIO, HTTPX, and asgi-lifespan APIs. The direct ASGI route workflow at "
             "async_tests.yaml:7-52 cannot establish those client or lifespan-manager contracts."
@@ -127,7 +127,7 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_TESTING_20261015 = {
             "behavior."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/advanced/async-tests.md:91-98 discusses "
+            "Pinned FastAPI 0.157.0 docs/en/docs/advanced/async-tests.md:91-98 discusses "
             "arbitrary test-code calls and MotorClient loop affinity. The startup-callback "
             "example is covered at the FastAPI application lifecycle boundary under "
             "testing-events.md; Python scheduling and third-party client lifetime have no "
@@ -148,7 +148,7 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_TESTING_20261015 = {
             "a reviewed child mapping."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/advanced/testing-dependencies.md:1-53 "
+            "Pinned FastAPI 0.157.0 docs/en/docs/advanced/testing-dependencies.md:1-53 "
             "contains one dependency-override topic with a concrete workflow at lines 3-9 and "
             "23-53, and a hypothetical provider-cost example at lines 11-22. The H1 adds no "
             "independent request operation; mapping the focused child sections avoids "
@@ -174,7 +174,7 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_TESTING_20261015 = {
             "subdependency suppression, test setup, or override reset."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/advanced/testing-dependencies.md:3-9 and "
+            "Pinned FastAPI 0.157.0 docs/en/docs/advanced/testing-dependencies.md:3-9 and "
             "23-53 describes replacing a dependency callable. The independent recipe selects "
             "case fastapi.dependencies.override-resolution and actions replacement-parameter "
             "and original-parameter-absent (dependency-lifecycle.yaml:149-221; workload "
@@ -195,7 +195,7 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_TESTING_20261015 = {
             "observable FastAPI contract."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/advanced/testing-dependencies.md:11-22 "
+            "Pinned FastAPI 0.157.0 docs/en/docs/advanced/testing-dependencies.md:11-22 "
             "describes when a user might substitute a mock user but defines no endpoint, "
             "dependency callable, or request/response observation. The selected override "
             "workflow under the parent section samples callable replacement only and does not "
@@ -225,7 +225,7 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_TESTING_20261015 = {
             "startup/shutdown bridge."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/advanced/testing-events.md:3-12 includes the "
+            "Pinned FastAPI 0.157.0 docs/en/docs/advanced/testing-events.md:3-12 includes the "
             "modern and deprecated examples at docs_src/app_testing/tutorial004_py310.py:9-43 "
             "and tutorial003_py310.py:9-24. The linked independent ASGI recipe selects "
             "fastapi.lifecycle.router-events-legacy and fastapi.lifecycle.app-lifespan-state, "
@@ -255,7 +255,7 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_TESTING_20261015 = {
             "this section mapping."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/advanced/testing-websockets.md:3-11 points to "
+            "Pinned FastAPI 0.157.0 docs/en/docs/advanced/testing-websockets.md:3-11 points to "
             "docs_src/app_testing/tutorial002_py310.py:13-18. The independent recipe selects "
             "case fastapi.docs.testing-websockets.testclient-example and action "
             "websocket-testclient-example (testing_websockets.yaml:7-52; workload "
@@ -289,7 +289,7 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_TESTING_20261015 = {
             "parameter source described on the page."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/advanced/using-request-directly.md:1-56 "
+            "Pinned FastAPI 0.157.0 docs/en/docs/advanced/using-request-directly.md:1-56 "
             "includes the Request/client-host example at lines 26-42 and the Starlette "
             "ownership note at lines 46-54. The independent recipe selects read-client-host "
             "and request-openapi (using_request_directly.yaml:7-84; workload "
@@ -316,7 +316,7 @@ DOC_SECTION_CASE_MAPPINGS_ADVANCED_TESTING_20261015 = {
             "properties and validation boundaries."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/advanced/using-request-directly.md:16-25 "
+            "Pinned FastAPI 0.157.0 docs/en/docs/advanced/using-request-directly.md:16-25 "
             "states that Request comes from Starlette, direct body access bypasses FastAPI's "
             "validation/conversion/documentation path, and normally declared parameters retain "
             "that path. The independent recipe selects case "

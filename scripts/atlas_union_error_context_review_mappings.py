@@ -16,8 +16,8 @@ FASTAPI_ROOT = PROJECT_ROOT.parent / "fastapi"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "role": "source oracle and development evidence only",
     },
     "starlette": {
@@ -26,8 +26,8 @@ SOURCE_IDENTITIES = {
         "role": "sole generic routing, request parsing, ASGI transport, and TestClient contract",
     },
     "pydantic": {
-        "version": "2.13.4",
-        "pydantic_core_version": "2.46.4",
+        "version": "2.13.5",
+        "pydantic_core_version": "2.46.5",
         "role": "pinned BaseModel field, union validation, error-item, and schema authority",
     },
 }
@@ -55,51 +55,51 @@ _PIN_SOURCE = (
         "path": "tests/fixtures/manifest.yaml",
         "start_line": 47,
         "end_line": 52,
-        "role": "reviewed oracle pin for Pydantic 2.13.4 / pydantic-core 2.46.4",
+        "role": "reviewed oracle pin for Pydantic 2.13.5 / pydantic-core 2.46.5",
     },
     {
         "path": "tests/fixtures/manifest.yaml",
         "start_line": 60,
         "end_line": 77,
-        "role": "reviewed FastAPI 0.141.1, Starlette 1.6.0, and Python package identity pins",
+        "role": "reviewed FastAPI 0.157.0, Starlette 1.6.0, and Python package identity pins",
     },
 )
 
 _FASTAPI_UNION_SOURCES = (
     {
         "path": "fastapi/dependencies/utils.py",
-        "start_line": 271,
-        "end_line": 347,
-        "role": "FastAPI 0.141.1 inspects endpoint signatures and derives dependency/body fields",
+        "start_line": 314,
+        "end_line": 389,
+        "role": "FastAPI 0.157.0 inspects endpoint signatures and derives dependency/body fields",
     },
     {
         "path": "fastapi/dependencies/utils.py",
-        "start_line": 951,
-        "end_line": 1048,
+        "start_line": 1162,
+        "end_line": 1284,
         "role": "FastAPI extracts URL-encoded fields, validates body parameters, and composes embedded body fields",
     },
     {
         "path": "fastapi/routing.py",
-        "start_line": 425,
-        "end_line": 465,
+        "start_line": 451,
+        "end_line": 492,
         "role": "FastAPI reads body bytes and selects JSON decoding/error handling before dependency solving",
     },
     {
         "path": "fastapi/openapi/utils.py",
-        "start_line": 231,
-        "end_line": 263,
+        "start_line": 216,
+        "end_line": 248,
         "role": "FastAPI places the Pydantic-derived request field schema and required flag in OpenAPI",
     },
     {
         "path": "fastapi/openapi/utils.py",
-        "start_line": 331,
-        "end_line": 385,
+        "start_line": 316,
+        "end_line": 370,
         "role": "FastAPI assembles OpenAPI operation metadata, request parameters, and requestBody",
     },
     {
         "path": "fastapi/openapi/utils.py",
-        "start_line": 585,
-        "end_line": 647,
+        "start_line": 570,
+        "end_line": 632,
         "role": "FastAPI generates the OpenAPI document from route contexts and model definitions",
     },
 )
@@ -107,32 +107,32 @@ _FASTAPI_UNION_SOURCES = (
 _FASTAPI_ERROR_CONTEXT_SOURCES = (
     {
         "path": "fastapi/routing.py",
-        "start_line": 278,
-        "end_line": 298,
+        "start_line": 287,
+        "end_line": 307,
         "role": "FastAPI extracts endpoint source file, line, and callable name for validation context",
     },
     {
         "path": "fastapi/routing.py",
-        "start_line": 406,
-        "end_line": 423,
+        "start_line": 429,
+        "end_line": 449,
         "role": "FastAPI attaches the HTTP method/path and mounted root_path to endpoint context",
     },
     {
         "path": "fastapi/routing.py",
-        "start_line": 301,
-        "end_line": 328,
+        "start_line": 321,
+        "end_line": 348,
         "role": "FastAPI validates response fields and raises ResponseValidationError with endpoint context",
     },
     {
         "path": "fastapi/routing.py",
-        "start_line": 751,
-        "end_line": 755,
+        "start_line": 792,
+        "end_line": 799,
         "role": "FastAPI raises RequestValidationError with endpoint context after request dependency validation",
     },
     {
         "path": "fastapi/routing.py",
-        "start_line": 764,
-        "end_line": 795,
+        "start_line": 808,
+        "end_line": 848,
         "role": "FastAPI builds WebSocket endpoint context, validates dependencies, and raises WebSocketRequestValidationError",
     },
     {
@@ -165,7 +165,7 @@ _STARLETTE_TRANSPORT_SOURCES = (
 )
 
 _PYDANTIC_BOUNDARY = (
-    "Pydantic 2.13.4 owns BaseModel field metadata, union-branch validation and coercion, "
+    "Pydantic 2.13.5 owns BaseModel field metadata, union-branch validation and coercion, "
     "Annotated Tag/Discriminator interpretation, validation error items, and model JSON Schema. "
     "FastAPI owns Python endpoint annotation inspection, deciding that these declarations are "
     "request bodies or forms, applying request/error locations and endpoint context, and placing "
@@ -188,14 +188,14 @@ _RUST_TARGET_BOUNDARY = (
     "described here belongs in fastapi-rs Rust control flow. The target Python runtime may only "
     "directly re-export native symbols and declare literal __all__; fastapi-rs-py is limited to "
     "PyO3 binding and value conversion. The Starlette 1.6.0 replacement has a separate Rust "
-    "contract; Pydantic 2.13.4 remains the pinned model/validation/schema authority."
+    "contract; Pydantic 2.13.5 remains the pinned model/validation/schema authority."
 )
 
 _PARITY_GATE = (
     "Input mapping only. Cases contain independent stimuli and selectors, not expected values, "
     "and no live parity was run. Compare the selectors only after identity-checked isolated "
     "execution; generic ASGI, form parser, mount, and TestClient behavior remains under the "
-    "Starlette 1.6.0 contract, while Pydantic 2.13.4 retains model validation and schema ownership."
+    "Starlette 1.6.0 contract, while Pydantic 2.13.5 retains model validation and schema ownership."
 )
 
 
@@ -217,7 +217,7 @@ def _test_span(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         node.lineno,
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 test function {function_name} and its assertions",
+        f"pinned FastAPI 0.157.0 test function {function_name} and its assertions",
     )
 
 
@@ -228,7 +228,7 @@ def _test_function_spans(test_path: str) -> list[dict[str, Any]]:
             test_path,
             node.lineno,
             node.end_lineno or node.lineno,
-            f"pinned FastAPI 0.141.1 test function {node.name}",
+            f"pinned FastAPI 0.157.0 test function {node.name}",
         )
         for node in tree.body
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
@@ -306,7 +306,7 @@ def _module(
 ) -> dict[str, Any]:
     function_spans = _test_function_spans(test_path)
     source_function_names = {
-        span["role"].removeprefix("pinned FastAPI 0.141.1 test function ")
+        span["role"].removeprefix("pinned FastAPI 0.157.0 test function ")
         for span in function_spans
     }
     if source_function_names != set(functions):
@@ -509,6 +509,27 @@ UNION_ERROR_CONTEXT_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                         _ANNOTATED_RECIPE,
                         "fastapi.request-union-body.callable-discriminator.annotated",
                         ("callable-discriminator-annotated-body",),
+                        _UNION_HTTP,
+                    ),
+                ),
+                _UNION_SOURCE_EVIDENCE,
+            ),
+            "test_union_body_discriminator_parameter": _function(
+                "tests/test_union_body_discriminator_annotated.py",
+                "test_union_body_discriminator_parameter",
+                ("request-validation",),
+                "The two tagged JSON inputs exercise both branches of an explicit Body(discriminator=...) declaration and observe status/body.",
+                (
+                    _link(
+                        _ANNOTATED_RECIPE,
+                        "fastapi.request-union-body.callable-discriminator.explicit-body.cat",
+                        ("explicit-body-discriminator-cat",),
+                        _UNION_HTTP,
+                    ),
+                    _link(
+                        _ANNOTATED_RECIPE,
+                        "fastapi.request-union-body.callable-discriminator.explicit-body.dog",
+                        ("explicit-body-discriminator-dog",),
                         _UNION_HTTP,
                     ),
                 ),
@@ -730,8 +751,8 @@ UNION_ERROR_CONTEXT_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     *_ERROR_CONTEXT_SOURCE_EVIDENCE,
                     _source(
                         "fastapi/applications.py",
-                        1000,
-                        1012,
+                        997,
+                        1009,
                         "FastAPI preserves a user-supplied WebSocketRequestValidationError handler while installing the default with setdefault",
                     ),
                     _source(
@@ -907,7 +928,7 @@ def validate_union_error_context_review_mappings() -> list[str]:
             errors.append(f"source test function denominator changed: {module_path}")
         mapped_functions = module.get("functions", {})
         expected_names = {
-            span["role"].removeprefix("pinned FastAPI 0.141.1 test function ")
+            span["role"].removeprefix("pinned FastAPI 0.157.0 test function ")
             for span in actual_spans
         }
         if set(mapped_functions) != expected_names:

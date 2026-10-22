@@ -34,8 +34,8 @@ from source_api_review_schema import (
 )
 
 PROJECT = Path(__file__).resolve().parents[1]
-FASTAPI_VERSION = "0.141.1"
-FASTAPI_COMMIT = "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f"
+FASTAPI_VERSION = "0.157.0"
+FASTAPI_COMMIT = "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1"
 STARLETTE_VERSION = "1.6.0"
 STARLETTE_COMMIT = "4f250d6b814587e20c5365f0a5f0c4d42bcb929f"
 STARLETTE_RS_AREAS = {
@@ -3029,8 +3029,8 @@ merge_test_review_mappings(
                         },
                         {
                             "path": "fastapi/openapi/utils.py",
-                            "start_line": 585,
-                            "end_line": 679,
+                            "start_line": 570,
+                            "end_line": 664,
                             "role": "OpenAPI document generation",
                         },
                     ],
@@ -4011,6 +4011,35 @@ for (
     for _query_header_function_name, _query_header_function_review in _query_header_module_review[
         "functions"
     ].items():
+        if _query_header_function_review.get("mapping_status") == "source-backed-exclusion":
+            _exclusion_reason = _query_header_function_review["exclusion_reason"]
+            _function_exclusions = TEST_FUNCTION_EXCLUSIONS.setdefault(_query_header_test_path, {})
+            _previous_reason = _function_exclusions.get(_query_header_function_name)
+            if _previous_reason is not None and _previous_reason != _exclusion_reason:
+                raise ValueError(
+                    "conflicting query/header exclusion for %s::%s"
+                    % (_query_header_test_path, _query_header_function_name)
+                )
+            _function_exclusions[_query_header_function_name] = _exclusion_reason
+            _function_evidence = TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(
+                _query_header_test_path, {}
+            ).setdefault(_query_header_function_name, [])
+            if _query_header_function_review["source_span"] not in _function_evidence:
+                _function_evidence.append(_query_header_function_review["source_span"])
+            _query_header_functions[_query_header_function_name] = {
+                "feature_ids": [],
+                "observation_selectors": [],
+                "rationale": _exclusion_reason,
+                "replace_features": True,
+                "workflow_cases": [],
+                "supporting_sources": [
+                    _query_header_function_review["source_span"],
+                    *_query_header_sources,
+                ],
+                "stimulus_notes": _exclusion_reason,
+            }
+            continue
+
         _query_header_workflow_links = []
         _function_sources = [
             _query_header_function_review["source_span"],
@@ -4068,7 +4097,7 @@ for (
             {
                 selector
                 for function in _query_header_module_review["functions"].values()
-                for selector in function["observation_selectors"]
+                for selector in function.get("observation_selectors", [])
             }
         ),
         "workflow_cases": [
@@ -4313,7 +4342,7 @@ DOC_EXCLUSION_OVERRIDES = {
     "editor-support.md": "Editor and language-server integration is tooling behavior, not FastAPI runtime behavior.",
     "environment-variables.md": "Environment parsing in this guide is supplied by Pydantic Settings and deployment configuration, not an independent FastAPI runtime feature.",
     "features.md": "Broad feature index with no independent stimulus; the focused feature pages carry the relevant FastAPI workflows.",
-    "history-design-future.md": "Historical and design narrative, not behavior in the pinned FastAPI 0.141.1 contract.",
+    "history-design-future.md": "Historical and design narrative, not behavior in the pinned FastAPI 0.157.0 contract.",
     "how-to/general.md": "How-to navigation page with no independently observable behavior; focused guides are mapped separately.",
     "how-to/graphql.md": "GraphQL routing and schema execution are third-party-owned; the page provides no independent FastAPI behavior case.",
     "how-to/migrate-from-pydantic-v1-to-pydantic-v2.md": "Migration guidance concerns Pydantic model APIs; the selected FastAPI contract pins Pydantic 2.13.4 and maps its integration separately.",
@@ -4323,7 +4352,7 @@ DOC_EXCLUSION_OVERRIDES = {
     "reference/staticfiles.md": "The pinned page documents FastAPI's direct Starlette StaticFiles re-export. Keep its import identity in the FastAPI API manifest and exclude the page from an independent FastAPI behavior workflow. Missing-root and repeated-check behavior belongs to the separate Starlette 1.6.0 StaticFiles contract; this import-only reference provides no workflow for those behaviors.",
     "reference/templating.md": "The reference exposes Starlette 1.6.0 Jinja2Templates; import paths remain in the FastAPI API manifest and rendering behavior belongs to Starlette-RS and Jinja2.",
     "reference/testclient.md": "The reference exposes Starlette 1.6.0 TestClient; import paths remain in the FastAPI API manifest and client/lifespan behavior belongs to Starlette-RS.",
-    "release-notes.md": "Release notes span multiple historical versions and do not define one behavior of pinned FastAPI 0.141.1.",
+    "release-notes.md": "Release notes span multiple historical versions and do not define one behavior of pinned FastAPI 0.157.0.",
     "translations.md": "Translation content does not define an independently observable FastAPI runtime behavior.",
     "tutorial/testing.md": "TestClient, HTTPX request construction, and pytest execution are outside FastAPI's behavior contract. The FastAPI root and extended route examples are linked to exact input-only direct-ASGI cases, with status/body-byte selectors; the FastAPI TestClient re-export is linked to import-path and object-identity observations. These links do not claim TestClient transport parity.",
     "virtual-environments.md": "Python environment creation and package installation guidance is contributor/setup tooling, not FastAPI runtime behavior.",
@@ -4368,20 +4397,20 @@ DOC_EXAMPLE_EXCLUSION_OVERRIDES = {
         "execution is not FastAPI-owned behavior."
     ),
     "docs_src/pydantic_v1_in_v2/tutorial001_an_py310.py": (
-        "This example is Pydantic-only; FastAPI 0.141.1 uses Pydantic v2 and does not expose "
+        "This example is Pydantic-only; FastAPI 0.157.0 uses Pydantic v2 and does not expose "
         "the historical FastAPI support for pydantic.v1 models."
     ),
     "docs_src/pydantic_v1_in_v2/tutorial002_an_py310.py": (
         "This example documents temporary pydantic.v1 support that FastAPI removed in 0.128.0; "
-        "it is not part of the FastAPI 0.141.1 contract."
+        "it is not part of the FastAPI 0.157.0 contract."
     ),
     "docs_src/pydantic_v1_in_v2/tutorial003_an_py310.py": (
         "This example documents temporary mixed Pydantic v1/v2 route support that FastAPI "
-        "removed in 0.128.0; it is not part of the FastAPI 0.141.1 contract."
+        "removed in 0.128.0; it is not part of the FastAPI 0.157.0 contract."
     ),
     "docs_src/pydantic_v1_in_v2/tutorial004_an_py310.py": (
         "This example uses fastapi.temp_pydantic_v1_params for temporary Pydantic v1 support "
-        "removed in FastAPI 0.128.0; it is not part of the 0.141.1 contract."
+        "removed in FastAPI 0.128.0; it is not part of the 0.157.0 contract."
     ),
     "docs_src/settings/app02_py310/config.py": (
         "This file only defines a pydantic_settings.BaseSettings subclass. Environment parsing, "
@@ -4392,6 +4421,26 @@ DOC_EXAMPLE_EXCLUSION_OVERRIDES = {
         "This example exercises Starlette 1.6.0 StaticFiles and Jinja2Templates with Jinja2. "
         "FastAPI's import paths remain in the API manifest; generic static and template "
         "behavior belongs to Starlette-RS and Jinja2."
+    ),
+    "docs_src/templates/tutorial002_py310.py": (
+        "This example composes FastAPI's Starlette StaticFiles and Jinja2Templates re-exports "
+        "with Jinja2. The import identities are tracked in the API manifest; generic mounting, "
+        "static serving, and template rendering are owned by Starlette-RS and Jinja2."
+    ),
+    "docs_src/opentelemetry/tutorial001_py310.py": (
+        "This example configures an OpenTelemetry tracer provider and console exporter. Its "
+        "trace/export effects are outside the current observation selectors; the constructor "
+        "surface is tracked separately, without claiming telemetry signal parity."
+    ),
+    "docs_src/opentelemetry/tutorial002_py310.py": (
+        "This example disables FastAPI operation spans. The span-emission difference is not "
+        "observable through the current parity selectors; the telemetry constructor option is "
+        "tracked separately, without claiming telemetry signal parity."
+    ),
+    "docs_src/opentelemetry/tutorial003_py310.py": (
+        "This example configures FastAPI telemetry options whose span and request-context "
+        "effects are outside the current observation selectors; the constructor surface is "
+        "tracked separately, without claiming telemetry signal parity."
     ),
     "docs_src/wsgi/tutorial001_py310.py": (
         "This example bridges Flask through third-party a2wsgi and Starlette's WSGIMiddleware. "
@@ -6123,6 +6172,53 @@ for _pending_test_wave in (
 ):
     merge_test_review_mappings(_normalize_source_review_workflow_mappings(_pending_test_wave))
 
+# Telemetry tests assert OpenTelemetry SDK outputs and request context that the
+# current parity observation contract cannot represent. Keep those exact
+# function-level exclusions and supporting source citations in the atlas.
+from atlas_telemetry_test_review_mappings import (  # noqa: E402
+    TELEMETRY_TEST_MODULE_EXCLUSIONS,
+    TELEMETRY_TEST_REVIEW_MAPPINGS,
+)
+
+for _telemetry_test_path, _telemetry_exclusion in TELEMETRY_TEST_MODULE_EXCLUSIONS.items():
+    TEST_EXCLUSIONS[_telemetry_test_path] = _telemetry_exclusion["exclusion_reason"]
+    merge_test_review_mappings(
+        {
+            _telemetry_test_path: {
+                "rationale": _telemetry_exclusion["exclusion_reason"],
+                "supporting_sources": _telemetry_exclusion.get("supporting_sources", []),
+            }
+        }
+    )
+
+for _telemetry_test_path, _telemetry_review in TELEMETRY_TEST_REVIEW_MAPPINGS.items():
+    merge_test_review_mappings({_telemetry_test_path: _telemetry_review})
+    _function_exclusions = TEST_FUNCTION_EXCLUSIONS.setdefault(_telemetry_test_path, {})
+    _function_exclusion_evidence = TEST_FUNCTION_EXCLUSION_EVIDENCE.setdefault(
+        _telemetry_test_path, {}
+    )
+    for _function_name, _function_review in _telemetry_review["functions"].items():
+        _function_exclusions[_function_name] = _function_review["exclusion_reason"]
+        _function_exclusion_evidence[_function_name] = [_function_review["source_span"]]
+
+# Explicitly map the FastAPI 0.157.0 source delta to reviewed, input-only
+# workflows. The repository translation test is tooling-only, not runtime API.
+from atlas_fastapi_0157_delta_mappings import (  # noqa: E402
+    FASTAPI_0157_DELTA_TEST_REVIEW_MAPPINGS,
+    TRANSLATION_TEST_EXCLUSION,
+)
+
+TEST_EXCLUSIONS["tests/test_translate.py"] = TRANSLATION_TEST_EXCLUSION["reason"]
+merge_test_review_mappings(
+    {
+        "tests/test_translate.py": {
+            "rationale": TRANSLATION_TEST_EXCLUSION["reason"],
+            "supporting_sources": TRANSLATION_TEST_EXCLUSION["supporting_sources"],
+        }
+    }
+)
+merge_test_review_mappings(FASTAPI_0157_DELTA_TEST_REVIEW_MAPPINGS)
+
 FEATURES = [
     {
         "id": "app-routing",
@@ -7693,10 +7789,17 @@ def classify_candidate(
     ):
         return "private/internal", "The source module or member is explicitly underscore-private."
     if candidate.get("kind") == "import_binding":
-        if (candidate.get("imported_module") or "").startswith("_"):
+        if (candidate.get("imported_module") or "").startswith("_") and candidate.get(
+            "visibility"
+        ) != "public_candidate":
             return (
                 "private/internal",
                 "The binding imports an underscore-private dependency module.",
+            )
+        if candidate.get("visibility") == "public_candidate":
+            return (
+                "uncertain",
+                "The package explicitly re-exports this name, but its public contract needs review.",
             )
         return "uncertain", "Importability from this module is not by itself public API evidence."
     return (
@@ -9703,7 +9806,6 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "fastapi.dependencies.utils.run_in_threadpool",
             "fastapi.applications.FastAPI.__call__",
             "fastapi.routing.Request",
-            "fastapi.routing.FormData",
             "fastapi.dependencies.utils.FormData",
             "fastapi.dependencies.utils.Headers",
             "fastapi.dependencies.utils.QueryParams",
@@ -10227,7 +10329,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             ),
             "root-path": (
                 "shared Starlette root-path and mounted-scope boundary",
-                "FastAPI 0.141.1 assigns its configured root_path in fastapi/applications.py:949, 1160-1163 and projects request root_path into OpenAPI/docs URLs at 1108-1154; docs/en/docs/advanced/behind-a-proxy.md:98-112 describes this FastAPI behavior. Starlette-RS owns generic Router root-path matching, Mount child-scope composition, and Request.url_for root-path projection. The linked Request.url_for requirement is Python-package-only, and its Rust-native support gap remains visible. These links identify the shared boundary and target support; they do not claim FastAPI-RS parity.",
+                "FastAPI 0.157.0 assigns its configured root_path into the ASGI scope in fastapi/applications.py:1176-1177 and projects request root_path into OpenAPI/docs URLs at 1124-1143 and 1167-1168; docs/en/docs/advanced/behind-a-proxy.md:104-112 describes the ASGI root_path boundary, while lines 211-213 record the deprecated constructor parameter. Starlette-RS owns generic Router root-path matching, Mount child-scope composition, and Request.url_for root-path projection. The linked Request.url_for requirement is Python-package-only, and its Rust-native support gap remains visible. These links identify the shared boundary and target support; they do not claim FastAPI-RS parity.",
                 [
                     (
                         "starlette.routing.Router",
@@ -10583,7 +10685,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             elif feature_id == "cli-process":
                 specs = (
                     "FastAPI-owned console entrypoint and process behavior",
-                    "FastAPI 0.141.1 declares `fastapi = fastapi.cli:main` in `pyproject.toml:119-120`; `fastapi/cli.py:8` defines the entrypoint and `docs/en/docs/fastapi-cli.md` documents its command surface. Starlette-RS has no corresponding CLI operation. This records upstream ownership only and makes no FastAPI-RS support or parity claim.",
+                    "FastAPI 0.157.0 declares `fastapi = fastapi.cli:main` in `pyproject.toml:134`; `fastapi/cli.py` defines the entrypoint and `docs/en/docs/fastapi-cli.md` documents its command surface. Starlette-RS has no corresponding CLI operation. This records upstream ownership only and makes no FastAPI-RS support or parity claim.",
                     [],
                 )
             else:
@@ -12900,7 +13002,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "prose be represented while preserving the pinned executable contract?"
             ),
             "evidence": (
-                "FastAPI 0.141.1 docs/en/docs/tutorial/extra-models.md:177-187 says "
+                "FastAPI 0.157.0 docs/en/docs/tutorial/extra-models.md:177-187 says "
                 "response_model=PlaneItem | CarItem would fail, but its included executable "
                 "docs_src/extra_models/tutorial003_py310.py:31 declares exactly that union. "
                 "The independent extra-models-tutorials-upstream-wave workflow exercises "
@@ -12918,7 +13020,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 "Pydantic contract when the tutorial's optional-default model does not?"
             ),
             "evidence": (
-                "FastAPI 0.141.1 docs/en/docs/how-to/separate-openapi-schemas.md:5,68-72,98-99 "
+                "FastAPI 0.157.0 docs/en/docs/how-to/separate-openapi-schemas.md:1,5-8,20-47 "
                 "describes distinct input/output schemas. Its tutorial001 and tutorial002 "
                 "source test snapshots instead contain one Item component with name required "
                 "(tests/test_tutorial/test_separate_openapi_schemas/test_tutorial001.py:115-125 "
@@ -12950,14 +13052,14 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         {
             "id": "fastapi-cli-compatibility-boundary",
             "status": "standard-oracle-pinned; one-input-process-contract-defined; target-entrypoint-and-cli-feature-coverage-pending",
-            "question": "Can FastAPI-RS expose the `fastapi` console entrypoint with the pinned standard FastAPI 0.141.1 process behavior, and which documented CLI operations still need independent inputs?",
+            "question": "Can FastAPI-RS expose the `fastapi` console entrypoint with the pinned standard FastAPI 0.157.0 process behavior, and which documented CLI operations still need independent inputs?",
             "evidence": "The standard source profile identifies fastapi-cli 0.0.32 and the input-only fastapi-cli-process-workflow.yaml records argv, isolated cwd, controlled environment, timeout, source digests, and exit/stdout/stderr selectors for the upstream missing-path case. The source atlas classifies fastapi.cli.main as private/internal; its upstream monkeypatch test is explicitly excluded, while the documented fastapi console command is mapped. The target console entrypoint remains unimplemented, so parity is unresolved; auto-discovery, configured entrypoints, run/reload options, and server launch behaviors also remain unmapped.",
         },
         {
             "id": "fastapi-security-module-runtime-surface",
             "status": "two-case-identity-checked-parity-passing; broader-security-contract-pending",
             "question": "Does FastAPI-RS expose the documented `fastapi.security` module and preserve `HTTPBearer` subclass overrides for missing-credential responses?",
-            "evidence": "FastAPI-RS exposes `fastapi.security` through direct native re-exports and its Rust HTTPBearer dependency passes both cases in the independently authored authentication-error-status-code-tutorial workflow against FastAPI 0.141.1 and Starlette 1.6.0 (two exact observations, including a subclass override that returns 403 and valid Bearer credential extraction). The target process verifies FastAPI-RS 0.1.0, CPython 3.12.13, and the pinned Starlette-RS revision; upstream FastAPI is absent. This establishes only the reviewed default-construction, missing-credential override, and valid-Bearer slice. Other schemes, optional authentication, non-Bearer and empty credentials, full HTTPBase inheritance, and OpenAPI security remain pending.",
+            "evidence": "The recorded FastAPI-RS security comparison used FastAPI 0.141.1 and Starlette 1.6.0; it is historical and does not establish parity against the active FastAPI 0.157.0 baseline. It covers only two observations in the authentication-error-status-code-tutorial workflow: the HTTPBearer subclass override returns 403, and valid Bearer credentials are extracted. The target process verifies FastAPI-RS 0.1.0, CPython 3.12.13, and the pinned Starlette-RS revision; upstream FastAPI is absent from that process. Other schemes, optional authentication, non-Bearer and empty credentials, full HTTPBase inheritance, and OpenAPI security remain pending.",
         },
         {
             "id": "fixture-recipe-execution-contract",
@@ -13538,7 +13640,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 fastapi_root / "pyproject.toml", fastapi_root / ".github/workflows/test.yml"
             ),
             "pydantic": {
-                "selected_version": "2.13.4",
+                "selected_version": "2.13.5",
                 "source_lock_version": inventory["source_identity"]
                 .get("locked_components", {})
                 .get("pydantic"),
@@ -13931,7 +14033,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         "",
         "## Pinned authorities",
         "",
-        "- FastAPI: 0.141.1 at `" + atlas["authorities"]["fastapi"]["commit"] + "`.",
+        "- FastAPI: 0.157.0 at `" + atlas["authorities"]["fastapi"]["commit"] + "`.",
         "- Starlette oracle contract: 1.6.0 at `"
         + atlas["authorities"]["starlette"]["commit"]
         + "` (the sole selected Starlette version).",
@@ -13939,7 +14041,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
         + atlas["authorities"]["starlette_rs"]["implementation_revision"]
         + "`.",
         "- FastAPI declares `starlette>=0.46.0`, which admits the selected contract. Its upstream lock graph is dependency-inventory evidence, not another compatibility profile.",
-        "- Pydantic: 2.13.4 source-lock baseline; Python support is `"
+        "- Pydantic: 2.13.5 source-lock baseline; Python support is `"
         + atlas["authorities"]["python"]["requires_python"]
         + "`.",
         "",
@@ -14339,7 +14441,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "",
             f"The implemented first slice is a scoped end-to-end POST `/items/{{item_id}}` path: Rust-owned app/route construction, path and query parsing, a header-backed dependency, Pydantic request validation, response-model filtering, exact HTTP observations, ordered ASGI send-message types, and selected generated OpenAPI fields. {counts['first_slice_input_cases']} input-only cases are in `tests/fixtures/input-recipes/parity/first-asgi-request.yaml` under the strict schema `tests/fixtures/schemas/python-asgi-workflow-v2.schema.json`; `make parity-inputs` materializes the ignored JSON input, and the independently authored workload is `tests/fixtures/workloads/first_slice.py`. The isolated oracle and target workers and exact comparator are present. This atlas records fixture scope and runner capability; fresh run outcomes belong in ignored `parity-results/` artifacts.",
             "",
-            f"The {counts['first_slice_input_cases']} cases define a narrow first vertical slice. Full FastAPI 0.141.1 API and behavior parity remains incomplete; do not read fixture links or runner availability as broader support evidence.",
+            f"The {counts['first_slice_input_cases']} cases define a narrow first vertical slice. Full FastAPI 0.157.0 API and behavior parity remains incomplete; do not read fixture links or runner availability as broader support evidence.",
             "",
             "## Prioritized project backlog",
             "",

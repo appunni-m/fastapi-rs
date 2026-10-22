@@ -152,21 +152,21 @@ are build-time support for this discovery/fallback path.
 
 ## Python package dependencies
 
-`pyproject.toml` directly pins `annotated-doc==0.0.4`, `pydantic==2.13.4`,
-`pydantic-core==2.46.4`, and `starlette-rs-py==0.1.0`. The external target
+`pyproject.toml` directly pins `annotated-doc==0.0.5`, `pydantic==2.13.5`,
+`pydantic-core==2.46.5`, and `starlette-rs-py==0.1.0`. The external target
 profile resolves eight registry distributions in
 [`requirements/target-runtime-cpython-3.12.13.lock`](../requirements/target-runtime-cpython-3.12.13.lock).
 That lock is for CPython 3.12.13; the project requires Python >=3.10, so
 conditional edges can differ on other supported interpreters. The local
 Starlette-RS source install is pinned separately through `metadata.yaml` and is
-not a registry-lock entry. The FastAPI 0.141.1 oracle closure remains separate
+not a registry-lock entry. The FastAPI 0.157.0 oracle closure remains separate
 in [`DEPENDENCY_GRAPH.md`](DEPENDENCY_GRAPH.md).
 
 | Distribution | Target role and dependency path | Purpose and consumer | Implementation/native parts | License evidence |
 | --- | --- | --- | --- | --- |
-| `annotated-doc` 0.0.4 | Direct FastAPI-RS runtime pin. | Rust imports `annotated_doc.Doc` through PyO3 to construct Python `Annotated` documentation metadata for public signatures, parameters, security APIs, and exceptions (`fastapi-rs-py/src/lib.rs`, `fastapi-rs/src/parameters.rs`, `fastapi-rs/src/errors.rs`). | Python package; no native component indicated by its wheel metadata. | [MIT](https://pypi.org/pypi/annotated-doc/0.0.4/json) |
-| `pydantic` 2.13.4 | Direct FastAPI-RS runtime pin. | Python model, `Field`, `TypeAdapter`, validation-error, and schema APIs called from Rust through PyO3 for model validation and OpenAPI/schema generation (`fastapi-rs/src/application_runtime.rs`, `fastapi-rs/src/openapi_models.rs`). | Python package and orchestration; model definitions and user validators remain Python objects. | [MIT](https://pypi.org/pypi/pydantic/2.13.4/json) |
-| `pydantic-core` 2.46.4 | Direct FastAPI-RS runtime pin; also Pydantic's required Core dependency. | Provides CoreSchema helpers, undefined sentinels, URL values, and Pydantic's validation/serialization engine; FastAPI-RS calls the pinned Python API through PyO3 (`fastapi-rs/src/datastructures.rs`, `fastapi-rs/src/encoding.rs`, `fastapi-rs/src/openapi_models.rs`). | Separate Pydantic-owned Rust/PyO3 extension wheel; outside this workspace's Cargo graph. | [MIT](https://pypi.org/pypi/pydantic-core/2.46.4/json) |
+| `annotated-doc` 0.0.5 | Direct FastAPI-RS runtime pin. | Rust imports `annotated_doc.Doc` through PyO3 to construct Python `Annotated` documentation metadata for public signatures, parameters, security APIs, and exceptions (`fastapi-rs-py/src/lib.rs`, `fastapi-rs/src/parameters.rs`, `fastapi-rs/src/errors.rs`). | Python package; no native component indicated by its wheel metadata. | [MIT](https://pypi.org/pypi/annotated-doc/0.0.5/json) |
+| `pydantic` 2.13.5 | Direct FastAPI-RS runtime pin. | Python model, `Field`, `TypeAdapter`, validation-error, and schema APIs called from Rust through PyO3 for model validation and OpenAPI/schema generation (`fastapi-rs/src/application_runtime.rs`, `fastapi-rs/src/openapi_models.rs`). | Python package and orchestration; model definitions and user validators remain Python objects. | [MIT](https://pypi.org/pypi/pydantic/2.13.5/json) |
+| `pydantic-core` 2.46.5 | Direct FastAPI-RS runtime pin; also Pydantic's required Core dependency. | Provides CoreSchema helpers, undefined sentinels, URL values, and Pydantic's validation/serialization engine; FastAPI-RS calls the pinned Python API through PyO3 (`fastapi-rs/src/datastructures.rs`, `fastapi-rs/src/encoding.rs`, `fastapi-rs/src/openapi_models.rs`). | Separate Pydantic-owned Rust/PyO3 extension wheel; outside this workspace's Cargo graph. | [MIT](https://pypi.org/pypi/pydantic-core/2.46.5/json) |
 | `annotated-types` 0.7.0 | Pydantic runtime transitive dependency (`pydantic -> annotated-types`). | Supplies Python `Annotated` constraint metadata that Pydantic consumes when constructing and validating fields; FastAPI-RS passes field metadata to Pydantic rather than implementing these types. | Python-only metadata types; no native component indicated by its wheel metadata. | [MIT](https://pypi.org/pypi/annotated-types/0.7.0/json) |
 | `typing-inspection` 0.4.2 | Pydantic runtime transitive dependency (`pydantic -> typing-inspection`). | Python typing-object inspection used by Pydantic's model/schema processing; retained as part of the pinned Pydantic runtime closure. | Python implementation; no native component indicated by its wheel metadata. | [MIT](https://pypi.org/pypi/typing-inspection/0.4.2/json) |
 | `typing-extensions` 4.16.0 | Shared runtime dependency: `starlette-rs-py` declares `>=4.12.0`; Pydantic declares `>=4.14.1`, and AnyIO declares it for Python <3.13. | Supplies typing APIs on supported Python versions. FastAPI-RS imports `TypeAliasType` and `deprecated` through PyO3 (`fastapi-rs/src/application_runtime.rs`, `fastapi-rs/src/parameter_classes.rs`). | Python-only typing backports/definitions. | [PSF-2.0](https://pypi.org/pypi/typing-extensions/4.16.0/json) |
@@ -203,7 +203,7 @@ and runs Cargo to build the extension.
 
 ### Narrow Pydantic Core encoder bridge
 
-FastAPI 0.141.1's public `jsonable_encoder` imports
+FastAPI 0.157.0's public `jsonable_encoder` imports
 `PydanticUndefinedType` from `pydantic_core` and encodes its instances as
 `None` (`fastapi/encoders.py:27,279–280`). It registers `Url` and `AnyUrl` as
 string encoders (`fastapi/encoders.py:103–111`); `AnyUrl` comes from
@@ -213,11 +213,11 @@ these classes at module load: its encoder performs runtime instance checks for
 `PydanticUndefinedType` and resolves the URL classes dynamically
 (`fastapi-rs/src/encoding.rs:223–225,407–415`).
 
-Pinned implementation evidence is FastAPI 0.141.1 commit
-`95f8322ee1dcda7ceace7b1c4f6c9915b36d748f`: `fastapi/encoders.py`
+Pinned implementation evidence is FastAPI 0.157.0 commit
+`386a28af2f87af1a32ac26d88f07b7f58ab2dfb1`: `fastapi/encoders.py`
 SHA-256 `4cc09230eca6435892f6bc25a2185e214dbedfe994d5103feb63ad269137caad`
 and `fastapi/_compat/v2.py` SHA-256
-`b031b28b588a4855bd2ee27b9f807ad7ed72ad0235347452c2c15144bb8527c9`.
+`4e015ef452aa0400425276234ec246464516031f5e66bbd968e73f4070dfec28`.
 The input-only encoder review is
 `tests/fixtures/input-recipes/parity/pydantic-core-encoder-compatibility.yaml`.
 
@@ -226,7 +226,7 @@ public API. The `pydantic-core` wheel is a direct target Python runtime
 dependency and its Rust implementation remains Pydantic-owned, outside this
 workspace's Cargo graph. Its separate native closure is inventoried in
 [`PYDANTIC_CORE_DEPENDENCIES.md`](PYDANTIC_CORE_DEPENDENCIES.md). The explicit
-`2.46.4` pin matches the selected manifest identity. The public Pydantic
+`2.46.5` pin matches the selected manifest identity. The public Pydantic
 `AnyUrl` type does not replace the raw
 Core `Url` check, and Pydantic does not export the undefined sentinel type as
 a public API. Keep the behavior tied to these encoder classifications and
@@ -243,7 +243,7 @@ model filtering, and OpenAPI assembly; Pydantic models and user callables remain
 Python objects invoked through PyO3.
 
 Do not add the pinned `pydantic-core` crate directly to this workspace without
-an explicit toolchain and boundary review. Its [2.46.4 Cargo manifest] sets
+an explicit toolchain and boundary review. Its [2.46.5 Cargo manifest] sets
 `rust-version = 1.88` and depends on PyO3 0.28, while this workspace declares
 Rust 1.85 and PyO3 0.29.2. Pydantic's [architecture contract] also treats model
 definition and core-schema generation as Python package work, with validation
@@ -251,5 +251,5 @@ and serialization delegated to the Rust core. Keep FastAPI-specific control
 flow in `fastapi-rs`, and call Pydantic's public model/schema APIs through the
 existing PyO3 boundary.
 
-[2.46.4 Cargo manifest]: https://github.com/pydantic/pydantic/blob/v2.13.4/pydantic-core/Cargo.toml
+[2.46.5 Cargo manifest]: https://github.com/pydantic/pydantic/blob/v2.13.5/pydantic-core/Cargo.toml
 [architecture contract]: https://pydantic.dev/docs/validation/dev/internals/architecture/

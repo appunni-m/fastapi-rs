@@ -1,6 +1,6 @@
 //! Rust-owned HTML for FastAPI's default documentation routes.
 //!
-//! The templates follow FastAPI 0.141.1's built-in openapi.docs helpers.
+//! The templates follow FastAPI 0.157.0's built-in openapi.docs helpers.
 
 use pyo3::prelude::*;
 use pyo3::types::{PyBool, PyDict, PyModule, PyString, PyTuple};

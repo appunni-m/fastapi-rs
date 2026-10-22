@@ -56,7 +56,7 @@ DOC_SECTION_CASE_MAPPINGS_CUSTOM_REQUEST_ROUTE_20261015 = {
             "message-pack conversion, or request logging."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/how-to/custom-request-and-route.md:1-109 "
+            "Pinned FastAPI 0.157.0 docs/en/docs/how-to/custom-request-and-route.md:1-109 "
             "introduces custom Request/APIRoute extension points and groups the body-encoding, "
             "exception-handler, and router examples. The selected source-wave-b cases pair an "
             "independently authored custom Request subclass with a custom route-handler wrapper "
@@ -81,7 +81,7 @@ DOC_SECTION_CASE_MAPPINGS_CUSTOM_REQUEST_ROUTE_20261015 = {
             "is excluded under the GzipRequest child section."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/how-to/custom-request-and-route.md:25-80 "
+            "Pinned FastAPI 0.157.0 docs/en/docs/how-to/custom-request-and-route.md:25-80 "
             "introduces gzip request handling and then expands it under the GzipRequest and "
             "GzipRoute headings. The source-wave-b independent route tests ordinary JSON input "
             "and custom Request construction; its workflow sources cite the pinned tutorial "
@@ -99,7 +99,7 @@ DOC_SECTION_CASE_MAPPINGS_CUSTOM_REQUEST_ROUTE_20261015 = {
             "claim is made."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/how-to/custom-request-and-route.md:31-46 "
+            "Pinned FastAPI 0.157.0 docs/en/docs/how-to/custom-request-and-route.md:31-46 "
             "describes overriding Request.body() and conditionally calling gzip.decompress; "
             "the included docs_src/custom_request_and_route/tutorial001_py310.py:8-15 and "
             "tests/test_tutorial/test_custom_request_and_route/test_tutorial001.py "
@@ -126,7 +126,7 @@ DOC_SECTION_CASE_MAPPINGS_CUSTOM_REQUEST_ROUTE_20261015 = {
             "decompression is excluded under the GzipRequest section."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/how-to/custom-request-and-route.md:47-80 "
+            "Pinned FastAPI 0.157.0 docs/en/docs/how-to/custom-request-and-route.md:47-80 "
             "describes an APIRoute.get_route_handler() wrapper that constructs GzipRequest and "
             "delegates to FastAPI's original handler. The source example is "
             "docs_src/custom_request_and_route/tutorial001_py310.py:18-34; the selected "
@@ -153,9 +153,9 @@ DOC_SECTION_CASE_MAPPINGS_CUSTOM_REQUEST_ROUTE_20261015 = {
             "are selected."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/how-to/custom-request-and-route.md:81-100 "
+            "Pinned FastAPI 0.157.0 docs/en/docs/how-to/custom-request-and-route.md:81-100 "
             "shows accessing Request.body() after request validation fails. Its included "
-            "docs_src/custom_request_and_route/tutorial002_py310.py:9-30 and upstream "
+            "docs_src/custom_request_and_route/tutorial002_py310.py:9-29 and upstream "
             "test_tutorial002.py source evidence the custom handler path. The independent "
             "source-wave-b case exercises that wrapper/error/body interaction with separately "
             "authored input and observes http.status plus http.body.bytes."
@@ -176,7 +176,7 @@ DOC_SECTION_CASE_MAPPINGS_CUSTOM_REQUEST_ROUTE_20261015 = {
             "time-dependent X-Response-Time value and duration in the tutorial are not claimed."
         ),
         (
-            "Pinned FastAPI 0.141.1 docs/en/docs/how-to/custom-request-and-route.md:101-109 "
+            "Pinned FastAPI 0.157.0 docs/en/docs/how-to/custom-request-and-route.md:101-109 "
             "sets APIRouter.route_class and describes the extra X-Response-Time response "
             "header. The included tutorial003_py310.py:8-39 and test_tutorial003.py provide "
             "source evidence. The independent custom-request-route-sections-review-20261015 "

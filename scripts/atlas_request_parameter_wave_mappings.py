@@ -1,4 +1,4 @@
-"""Source-reviewed request-parameter mappings for the FastAPI 0.141.1 atlas.
+"""Source-reviewed request-parameter mappings for the FastAPI 0.157.0 atlas.
 
 This is a separate review module. It does not run the atlas generator or edit
 generated inventories. Recipe links resolve to independently authored,
@@ -23,8 +23,8 @@ STARLETTE_ROOT = PROJECT_ROOT.parent / "starlette"
 RECIPE_ROOT = PROJECT_ROOT / "tests/fixtures/input-recipes/parity"
 
 FASTAPI_IDENTITY = {
-    "version": "0.141.1",
-    "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+    "version": "0.157.0",
+    "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
 }
 STARLETTE_IDENTITY = {
     "version": "1.6.0",
@@ -32,7 +32,7 @@ STARLETTE_IDENTITY = {
     "role": "sole Starlette oracle and generic-framework contract",
 }
 PYDANTIC_IDENTITY = {
-    "version": "2.13.4",
+    "version": "2.13.5",
     "role": "field construction, type coercion, and value validation",
 }
 
@@ -114,7 +114,7 @@ def _test_function_spans(test_path: str) -> list[dict[str, Any]]:
                     test_path,
                     node.lineno,
                     node.end_lineno or node.lineno,
-                    f"upstream FastAPI 0.141.1 test function {node.name}",
+                    f"upstream FastAPI 0.157.0 test function {node.name}",
                 )
             )
     return spans
@@ -210,6 +210,7 @@ def _recipe_case_index() -> dict[str, dict[str, Any]]:
             "fastapi-rs/python-asgi-workflow@2",
             "fastapi-rs/python-asgi-workflow@3",
             "fastapi-rs/python-asgi-workflow@13",
+            "fastapi-rs/python-asgi-workflow@17",
             _API_WORKFLOW_SCHEMA,
         }:
             continue
@@ -251,87 +252,93 @@ def _source_link_index() -> dict[str, list[dict[str, Any]]]:
 _FASTAPI_IMPLEMENTATION_SOURCES = [
     _source(
         "fastapi/dependencies/utils.py",
-        271,
-        347,
-        "FastAPI 0.141.1 inspects endpoint signatures, infers parameter fields, and classifies path/query/header/cookie/body fields.",
+        314,
+        416,
+        "FastAPI 0.157.0 inspects endpoint signatures, infers parameter fields, and classifies path/query/header/cookie/body fields.",
     ),
     _source(
         "fastapi/dependencies/utils.py",
-        381,
-        547,
-        "FastAPI 0.141.1 resolves Annotated/default parameter metadata, aliases, path restrictions, and query type restrictions.",
+        423,
+        620,
+        "FastAPI 0.157.0 resolves Annotated/default parameter metadata, aliases, path restrictions, and query type restrictions.",
     ),
     _source(
         "fastapi/dependencies/utils.py",
-        734,
-        777,
-        "FastAPI 0.141.1 adapts extracted values and required/default handling to Pydantic ModelField validation.",
+        822,
+        842,
+        "FastAPI 0.157.0 adapts extracted values and required/default handling to Pydantic ModelField validation.",
     ),
     _source(
         "fastapi/dependencies/utils.py",
-        780,
-        850,
-        "FastAPI 0.141.1 extracts query/header/cookie/path values and aggregates request parameter errors.",
+        843,
+        991,
+        "FastAPI 0.157.0 extracts query/header/cookie/path values and aggregates request parameter errors.",
     ),
     _source(
         "fastapi/dependencies/utils.py",
-        888,
-        905,
-        "FastAPI 0.141.1 selects whether request-body fields must be embedded into one body object.",
+        1054,
+        1076,
+        "FastAPI 0.157.0 selects whether request-body fields must be embedded into one body object.",
     ),
     _source(
         "fastapi/dependencies/utils.py",
-        951,
-        998,
-        "FastAPI 0.141.1 extracts and validates JSON, Form, and File request-body fields.",
+        1078,
+        1236,
+        "FastAPI 0.157.0 extracts and validates JSON, Form, and File request-body fields.",
     ),
     _source(
         "fastapi/dependencies/utils.py",
-        1001,
-        1048,
-        "FastAPI 0.141.1 combines Body fields and carries a common declared media type into the aggregate field.",
+        1237,
+        1286,
+        "FastAPI 0.157.0 combines Body fields and carries a common declared media type into the aggregate field.",
     ),
     _source(
         "fastapi/dependencies/utils.py",
-        1051,
-        1053,
-        "FastAPI 0.141.1 selects a Pydantic validation alias before the declared field alias.",
+        1287,
+        1320,
+        "FastAPI 0.157.0 selects a Pydantic validation alias before the declared field alias.",
     ),
     _source(
         "fastapi/routing.py",
-        425,
-        465,
-        "FastAPI 0.141.1 selects JSON body decoding by Content-Type and translates malformed JSON into request validation errors.",
+        398,
+        491,
+        "FastAPI 0.157.0 selects JSON body decoding by Content-Type and translates malformed JSON into request validation errors.",
     ),
     _source(
         "fastapi/openapi/utils.py",
         159,
-        218,
-        "FastAPI 0.141.1 projects parameter location, validation alias, requiredness, and schema into OpenAPI.",
+        215,
+        "FastAPI 0.157.0 projects parameter location, validation alias, requiredness, and schema into OpenAPI.",
     ),
     _source(
         "fastapi/openapi/utils.py",
+        216,
+        249,
+        "FastAPI 0.157.0 uses Body.media_type as the requestBody content key.",
+    ),
+    _source(
+        "fastapi/openapi/utils.py",
+        296,
+        527,
+        "FastAPI 0.157.0 builds operation parameter lists and request-body OpenAPI entries.",
+    ),
+    _source(
+        "fastapi/params.py",
+        27,
         231,
-        263,
-        "FastAPI 0.141.1 uses Body.media_type as the requestBody content key.",
-    ),
-    _source(
-        "fastapi/openapi/utils.py",
-        311,
-        382,
-        "FastAPI 0.141.1 builds operation parameter lists and request-body OpenAPI entries.",
+        "FastAPI 0.157.0 parameter metadata and constraints.",
     ),
     _source(
         "fastapi/params.py",
-        137,
-        220,
-        "FastAPI Path metadata and constraints.",
+        232,
+        497,
+        "FastAPI 0.157.0 Query, Header, and Cookie metadata and constraints.",
     ),
     _source(
         "fastapi/params.py",
-        221,
-        302,
-        "FastAPI Query metadata and constraints.",
+        498,
+        740,
+        "FastAPI 0.157.0 Body, Form, and File metadata and constraints.",
     ),
     _source(
         "fastapi/params.py",
@@ -410,7 +417,7 @@ _STARLETTE_CONTRACT_SOURCES = [
     ),
 ]
 
-_PYDANTIC_BOUNDARY = "Pydantic 2.13.4 owns its public ModelField/BaseModel field metadata, core type coercion, and validation semantics. FastAPI owns inspecting Python endpoint annotations, constructing its field adapter, choosing request sources/locations, and shaping FastAPI validation errors. This mapping does not claim a Rust reimplementation of Pydantic internals."
+_PYDANTIC_BOUNDARY = "Pydantic 2.13.5 owns its public ModelField/BaseModel field metadata, core type coercion, and validation semantics. FastAPI owns inspecting Python endpoint annotations, constructing its field adapter, choosing request sources/locations, and shaping FastAPI validation errors. This mapping does not claim a Rust reimplementation of Pydantic internals."
 _STARLETTE_BOUNDARY = "Starlette 1.6.0 is the sole generic-framework oracle. HTTP route matching, ASGI request-body/form/multipart parsing, query/header/cookie data structures, and UploadFile mechanics are assigned to the separate Starlette-RS contract. FastAPI owns parameter declaration inspection, source selection, body-field composition, and FastAPI/OpenAPI validation projections."
 _PARITY_GATE = "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract."
 _BODY_MEDIA_TYPE_PARITY_GATE = "Input mapping only: the recipe contains stimuli and observation selectors, not expected outputs or measurements. The original upstream test asserts the two-route OpenAPI schema only; explicitly named source-derived cases add independent HTTP probes grounded in pinned implementation branches. No complete module parity result is claimed; any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, and exact TestClient behavior remain outside this mapping. Generic request and parser behavior remains under Starlette 1.6.0's separate contract."
@@ -540,7 +547,7 @@ def _path_test_function_case_mappings(test_path: str) -> list[dict[str, Any]]:
                     test_path,
                     node.lineno,
                     node.end_lineno or node.lineno,
-                    f"pinned FastAPI 0.141.1 test function {node.name}",
+                    f"pinned FastAPI 0.157.0 test function {node.name}",
                 ),
                 "request": {"method": request_key[0], "path": request_key[1]},
                 "recipe_path": case["recipe_path"],
@@ -579,7 +586,7 @@ def _source_exclusion(test_path: str, reason: str) -> dict[str, Any]:
         "exclusion_reason": reason,
         "supporting_sources": sources,
         "source_file": _source_file(
-            test_path, "pinned FastAPI 0.141.1 test source for the exclusion"
+            test_path, "pinned FastAPI 0.157.0 test source for the exclusion"
         ),
         "starlette_ownership_boundary": _STARLETTE_BOUNDARY,
         "starlette_contract_sources": list(_STARLETTE_CONTRACT_SOURCES),
@@ -607,7 +614,7 @@ _UNSUPPORTED_REQUEST_PARAM_MODULES = {
 _TOP_LEVEL_REQUEST_PARAMETER_EXCLUSIONS = {
     "tests/test_param_class.py": (
         "Both pinned tests directly import and construct fastapi.params.Param. The reviewed "
-        "FastAPI 0.141.1 atlas classifies Param as private/internal and its base constructor "
+        "FastAPI 0.157.0 atlas classifies Param as private/internal and its base constructor "
         "as uncertain, so FastAPI-RS does not expose that base through the public facade. "
         "Equivalent missing/provided optional-query behavior is mapped through the supported "
         "Query factory in query-default-wave; this exclusion is limited to direct Param use."
@@ -673,7 +680,7 @@ for _test_path in REQUEST_PARAM_SOURCE_MODULES:
                 "exclusion_reason": _REQUEST_PARAM_SUPPORT_EXCLUSIONS[_test_path],
                 "supporting_sources": [],
                 "source_file": _source_file(
-                    _test_path, "empty initializer verified in pinned FastAPI 0.141.1 source"
+                    _test_path, "empty initializer verified in pinned FastAPI 0.157.0 source"
                 ),
             }
         else:
@@ -683,7 +690,7 @@ for _test_path in REQUEST_PARAM_SOURCE_MODULES:
                 "exclusion_reason": _REQUEST_PARAM_SUPPORT_EXCLUSIONS[_test_path],
                 "supporting_sources": [helper_span] if helper_span else [],
                 "source_file": _source_file(
-                    _test_path, "test helper source in pinned FastAPI 0.141.1"
+                    _test_path, "test helper source in pinned FastAPI 0.157.0"
                 ),
             }
     else:
@@ -784,7 +791,7 @@ def _tail_function_mapping(
             test_path,
             function.lineno,
             function.end_lineno or function.lineno,
-            f"upstream FastAPI 0.141.1 test function {function_name}",
+            f"upstream FastAPI 0.157.0 test function {function_name}",
         ),
         "workflow_case": {
             "recipe_path": _TAIL_WAVE_RECIPE,
@@ -821,7 +828,7 @@ def _header_cookie_alias_function_mapping(
             test_path,
             function.lineno,
             function.end_lineno or function.lineno,
-            f"upstream FastAPI 0.141.1 test function {function_name}",
+            f"upstream FastAPI 0.157.0 test function {function_name}",
         ),
         "workflow_case": {
             "recipe_path": _TAIL_WAVE_RECIPE,
@@ -930,7 +937,7 @@ def _optional_upload_function_mapping(
             test_path,
             function.lineno,
             function.end_lineno or function.lineno,
-            f"upstream FastAPI 0.141.1 test function {function_name}",
+            f"upstream FastAPI 0.157.0 test function {function_name}",
         ),
         "workflow_case": {
             "recipe_path": _OPTIONAL_UPLOAD_RECIPE,
@@ -968,7 +975,7 @@ def _optional_list_schema_function_mapping(
             test_path,
             function.lineno,
             function.end_lineno or function.lineno,
-            f"upstream FastAPI 0.141.1 test function {function_name}",
+            f"upstream FastAPI 0.157.0 test function {function_name}",
         ),
         "workflow_case": {
             "recipe_path": _OPTIONAL_LIST_SCHEMA_RECIPE,
@@ -1008,7 +1015,7 @@ def _optional_body_str_function_mapping(
             test_path,
             function.lineno,
             function.end_lineno or function.lineno,
-            f"upstream FastAPI 0.141.1 test function {function_name}",
+            f"upstream FastAPI 0.157.0 test function {function_name}",
         ),
         "workflow_case": {
             "recipe_path": _OPTIONAL_BODY_STR_RECIPE,
@@ -1048,7 +1055,7 @@ def _request_http_function_mapping(
             test_path,
             function.lineno,
             function.end_lineno or function.lineno,
-            f"upstream FastAPI 0.141.1 test function {function_name}",
+            f"upstream FastAPI 0.157.0 test function {function_name}",
         ),
         "workflow_case": {
             "recipe_path": _REQUEST_UPLOADS_RECIPE,
@@ -1062,6 +1069,150 @@ def _request_http_function_mapping(
             "declared `list[bytes]`/Form routes and observes only HTTP status and response bytes. "
             "It is a source-to-input mapping, not a parity result; multipart parsing remains "
             "under the separate Starlette 1.6.0 contract."
+        ),
+    }
+
+
+_FIELD_OPTIONS_TEST_PATH = "tests/test_request_params/test_field_options.py"
+_FIELD_OPTIONS_RECIPE = "tests/fixtures/input-recipes/parity/field-options-0157.yaml"
+_FIELD_OPTIONS_CASE_ID = "fastapi.request-parameters.field-options.source-review"
+_FIELD_OPTIONS_ACTION_IDS = {
+    "test_union_mode": [
+        f"union-{location}-{mode}"
+        for location in ("path", "query", "header", "cookie", "body", "form")
+        for mode in ("none", "smart", "left-to-right")
+    ],
+    "test_fail_fast": [
+        f"fail-fast-{location}-{setting}"
+        for location in ("query", "header", "body", "form")
+        for setting in ("fast", "all")
+    ],
+    "test_omitted_options_preserve_pydantic_validation_metadata": [
+        "omitted-options-valid",
+        "omitted-options-invalid",
+    ],
+    "test_explicit_options_override_pydantic_validation_metadata": [
+        "explicit-options-valid",
+        "explicit-options-invalid",
+    ],
+    "test_compiled_pattern": [
+        f"pattern-{location}-{value}"
+        for location in ("path", "query", "header", "cookie", "body", "form")
+        for value in ("abc", "xyz")
+    ],
+    "test_file_list_fail_fast": [
+        "file-fail-fast-fast",
+        "file-fail-fast-all",
+        "file-fail-fast-valid",
+    ],
+    "test_query_options": ["query-options"],
+    "test_body_options": ["body-options"],
+    "test_openapi_schema": ["openapi-options"],
+}
+
+
+def _field_options_function_mapping(
+    function_name: str,
+    action_ids: list[str],
+    selectors: list[str],
+    rationale: str,
+    feature_ids: list[str] | None = None,
+) -> dict[str, Any]:
+    tree = ast.parse((FASTAPI_ROOT / _FIELD_OPTIONS_TEST_PATH).read_text(encoding="utf-8"))
+    matches = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name
+    ]
+    if len(matches) != 1:
+        raise ValueError(
+            f"expected exact source function {function_name} in {_FIELD_OPTIONS_TEST_PATH}"
+        )
+    function = matches[0]
+    return {
+        "source_span": _source(
+            _FIELD_OPTIONS_TEST_PATH,
+            function.lineno,
+            function.end_lineno or function.lineno,
+            f"upstream FastAPI 0.157.0 test function {function_name}",
+        ),
+        "supporting_sources": [
+            _source(
+                "fastapi/_compat/v2.py",
+                359,
+                368,
+                "FastAPI 0.157.0 copies FieldInfo and merges its annotation metadata before request-field construction.",
+            )
+        ],
+        "workflow_case": {
+            "recipe_path": _FIELD_OPTIONS_RECIPE,
+            "case_id": _FIELD_OPTIONS_CASE_ID,
+            "action_ids": list(action_ids),
+            "observation_selectors": list(selectors),
+        },
+        "feature_ids": feature_ids or ["request-validation"],
+        "rationale": rationale,
+        "contract_gate": (
+            "Input-only partial mapping to independently declared routes. The linked requests "
+            "and selected HTTP/OpenAPI observations exercise only the listed field options and "
+            "parameter locations; they do not establish complete test-function parity or the "
+            "full OpenAPI snapshot. Pydantic owns its field validation semantics, while "
+            "FastAPI owns parameter metadata propagation and request-source projection; "
+            "generic request and multipart parsing remains under Starlette 1.6.0."
+        ),
+    }
+
+
+_NULLABLE_DEFAULTS_RECIPE = (
+    "tests/fixtures/input-recipes/parity/request-nullable-defaults-0157.yaml"
+)
+_NULLABLE_DEFAULTS_CASE_IDS = {
+    "file": "fastapi.request-parameters.nullable-defaults.file",
+    "form": "fastapi.request-parameters.nullable-defaults.form",
+    "header": "fastapi.request-parameters.nullable-defaults.header",
+    "locations": "fastapi.request-parameters.nullable-defaults.locations",
+}
+
+
+def _nullable_defaults_function_mapping(
+    test_path: str,
+    function_name: str,
+    case_name: str,
+    action_ids: list[str],
+    selectors: list[str],
+    rationale: str,
+    feature_ids: list[str] | None = None,
+) -> dict[str, Any]:
+    tree = ast.parse((FASTAPI_ROOT / test_path).read_text(encoding="utf-8"))
+    matches = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == function_name
+    ]
+    if len(matches) != 1:
+        raise ValueError(f"expected exact source function {function_name} in {test_path}")
+    function = matches[0]
+    return {
+        "source_span": _source(
+            test_path,
+            function.lineno,
+            function.end_lineno or function.lineno,
+            f"upstream FastAPI 0.157.0 test function {function_name}",
+        ),
+        "workflow_case": {
+            "recipe_path": _NULLABLE_DEFAULTS_RECIPE,
+            "case_id": _NULLABLE_DEFAULTS_CASE_IDS[case_name],
+            "action_ids": list(action_ids),
+            "observation_selectors": list(selectors),
+        },
+        "feature_ids": feature_ids or ["request-validation"],
+        "rationale": rationale,
+        "contract_gate": (
+            "Input-only partial mapping to independent request routes and selected HTTP/OpenAPI "
+            "observations. It does not claim complete test-function or module parity, complete "
+            "validation-error objects, or a full OpenAPI snapshot. FastAPI owns request-field "
+            "construction, defaults, and source projection; Pydantic owns model field state and "
+            "validation semantics, while Starlette 1.6.0 owns generic form and multipart parsing."
         ),
     }
 
@@ -1122,7 +1273,7 @@ def _required_parameter_once_openapi_function_mapping() -> dict[str, Any]:
             test_path,
             function.lineno,
             function.end_lineno or function.lineno,
-            f"upstream FastAPI 0.141.1 test function {function_name}",
+            f"upstream FastAPI 0.157.0 test function {function_name}",
         ),
         "workflow_case": {
             "recipe_path": case_row["recipe_path"],
@@ -1182,7 +1333,7 @@ def _required_parameter_once_http_function_mapping(
             test_path,
             function.lineno,
             function.end_lineno or function.lineno,
-            f"upstream FastAPI 0.141.1 test function {function_name}",
+            f"upstream FastAPI 0.157.0 test function {function_name}",
         ),
         "workflow_case": {
             "recipe_path": recipe_path,
@@ -1237,7 +1388,7 @@ def _path_test_function_mapping(function_name: str, case_id: str, behavior: str)
             test_path,
             function.lineno,
             function.end_lineno or function.lineno,
-            f"upstream FastAPI 0.141.1 test function {function_name}",
+            f"upstream FastAPI 0.157.0 test function {function_name}",
         ),
         "workflow_case": {
             "recipe_path": case_row["recipe_path"],
@@ -1280,7 +1431,7 @@ def _query_list_validation_alias_function_mapping(
             test_path,
             function.lineno,
             function.end_lineno or function.lineno,
-            f"upstream FastAPI 0.141.1 test function {function_name}",
+            f"upstream FastAPI 0.157.0 test function {function_name}",
         ),
         "workflow_case": {
             "recipe_path": _QUERY_LIST_VALIDATION_ALIAS_RECIPE,
@@ -1324,7 +1475,7 @@ def _query_required_list_function_mapping(
             test_path,
             function.lineno,
             function.end_lineno or function.lineno,
-            f"upstream FastAPI 0.141.1 test function {function_name}",
+            f"upstream FastAPI 0.157.0 test function {function_name}",
         ),
         "workflow_case": {
             "recipe_path": _QUERY_REQUIRED_LIST_RECIPE,
@@ -1416,7 +1567,7 @@ def _query_required_optional_integer_function_mapping(
             test_path,
             function.lineno,
             function.end_lineno or function.lineno,
-            f"upstream FastAPI 0.141.1 test function {function_name}",
+            f"upstream FastAPI 0.157.0 test function {function_name}",
         ),
         "workflow_case": {
             "recipe_path": _QUERY_REQUIRED_OPTIONAL_INTEGER_RECIPE,
@@ -1459,7 +1610,7 @@ def _optional_query_list_alias_function_mapping(
             test_path,
             function.lineno,
             function.end_lineno or function.lineno,
-            f"upstream FastAPI 0.141.1 test function {function_name}",
+            f"upstream FastAPI 0.157.0 test function {function_name}",
         ),
         "workflow_case": {
             "recipe_path": _OPTIONAL_QUERY_LIST_ALIAS_RECIPE,
@@ -1714,7 +1865,7 @@ def _parameter_repr_function_mappings() -> dict[str, dict[str, Any]]:
             "fastapi/params.py",
             132,
             133,
-            "FastAPI 0.141.1 Param.__repr__ implementation inherited by public parameter classes.",
+            "FastAPI 0.157.0 Param.__repr__ implementation inherited by public parameter classes.",
         )
     ]
     return {
@@ -1741,6 +1892,216 @@ def _parameter_repr_function_mappings() -> dict[str, dict[str, Any]]:
 
 REQUEST_PARAMETER_FUNCTION_MAPPINGS = {
     _PARAMETER_REPR_TEST_PATH: _parameter_repr_function_mappings(),
+    _FIELD_OPTIONS_TEST_PATH: {
+        "test_union_mode": _field_options_function_mapping(
+            "test_union_mode",
+            _FIELD_OPTIONS_ACTION_IDS["test_union_mode"],
+            ["http.body.bytes", "http.status"],
+            "Independent requests cover None, smart, and left_to_right union_mode selections across Path, Query, Header, Cookie, Body, and Form; the valid numeric string distinguishes left_to_right coercion from the two smart-mode outcomes.",
+        ),
+        "test_fail_fast": _field_options_function_mapping(
+            "test_fail_fast",
+            _FIELD_OPTIONS_ACTION_IDS["test_fail_fast"],
+            ["http.body.bytes", "http.status"],
+            "Invalid repeated values exercise fail_fast=True and False for Query, Header, Body, and Form, observing whether validation stops at the first item or reports both.",
+        ),
+        "test_omitted_options_preserve_pydantic_validation_metadata": _field_options_function_mapping(
+            "test_omitted_options_preserve_pydantic_validation_metadata",
+            _FIELD_OPTIONS_ACTION_IDS["test_omitted_options_preserve_pydantic_validation_metadata"],
+            ["http.body.bytes", "http.status"],
+            "The independent route leaves Query.union_mode and Body.fail_fast unset while Field metadata supplies left_to_right and fail_fast=True; valid and invalid bodies expose the preserved metadata behavior.",
+        ),
+        "test_explicit_options_override_pydantic_validation_metadata": _field_options_function_mapping(
+            "test_explicit_options_override_pydantic_validation_metadata",
+            _FIELD_OPTIONS_ACTION_IDS[
+                "test_explicit_options_override_pydantic_validation_metadata"
+            ],
+            ["http.body.bytes", "http.status"],
+            "The independent route combines Field metadata with explicit Query.union_mode='smart' and Body.fail_fast=False, then sends valid and invalid inputs to observe the option overrides.",
+        ),
+        "test_compiled_pattern": _field_options_function_mapping(
+            "test_compiled_pattern",
+            _FIELD_OPTIONS_ACTION_IDS["test_compiled_pattern"],
+            ["http.body.bytes", "http.status"],
+            "Case-insensitive compiled patterns are exercised with one matching and one non-matching value at each Path, Query, Header, Cookie, Body, and Form location.",
+        ),
+        "test_file_list_fail_fast": _field_options_function_mapping(
+            "test_file_list_fail_fast",
+            _FIELD_OPTIONS_ACTION_IDS["test_file_list_fail_fast"],
+            ["http.body.bytes", "http.status"],
+            "Multipart inputs compare invalid list items under File(fail_fast=True/False) and include a valid upload. Multipart framing and UploadFile parsing remain Starlette-owned.",
+        ),
+        "test_query_options": _field_options_function_mapping(
+            "test_query_options",
+            _FIELD_OPTIONS_ACTION_IDS["test_query_options"],
+            ["http.body.bytes", "http.status"],
+            "The independent /query request supplies a union value and repeated list values while defaulted fields exercise validate_default and a compiled pattern.",
+        ),
+        "test_body_options": _field_options_function_mapping(
+            "test_body_options",
+            _FIELD_OPTIONS_ACTION_IDS["test_body_options"],
+            ["http.body.bytes", "http.status"],
+            "The independent /body request supplies a list and union value while the defaulted body field exercises validate_default.",
+        ),
+        "test_openapi_schema": _field_options_function_mapping(
+            "test_openapi_schema",
+            _FIELD_OPTIONS_ACTION_IDS["test_openapi_schema"],
+            ["docs.response.status", "openapi.document", "openapi.paths"],
+            "The OpenAPI action selects the /query parameter list and /body requestBody projection, covering the field options' route-level schema output without claiming the source's full-document snapshot.",
+            ["openapi-docs"],
+        ),
+    },
+    "tests/test_request_params/test_file/test_nullable_and_defaults.py": {
+        "test_missing_required_nullable_files": _nullable_defaults_function_mapping(
+            "tests/test_request_params/test_file/test_nullable_and_defaults.py",
+            "test_missing_required_nullable_files",
+            "file",
+            ["file-required-omitted", "file-required-empty-selection"],
+            ["http.body.bytes", "http.status"],
+            "The required nullable File declaration is sent once without multipart input and once with empty-filename browser parts, mapping missing-field handling for bytes and bytes-list fields.",
+        ),
+        "test_named_file_is_supplied_even_when_empty": _nullable_defaults_function_mapping(
+            "tests/test_request_params/test_file/test_nullable_and_defaults.py",
+            "test_named_file_is_supplied_even_when_empty",
+            "file",
+            ["file-named-empty"],
+            ["http.body.bytes", "http.status"],
+            "Named multipart file parts with empty content exercise the source distinction between a selected empty file and a no-selection part.",
+        ),
+        "test_missing_files_use_bytes_defaults": _nullable_defaults_function_mapping(
+            "tests/test_request_params/test_file/test_nullable_and_defaults.py",
+            "test_missing_files_use_bytes_defaults",
+            "file",
+            ["file-defaults-omitted"],
+            ["http.body.bytes", "http.status"],
+            "The independent missing-body request exercises File parameter defaults and a default factory for a bytes list.",
+        ),
+        "test_individual_file_alias_choices": _nullable_defaults_function_mapping(
+            "tests/test_request_params/test_file/test_nullable_and_defaults.py",
+            "test_individual_file_alias_choices",
+            "file",
+            ["file-alias-choice"],
+            ["http.body.bytes", "http.status"],
+            "The multipart field name uses the first accepted AliasChoices value while File.alias names a different field.",
+        ),
+        "test_openapi_schema": _nullable_defaults_function_mapping(
+            "tests/test_request_params/test_file/test_nullable_and_defaults.py",
+            "test_openapi_schema",
+            "file",
+            ["file-openapi"],
+            ["docs.response.status", "openapi.document", "openapi.paths"],
+            "The OpenAPI action selects requestBody declarations for required, optional, and aliased file routes instead of the source's complete schema snapshot.",
+            ["openapi-docs"],
+        ),
+    },
+    "tests/test_request_params/test_form/test_nullable_and_defaults.py": {
+        "test_empty_integer_uses_default": _nullable_defaults_function_mapping(
+            "tests/test_request_params/test_form/test_nullable_and_defaults.py",
+            "test_empty_integer_uses_default",
+            "form",
+            ["form-empty-default"],
+            ["http.body.bytes", "http.status"],
+            "An empty URL-encoded integer field exercises FastAPI's Form empty-value handling for a parameter with a non-null default.",
+        ),
+        "test_empty_required_integer_is_missing": _nullable_defaults_function_mapping(
+            "tests/test_request_params/test_form/test_nullable_and_defaults.py",
+            "test_empty_required_integer_is_missing",
+            "form",
+            ["form-empty-required"],
+            ["http.body.bytes", "http.status"],
+            "An empty URL-encoded field is supplied to a required integer Form parameter and observes its validation response.",
+        ),
+        "test_checkbox_with_true_default": _nullable_defaults_function_mapping(
+            "tests/test_request_params/test_form/test_nullable_and_defaults.py",
+            "test_checkbox_with_true_default",
+            "form",
+            ["form-checkbox-default"],
+            ["http.body.bytes", "http.status"],
+            "The omitted checkbox request exercises a direct Form boolean whose declared default is true.",
+        ),
+    },
+    "tests/test_request_params/test_header/test_nullable_and_defaults.py": {
+        "test_nullable_header_uses_hyphenated_name": _nullable_defaults_function_mapping(
+            "tests/test_request_params/test_header/test_nullable_and_defaults.py",
+            "test_nullable_header_uses_hyphenated_name",
+            "header",
+            ["header-nullable", "header-openapi"],
+            [
+                "http.body.bytes",
+                "http.status",
+                "docs.response.status",
+                "openapi.document",
+                "openapi.paths",
+            ],
+            "The value and OpenAPI projections exercise FastAPI's underscore-to-hyphen name for an annotated nullable header parameter.",
+        ),
+        "test_nullable_header_error_uses_hyphenated_name": _nullable_defaults_function_mapping(
+            "tests/test_request_params/test_header/test_nullable_and_defaults.py",
+            "test_nullable_header_error_uses_hyphenated_name",
+            "header",
+            ["header-missing"],
+            ["http.body.bytes", "http.status"],
+            "The missing nullable Header-model input observes the header-prefixed validation location for the converted wire name.",
+        ),
+        "test_header_model_list_error_preserves_item_index": _nullable_defaults_function_mapping(
+            "tests/test_request_params/test_header/test_nullable_and_defaults.py",
+            "test_header_model_list_error_preserves_item_index",
+            "header",
+            ["header-list-error"],
+            ["http.body.bytes", "http.status"],
+            "Repeated item-ids headers include one invalid second value, exercising the indexed Header-model validation location.",
+        ),
+    },
+    "tests/test_request_params/test_nullable_and_defaults.py": {
+        "test_nullable_required_schema_and_supplied_value": _nullable_defaults_function_mapping(
+            "tests/test_request_params/test_nullable_and_defaults.py",
+            "test_nullable_required_schema_and_supplied_value",
+            "locations",
+            [
+                "request-query-supplied",
+                "request-cookie-supplied",
+                "request-header-supplied",
+                "request-form-supplied",
+                "request-body-supplied",
+                "request-openapi",
+            ],
+            [
+                "http.body.bytes",
+                "http.status",
+                "docs.response.status",
+                "openapi.document",
+                "openapi.paths",
+            ],
+            "Independent Query, Cookie, Header, Form, and Body declarations accept a supplied zero and expose their selected OpenAPI parameter/requestBody projections.",
+        ),
+        "test_nullable_scalar_is_required": _nullable_defaults_function_mapping(
+            "tests/test_request_params/test_nullable_and_defaults.py",
+            "test_nullable_scalar_is_required",
+            "locations",
+            [
+                "request-query-supplied",
+                "request-query-missing",
+                "request-cookie-supplied",
+                "request-cookie-missing",
+                "request-header-supplied",
+                "request-header-missing",
+                "request-form-supplied",
+                "request-form-missing",
+                "request-body-supplied",
+                "request-body-missing",
+            ],
+            ["http.body.bytes", "http.status"],
+            "Nullable scalar parameters are exercised both with a supplied zero and with the source omitted across Query, Cookie, Header, Form, and embedded Body locations.",
+        ),
+        "test_missing_value_uses_default": _nullable_defaults_function_mapping(
+            "tests/test_request_params/test_nullable_and_defaults.py",
+            "test_missing_value_uses_default",
+            "locations",
+            ["request-query-default-missing", "request-body-default-missing"],
+            ["http.body.bytes", "http.status"],
+            "Omitted query and embedded-body values exercise direct parameter defaults; the mapping selects representative source locations only.",
+        ),
+    },
     "tests/test_enforce_once_required_parameter.py": {
         "test_get_invalid": _required_parameter_once_http_function_mapping(
             "test_get_invalid",

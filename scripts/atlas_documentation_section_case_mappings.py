@@ -208,7 +208,7 @@ DOC_SECTION_CASE_MAPPINGS = {
             "{ #use-the-response-model-exclude-unset-parameter }"
         ),
         "start_line": 237,
-        "end_line": 305,
+        "end_line": 309,
         "recipe_path": (
             "tests/fixtures/input-recipes/parity/response-model-post-policy-options-review.yaml"
         ),
@@ -217,7 +217,8 @@ DOC_SECTION_CASE_MAPPINGS = {
         "observation_selectors": ["http.body.bytes", "http.status"],
         "scope_note": (
             "Only POST /exclude-unset action preserve-explicit-null-and-alias is selected, "
-            "with http.status and http.body.bytes. The identity-checked FastAPI 0.141.1 "
+            "with http.status and http.body.bytes. The previously recorded identity-checked "
+            "FastAPI 0.141.1 observation remains historical evidence, not a 0.157.0 result: "
             'observation is HTTP 200 with body {"label":"unset-card","note":null,'
             '"displayName":"Unset Alias"}: this samples omission of defaulted state '
             "and retries while retaining the explicitly supplied nullable note and aliased "
@@ -225,8 +226,8 @@ DOC_SECTION_CASE_MAPPINGS = {
             "exclude options, OpenAPI effects, or general Pydantic serialization."
         ),
         "rationale": (
-            "FastAPI 0.141.1 passes response_model_exclude_unset to response serialization "
-            "(fastapi/routing.py:725-735). Its tutorial sets the option and says unset "
+            "FastAPI 0.157.0 passes response_model_exclude_unset to response serialization "
+            "(fastapi/routing.py:768-779). Its tutorial sets the option and says unset "
             "defaults are omitted (docs/en/docs/tutorial/response-model.md:237-252; "
             "docs_src/response_model/tutorial004_py310.py:15-24). The pinned test also "
             "asserts that an explicitly supplied null remains present "
@@ -242,8 +243,8 @@ DOC_SECTION_CASE_MAPPINGS = {
             "`response_model_include` and `response_model_exclude` "
             "{ #response-model-include-and-response-model-exclude }"
         ),
-        "start_line": 306,
-        "end_line": 339,
+        "start_line": 310,
+        "end_line": 343,
         "recipe_path": "tests/fixtures/input-recipes/parity/response-model-serialization.yaml",
         "case_ids": [
             "fastapi.response-model.include.nested",
@@ -263,10 +264,10 @@ DOC_SECTION_CASE_MAPPINGS = {
             "effects, and `response_model_by_alias` remain outside this row."
         ),
         "rationale": (
-            "FastAPI 0.141.1 carries the route's `response_model_include` and "
+            "FastAPI 0.157.0 carries the route's `response_model_include` and "
             "`response_model_exclude` values into `serialize_response` "
-            "(`../fastapi/fastapi/routing.py:727-739`), where the response-field serializer "
-            "receives them as `include` and `exclude` (`../fastapi/fastapi/routing.py:329-338`). "
+            "(`../fastapi/fastapi/routing.py:768-779`), where the response-field serializer "
+            "receives them as `include` and `exclude` (`../fastapi/fastapi/routing.py:349-358`). "
             "Pydantic performs the resulting value projection."
         ),
     },
@@ -399,23 +400,10 @@ DOC_SECTION_CASE_MAPPINGS = {
             "direct route additions."
         ),
     },
-    ("advanced/behind-a-proxy.md", "setting-the-root-path-in-the-fastapi-app"): {
-        "heading": "Setting the `root_path` in the FastAPI app { #setting-the-root-path-in-the-fastapi-app }",
-        "start_line": 219,
-        "end_line": 226,
-        "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-tutorial002-upstream.yaml",
-        "case_ids": ["fastapi.behind-proxy.tutorial002.app-root-path"],
-        "observation_selectors": ["http.body.bytes", "http.status"],
-        "scope_note": (
-            "The example returns the app root_path from the scope. Generic path matching and "
-            "proxy-server behavior remain Starlette/server-owned."
-        ),
-        "rationale": ("FastAPI stores the app root_path and places it in the ASGI scope."),
-    },
     ("advanced/behind-a-proxy.md", "additional-servers"): {
         "heading": "Additional servers { #additional-servers }",
-        "start_line": 387,
-        "end_line": 461,
+        "start_line": 358,
+        "end_line": 432,
         "recipe_path": "tests/fixtures/input-recipes/parity/behind-proxy-tutorial003-upstream.yaml",
         "case_ids": ["fastapi.behind-proxy.tutorial003.openapi-servers"],
         "observation_selectors": [
@@ -426,18 +414,26 @@ DOC_SECTION_CASE_MAPPINGS = {
             "openapi.document",
         ],
         "scope_note": (
-            "This case reads the OpenAPI `/servers` array from the tutorial003 app configured "
-            "with a FastAPI root_path and two custom servers. It does not run a proxy or "
-            "assert forwarded-header interpretation."
+            "The selected workflow reads the OpenAPI `/servers` array for two custom servers "
+            "and the root path. Its fixture uses the deprecated FastAPI(root_path=...) "
+            "constructor setting; the current tutorial instead supplies root_path through "
+            "fastapi run --root-path. This workflow does not exercise that CLI configuration, "
+            "a proxy, or forwarded-header interpretation."
         ),
         "rationale": (
-            "The pinned section specifies that FastAPI prepends the configured root_path "
-            "ahead of custom servers (docs/en/docs/advanced/behind-a-proxy.md:387-453). "
-            "Tutorial003 and its test provide the exact app configuration and `/servers` "
-            "observation (docs_src/behind_a_proxy/tutorial003_py310.py:1-14; "
-            "tests/test_tutorial/test_behind_a_proxy/test_tutorial003.py:15-47). FastAPI "
-            "constructs and inserts this server in its OpenAPI handler "
-            "(fastapi/applications.py:1084-1118); Starlette owns generic ASGI dispatch."
+            "The current section says the server-supplied root_path is prepended before "
+            "custom servers (docs/en/docs/advanced/behind-a-proxy.md:358-405), and the "
+            "tutorial003 source now declares only staging/production servers while reading "
+            "root_path from the ASGI request scope "
+            "(docs_src/behind_a_proxy/tutorial003_py310.py:1-13). Its 0.157.0 test supplies "
+            "the root_path through TestClient and checks the OpenAPI server order "
+            "(tests/test_tutorial/test_behind_a_proxy/test_tutorial003.py:4-6,15-47). The "
+            "selected independent recipe instead uses the deprecated FastAPI constructor "
+            "parameter, whose deprecation is documented at "
+            "docs/en/docs/advanced/behind-a-proxy.md:211-215; the parameter remains "
+            "implemented at fastapi/applications.py:938-946. FastAPI reads the request "
+            "scope and inserts a missing root-path server before configured servers "
+            "(fastapi/applications.py:1123-1133); Starlette owns generic ASGI dispatch."
         ),
     },
     ("advanced/custom-response.md", "default-response-class"): {
@@ -493,8 +489,8 @@ DOC_SECTION_CASE_MAPPINGS = {
     ("tutorial/query-params-str-validations.md", "understand-that-code"): {
         "status": "excluded",
         "heading": "Understand that Code { #understand-that-code }",
-        "start_line": 399,
-        "end_line": 428,
+        "start_line": 407,
+        "end_line": 436,
         "exclusion_reason": (
             "This optional explanation repeats the preceding AfterValidator behavior and adds "
             "no separate FastAPI contract."
@@ -507,8 +503,8 @@ DOC_SECTION_CASE_MAPPINGS = {
     ("tutorial/query-params-str-validations.md", "string-with-value-startswith"): {
         "status": "excluded",
         "heading": "String with `value.startswith()` { #string-with-value-startswith }",
-        "start_line": 407,
-        "end_line": 412,
+        "start_line": 415,
+        "end_line": 420,
         "exclusion_reason": (
             "This section explains standard Python string-prefix behavior inside an application "
             "validator, not an independent FastAPI behavior."
@@ -521,8 +517,8 @@ DOC_SECTION_CASE_MAPPINGS = {
     ("tutorial/query-params-str-validations.md", "recap"): {
         "status": "excluded",
         "heading": "Recap { #recap }",
-        "start_line": 429,
-        "end_line": 450,
+        "start_line": 437,
+        "end_line": 458,
         "exclusion_reason": (
             "This section lists validations and metadata already described in preceding "
             "sections and adds no independent input/output behavior."
@@ -549,8 +545,8 @@ DOC_SECTION_CASE_MAPPINGS = {
     ("tutorial/response-model.md", "recap"): {
         "status": "excluded",
         "heading": "Recap { #recap }",
-        "start_line": 340,
-        "end_line": 344,
+        "start_line": 344,
+        "end_line": 348,
         "exclusion_reason": (
             "This section restates response filtering and exclude_unset behavior from earlier "
             "sections and introduces no new contract."

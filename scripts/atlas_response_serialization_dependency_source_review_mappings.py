@@ -1,9 +1,9 @@
 """Function-level source review for response serialization and injection cases.
 
-FastAPI 0.141.1 owns route response-field setup, dependency analysis, and the
+FastAPI 0.157.0 owns route response-field setup, dependency analysis, and the
 orchestration that validates/filters endpoint return values. Its Pydantic
 adapter delegates model validation and serialization to pinned Pydantic
-2.13.4. Starlette 1.6.0 owns generic Response/JSONResponse rendering, ASGI
+2.13.5. Starlette 1.6.0 owns generic Response/JSONResponse rendering, ASGI
 emission, background-task execution, and TestClient transport. These rows link
 independent input-only workflows; they are not parity results.
 """
@@ -19,8 +19,8 @@ FASTAPI_ROOT = PROJECT_ROOT.parent / "fastapi"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "role": "source oracle and development-time source only; never a target runtime dependency",
     },
     "starlette": {
@@ -29,7 +29,7 @@ SOURCE_IDENTITIES = {
         "role": "sole owner of generic HTTP Response/JSONResponse transport and TestClient behavior",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "owner of model/dataclass validation, coercion, defaults, and field serialization called by FastAPI",
     },
 }
@@ -55,7 +55,7 @@ def _test_function_span(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         min(starts),
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 test function {function_name} and its assertions",
+        f"pinned FastAPI 0.157.0 test function {function_name} and its assertions",
     )
 
 
@@ -115,20 +115,20 @@ def _mapping(
 
 _FASTAPI_RESPONSE_FIELD = _source(
     "fastapi/routing.py",
-    1102,
-    1114,
+    1157,
+    1169,
     "FastAPI APIRoute creates a serialization-mode response field from response_model or records that no model field is configured",
 )
 _FASTAPI_SERIALIZE_RESPONSE = _source(
     "fastapi/routing.py",
-    301,
-    341,
+    321,
+    361,
     "FastAPI validates modeled endpoint output, passes response filtering flags to its field adapter, and uses jsonable_encoder when no response field exists",
 )
 _FASTAPI_RESPONSE_SELECTION = _source(
     "fastapi/routing.py",
-    706,
-    750,
+    746,
+    791,
     "FastAPI selects an endpoint-returned Response directly or serializes ordinary endpoint output and constructs the configured Response",
 )
 _FASTAPI_MODEL_FIELD_ADAPTER = _source(
@@ -145,32 +145,32 @@ _FASTAPI_JSONABLE_DATACLASS = _source(
 )
 _FASTAPI_DEPENDENCY_ANALYSIS = _source(
     "fastapi/dependencies/utils.py",
-    350,
-    371,
+    392,
+    413,
     "FastAPI classifies injected Request, Response, and BackgroundTasks special parameters",
 )
 _FASTAPI_DEPENDS_SYNTAX = _source(
     "fastapi/dependencies/utils.py",
-    381,
-    475,
+    423,
+    518,
     "FastAPI analyzes Annotated Depends metadata separately from Depends supplied as a default parameter value",
 )
 _FASTAPI_DEPENDENCY_RESOLUTION = _source(
     "fastapi/dependencies/utils.py",
-    586,
-    730,
+    657,
+    818,
     "FastAPI recursively resolves dependency values and injects the shared Request, BackgroundTasks, and mutable temporary Response",
 )
 _FASTAPI_HANDLER_RESPONSE = _source(
     "fastapi/routing.py",
-    481,
-    490,
+    511,
+    524,
     "FastAPI request handling invokes dependency solving before the path operation function",
 )
 _FASTAPI_BACKGROUND_MERGE = _source(
     "fastapi/routing.py",
-    357,
-    372,
+    380,
+    395,
     "FastAPI carries the solved BackgroundTasks into its response arguments and applies the dependency-mutated response status",
 )
 _STARLETTE_RESPONSE = _source(
@@ -494,7 +494,7 @@ RESPONSE_SERIALIZATION_DEPENDENCY_SOURCE_REVIEW_MAPPINGS = {
                     ),
                 ],
                 rationale="The two existing inputs jointly cover the source's returned dict shape and string-to-number coercion through a FastAPI response model.",
-                contract_gate="route values and model names differ. FastAPI owns response validation dispatch; Pydantic 2.13.4 owns conversion and serialization; Starlette 1.6.0 owns transport.",
+                contract_gate="route values and model names differ. FastAPI owns response validation dispatch; Pydantic 2.13.5 owns conversion and serialization; Starlette 1.6.0 owns transport.",
                 implementation_sources=(
                     _FASTAPI_RESPONSE_FIELD,
                     _FASTAPI_SERIALIZE_RESPONSE,

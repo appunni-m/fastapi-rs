@@ -20,8 +20,8 @@ WORKLOAD = "tests/fixtures/workloads/pending_source_wave_a.py"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "role": "pinned source oracle and development evidence only",
     },
     "starlette": {
@@ -30,7 +30,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI, HTTP response, upload data structure, and wire contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned model validation, serialization, and JSON Schema dependency",
     },
 }
@@ -61,7 +61,7 @@ def _test_span(path: str, name: str) -> dict[str, object]:
         path,
         node.lineno,
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 upstream test function {name}",
+        f"pinned FastAPI 0.157.0 upstream test function {name}",
     )
 
 
@@ -128,14 +128,14 @@ def _excluded(
 _FILE_CLOSE = (
     _source(
         "fastapi/routing.py",
-        134,
-        145,
+        143,
+        154,
         "FastAPI creates the request-scoped AsyncExitStack and unwinds it after response dispatch",
     ),
     _source(
         "fastapi/routing.py",
-        425,
-        432,
+        451,
+        458,
         "FastAPI parses form data and registers FormData.close on its request cleanup stack",
     ),
     _source(
@@ -149,14 +149,14 @@ _FILE_CLOSE = (
 _SECURITY = (
     _source(
         "fastapi/dependencies/utils.py",
-        271,
-        347,
+        314,
+        389,
         "FastAPI builds dependency graphs and composes parent and Security-declared OAuth scopes",
     ),
     _source(
         "fastapi/dependencies/utils.py",
-        710,
-        724,
+        798,
+        812,
         "FastAPI injects the resolved Response and accumulated SecurityScopes into dependencies",
     ),
     _source(
@@ -170,14 +170,14 @@ _SECURITY = (
 _BODY_VALIDATION = (
     _source(
         "fastapi/routing.py",
-        425,
-        450,
+        451,
+        476,
         "FastAPI reads body/form inputs and gates JSON decoding on strict_content_type and JSON media types",
     ),
     _source(
         "fastapi/dependencies/utils.py",
-        951,
-        1048,
+        1162,
+        1284,
         "FastAPI extracts request body values and delegates typed fixed-tuple validation through request fields",
     ),
 )
@@ -185,14 +185,14 @@ _BODY_VALIDATION = (
 _RESPONSE_SERIALIZATION = (
     _source(
         "fastapi/routing.py",
-        301,
-        338,
+        321,
+        358,
         "FastAPI validates response values and delegates field serialization to the pinned Pydantic adapter",
     ),
     _source(
         "fastapi/routing.py",
-        706,
-        750,
+        746,
+        791,
         "FastAPI builds ordinary responses, applies no-body status policy, and merges dependency response headers",
     ),
 )
@@ -200,14 +200,14 @@ _RESPONSE_SERIALIZATION = (
 _RESPONSE_STATUS = (
     _source(
         "fastapi/routing.py",
-        357,
-        372,
+        380,
+        395,
         "FastAPI resolves dependency-mutated Response.status_code over the route-declared status",
     ),
     _source(
         "fastapi/routing.py",
-        716,
-        750,
+        756,
+        791,
         "FastAPI serializes route results, empties bodies for disallowed statuses, and merges injected response headers",
     ),
 )
@@ -215,26 +215,26 @@ _RESPONSE_STATUS = (
 _OPENAPI_ROUTE = (
     _source(
         "fastapi/routing.py",
-        1034,
-        1054,
+        1089,
+        1109,
         "FastAPI normalizes route descriptions and creates response fields for additional response models",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        311,
-        365,
+        296,
+        350,
         "FastAPI assembles OpenAPI operation metadata, parameters, and route response entries",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        403,
-        465,
+        388,
+        450,
         "FastAPI projects response status, response media types, and JSONL/SSE item schemas into OpenAPI",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        585,
-        647,
+        570,
+        632,
         "FastAPI generates its OpenAPI document from route contexts and Pydantic-derived model definitions",
     ),
 )
@@ -242,26 +242,26 @@ _OPENAPI_ROUTE = (
 _STRICT_CONTENT_TYPE = (
     _source(
         "fastapi/applications.py",
-        840,
-        858,
+        847,
+        865,
         "FastAPI exposes strict_content_type on the application constructor",
     ),
     _source(
         "fastapi/applications.py",
-        986,
-        999,
+        983,
+        996,
         "FastAPI forwards the application-level strict_content_type setting to its router",
     ),
     _source(
         "fastapi/routing.py",
-        389,
-        450,
+        412,
+        476,
         "FastAPI resolves route strictness and parses JSON only for accepted Content-Type cases",
     ),
     _source(
         "fastapi/routing.py",
-        1300,
-        1365,
+        1351,
+        1416,
         "FastAPI router inclusion carries and resolves strict_content_type across nested routers",
     ),
 )
@@ -330,7 +330,7 @@ def _module(
     }
 
 
-# Paths in these records are relative to the pinned FastAPI 0.141.1 source checkout.
+# Paths in these records are relative to the pinned FastAPI 0.157.0 source checkout.
 T = "tests/test_datastructures.py"
 D = "tests/test_dependency_paramless.py"
 F = "tests/test_get_model_definitions_formfeed_escape.py"
@@ -541,8 +541,8 @@ FASTAPI_SOURCE_WAVE_A_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 (
                     _source(
                         "fastapi/_compat/v2.py",
-                        330,
-                        345,
+                        332,
+                        347,
                         "FastAPI removes Pydantic model-description content after the form-feed marker",
                     ),
                     *_OPENAPI_ROUTE,
@@ -595,8 +595,8 @@ FASTAPI_SOURCE_WAVE_A_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     *_STARLETTE_COOKIES,
                     _source(
                         "fastapi/routing.py",
-                        744,
-                        750,
+                        785,
+                        791,
                         "FastAPI merges dependency-mutated raw headers into the selected route response",
                     ),
                 ),
@@ -775,14 +775,14 @@ FASTAPI_SOURCE_WAVE_A_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     *_RESPONSE_STATUS,
                     _source(
                         "fastapi/routing.py",
-                        389,
-                        400,
+                        412,
+                        423,
                         "FastAPI classifies generator response kinds from route response classes",
                     ),
                     _source(
                         "fastapi/routing.py",
-                        610,
-                        704,
+                        650,
+                        744,
                         "FastAPI resolves route/dependency status and constructs SSE, JSONL, and raw StreamingResponse branches",
                     ),
                     _source(
@@ -814,8 +814,8 @@ FASTAPI_SOURCE_WAVE_A_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     *_OPENAPI_ROUTE,
                     _source(
                         "fastapi/routing.py",
-                        1071,
-                        1114,
+                        1126,
+                        1169,
                         "FastAPI detects generator item types and derives route stream response fields",
                     ),
                 ),
@@ -951,8 +951,8 @@ FASTAPI_SOURCE_WAVE_A_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     *_OPENAPI_ROUTE,
                     _source(
                         "fastapi/openapi/utils.py",
-                        231,
-                        263,
+                        216,
+                        248,
                         "FastAPI places Pydantic-derived request field schemas and media types into OpenAPI",
                     ),
                 ),

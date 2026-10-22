@@ -139,8 +139,10 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         "advanced/security/oauth2-scopes.md",
         "declare-scopes-in-path-operations-and-dependencies",
     ): _workflow(
-        "Declare scopes in *path operations* and dependencies { #declare-"
-        "scopes-in-path-operations-and-dependencies }",
+        (
+            "Declare scopes in *path operations* and dependencies "
+            "{ #declare-scopes-in-path-operations-and-dependencies }"
+        ),
         103,
         138,
         ["inspect-scoped-openapi", "read-user", "read-items"],
@@ -326,8 +328,10 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         "tutorial/security/oauth2-jwt.md",
         "oauth2-with-password-and-hashing-bearer-with-jwt-tokens",
     ): _workflow(
-        "OAuth2 with Password (and hashing), Bearer with JWT tokens { #oa"
-        "uth2-with-password-and-hashing-bearer-with-jwt-tokens }",
+        (
+            "OAuth2 with Password (and hashing), Bearer with JWT tokens "
+            "{ #oauth2-with-password-and-hashing-bearer-with-jwt-tokens }"
+        ),
         1,
         277,
         _ALL_ACTIONS,
@@ -485,8 +489,10 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
         "tutorial/security/oauth2-jwt.md",
         "technical-details-about-the-jwt-subject-sub",
     ): _excluded(
-        'Technical details about the JWT "subject" `sub` { #technical-det'
-        "ails-about-the-jwt-subject-sub }",
+        (
+            'Technical details about the JWT "subject" `sub` '
+            "{ #technical-details-about-the-jwt-subject-sub }"
+        ),
         179,
         200,
         (

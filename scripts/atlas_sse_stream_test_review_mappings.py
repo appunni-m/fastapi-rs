@@ -1,21 +1,21 @@
 """Source-reviewed mappings for SSE and streaming behavior tests.
 
-The test sources are pinned to FastAPI 0.141.1. Recipes contain independent
+The test sources are pinned to FastAPI 0.157.0. Recipes contain independent
 ASGI requests, not copied pytest bodies or expected results. Generic response
 framing and TestClient behavior remain in the Starlette 1.6.0 contract.
 """
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
         "commit": "4f250d6b814587e20c5365f0a5f0c4d42bcb929f",
         "role": "sole generic response, transport, and TestClient contract",
     },
-    "pydantic": {"version": "2.13.4", "role": "pinned model validation and encoding dependency"},
+    "pydantic": {"version": "2.13.5", "role": "pinned model validation and encoding dependency"},
 }
 
 __all__ = [
@@ -264,38 +264,38 @@ _STREAM_CANCELLATION = [
 
 _SSE_STREAM = _source(
     "fastapi/routing.py",
-    492,
-    551,
+    526,
+    591,
     "FastAPI validates and serializes yielded SSE items, distinguishing raw data from JSON data",
 )
 _SSE_ITERATION = _source(
     "fastapi/routing.py",
-    520,
-    557,
+    556,
+    597,
     "FastAPI dispatches async and sync SSE generators and formats yielded records",
 )
 _SSE_OAS = _source(
     "fastapi/openapi/utils.py",
-    436,
-    455,
+    421,
+    440,
     "FastAPI generates the text/event-stream item schema and optional payload schema",
 )
 _RAW_STREAM = _source(
     "fastapi/routing.py",
-    683,
-    704,
+    723,
+    744,
     "FastAPI forwards raw async or sync generator chunks into the declared response class",
 )
 _GENERATOR_ROUTE = _source(
     "fastapi/routing.py",
-    1071,
-    1101,
+    1126,
+    1156,
     "FastAPI detects generator endpoints and infers or suppresses response models from stream item annotations",
 )
 _STREAM_OAS = _source(
     "fastapi/openapi/utils.py",
-    456,
-    472,
+    441,
+    457,
     "FastAPI documents a response-class media type with its selected schema",
 )
 
@@ -514,8 +514,8 @@ SSE_STREAM_TEST_REVIEW_MAPPINGS = {
             _SSE_OAS,
             _source(
                 "fastapi/dependencies/utils.py",
-                780,
-                849,
+                874,
+                947,
                 "FastAPI extracts and validates request header parameters",
             ),
         ],
@@ -565,8 +565,8 @@ SSE_STREAM_TEST_REVIEW_MAPPINGS = {
                     ),
                     _source(
                         "fastapi/dependencies/utils.py",
-                        780,
-                        849,
+                        874,
+                        947,
                         "FastAPI header lookup, alias handling, and Pydantic value validation",
                     ),
                     _SSE_STREAM,
@@ -594,8 +594,8 @@ SSE_STREAM_TEST_REVIEW_MAPPINGS = {
                     ),
                     _source(
                         "fastapi/dependencies/utils.py",
-                        780,
-                        849,
+                        874,
+                        947,
                         "FastAPI header lookup, alias handling, and Pydantic value validation",
                     ),
                     _SSE_STREAM,
@@ -623,8 +623,8 @@ SSE_STREAM_TEST_REVIEW_MAPPINGS = {
                     ),
                     _source(
                         "fastapi/openapi/utils.py",
-                        357,
-                        377,
+                        342,
+                        362,
                         "FastAPI builds operation parameter documentation",
                     ),
                     _SSE_OAS,
@@ -648,14 +648,14 @@ SSE_STREAM_TEST_REVIEW_MAPPINGS = {
             _SSE_OAS,
             _source(
                 "fastapi/routing.py",
-                425,
-                489,
+                451,
+                523,
                 "FastAPI reads and parses a request body before solving endpoint dependencies",
             ),
             _source(
                 "fastapi/dependencies/utils.py",
-                951,
-                998,
+                1162,
+                1234,
                 "FastAPI validates a request model from the parsed body",
             ),
         ],
@@ -681,14 +681,14 @@ SSE_STREAM_TEST_REVIEW_MAPPINGS = {
                     ),
                     _source(
                         "fastapi/routing.py",
-                        425,
-                        489,
+                        451,
+                        523,
                         "FastAPI body read and JSON parsing",
                     ),
                     _source(
                         "fastapi/dependencies/utils.py",
-                        951,
-                        998,
+                        1162,
+                        1234,
                         "FastAPI request model validation",
                     ),
                     _SSE_STREAM,
@@ -716,8 +716,8 @@ SSE_STREAM_TEST_REVIEW_MAPPINGS = {
                     ),
                     _source(
                         "fastapi/openapi/utils.py",
-                        377,
-                        385,
+                        362,
+                        370,
                         "FastAPI emits requestBody OpenAPI metadata",
                     ),
                     _SSE_OAS,
@@ -935,14 +935,14 @@ SSE_STREAM_TEST_REVIEW_MAPPINGS = {
                 ),
                 _source(
                     "fastapi/routing.py",
-                    656,
-                    662,
+                    696,
+                    702,
                     "FastAPI inserts a cancellation checkpoint after each async JSON Lines item",
                 ),
                 _source(
                     "fastapi/routing.py",
-                    683,
-                    704,
+                    723,
+                    744,
                     "FastAPI wraps raw async generator streams with a cancellation checkpoint",
                 ),
                 _source(

@@ -21,7 +21,7 @@ FASTAPI_ROOT = PROJECT_ROOT.parent / "fastapi"
 STARLETTE_ROOT = PROJECT_ROOT.parent / "starlette"
 
 SOURCE_IDENTITIES = {
-    "fastapi": {"version": "0.141.1", "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f"},
+    "fastapi": {"version": "0.157.0", "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1"},
     "starlette": {
         "version": "1.6.0",
         "commit": "4f250d6b814587e20c5365f0a5f0c4d42bcb929f",
@@ -37,7 +37,7 @@ SOURCE_IDENTITIES = {
         "role": "pinned isolated oracle runner profile",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "owns BaseModel validation/coercion, Enum validation, field serialization, and model JSON schema generation where exercised",
     },
 }
@@ -45,7 +45,7 @@ SOURCE_IDENTITIES = {
 SOURCE_OWNERSHIP = {
     "fastapi": "FastAPI owns decorator/path-operation setup, endpoint parameter analysis, validation orchestration and error mapping, response-model integration, and OpenAPI assembly. FastAPI behavior/control flow belongs in Rust. Python runtime files permit only direct native re-exports and literal __all__.",
     "starlette": "Pinned Starlette 1.6.0 is the sole generic ASGI Request/Response, HTTP route matching/path converter, and TestClient contract. The target supplies this through Starlette-RS 0.1.0; these generic semantics are not assigned to FastAPI.",
-    "pydantic": "Pinned Pydantic 2.13.4 owns model parsing/coercion, enum validation, field serialization, and model schema mechanics. FastAPI chooses the parameter/body fields, invokes the pinned Pydantic contract, maps errors, and assembles OpenAPI.",
+    "pydantic": "Pinned Pydantic 2.13.5 owns model parsing/coercion, enum validation, field serialization, and model schema mechanics. FastAPI chooses the parameter/body fields, invokes the pinned Pydantic contract, maps errors, and assembles OpenAPI.",
 }
 
 FASTAPI_TEST_MODULES = (
@@ -74,14 +74,14 @@ SOURCE_GROUPS = {
     "route_registration": [
         (
             "fastapi/routing.py",
-            1161,
-            1281,
+            1216,
+            1332,
             "FastAPI APIRoute stores endpoint, response, and path-operation configuration.",
         ),
         (
             "fastapi/routing.py",
-            2889,
-            2971,
+            2996,
+            3078,
             "FastAPI APIRouter.add_api_route forwards route configuration and registers the API "
             "route.",
         ),
@@ -89,42 +89,42 @@ SOURCE_GROUPS = {
     "openapi_generation": [
         (
             "fastapi/openapi/utils.py",
-            287,
-            308,
+            272,
+            293,
             "FastAPI creates operation metadata including tags, summary, description, operation "
             "ID, and deprecation.",
         ),
         (
             "fastapi/openapi/utils.py",
-            159,
-            228,
+            158,
+            213,
             "FastAPI projects analyzed endpoint parameter fields into OpenAPI parameters.",
         ),
         (
             "fastapi/openapi/utils.py",
-            231,
-            263,
+            216,
+            248,
             "FastAPI projects request-body field schemas and media types into OpenAPI.",
         ),
         (
             "fastapi/openapi/utils.py",
-            311,
-            540,
+            296,
+            525,
             "FastAPI assembles each operation, response, validation response, and openapi_extra "
             "merge.",
         ),
         (
             "fastapi/openapi/utils.py",
-            585,
-            679,
+            570,
+            664,
             "FastAPI combines included API routes into the OpenAPI document.",
         ),
     ],
     "request_dispatch": [
         (
             "fastapi/routing.py",
-            375,
-            761,
+            398,
+            805,
             "FastAPI parses request bodies, solves dependency/path parameters, and builds "
             "endpoint responses.",
         ),
@@ -138,22 +138,22 @@ SOURCE_GROUPS = {
     "parameter_analysis": [
         (
             "fastapi/dependencies/utils.py",
-            271,
-            347,
+            314,
+            389,
             "FastAPI matches endpoint signature parameters to path names and builds dependant "
             "fields.",
         ),
         (
             "fastapi/dependencies/utils.py",
-            381,
-            547,
+            423,
+            618,
             "FastAPI analyzes endpoint annotations/defaults and constructs path parameter "
             "validation fields.",
         ),
         (
             "fastapi/dependencies/utils.py",
-            586,
-            731,
+            657,
+            819,
             "FastAPI extracts request values, invokes Pydantic field validation, and "
             "accumulates errors.",
         ),
@@ -169,15 +169,15 @@ SOURCE_GROUPS = {
         (
             "fastapi/_compat/v2.py",
             254,
-            282,
+            284,
             "FastAPI uses Pydantic-generated JSON schema for OpenAPI field projections.",
         ),
     ],
     "response_dispatch": [
         (
             "fastapi/routing.py",
-            375,
-            761,
+            398,
+            805,
             "FastAPI dispatches endpoint values through response-model validation/serialization "
             "and response construction.",
         )
@@ -1582,7 +1582,7 @@ REVIEW_PLANS = {
             "not "
             "claimed; "
             "Pydantic "
-            "2.13.4 "
+            "2.13.5 "
             "owns "
             "validation "
             "detail "
@@ -1687,7 +1687,7 @@ REVIEW_PLANS = {
             "not "
             "claimed; "
             "Pydantic "
-            "2.13.4 "
+            "2.13.5 "
             "owns "
             "validation "
             "detail "
@@ -3607,7 +3607,7 @@ REVIEW_PLANS = {
             "are not "
             "claimed; "
             "Pydantic "
-            "2.13.4 "
+            "2.13.5 "
             "owns "
             "validation "
             "detail "
@@ -4499,7 +4499,7 @@ REVIEW_PLANS = {
             "not "
             "claimed; "
             "Pydantic "
-            "2.13.4 owns "
+            "2.13.5 owns "
             "validation "
             "detail "
             "semantics "
@@ -4665,7 +4665,7 @@ def _definition_span(path: str, name: str, node_type: type) -> dict[str, Any]:
         path,
         start,
         node.end_lineno or node.lineno,
-        f"Pinned FastAPI 0.141.1 documentation source for {name}",
+        f"Pinned FastAPI 0.157.0 documentation source for {name}",
     )
 
 
@@ -4684,7 +4684,7 @@ def _assignment_span(path: str, name: str) -> dict[str, Any]:
         path,
         node.lineno,
         node.end_lineno or node.lineno,
-        f"Pinned FastAPI 0.141.1 docs configuration of {name}",
+        f"Pinned FastAPI 0.157.0 docs configuration of {name}",
     )
 
 
@@ -4702,7 +4702,7 @@ def _test_span(path: str, function_name: str) -> dict[str, Any]:
         path,
         node.lineno,
         node.end_lineno or node.lineno,
-        f"FastAPI 0.141.1 upstream test function {function_name}",
+        f"FastAPI 0.157.0 upstream test function {function_name}",
     )
 
 

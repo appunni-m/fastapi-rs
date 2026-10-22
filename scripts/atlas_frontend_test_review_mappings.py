@@ -1,6 +1,6 @@
 """Source-reviewed FastAPI frontend workflow mappings and exclusions.
 
-The fixture is an input candidate for FastAPI 0.141.1. It records ASGI
+The fixture is an input candidate for FastAPI 0.157.0. It records ASGI
 stimuli and existing observation selectors only; it contains no expected
 responses or parity results. Generic static-file emission and TestClient
 behavior remain assigned to the pinned Starlette 1.6.0 / Starlette-RS
@@ -51,7 +51,7 @@ def _candidate(
     gate: str | None = None,
     recipe_path: str = _RECIPE,
 ) -> dict[str, Any]:
-    test_source = _source(_TEST, start, end, "exact upstream FastAPI 0.141.1 test function span")
+    test_source = _source(_TEST, start, end, "exact upstream FastAPI 0.157.0 test function span")
     workflow_link = {
         "recipe_path": recipe_path,
         "case_id": case_id,
@@ -77,38 +77,38 @@ def _candidate(
 
 _FALLBACK_IMPL = _source(
     "fastapi/routing.py",
-    1899,
-    2044,
+    1966,
+    2114,
     "FastAPI frontend static adapter selects fallback files, applies GET/HEAD and Accept gating, and assigns fallback response status",
 )
 _FRONTEND_REGISTRATION = _source(
     "fastapi/routing.py",
-    2630,
-    2717,
+    2704,
+    2791,
     "APIRouter.frontend resolves configuration, normalizes paths, adds low-priority frontend routes, and records route changes",
 )
 _APP_FRONTEND = _source(
     "fastapi/applications.py",
-    1222,
-    1299,
+    1264,
+    1341,
     "FastAPI.frontend public signature and delegation to the application router",
 )
 _LOW_PRIORITY_DISPATCH = _source(
     "fastapi/routing.py",
-    2728,
-    2781,
+    2802,
+    2888,
     "FastAPI Router dispatches ordinary routes before its low-priority route collection",
 )
 _FRONTEND_WEBSOCKET_FILTER = _source(
     "fastapi/routing.py",
-    2069,
-    2083,
+    2139,
+    2153,
     "FastAPI frontend route matching excludes WebSocket scopes, allowing an explicit WebSocket route at the same path to win",
 )
 _FRONTEND_MATCH_ROOT_PATH = _source(
     "fastapi/routing.py",
-    2068,
-    2078,
+    2138,
+    2148,
     "FastAPI frontend route matching uses Starlette get_route_path for the ASGI scope, so a configured root_path is considered during path matching",
 )
 _STARLETTE_ROUTE_PATH = _source(
@@ -119,32 +119,32 @@ _STARLETTE_ROUTE_PATH = _source(
 )
 _FRONTEND_GROUP = _source(
     "fastapi/routing.py",
-    2103,
-    2169,
+    2173,
+    2239,
     "FastAPI frontend route group applies included prefixes and selects the most-specific frontend path",
 )
 _FRONTEND_DEPENDENCIES = _source(
     "fastapi/routing.py",
-    2110,
-    2121,
+    2180,
+    2191,
     "FastAPI frontend route group builds its parameterless dependency graph from app/router dependencies",
 )
 _FRONTEND_DEPENDENCY_DISPATCH = _source(
     "fastapi/routing.py",
-    2191,
-    2207,
+    2261,
+    2281,
     "FastAPI resolves frontend route dependencies before invoking the selected static frontend route",
 )
 _FRONTEND_CHECK_DIR = _source(
     "fastapi/routing.py",
-    1881,
-    1929,
+    1948,
+    1996,
     "FastAPI resolves check_dir from FASTAPI_ENV and eagerly validates frontend directories and explicit fallback files",
 )
 _FRONTEND_LOOKUP_ERROR_POLICY = _source(
     "fastapi/routing.py",
-    1974,
-    1984,
+    2044,
+    2054,
     "FastAPI maps PermissionError to 401, ENAMETOOLONG and ValueError to 404, and propagates other OSError values during frontend lookup",
 )
 _DOC_FALLBACK = _source(
@@ -276,7 +276,7 @@ FRONTEND_TEST_REVIEW_MAPPINGS = {
             },
         ],
         "rationale": (
-            "FastAPI 0.141.1 adds fallback policy and low-priority frontend routing on top of "
+            "FastAPI 0.157.0 adds fallback policy and low-priority frontend routing on top of "
             "Starlette static files. The independent waves sample fallback policy, API and "
             "included-router precedence, frontend dependency resolution, and "
             "construction/deferred directory configuration, plus target-only frontend lookup "
@@ -802,8 +802,8 @@ FRONTEND_TEST_REVIEW_MAPPINGS = {
                     _FRONTEND_REGISTRATION,
                     _source(
                         "fastapi/routing.py",
-                        1940,
-                        1944,
+                        2007,
+                        2011,
                         "FastAPI frontend static adapter checks deferred configuration before the file lookup",
                     ),
                     _source(
@@ -961,8 +961,8 @@ FRONTEND_TEST_SCOPE_NOTES = {
 
 FRONTEND_WAVE_SOURCE_REVIEW = {
     "fastapi_identity": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette_identity": {
         "version": "1.6.0",

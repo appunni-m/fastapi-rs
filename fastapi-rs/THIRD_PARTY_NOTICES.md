@@ -3,7 +3,7 @@
 FastAPI-RS's original code is licensed under MIT; see [`LICENSE.md`][project-license].
 This repository does not include FastAPI implementation source or wholesale
 Starlette modules. `fastapi-rs/src/route_signature.json` does include
-FastAPI 0.141.1 signature metadata and annotation text copied from its pinned
+FastAPI 0.157.0 signature metadata and annotation text copied from its pinned
 source. FastAPI's original author and MIT copyright holder is Sebastián
 Ramírez (Copyright (c) 2018); the complete upstream MIT notice, including its
 required copyright and permission notice, is reproduced below. Starlette-RS
@@ -27,8 +27,8 @@ authorities, not included implementation source trees in this distribution.
   Rust calls `annotated_doc.Doc` through PyO3 to construct `Doc` metadata in
   Python signatures. It is installed as a separate distribution and is not
   bundled by this package; retain its MIT notice if a release later bundles it.
-- The Python package pins Pydantic `==2.13.4` and directly pins
-  `pydantic-core==2.46.4`; both are MIT-licensed separate Python distributions.
+- The Python package pins Pydantic `==2.13.5` and directly pins
+  `pydantic-core==2.46.5`; both are MIT-licensed separate Python distributions.
   Pydantic's public model API is Python, while the Core wheel provides its Rust
   validation/serialization engine and FastAPI-RS calls its runtime APIs
   directly. Each distribution carries its own license file. These wheels are
@@ -4857,14 +4857,14 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <!-- END PINNED STARLETTE-RS LICENSE -->
 
-## FastAPI 0.141.1 signature metadata — MIT
+## FastAPI 0.157.0 signature metadata — MIT
 
 The route and parameter-factory signature metadata and annotation text in
 `fastapi-rs/src/route_signature.json` and
-`fastapi-rs/src/parameter_signature_contract.json` were copied from FastAPI 0.141.1 at the
-source commit `95f8322ee1dcda7ceace7b1c4f6c9915b36d748f` recorded in that file.
+`fastapi-rs/src/parameter_signature_contract.json` were copied from FastAPI 0.157.0 at the
+source commit `386a28af2f87af1a32ac26d88f07b7f58ab2dfb1` recorded in that file.
 
-Source: [FastAPI 0.141.1 LICENSE](https://github.com/fastapi/fastapi/blob/95f8322ee1dcda7ceace7b1c4f6c9915b36d748f/LICENSE).
+Source: [FastAPI 0.157.0 LICENSE](https://github.com/fastapi/fastapi/blob/386a28af2f87af1a32ac26d88f07b7f58ab2dfb1/LICENSE).
 
 FastAPI's original author and MIT copyright holder is Sebastián Ramírez
 (Copyright (c) 2018). The complete upstream MIT notice, including its

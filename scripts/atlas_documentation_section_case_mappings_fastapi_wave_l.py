@@ -185,8 +185,8 @@ DOC_SECTION_CASE_MAPPINGS_WAVE_L = {
     ),
     ("advanced/websockets.md", "handling-disconnections-and-multiple-clients"): _w(
         (
-            "Handling disconnections and multiple clients { "
-            "#handling-disconnections-and-multiple-clients }"
+            "Handling disconnections and multiple clients "
+            "{ #handling-disconnections-and-multiple-clients }"
         ),
         153,
         180,

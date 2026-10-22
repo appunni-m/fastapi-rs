@@ -1,0 +1,107 @@
+# Constructor validation and falsey-value observations from FastAPI 0.141.1.
+# Inputs are supplied to the public APIKeyHeader constructor; this recipe stores
+# no expected responses or exceptions.
+schema: fastapi-rs/python-asgi-workflow@17
+workload:
+  file: tests/fixtures/workloads/security_api_key_header_constructor_edge_cases.py
+  factory: create_app
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.security.apikeyheader.invalid-name-type
+  verification: parity
+  factory_input:
+    name: 17
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: fastapi/security/api_key.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.security.api_key.APIKeyHeader.__init__
+    sha256: def1f1e3014c2eb02435aa354b6342a6e1e328ae3da93860a9dc03f07b64314e
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.APIKey
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.security.apikeyheader.invalid-description-type
+  verification: parity
+  factory_input:
+    name: x-session-key
+    description: 23
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: fastapi/security/api_key.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.security.api_key.APIKeyHeader.__init__
+    sha256: def1f1e3014c2eb02435aa354b6342a6e1e328ae3da93860a9dc03f07b64314e
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.APIKey
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d
+- case_id: fastapi.security.apikeyheader.falsey-options-missing-header-openapi
+  verification: parity
+  factory_input:
+    name: x-session-key
+    scheme_name: ''
+    description: ''
+    auto_error: 0
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: request-with-missing-api-key-header
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /protected
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - {kind: http_response, selectors: [status, body_json], comparison: exact}
+  - action_id: inspect-falsey-options-openapi
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - {type: http.request, body: '', more_body: false}
+    observations:
+    - kind: openapi
+      json_pointers:
+      - /paths/~1protected/get/security
+      - /components/securitySchemes/APIKeyHeader
+      comparison: exact
+  source_evidence:
+  - path: fastapi/security/api_key.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.security.api_key.APIKeyHeader.__init__
+    sha256: def1f1e3014c2eb02435aa354b6342a6e1e328ae3da93860a9dc03f07b64314e
+  - path: fastapi/openapi/models.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.openapi.models.APIKey
+    sha256: b708c95867fa95c29125981a6427274344de9f584385cc822e06ebeed5c83f7d

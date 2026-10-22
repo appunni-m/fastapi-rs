@@ -371,7 +371,6 @@ def _manifest_with_current_index(text: str, index: dict[str, Any]) -> str:
 
 
 def build_index() -> dict[str, Any]:
-    current = read_json(INDEX_PATH)
     atlas = read_json(ROOT / "tests/fixtures/compatibility-atlas.json")
     backlog = read_json(ROOT / "tests/fixtures/fixture-backlog.json")
     selector_catalog = read_json(ROOT / "tests/fixtures/observation-selectors.json")
@@ -801,7 +800,10 @@ def build_index() -> dict[str, Any]:
 
     generated = {
         "schema": INDEX_SCHEMA,
-        "authority": current["authority"],
+        "authority": {
+            "fastapi": atlas["authorities"]["fastapi"]["version"],
+            "starlette": atlas["authorities"]["starlette"]["version"],
+        },
         "workflows": sorted(workflow_rows.values(), key=lambda row: row["id"]),
         "mappings": sorted(
             mappings.values(), key=lambda row: (row["workflow_id"], row["source_item_id"])

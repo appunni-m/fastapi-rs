@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Emit a deterministic, source-only inventory for pinned FastAPI 0.141.1.
+"""Emit a deterministic, source-only inventory for pinned FastAPI 0.157.0.
 
 This is discovery input for the future migration-parity manifest. It does not
 import FastAPI, run an oracle, claim target support, or store parity results.
@@ -25,9 +25,9 @@ from typing import Any
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = PROJECT_ROOT / "tests" / "fixtures" / "api-inventory.json"
 DEFAULT_SOURCE_CHECKOUT = PROJECT_ROOT.parent / "fastapi"
-EXPECTED_VERSION = "0.141.1"
-EXPECTED_TAG = "0.141.1"
-EXPECTED_COMMIT = "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f"
+EXPECTED_VERSION = "0.157.0"
+EXPECTED_TAG = "0.157.0"
+EXPECTED_COMMIT = "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1"
 SCHEMA = "fastapi-rs/source-api-inventory@1"
 INSTANCE_ASSIGNMENT_OWNERS = {
     ("fastapi.applications", "FastAPI"),
@@ -128,8 +128,8 @@ def validate_checkout(checkout: Path) -> dict[str, Any]:
     # lock for inventory provenance. Oracle and target compatibility are pinned
     # independently to Starlette 1.6.0 in the parity contract.
     expected_source_lock_components = {
-        "starlette": "1.3.1",
-        "pydantic": "2.13.4",
+        "starlette": "1.7.0",
+        "pydantic": "2.13.5",
         "httpx": "0.28.1",
     }
     if dependencies != expected_source_lock_components:
@@ -1111,7 +1111,7 @@ def main(argv: list[str] | None = None) -> int:
         nargs="?",
         type=Path,
         default=DEFAULT_SOURCE_CHECKOUT,
-        help="Local FastAPI checkout at exact tag 0.141.1 (default: ../fastapi)",
+        help="Local FastAPI checkout at exact tag 0.157.0 (default: ../fastapi)",
     )
     parser.add_argument(
         "--output", type=Path, default=DEFAULT_OUTPUT, help="Inventory JSON output path"

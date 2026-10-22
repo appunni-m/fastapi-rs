@@ -111,8 +111,8 @@ _STARLETTE_MODULE_PATH = re.compile(r"starlette(?:\.[A-Za-z_][A-Za-z0-9_]*)+\Z")
 _ATTRIBUTE_PATH = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*\Z")
 PINNED_AUTHORITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -1815,7 +1815,7 @@ def _validate_indexed_workflow(
         raise WorkerError("manifest changed after host-side API workflow validation")
     manifest_text = MANIFEST_PATH.read_text(encoding="utf-8")
     index = _read_pinned_artifact(manifest_text, "materialized_input_index", INDEX_SCHEMA_ID)
-    if index.get("authority") != {"fastapi": "0.141.1", "starlette": "1.6.0"}:
+    if index.get("authority") != {"fastapi": "0.157.0", "starlette": "1.6.0"}:
         raise WorkerError("materialized input index does not select the pinned source contract")
     relative_input = workflow_path.relative_to(ROOT).as_posix()
     matching = [

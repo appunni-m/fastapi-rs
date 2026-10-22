@@ -7,7 +7,7 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_MODEL_DEFAULTS_20261015 = {
             "{ #data-with-values-for-fields-with-defaults }"
         ),
         "start_line": 265,
-        "end_line": 279,
+        "end_line": 281,
         "recipe_path": (
             "tests/fixtures/input-recipes/parity/response-model-tutorials-upstream.yaml"
         ),

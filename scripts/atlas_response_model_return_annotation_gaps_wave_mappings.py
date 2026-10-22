@@ -2,8 +2,8 @@
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -11,7 +11,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI, Response-class, and wire-transport contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned validation and model serialization dependency",
     },
 }
@@ -74,7 +74,7 @@ def _function(
                 _TEST,
                 test_start,
                 test_end,
-                f"pinned FastAPI 0.141.1 upstream test function {name} and its assertions",
+                f"pinned FastAPI 0.157.0 upstream test function {name} and its assertions",
             ),
             _source(
                 _TEST,
@@ -88,20 +88,20 @@ def _function(
 
 _MODEL_SELECTION = _source(
     "fastapi/routing.py",
-    1081,
-    1114,
+    1136,
+    1169,
     "FastAPI resolves the endpoint return annotation, suppresses Response subclasses as response models, and creates the selected response field",
 )
 _RESPONSE_SERIALIZATION = _source(
     "fastapi/routing.py",
-    301,
-    338,
+    321,
+    358,
     "FastAPI validates response content and raises ResponseValidationError before delegating successful values to the field serializer",
 )
 _RESPONSE_DISPATCH = _source(
     "fastapi/routing.py",
-    711,
-    739,
+    751,
+    780,
     "FastAPI bypasses response-model serialization for returned Response instances and serializes other endpoint values",
 )
 

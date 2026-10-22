@@ -87,7 +87,7 @@ _OPENAPI_PATHS = ["openapi.document", "openapi.paths"]
 _HTTP_AND_OPENAPI_PATHS = ["http.status", "openapi.document", "openapi.paths"]
 
 _META_API_RATIONALE = (
-    "The pinned section lists FastAPI application metadata. FastAPI 0.141.1 stores these "
+    "The pinned section lists FastAPI application metadata. FastAPI 0.157.0 stores these "
     "fields on the application in fastapi/applications.py:875-885 and passes them into "
     "get_openapi() at :1084-1097; fastapi/openapi/utils.py:590-612 emits the selected Info "
     "fields. The recipe observes OpenAPI data only; Starlette 1.6.0 owns generic ASGI and "
@@ -95,28 +95,28 @@ _META_API_RATIONALE = (
 )
 
 _META_TAGS_RATIONALE = (
-    "FastAPI 0.141.1 accepts ordered openapi_tags metadata on FastAPI in "
+    "FastAPI 0.157.0 accepts ordered openapi_tags metadata on FastAPI in "
     "fastapi/applications.py:222-255 and passes it to OpenAPI generation at :1097; "
-    "fastapi/openapi/utils.py:675-676 adds the metadata array to the document. The selected "
+    "fastapi/openapi/utils.py:660-661 adds the metadata array to the document. The selected "
     "pointer is one tag's externalDocs object, not a rendered docs UI."
 )
 
 _META_ROUTE_TAGS_RATIONALE = (
-    "The pinned example assigns tags to path operations. FastAPI 0.141.1 forwards route "
+    "The pinned example assigns tags to path operations. FastAPI 0.157.0 forwards route "
     "decorator metadata through fastapi/applications.py:1167-1219, and "
     "fastapi/openapi/utils.py:291-293 emits route tags into each operation. The selected "
     "OpenAPI paths are route metadata; Starlette 1.6.0 owns generic route dispatch."
 )
 
 _META_URL_RATIONALE = (
-    "FastAPI 0.141.1 registers the OpenAPI endpoint and conditional Swagger UI/ReDoc routes "
+    "FastAPI 0.157.0 registers the OpenAPI endpoint and conditional Swagger UI/ReDoc routes "
     "in fastapi/applications.py:1106-1158. The selected route status, body, and OpenAPI "
     "pointers are ASGI-visible configuration results; Starlette 1.6.0 owns generic dispatch "
     "and response transport."
 )
 
 _ROUTE_CONFIGURATION_RATIONALE = (
-    "FastAPI 0.141.1 exposes path-operation configuration through its route decorators in "
+    "FastAPI 0.157.0 exposes path-operation configuration through its route decorators in "
     "fastapi/applications.py:1167-1219 and stores it on APIRoute in "
     "fastapi/routing.py:984-1037. "
     "fastapi/openapi/utils.py:281-306 projects summary, operationId, tags, and deprecation "
@@ -124,7 +124,7 @@ _ROUTE_CONFIGURATION_RATIONALE = (
 )
 
 _OPENAPI_EXTRA_RATIONALE = (
-    "FastAPI 0.141.1 merges each APIRoute.openapi_extra into its generated operation using "
+    "FastAPI 0.157.0 merges each APIRoute.openapi_extra into its generated operation using "
     "deep_dict_update in fastapi/openapi/utils.py:537-538. The recipe exercises a direct "
     "route and a router-included route; the OpenAPI document and paths are the selected "
     "observations."
@@ -133,7 +133,7 @@ _OPENAPI_EXTRA_RATIONALE = (
 _CUSTOM_SCHEMA_RATIONALE = (
     "The pinned example reads request bytes through Request and "
     "declares a requestBody schema "
-    "with openapi_extra. FastAPI 0.141.1 merges that fragment at "
+    "with openapi_extra. FastAPI 0.157.0 merges that fragment at "
     "fastapi/openapi/utils.py:537-538; Starlette 1.6.0 owns Request body consumption and "
     "generic ASGI transport. The selected route result and OpenAPI "
     "request schema are distinct "
@@ -141,7 +141,7 @@ _CUSTOM_SCHEMA_RATIONALE = (
 )
 
 _CUSTOM_CONTENT_TYPE_RATIONALE = (
-    "FastAPI 0.141.1 merges the tutorial's manually declared YAML requestBody through "
+    "FastAPI 0.157.0 merges the tutorial's manually declared YAML requestBody through "
     "APIRoute.openapi_extra at fastapi/openapi/utils.py:537-538. "
     "Starlette 1.6.0 owns Request "
     "body delivery. YAML decoding and Pydantic validation in the workload are authored "
@@ -383,7 +383,7 @@ DOC_SECTION_CASE_MAPPINGS_OPERATION_CONFIG_20261015 = {
             "rendering, or external documentation consumers."
         ),
         (
-            "FastAPI 0.141.1 uses inspect.cleandoc on an endpoint docstring in "
+            "FastAPI 0.157.0 uses inspect.cleandoc on an endpoint docstring in "
             "fastapi/routing.py:1033-1037; the operation description is "
             "assembled in fastapi/openapi/utils.py:291-294. Starlette 1.6.0 "
             "owns only the generic HTTP request path used to retrieve OpenAPI."
@@ -434,8 +434,8 @@ DOC_SECTION_CASE_MAPPINGS_OPERATION_CONFIG_20261015 = {
             "and introduces no distinct configuration behavior."
         ),
         (
-            "Pinned docs/en/docs/tutorial/path-operation-configuration.md:105-1"
-            "07 is a one-sentence recap of the status, tags, summary, "
+            "Pinned docs/en/docs/tutorial/path-operation-configuration.md:105-107 "
+            "is a one-sentence recap of the status, tags, summary, "
             "description, response description, and deprecation child sections, "
             "each mapped separately."
         ),
@@ -474,7 +474,7 @@ DOC_SECTION_CASE_MAPPINGS_OPERATION_CONFIG_20261015 = {
             "modules, uniqueness enforcement, or every route method."
         ),
         (
-            "FastAPI 0.141.1 invokes the selected unique-ID function while "
+            "FastAPI 0.157.0 invokes the selected unique-ID function while "
             "configuring APIRoute in fastapi/routing.py:1022-1028; "
             "fastapi/openapi/utils.py:296-305 writes the route ID into "
             "operationId. The selected OpenAPI pointer is the route operation "
@@ -496,7 +496,7 @@ DOC_SECTION_CASE_MAPPINGS_OPERATION_CONFIG_20261015 = {
             "documentation UI."
         ),
         (
-            "FastAPI 0.141.1 retains include_in_schema on APIRoute and gates "
+            "FastAPI 0.157.0 retains include_in_schema on APIRoute and gates "
             "OpenAPI emission in fastapi/openapi/utils.py:331 and :562. The "
             "fixture's OpenAPI paths observation is the documented visibility "
             "boundary."
@@ -517,7 +517,7 @@ DOC_SECTION_CASE_MAPPINGS_OPERATION_CONFIG_20261015 = {
             "documentation tool."
         ),
         (
-            "FastAPI 0.141.1 cleans the route docstring and truncates it at the "
+            "FastAPI 0.157.0 cleans the route docstring and truncates it at the "
             "first form-feed in fastapi/routing.py:1033-1037; "
             "fastapi/openapi/utils.py:291-294 includes the result in the "
             "operation. The case selects that operation metadata in OpenAPI."
@@ -546,7 +546,7 @@ DOC_SECTION_CASE_MAPPINGS_OPERATION_CONFIG_20261015 = {
             "captured by the same action as transport observations."
         ),
         (
-            "FastAPI 0.141.1 builds declared response metadata while creating "
+            "FastAPI 0.157.0 builds declared response metadata while creating "
             "APIRoute and emits response objects in "
             "fastapi/openapi/utils.py:405-537. The case reads the generated "
             "OpenAPI for one inventory operation; Starlette 1.6.0 owns the "

@@ -1,6 +1,6 @@
 """Function-level source review for FastAPI response-model tutorial tests.
 
-The mappings point to pinned FastAPI 0.141.1 source and input-only parity
+The mappings point to pinned FastAPI 0.157.0 source and input-only parity
 workflows. They are deliberately partial: response JSON assertions use exact
 body bytes in current workflows, and existing OpenAPI cases select pointers
 instead of storing source snapshot outputs.
@@ -12,8 +12,8 @@ from typing import Any
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -21,7 +21,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI, TestClient, response-class, and HTTP transport contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned model validation, response-field serialization, and schema generation dependency",
     },
 }
@@ -98,7 +98,7 @@ def _function(
                 test_path,
                 start,
                 end,
-                "pinned FastAPI 0.141.1 test function and asserted observations",
+                "pinned FastAPI 0.157.0 test function and asserted observations",
             ),
             *sources,
         ],
@@ -159,42 +159,42 @@ _OPENAPI = ("openapi.document",)
 _ROUTING_SERIALIZATION = (
     _source(
         "fastapi/routing.py",
-        301,
-        338,
+        321,
+        358,
         "FastAPI validates a response field and forwards include/exclude/unset options to its Pydantic serializer",
     ),
     _source(
         "fastapi/routing.py",
-        727,
-        739,
+        767,
+        780,
         "FastAPI passes route response-model projection options into response serialization",
     ),
 )
 _ROUTE_MODEL_SELECTION = (
     _source(
         "fastapi/routing.py",
-        961,
-        1007,
+        1016,
+        1062,
         "FastAPI accepts and stores response-model include, exclude, and unset configuration on a route",
     ),
     _source(
         "fastapi/routing.py",
-        1081,
-        1123,
+        1136,
+        1178,
         "FastAPI selects explicit/annotated response models, suppresses Response annotations, and creates response fields",
     ),
 )
 _OPENAPI_RESPONSE = (
     _source(
         "fastapi/openapi/utils.py",
-        357,
-        385,
+        342,
+        370,
         "FastAPI derives operation parameters and request-body schemas from route dependencies and body fields",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        419,
-        472,
+        404,
+        457,
         "FastAPI projects response fields into generated OpenAPI response schemas",
     ),
 )
@@ -230,8 +230,8 @@ _STARLETTE_RESPONSES = (
 _DIRECT_RESPONSE = (
     _source(
         "fastapi/routing.py",
-        706,
-        739,
+        746,
+        780,
         "FastAPI preserves returned Response instances and serializes other endpoint values through the selected response field",
     ),
     *_STARLETTE_RESPONSES,
@@ -1142,7 +1142,7 @@ RESPONSE_MODEL_TUTORIAL_TEST_REVIEW_MAPPINGS = {
             "test_filter_second_level_model": _function(
                 "tests/test_response_model_data_filter.py",
                 66,
-                72,
+                71,
                 ("response-serialization",),
                 ("http.body.json",),
                 "FastAPI applies PetOut to a returned PetDB and filters the nested UserDB down to UserBase fields.",
@@ -1217,7 +1217,7 @@ RESPONSE_MODEL_TUTORIAL_TEST_REVIEW_MAPPINGS = {
             "test_filter_second_level_model": _function(
                 "tests/test_response_model_data_filter_no_inheritance.py",
                 68,
-                74,
+                73,
                 ("response-serialization",),
                 _JSON,
                 "The declared PetOut/User response models project a nested PetDB/UserDB result even though neither returned class inherits from its declared counterpart.",

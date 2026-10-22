@@ -67,9 +67,9 @@ DOC_SECTION_CASE_MAPPINGS_BACKGROUND_TASKS_20261015 = {
         (
             "The pinned page introduces tasks that run after returning a response and gives "
             "email and processing examples (docs/en/docs/tutorial/background-tasks.md:1-12). "
-            "FastAPI 0.141.1 classifies the injected parameter in "
-            "../fastapi/fastapi/dependencies/utils.py:365-366, creates/reuses it at :715-729, "
-            "and attaches it to response arguments in ../fastapi/fastapi/routing.py:357-362. "
+            "FastAPI 0.157.0 classifies the injected parameter in "
+            "../fastapi/fastapi/dependencies/utils.py:392-413, injects it at :803-819, "
+            "and attaches it to response arguments in ../fastapi/fastapi/routing.py:380-395. "
             "Starlette 1.6.0 owns generic execution after the response send."
         ),
     ),
@@ -90,9 +90,9 @@ DOC_SECTION_CASE_MAPPINGS_BACKGROUND_TASKS_20261015 = {
         (
             "The pinned section shows the BackgroundTasks parameter and says FastAPI creates "
             "and supplies the object (docs/en/docs/tutorial/background-tasks.md:14-20). "
-            "FastAPI 0.141.1 recognizes StarletteBackgroundTasks subclasses in "
-            "../fastapi/fastapi/dependencies/utils.py:365-366 and supplies the shared value at "
-            ":715-729; the linked case observes the route response and subsequent public "
+            "FastAPI 0.157.0 recognizes StarletteBackgroundTasks subclasses in "
+            "../fastapi/fastapi/dependencies/utils.py:407-409 and supplies the shared value at "
+            ":803-819; the linked case observes the route response and subsequent public "
             "state response."
         ),
     ),
@@ -109,8 +109,8 @@ DOC_SECTION_CASE_MAPPINGS_BACKGROUND_TASKS_20261015 = {
         (
             "The pinned text says task functions may be ordinary or async callables and can "
             "receive parameters (docs/en/docs/tutorial/background-tasks.md:22-35). "
-            "FastAPI 0.141.1 forwards the registration call in "
-            "../fastapi/fastapi/background.py:40-61. Starlette 1.6.0 selects async invocation "
+            "FastAPI 0.157.0 forwards the registration call in "
+            "../fastapi/fastapi/background.py:41-62. Starlette 1.6.0 selects async invocation "
             "or run_in_threadpool in ../starlette/starlette/background.py:12-23; the section "
             "therefore adds no FastAPI-owned task-callable behavior to this crosswalk."
         ),
@@ -132,8 +132,8 @@ DOC_SECTION_CASE_MAPPINGS_BACKGROUND_TASKS_20261015 = {
         (
             "The pinned section describes calling add_task from a path operation and its "
             "function, positional-argument, and keyword-argument inputs "
-            "(docs/en/docs/tutorial/background-tasks.md:36-46). FastAPI 0.141.1 declares "
-            "*args/**kwargs and forwards both in ../fastapi/fastapi/background.py:40-61. The "
+            "(docs/en/docs/tutorial/background-tasks.md:36-46). FastAPI 0.157.0 declares "
+            "*args/**kwargs and forwards both in ../fastapi/fastapi/background.py:41-62. The "
             "independent recipe uses a different route, target, task, and keyword label; the "
             "follow-up response exposes the effect."
         ),
@@ -155,9 +155,9 @@ DOC_SECTION_CASE_MAPPINGS_BACKGROUND_TASKS_20261015 = {
         (
             "The pinned example declares BackgroundTasks in dependencies and a path operation, "
             "then describes the shared collection and merged tasks "
-            "(docs/en/docs/tutorial/background-tasks.md:48-62). FastAPI 0.141.1 propagates the "
-            "solved task collection through ../fastapi/fastapi/dependencies/utils.py:715-729 "
-            "and attaches it to the response in ../fastapi/fastapi/routing.py:357-362. "
+            "(docs/en/docs/tutorial/background-tasks.md:48-62). FastAPI 0.157.0 propagates the "
+            "solved task collection through ../fastapi/fastapi/dependencies/utils.py:803-819 "
+            "and attaches it to the response in ../fastapi/fastapi/routing.py:380-395. "
             "Starlette owns execution of the attached collection."
         ),
     ),
@@ -178,9 +178,9 @@ DOC_SECTION_CASE_MAPPINGS_BACKGROUND_TASKS_20261015 = {
         (
             "The pinned section says BackgroundTasks is made available from FastAPI and "
             "distinguishes it from Starlette's singular BackgroundTask "
-            "(docs/en/docs/tutorial/background-tasks.md:64-72). FastAPI 0.141.1 exports the "
+            "(docs/en/docs/tutorial/background-tasks.md:64-72). FastAPI 0.157.0 exports the "
             "class at ../fastapi/fastapi/__init__.py:8 and defines its subclass of "
-            "StarletteBackgroundTasks at ../fastapi/fastapi/background.py:5-11. The linked "
+            "StarletteBackgroundTasks at ../fastapi/fastapi/background.py:6-13. The linked "
             "case returns the root-to-public-module identity check; generic BackgroundTask "
             "execution and Response attachment remain Starlette-owned."
         ),

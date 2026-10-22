@@ -9,7 +9,7 @@ use pyo3::types::{PyDict, PyList, PyModule, PyString, PyTuple};
 
 const CONTRACT: &str = include_str!("route_signature.json");
 const CONTRACT_SCHEMA: &str = "fastapi-rs/application-signature-contract@1";
-const FASTAPI_SOURCE_REVISION: &str = "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f";
+const FASTAPI_SOURCE_REVISION: &str = "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1";
 
 static PARSED_CONTRACT: PyOnceLock<Py<PyAny>> = PyOnceLock::new();
 
@@ -38,7 +38,7 @@ impl ApplicationSignatureBuilder {
             .extract()?;
         if schema != CONTRACT_SCHEMA || revision != FASTAPI_SOURCE_REVISION {
             return Err(PyRuntimeError::new_err(
-                "application signature contract is not pinned to FastAPI 0.141.1",
+                "application signature contract is not pinned to FastAPI 0.157.0",
             ));
         }
         Ok(Self {

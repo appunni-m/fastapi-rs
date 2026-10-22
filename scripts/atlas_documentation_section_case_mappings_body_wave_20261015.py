@@ -95,7 +95,7 @@ def _excluded(heading, start, end, reason, rationale):
 
 
 _BODY_BINDING_RATIONALE = (
-    "FastAPI 0.141.1 classifies path parameters, non-scalar body parameters, and scalar query "
+    "FastAPI 0.157.0 classifies path parameters, non-scalar body parameters, and scalar query "
     "parameters in fastapi/dependencies/utils.py:491-505. It embeds body fields when more "
     "than one body parameter is declared or when Body(embed=True) is explicit at :888-909; "
     "request_body_to_args extracts keyed fields and validates them at :951-998. OpenAPI "
@@ -107,7 +107,7 @@ _BODY_BINDING_RATIONALE = (
 _BODY_UPDATES_RATIONALE = (
     "The pinned docs examples are docs_src/body_updates/tutorial001_py310.py:28-32 and "
     "tutorial002_py310.py:28-35. The independent StockRecord workload uses different field "
-    "names, values, and a different route. FastAPI 0.141.1 reads JSON request bodies and "
+    "names, values, and a different route. FastAPI 0.157.0 reads JSON request bodies and "
     "passes parsed values into request validation (fastapi/routing.py:425-450; "
     "fastapi/dependencies/utils.py:951-998), then validates/serializes an annotated response "
     "field (fastapi/routing.py:301-342). The exclude_unset/model_copy update policy is the "
@@ -117,7 +117,7 @@ _BODY_UPDATES_RATIONALE = (
 )
 
 _DATACLASSES_RATIONALE = (
-    "FastAPI 0.141.1 creates a Pydantic-backed ModelField from the declared response type "
+    "FastAPI 0.157.0 creates a Pydantic-backed ModelField from the declared response type "
     "in fastapi/utils.py:58-77. APIRoute creates the response field for the declared type "
     "in fastapi/routing.py:1081-1112 and validates/serializes response content through that "
     "field in fastapi/routing.py:301-342. The recipe uses a standard-library dataclass as "
@@ -128,7 +128,7 @@ _DATACLASSES_RATIONALE = (
 _DATACLASS_REQUEST_RATIONALE = (
     "The pinned tutorial example declares a standard-library Item dataclass as a path "
     "operation parameter and returns it (docs_src/dataclasses_/tutorial001_py310.py:1-19). "
-    "FastAPI 0.141.1 constructs APIRoute dependency and body-field state in "
+    "FastAPI 0.157.0 constructs APIRoute dependency and body-field state in "
     "fastapi/routing.py:1081-1112, parses request JSON at fastapi/routing.py:425-450, and "
     "classifies/validates body fields in fastapi/dependencies/utils.py:491-505,951-998. "
     "The independent Entry workload changes the route and values while preserving the "
@@ -140,7 +140,7 @@ _DATACLASS_REQUEST_RATIONALE = (
 _JSON_BYTES_RATIONALE = (
     "The pinned documentation's example is docs_src/json_base64_bytes/tutorial001_py310.py. "
     "Its val_json_bytes and ser_json_bytes configuration is Pydantic behavior. FastAPI "
-    "0.141.1 reads JSON request bodies and supplies parsed input to model validation "
+    "0.157.0 reads JSON request bodies and supplies parsed input to model validation "
     "(fastapi/routing.py:425-450), returns model data through response serialization "
     "(fastapi/routing.py:301-342), and emits request/response schemas in OpenAPI "
     "(fastapi/openapi/utils.py:377-385). Starlette 1.6.0 owns the Request body/JSON "
@@ -445,7 +445,7 @@ DOC_SECTION_CASE_MAPPINGS_BODY_WAVE_20261015 = {
         (
             "Pinned docs/en/docs/advanced/dataclasses.md:93-95 states availability since "
             "FastAPI 0.67.0. This is release-history prose rather than a request, response, or "
-            "OpenAPI input for the pinned 0.141.1 contract."
+            "OpenAPI input for the pinned 0.157.0 contract."
         ),
     ),
     (_JSON_BYTES_PAGE, "json-with-bytes-as-base64"): _excluded(

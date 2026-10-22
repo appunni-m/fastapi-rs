@@ -11,8 +11,8 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_PATH = ROOT / "fastapi-rs" / "src" / "route_signature.json"
-FASTAPI_VERSION = "0.141.1"
-FASTAPI_REVISION = "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f"
+FASTAPI_VERSION = "0.157.0"
+FASTAPI_REVISION = "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1"
 STARLETTE_VERSION = "1.6.0"
 STARLETTE_REVISION = "4f250d6b814587e20c5365f0a5f0c4d42bcb929f"
 CALLABLES = {
@@ -254,7 +254,7 @@ def main() -> int:
     contract_path = args.contract.resolve()
     contract = json.loads(contract_path.read_text(encoding="utf-8"))
     if contract["source"]["revision"] != FASTAPI_REVISION:
-        raise SignatureContractError("signature contract source revision is not FastAPI 0.141.1")
+        raise SignatureContractError("signature contract source revision is not FastAPI 0.157.0")
     capture = SignatureContractCapture(contract, DefaultPlaceholder)
     for contract_name, (owner_name, member_name) in CALLABLES.items():
         owner = {"FastAPI": FastAPI}[owner_name]

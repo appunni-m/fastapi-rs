@@ -64,7 +64,7 @@ PARITY_API_TARGET_PYTHON ?= $(if $(filter testclient,$(PARITY_API_PROFILE_EXTENS
 PARITY_PROCESS_INPUT ?= tests/fixtures/inputs/parity/fastapi-cli-process-workflow.json
 PARITY_PROCESS_V2_INPUT ?= tests/fixtures/inputs/parity/fastapi-cli-documented-process-v2.json
 PARITY_PROCESS_CORE_INPUT ?= tests/fixtures/inputs/parity/fastapi-cli-missing-optional-process-v2.json
-PARITY_PROCESS_ORACLE_PROFILE ?= fastapi-0.141.1-starlette-1.6.0-cpython-3.12.13-standard
+PARITY_PROCESS_ORACLE_PROFILE ?= fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-standard
 PARITY_PROCESS_ORACLE_PYTHON ?= $(ORACLE_STANDARD_PYTHON)
 # Keep results immutable while making repeated process runs safe. Reuse the same
 # id across separate oracle, target, and compare invocations to pair artifacts.
@@ -112,10 +112,10 @@ help: ## Show common development commands
 	  '  make pydantic-core-inventory-update Regenerate the pinned Pydantic Core native dependency report' \
 	  '  make pydantic-core-inventory-check Check the pinned Pydantic Core native dependency report' \
 	  '  make dependency-graph-update Regenerate FastAPI lock-derived dependency edges and surfaces' \
-	  '  make dependency-graph-check Check Python dependency rows against FastAPI 0.141.1 uv.lock' \
+	  '  make dependency-graph-check Check Python dependency rows against FastAPI 0.157.0 uv.lock' \
 	  '  make parity-inputs    Materialize ignored JSON workflows from YAML recipes' \
 	  '  make parity-workload-check Screen active workload Python sources with AST' \
-	  '  make parity-prepare-oracle Prepare pinned FastAPI 0.141.1 / Starlette 1.6.0 Python env' \
+	  '  make parity-prepare-oracle Prepare pinned FastAPI 0.157.0 / Starlette 1.6.0 Python env' \
 	  '  make parity-prepare-oracle-standard Prepare the locked optional-feature reflection profile' \
 	  '  make parity-prepare-oracle-testclient Prepare FastAPI standard extra with HTTPX fallback' \
 	  '  make parity-prepare-oracle-email-validation Prepare the hash-locked EmailStr oracle profile' \
@@ -443,7 +443,7 @@ signature-workflow-migration-check: ## Require active signature recipes to use a
 parity-api-validate: parity-inputs signature-workflow-migration-check ## Validate a direct public Python API workflow
 	$(PYTHON) -m scripts.parity.cli api-validate --input "$(PARITY_API_INPUT)"
 
-parity-api-oracle: parity-inputs signature-workflow-migration-check ## Execute a direct public API workflow against FastAPI 0.141.1
+parity-api-oracle: parity-inputs signature-workflow-migration-check ## Execute a direct public API workflow against FastAPI 0.157.0
 	$(PYTHON) -m scripts.parity.cli api-oracle --input "$(PARITY_API_INPUT)" --python "$(PARITY_API_ORACLE_PYTHON)" --profile-extension "$(PARITY_API_PROFILE_EXTENSION)"
 
 parity-api-target: parity-inputs signature-workflow-migration-check ## Execute a direct public API workflow against FastAPI-RS

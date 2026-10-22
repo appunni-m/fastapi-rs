@@ -33,9 +33,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_FASTAPI_SOURCE = PROJECT_ROOT.parent / "fastapi"
 DEFAULT_STARLETTE_SOURCE = PROJECT_ROOT.parent / "starlette"
 DEFAULT_OUTPUT = PROJECT_ROOT / "tests/fixtures/runtime-api-surface.json"
-EXPECTED_FASTAPI = ("0.141.1", "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f")
+EXPECTED_FASTAPI = ("0.157.0", "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1")
 EXPECTED_STARLETTE = ("1.6.0", "4f250d6b814587e20c5365f0a5f0c4d42bcb929f")
-EXPECTED_PYDANTIC = ("2.13.4", "2.46.4")
+EXPECTED_PYDANTIC = ("2.13.5", "2.46.5")
 EXPECTED_PYTHON = ("CPython", "3.12.13")
 SCHEMA = "fastapi-rs/runtime-api-surface@1"
 INSTANCE_REFLECTION_ARGUMENTS = {
@@ -408,7 +408,7 @@ def build_runtime_surface(
         ("starlette", "pyproject.toml"),
     )
     if inventory.get("source_identity", {}).get("commit") != EXPECTED_FASTAPI[1]:
-        raise RuntimeInventoryError("source API inventory does not match FastAPI 0.141.1")
+        raise RuntimeInventoryError("source API inventory does not match FastAPI 0.157.0")
 
     import fastapi
     import pydantic
@@ -416,11 +416,11 @@ def build_runtime_surface(
     import starlette
 
     if importlib.metadata.version("fastapi") != EXPECTED_FASTAPI[0]:
-        raise RuntimeInventoryError("imported FastAPI package version is not 0.141.1")
+        raise RuntimeInventoryError("imported FastAPI package version is not 0.157.0")
     if importlib.metadata.version("starlette") != EXPECTED_STARLETTE[0]:
         raise RuntimeInventoryError("imported Starlette package version is not 1.6.0")
     if (pydantic.__version__, pydantic_core.__version__) != EXPECTED_PYDANTIC:
-        raise RuntimeInventoryError("imported Pydantic runtime is not 2.13.4/2.46.4")
+        raise RuntimeInventoryError("imported Pydantic runtime is not 2.13.5/2.46.5")
     python_identity = (platform.python_implementation(), platform.python_version())
     if python_identity != EXPECTED_PYTHON:
         raise RuntimeInventoryError(

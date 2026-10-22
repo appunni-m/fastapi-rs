@@ -11,8 +11,8 @@ FASTAPI_ROOT = PROJECT_ROOT.parent / "fastapi"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -20,7 +20,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI and HTTP response transport contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "not used to cache dependency values or validate a response model in these scalar-counter cases",
     },
 }
@@ -49,7 +49,7 @@ def _test_function_span(name: str) -> dict[str, Any]:
         _TEST,
         node.lineno,
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 public HTTP test function {name}",
+        f"pinned FastAPI 0.157.0 public HTTP test function {name}",
     )
 
 
@@ -61,32 +61,32 @@ _CACHE_ROUTE_DEFINITIONS = _source(
 )
 _CACHE_SOLVER = _source(
     "fastapi/dependencies/utils.py",
-    640,
-    680,
+    721,
+    762,
     "FastAPI recursively solves each dependency, consults the request-local cache only when use_cache is true, and stores a resolved value only when the key is absent",
 )
 _CACHE_KEY = _source(
     "fastapi/dependencies/models.py",
-    82,
-    96,
+    83,
+    97,
     "FastAPI keys dependency results by callable and applicable security and cleanup scopes",
 )
 _REQUEST_CACHE_LIFETIME = _source(
     "fastapi/routing.py",
-    481,
-    488,
+    505,
+    519,
     "FastAPI starts dependency solving for each request without passing a previous request's cache",
 )
 _REQUEST_CACHE_INIT = _source(
     "fastapi/dependencies/utils.py",
-    615,
-    616,
+    687,
+    688,
     "FastAPI allocates a new dependency-cache dictionary when the route does not supply one",
 )
 _FASTAPI_JSON_ENCODING = _source(
     "fastapi/routing.py",
-    340,
-    342,
+    360,
+    362,
     "FastAPI uses jsonable_encoder when no response model field is selected",
 )
 _STARLETTE_JSON_RESPONSE = _source(

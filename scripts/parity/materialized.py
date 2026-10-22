@@ -351,7 +351,7 @@ def validate_materialized_input_index(
         _fail(f"input does not match its schema: {details}")
     if index["schema"] != INDEX_SCHEMA_ID:
         _fail(f"unsupported schema: {index['schema']!r}")
-    if index["authority"] != {"fastapi": "0.141.1", "starlette": "1.6.0"}:
+    if index["authority"] != {"fastapi": "0.157.0", "starlette": "1.6.0"}:
         _fail("index authority differs from the selected FastAPI/Starlette contract")
 
     all_workflows_by_id = {row["id"]: row for row in index["workflows"]}

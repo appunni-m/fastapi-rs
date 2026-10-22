@@ -101,8 +101,10 @@ DOC_SECTION_CASE_MAPPINGS_PATH_PARAMS_1016 = {
         "tutorial/path-params.md",
         "standards-based-benefits-alternative-documentation",
     ): _workflow(
-        "Standards-based benefits, alternative documentation { #standards"
-        "-based-benefits-alternative-documentation }",
+        (
+            "Standards-based benefits, alternative documentation "
+            "{ #standards-based-benefits-alternative-documentation }"
+        ),
         93,
         102,
         _PATH,
@@ -413,8 +415,10 @@ DOC_SECTION_CASE_MAPPINGS_PATH_PARAMS_1016 = {
         "tutorial/path-params-numeric-validations.md",
         "number-validations-greater-than-and-less-than-or-equal",
     ): _workflow(
-        "Number validations: greater than and less than or equal { #numbe"
-        "r-validations-greater-than-and-less-than-or-equal }",
+        (
+            "Number validations: greater than and less than or equal "
+            "{ #number-validations-greater-than-and-less-than-or-equal }"
+        ),
         102,
         110,
         _NUMERIC,
@@ -431,8 +435,10 @@ DOC_SECTION_CASE_MAPPINGS_PATH_PARAMS_1016 = {
         "tutorial/path-params-numeric-validations.md",
         "number-validations-floats-greater-than-and-less-than",
     ): _workflow(
-        "Number validations: floats, greater than and less than { #number"
-        "-validations-floats-greater-than-and-less-than }",
+        (
+            "Number validations: floats, greater than and less than "
+            "{ #number-validations-floats-greater-than-and-less-than }"
+        ),
         111,
         122,
         _NUMERIC,

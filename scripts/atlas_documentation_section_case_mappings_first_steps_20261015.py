@@ -1,4 +1,4 @@
-"""Reviewed section mappings for FastAPI 0.141.1's First Steps page."""
+"""Reviewed section mappings for FastAPI 0.157.0's First Steps page."""
 
 _RECIPE = "tests/fixtures/input-recipes/parity/first-steps-page-review-20261015.yaml"
 
@@ -58,7 +58,7 @@ DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015 = {
             "Swagger UI's external JavaScript and CSS."
         ),
         (
-            "FastAPI 0.141.1 registers the Swagger UI HTML endpoint and embeds the OpenAPI "
+            "FastAPI 0.157.0 registers the Swagger UI HTML endpoint and embeds the OpenAPI "
             "URL; Starlette 1.6.0 owns route dispatch and HTTP transport. Swagger UI browser "
             "rendering is third-party client behavior and is outside this ASGI input."
         ),
@@ -76,7 +76,7 @@ DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015 = {
             "ReDoc's external JavaScript and CSS."
         ),
         (
-            "FastAPI 0.141.1 registers the ReDoc HTML endpoint and embeds the OpenAPI URL; "
+            "FastAPI 0.157.0 registers the ReDoc HTML endpoint and embeds the OpenAPI URL; "
             "Starlette 1.6.0 owns route dispatch and HTTP transport. ReDoc browser rendering "
             "is third-party client behavior and is outside this ASGI input."
         ),
@@ -144,7 +144,7 @@ DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015 = {
             "not claim the illustrative /items/ document or every OpenAPI field."
         ),
         (
-            "FastAPI 0.141.1 constructs and serves the OpenAPI document from registered "
+            "FastAPI 0.157.0 constructs and serves the OpenAPI document from registered "
             "routes. Starlette 1.6.0 owns generic HTTP transport. This workload has no "
             "Pydantic model, so model JSON Schema generation is not claimed."
         ),
@@ -275,7 +275,7 @@ DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015 = {
             "HEAD, PATCH, or TRACE routes."
         ),
         (
-            "FastAPI 0.141.1 registers the endpoint and invokes its user function. Starlette "
+            "FastAPI 0.157.0 registers the endpoint and invokes its user function. Starlette "
             "1.6.0 owns generic route matching and HTTP transport; the returned dictionary "
             "is user code and response wire behavior follows the shared Starlette contract."
         ),
@@ -299,7 +299,7 @@ DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015 = {
             "application business logic or every sync/async callable edge case."
         ),
         (
-            "FastAPI 0.141.1 dispatches the endpoint according to whether user code is async "
+            "FastAPI 0.157.0 dispatches the endpoint according to whether user code is async "
             "or sync; Starlette 1.6.0 supplies generic thread-pool and HTTP/ASGI transport "
             "behavior. Both returned dictionaries are authored by the workload."
         ),

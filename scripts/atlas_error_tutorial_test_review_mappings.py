@@ -15,8 +15,8 @@ PROJECT = Path(__file__).resolve().parents[1]
 FASTAPI_ROOT = PROJECT.parent / "fastapi"
 
 SOURCE_IDENTITY = {
-    "fastapi_version": "0.141.1",
-    "fastapi_commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+    "fastapi_version": "0.157.0",
+    "fastapi_commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     "starlette_version": "1.6.0",
     "starlette_commit": "4f250d6b814587e20c5365f0a5f0c4d42bcb929f",
 }
@@ -44,7 +44,7 @@ def _test_span(test_path: str, function_name: str) -> dict[str, Any]:
         test_path,
         node.lineno,
         node.end_lineno or node.lineno,
-        f"pinned FastAPI 0.141.1 test stimulus and assertions for {function_name}",
+        f"pinned FastAPI 0.157.0 test stimulus and assertions for {function_name}",
     )
 
 
@@ -127,14 +127,14 @@ _VALIDATION_HANDLER = _source(
 )
 _DEFAULT_HANDLER_REGISTRATION = _source(
     "fastapi/applications.py",
-    1000,
-    1012,
+    997,
+    1009,
     "FastAPI installs default HTTP, request-validation, and WebSocket validation handlers",
 )
 _HANDLER_DECORATOR = _source(
     "fastapi/applications.py",
-    4729,
-    4774,
+    4771,
+    4816,
     "FastAPI's exception_handler decorator registers the supplied handler",
 )
 _HTTP_EXCEPTION_CLASS = _source(
@@ -145,26 +145,26 @@ _HTTP_EXCEPTION_CLASS = _source(
 )
 _REQUEST_VALIDATION_CREATION = _source(
     "fastapi/routing.py",
-    751,
-    755,
+    792,
+    799,
     "FastAPI wraps dependency and field errors in RequestValidationError",
 )
 _BODY_VALIDATION_FLOW = _source(
     "fastapi/routing.py",
-    425,
-    465,
+    451,
+    492,
     "FastAPI reads and decodes request bodies and reports malformed JSON as RequestValidationError",
 )
 _OPENAPI_PATH_FIELDS = _source(
     "fastapi/openapi/utils.py",
-    311,
-    385,
+    296,
+    370,
     "FastAPI builds OpenAPI path operations and their parameter and request-body schemas",
 )
 _OPENAPI_RESPONSE_FIELDS = _source(
     "fastapi/openapi/utils.py",
-    403,
-    472,
+    388,
+    457,
     "FastAPI constructs the documented response status and validation response schema",
 )
 _STARLETTE_HANDLER_DISPATCH = _source(
@@ -200,8 +200,8 @@ ERROR_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     ),
                     _source(
                         "fastapi/routing.py",
-                        706,
-                        759,
+                        746,
+                        803,
                         "FastAPI executes the endpoint and selects the response path",
                     ),
                 ),
@@ -271,8 +271,8 @@ ERROR_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     ),
                     _source(
                         "fastapi/routing.py",
-                        706,
-                        759,
+                        746,
+                        803,
                         "FastAPI executes the endpoint and selects the response path",
                     ),
                 ),
@@ -342,8 +342,8 @@ ERROR_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     ),
                     _source(
                         "fastapi/routing.py",
-                        706,
-                        759,
+                        746,
+                        803,
                         "FastAPI executes the endpoint and selects the response path",
                     ),
                 ),
@@ -465,8 +465,8 @@ ERROR_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     ),
                     _source(
                         "fastapi/routing.py",
-                        475,
-                        490,
+                        505,
+                        524,
                         "FastAPI resolves the route's validated dependency values",
                     ),
                 ),
@@ -542,8 +542,8 @@ ERROR_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     _BODY_VALIDATION_FLOW,
                     _source(
                         "fastapi/routing.py",
-                        706,
-                        759,
+                        746,
+                        803,
                         "FastAPI resolves the endpoint result and constructs its response",
                     ),
                 ),
@@ -646,8 +646,8 @@ ERROR_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     ),
                     _source(
                         "fastapi/routing.py",
-                        475,
-                        490,
+                        505,
+                        524,
                         "FastAPI resolves validated path values for the endpoint",
                     ),
                 ),
@@ -685,7 +685,7 @@ ERROR_TUTORIAL_TEST_MODULE_EXCLUSIONS = {
         "supporting_sources": [
             {
                 "path": "tests/test_tutorial/test_handling_errors/__init__.py",
-                "role": "pinned FastAPI 0.141.1 package marker; no test functions",
+                "role": "pinned FastAPI 0.157.0 package marker; no test functions",
             }
         ],
     }

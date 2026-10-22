@@ -15,7 +15,7 @@ DOC_SECTION_CASE_MAPPINGS_DATA_CONVERSION_20261015 = {
             "section; it adds no distinct request or observation."
         ),
         "rationale": (
-            "Pinned FastAPI 0.141.1 docs/en/docs/tutorial/path-params.md:29-44 explains the "
+            "Pinned FastAPI 0.157.0 docs/en/docs/tutorial/path-params.md:29-44 explains the "
             "integer conversion from the same tutorial002 typed route whose independent "
             "integer-path-value action is linked to #path-parameters-with-types. That linked "
             "action already supplies the path value and observes the numeric JSON response. "

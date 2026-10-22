@@ -407,7 +407,7 @@ fn bootstrap_target_fastapi_modules(py: Python<'_>) -> PyResult<()> {
 
 #[pymodule]
 fn _core(module: &Bound<'_, PyModule>) -> PyResult<()> {
-    module.add("__version__", "0.141.1")?;
+    module.add("__version__", "0.157.0")?;
     fastapi_rs::register_python_api(module)?;
     module.add_class::<PyOperationRouter>()?;
     module.add_function(wrap_pyfunction!(identity, module)?)?;

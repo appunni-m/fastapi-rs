@@ -38,7 +38,7 @@ def _excluded(heading, start, end, reason, rationale):
 
 
 _BODY_PIPELINE = (
-    "FastAPI 0.141.1 selects form versus body handling and decides whether JSON "
+    "FastAPI 0.157.0 selects form versus body handling and decides whether JSON "
     "parsing applies from the request content type in fastapi/routing.py:425-450; "
     "Starlette 1.6.0 Request.body() buffers the ASGI stream and Request.json() "
     "decodes JSON in starlette/requests.py:254-266. FastAPI validates a single "

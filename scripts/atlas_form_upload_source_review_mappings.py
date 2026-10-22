@@ -27,8 +27,8 @@ UPLOADFILE_READ_SEEK_CASE = "fastapi.request-form-upload.uploadfile.read-seek-re
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
         "role": "pinned source oracle for FastAPI-specific route behavior",
     },
     "starlette": {
@@ -45,10 +45,10 @@ SOURCE_IDENTITIES = {
     "python": {
         "minimum": ">=3.10",
         "oracle": "CPython 3.12.13",
-        "basis": "FastAPI 0.141.1 pyproject.toml requires-python; request-file fixtures use Python 3.10 syntax",
+        "basis": "FastAPI 0.157.0 pyproject.toml requires-python; request-file fixtures use Python 3.10 syntax",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "pydantic_core_version": "2.46.4",
         "role": "public scalar/model validation and model schema dependency where applicable",
     },
@@ -124,7 +124,7 @@ UPLOADFILE_READ_SEEK_REVIEW = {
 
 OWNER_BOUNDARY = {
     "source_oracle": (
-        "Original FastAPI 0.141.1 is isolated source-oracle/development material only; "
+        "Original FastAPI 0.157.0 is isolated source-oracle/development material only; "
         "the target has zero FastAPI runtime dependency or import."
     ),
     "fastapi_control_flow": (
@@ -140,7 +140,7 @@ OWNER_BOUNDARY = {
         "starlette-rs implements that contract. FastAPI owns only its integration edges."
     ),
     "pydantic": (
-        "Pydantic 2.13.4 owns its public scalar/model validation and model JSON-schema "
+        "Pydantic 2.13.5 owns its public scalar/model validation and model JSON-schema "
         "mechanics; FastAPI owns extraction of FormData and its endpoint/OpenAPI integration."
         " pydantic-core is not a FastAPI-RS public API."
     ),
@@ -173,7 +173,7 @@ COMPATIBILITY_GATES = [
         "incorrectly named multipart distribution is installed."
     ),
     (
-        "FastAPI 0.141.1 requires Python >=3.10. The selected oracle is CPython "
+        "FastAPI 0.157.0 requires Python >=3.10. The selected oracle is CPython "
         "3.12.13; no compatibility claim is made below 3.10 or for another Python "
         "minor runtime."
     ),
@@ -465,7 +465,7 @@ def _test_span(test_path: str, function_name: str) -> dict[str, Any]:
         raise ValueError(f"expected one top-level {function_name} in {test_path}")
     node = matches[0]
     if function_name.startswith("test_"):
-        role = f"pinned FastAPI 0.141.1 test stimulus/assertions for {function_name}"
+        role = f"pinned FastAPI 0.157.0 test stimulus/assertions for {function_name}"
     elif function_name == "get_app":
         role = "fixture loads the selected docs-source FastAPI app; setup only"
     else:
@@ -514,54 +514,54 @@ def _common_sources(doc_path: str) -> list[dict[str, Any]]:
             "pyproject.toml",
             12,
             12,
-            "FastAPI 0.141.1 requires Python >=3.10",
+            "FastAPI 0.157.0 requires Python >=3.10",
         ),
         _source(
             "pyproject.toml",
-            59,
-            106,
+            60,
+            120,
             "optional extras include python-multipart for forms and uploads and httpx for TestClient",
         ),
         _source(
             "fastapi/params.py",
-            663,
-            742,
+            702,
+            787,
             "File specializes Form and declares multipart media type and OpenAPI metadata",
         ),
         _source(
             "fastapi/dependencies/utils.py",
-            88,
-            129,
+            89,
+            130,
             "FastAPI checks for the optional python-multipart package and rejects the incorrect multipart distribution",
         ),
         _source(
             "fastapi/dependencies/utils.py",
-            516,
-            535,
+            570,
+            606,
             "FastAPI recognizes Form fields and prepares endpoint model fields",
         ),
         _source(
             "fastapi/dependencies/utils.py",
-            912,
-            998,
+            1138,
+            1234,
             "FastAPI extracts repeated multipart values, reads byte file fields, and validates form/model values",
         ),
         _source(
             "fastapi/routing.py",
-            425,
-            473,
+            451,
+            500,
             "FastAPI routes Form bodies through request.form and parses JSON body input before dependency validation",
         ),
         _source(
             "fastapi/openapi/utils.py",
-            231,
-            263,
+            216,
+            248,
             "FastAPI builds requestBody content media type, schema, and requiredness",
         ),
         _source(
             "fastapi/openapi/utils.py",
-            331,
-            385,
+            316,
+            370,
             "FastAPI projects body fields into OpenAPI operations",
         ),
         _source(

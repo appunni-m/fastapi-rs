@@ -24,8 +24,8 @@ DOC_ROOT = FASTAPI_ROOT / "docs_src/query_params_str_validations"
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -33,7 +33,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI, query-string parsing, response, and TestClient contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned field validation, string constraints, custom AfterValidator, and schema generation dependency",
     },
 }
@@ -41,44 +41,50 @@ SOURCE_IDENTITIES = {
 _FASTAPI_SOURCES = (
     {
         "path": "fastapi/params.py",
-        "start_line": 26,
-        "end_line": 60,
+        "start_line": 27,
+        "end_line": 139,
         "role": "FastAPI Param declaration stores query field metadata, aliases, length bounds, and pattern constraints.",
     },
     {
         "path": "fastapi/params.py",
-        "start_line": 221,
-        "end_line": 300,
+        "start_line": 232,
+        "end_line": 317,
         "role": "FastAPI Query selects query location and forwards defaults, aliases, descriptions, deprecation, and constraints to FieldInfo.",
     },
     {
         "path": "fastapi/dependencies/utils.py",
-        "start_line": 381,
-        "end_line": 547,
+        "start_line": 423,
+        "end_line": 618,
         "role": "FastAPI analyzes endpoint annotations/defaults, copies Annotated FieldInfo, infers Query, applies aliases, and creates the request field.",
     },
     {
         "path": "fastapi/dependencies/utils.py",
-        "start_line": 550,
-        "end_line": 560,
+        "start_line": 621,
+        "end_line": 634,
         "role": "FastAPI classifies a created field into the dependant's query-parameter collection.",
     },
     {
         "path": "fastapi/dependencies/utils.py",
-        "start_line": 681,
-        "end_line": 697,
+        "start_line": 657,
+        "end_line": 819,
         "role": "FastAPI supplies Starlette Request.query_params to query-field extraction and collects resulting values/errors.",
     },
     {
         "path": "fastapi/dependencies/utils.py",
-        "start_line": 734,
-        "end_line": 866,
-        "role": "FastAPI handles missing/default values, reads aliases and repeated values, invokes the field validator, and attaches query locations to errors.",
+        "start_line": 843,
+        "end_line": 871,
+        "role": "FastAPI reads scalar or repeated multidict query values and defers missing/default handling to field validation.",
+    },
+    {
+        "path": "fastapi/dependencies/utils.py",
+        "start_line": 952,
+        "end_line": 989,
+        "role": "FastAPI selects query aliases, validates extracted values, and attaches query locations to validation errors.",
     },
     {
         "path": "fastapi/routing.py",
-        "start_line": 751,
-        "end_line": 755,
+        "start_line": 793,
+        "end_line": 800,
         "role": "FastAPI turns dependency-solving errors into RequestValidationError.",
     },
     {
@@ -89,14 +95,14 @@ _FASTAPI_SOURCES = (
     },
     {
         "path": "fastapi/openapi/utils.py",
-        "start_line": 159,
-        "end_line": 228,
+        "start_line": 158,
+        "end_line": 213,
         "role": "FastAPI builds OpenAPI parameter names, query location, required flags, schemas, descriptions, and deprecation metadata.",
     },
     {
         "path": "fastapi/openapi/utils.py",
-        "start_line": 672,
-        "end_line": 679,
+        "start_line": 570,
+        "end_line": 664,
         "role": "FastAPI validates and encodes the assembled OpenAPI document through its OpenAPI model.",
     },
 )
@@ -137,7 +143,7 @@ _STARLETTE_SOURCES = (
 _GLOBAL_GATES = (
     "Atlas mapping is candidate evidence only: the manifest remains foundation-only and no identity-checked source/target run is represented.",
     "Where an upstream fixture parameterizes both direct Query and Annotated declarations, each independent workload represents one declaration form, so the other variant remains gated.",
-    "Pydantic 2.13.4 owns value/type validation, string length and pattern enforcement, custom AfterValidator execution, and field schema generation. FastAPI owns parameter classification, extraction, error locations/422 handling, and OpenAPI parameter assembly.",
+    "Pydantic 2.13.5 owns value/type validation, string length and pattern enforcement, custom AfterValidator execution, and field schema generation. FastAPI owns parameter classification, extraction, error locations/422 handling, and OpenAPI parameter assembly.",
     "Generic ASGI request/response transport, query-string decoding, blank-value preservation, multidict behavior, and FastAPI TestClient behavior belong to the pinned Starlette 1.6.0 / Starlette-RS contract.",
 )
 
@@ -159,7 +165,7 @@ def _test_spans(test_path: str) -> dict[str, dict[str, Any]]:
             test_path,
             start_line,
             node.end_lineno or node.lineno,
-            f"FastAPI 0.141.1 upstream test function {node.name}",
+            f"FastAPI 0.157.0 upstream test function {node.name}",
         )
     return spans
 
@@ -441,21 +447,23 @@ _PLANS: dict[str, dict[str, Any]] = {
             "fastapi.query-validation.tutorial006c-omitted-empty-valid-openapi",
             "omitted-query-xfail",
         ),
-        "test_query_params_str_validations_empty_str": _ref(
-            _BRANCH_RECIPE,
-            "fastapi.query-validation.tutorial006c-omitted-empty-valid-openapi",
-            "empty-query-xfail",
-        ),
         "test_query_params_str_validations_q_query": _ref(
             _BRANCH_RECIPE,
             "fastapi.query-validation.tutorial006c-omitted-empty-valid-openapi",
             "valid-query",
         ),
-        "test_query_params_str_validations_q_short": _ref(
-            _TEN_MODULE_RECIPE,
-            "fastapi.query-validation.tutorial006c-required-minimum",
-            "too-short-query",
-        ),
+        "test_query_params_str_validations_q_short": [
+            _ref(
+                _BRANCH_RECIPE,
+                "fastapi.query-validation.tutorial006c-omitted-empty-valid-openapi",
+                "empty-query-xfail",
+            ),
+            _ref(
+                _TEN_MODULE_RECIPE,
+                "fastapi.query-validation.tutorial006c-required-minimum",
+                "too-short-query",
+            ),
+        ],
         "test_openapi_schema": _ref(
             _BRANCH_RECIPE,
             "fastapi.query-validation.tutorial006c-omitted-empty-valid-openapi",
@@ -676,10 +684,10 @@ _SPECIAL_GATES = {
         "The existing /search workflow selects only its query parameter schema; the upstream test asserts the full /items/ OpenAPI document.",
     ),
     ("test_tutorial006c.py", "test_query_params_str_validations_no_query"): (
-        "The upstream test is marked xfail because the example's omitted nullable query is invalid; the workflow records the request and actual response without treating the asserted 200 as a compatibility oracle.",
+        "The omitted query is a required field in the pinned example; this input-only workflow records the request and response without treating a recipe expectation as an oracle.",
     ),
-    ("test_tutorial006c.py", "test_query_params_str_validations_empty_str"): (
-        "The upstream test is marked xfail because the example's empty constrained query is invalid; the workflow records the request and actual response without treating the asserted 200 as a compatibility oracle.",
+    ("test_tutorial006c.py", "test_query_params_str_validations_q_short"): (
+        "The pinned test parameterizes this function with both an empty string and fa; the linked actions preserve both inputs. The historical empty-query action name carries no expected output.",
     ),
     ("test_tutorial006c.py", "test_openapi_schema"): (
         "The selected OpenAPI parameter node is a focused schema sample, not the upstream full OpenAPI snapshot.",
@@ -691,7 +699,7 @@ _SPECIAL_GATES = {
         "The workload exercises the valid-prefix/unknown-ID lookup result, but its route is prefixed and slash-terminated; application lookup output is not a validation contract.",
     ),
     ("test_tutorial015.py", "test_get_invalid_item"): (
-        "The independent workload recreates the custom prefix validator; the exact exception context comes from Pydantic 2.13.4 and remains a live-parity gate.",
+        "The independent workload recreates the custom prefix validator; the exact exception context comes from Pydantic 2.13.5 and remains a live-parity gate.",
     ),
     ("test_tutorial015.py", "test_openapi_schema"): (
         "The selected OpenAPI parameter node is a focused schema sample, not the upstream full OpenAPI snapshot.",
@@ -736,23 +744,39 @@ def _build_mappings() -> dict[str, dict[str, Any]]:
                 }
                 continue
 
-            recipe_path, case_id, action_id = assignment
-            case_row = recipe_index.get(case_id)
-            if case_row is None or case_row["recipe_path"] != recipe_path:
-                raise ValueError(f"case link is missing or has the wrong recipe: {case_id}")
-            action = case_row["actions"].get(action_id)
-            if action is None:
-                raise ValueError(f"action {action_id} is missing from {case_id}")
-            case_source_paths = {
-                evidence.get("path")
-                for evidence in case_row["case"].get("source_evidence", []) or []
-                if evidence.get("kind") == "upstream_test"
-            }
-            if test_path not in case_source_paths:
-                raise ValueError(f"case {case_id} does not cite {test_path}")
-            selectors = _action_selectors(action)
-            if not selectors:
-                raise ValueError(f"case action has no observable selectors: {case_id}:{action_id}")
+            assignments = assignment if isinstance(assignment, list) else [assignment]
+            workflow_cases: list[dict[str, Any]] = []
+            selected: set[str] = set()
+            for recipe_path, case_id, action_id in assignments:
+                case_row = recipe_index.get(case_id)
+                if case_row is None or case_row["recipe_path"] != recipe_path:
+                    raise ValueError(f"case link is missing or has the wrong recipe: {case_id}")
+                action = case_row["actions"].get(action_id)
+                if action is None:
+                    raise ValueError(f"action {action_id} is missing from {case_id}")
+                case_source_paths = {
+                    evidence.get("path")
+                    for evidence in case_row["case"].get("source_evidence", []) or []
+                    if evidence.get("kind") == "upstream_test"
+                }
+                if test_path not in case_source_paths:
+                    raise ValueError(f"case {case_id} does not cite {test_path}")
+                action_selectors = _action_selectors(action)
+                if not action_selectors:
+                    raise ValueError(
+                        f"case action has no observable selectors: {case_id}:{action_id}"
+                    )
+                selected.update(action_selectors)
+                workflow_cases.append(
+                    {
+                        "recipe_path": recipe_path,
+                        "case_id": case_id,
+                        "action_ids": [action_id],
+                        "observation_selectors": action_selectors,
+                        "mapping_scope": "query-input-and-selected-observations",
+                    }
+                )
+            selectors = sorted(selected)
             is_openapi = function_name == "test_openapi_schema"
             features = (
                 ["request-validation", "openapi-docs"] if is_openapi else ["request-validation"]
@@ -776,13 +800,6 @@ def _build_mappings() -> dict[str, dict[str, Any]]:
                 specific_gates.append(
                     "This input selects one direct Query declaration; the upstream test also parameterizes an Annotated form."
                 )
-            workflow_case = {
-                "recipe_path": recipe_path,
-                "case_id": case_id,
-                "action_ids": [action_id],
-                "observation_selectors": selectors,
-                "mapping_scope": "query-input-and-selected-observations",
-            }
             function_rows[function_name] = {
                 "mapping_status": "mapped-partial",
                 "feature_ids": features,
@@ -794,7 +811,7 @@ def _build_mappings() -> dict[str, dict[str, Any]]:
                     *_FASTAPI_SOURCES,
                     *_STARLETTE_SOURCES,
                 ],
-                "workflow_cases": [workflow_case],
+                "workflow_cases": workflow_cases,
                 "rationale": (
                     "Maps this test's specific query input and selected HTTP or OpenAPI observation to an independently authored workflow action."
                 ),
@@ -831,7 +848,7 @@ def _build_mappings() -> dict[str, dict[str, Any]]:
             "function_mappings": function_rows,
             "ownership_boundaries": {
                 "fastapi": "Query construction/inference, query-field grouping/extraction, validation location/error assembly, 422 response handling, and OpenAPI parameter assembly.",
-                "pydantic": "Pinned 2.13.4 field validation, string constraints, AfterValidator, and schema generation.",
+                "pydantic": "Pinned 2.13.5 field validation, string constraints, AfterValidator, and schema generation.",
                 "starlette": "Pinned 1.6.0 ASGI Request.query_params, URL query parsing/blank preservation, multidict behavior, response transport, and TestClient; the replacement's generic contract is Starlette-RS.",
             },
             "contract_gates": list(_GLOBAL_GATES),
@@ -1029,8 +1046,8 @@ def validate_query_string_validation_tutorial_mappings() -> list[str]:
         }
         if set(builder_functions) != expected_builder_functions:
             errors.append(f"builder adapter function denominator mismatch for {test_path}")
-    if function_count != 65:
-        errors.append(f"expected 65 test functions, found {function_count}")
+    if function_count != 64:
+        errors.append(f"expected 64 test functions, found {function_count}")
     if case_link_count != 64:
         errors.append(f"expected 64 function-to-case links, found {case_link_count}")
 

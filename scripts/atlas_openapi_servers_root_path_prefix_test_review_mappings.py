@@ -1,4 +1,4 @@
-"""Function-level review for OpenAPI servers, root paths, and deprecated prefix tests."""
+"""Function-level review for OpenAPI servers and root-path behavior."""
 
 from __future__ import annotations
 
@@ -6,8 +6,8 @@ from typing import Any
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -15,7 +15,7 @@ SOURCE_IDENTITIES = {
         "role": "sole TestClient and generic ASGI transport contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned dependency; these functions do not exercise Pydantic model behavior",
     },
 }
@@ -75,7 +75,7 @@ def _function(
                 test_path,
                 start,
                 end,
-                "pinned FastAPI 0.141.1 test function and asserted observations",
+                "pinned FastAPI 0.157.0 test function and asserted observations",
             ),
             *sources,
         ],
@@ -110,7 +110,6 @@ def _module(rationale: str, functions: dict[str, dict[str, Any]]) -> dict[str, A
 
 
 _OPENAPI_DOCS_RECIPE = "tests/fixtures/input-recipes/parity/openapi-docs.yaml"
-_OPENAPI_OPERATIONS_RECIPE = "tests/fixtures/input-recipes/parity/openapi-operations.yaml"
 _SERVERS_ROUTE_RECIPE = "tests/fixtures/input-recipes/parity/openapi-servers-route-review.yaml"
 _ROOT_SEQUENCE_RECIPE = (
     "tests/fixtures/input-recipes/parity/openapi-cache-root-path-clean-review.yaml"
@@ -118,31 +117,27 @@ _ROOT_SEQUENCE_RECIPE = (
 _SERVERS_REFERENCE_RECIPE = (
     "tests/fixtures/input-recipes/parity/openapi-configured-servers-reference-review.yaml"
 )
-_PREFIX_REVIEW_RECIPE = (
-    "tests/fixtures/input-recipes/parity/deprecated-openapi-prefix-tutorial-review.yaml"
-)
 _STATUS = ("http.status",)
 _OPENAPI = ("http.status", "openapi.document")
 _ROOT_DOCUMENT = ("openapi.document",)
-_BODY = ("http.status", "http.body.bytes")
 
 _OPENAPI_SERVER_SOURCES = (
     _source(
         "fastapi/applications.py",
-        881,
-        890,
+        879,
+        888,
         "FastAPI stores OpenAPI settings and the configured servers list",
     ),
     _source(
         "fastapi/applications.py",
-        1070,
-        1103,
+        1085,
+        1118,
         "FastAPI caches the generated schema and passes configured servers to get_openapi",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        595,
-        615,
+        580,
+        600,
         "OpenAPI generation adds the configured servers to the output document",
     ),
     _source("fastapi/testclient.py", 1, 1, "FastAPI re-exports Starlette TestClient"),
@@ -151,20 +146,20 @@ _OPENAPI_SERVER_SOURCES = (
 _ROOT_PATH_SOURCES = (
     _source(
         "fastapi/applications.py",
-        1070,
-        1103,
+        1085,
+        1118,
         "FastAPI caches OpenAPI generation on the application instance",
     ),
     _source(
         "fastapi/applications.py",
-        1105,
-        1120,
+        1123,
+        1133,
         "FastAPI reads each request root_path and constructs a response-specific servers list",
     ),
     _source(
         "fastapi/applications.py",
-        1160,
-        1163,
+        1175,
+        1178,
         "FastAPI applies its configured root_path to incoming ASGI scopes",
     ),
     _source(
@@ -184,51 +179,23 @@ _ROOT_PATH_SOURCES = (
 _CONFIGURED_SERVER_COPY_SOURCES = (
     _source(
         "fastapi/applications.py",
-        881,
-        890,
+        879,
+        888,
         "FastAPI stores the supplied server list on the application",
     ),
     _source(
         "fastapi/applications.py",
-        1105,
-        1118,
+        1120,
+        1133,
         "FastAPI shallow-copies the OpenAPI document before adding a request root_path server",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        595,
-        615,
+        580,
+        600,
         "OpenAPI generation incorporates configured server entries",
     ),
 )
-
-_DEPRECATED_PREFIX_SOURCES = (
-    _source(
-        "fastapi/applications.py",
-        625,
-        639,
-        "The FastAPI constructor declares openapi_prefix and marks it deprecated in favor of root_path",
-    ),
-    _source(
-        "fastapi/applications.py",
-        929,
-        949,
-        "FastAPI warns for openapi_prefix and falls back to it when assigning root_path",
-    ),
-    _source(
-        "fastapi/applications.py",
-        1105,
-        1118,
-        "The OpenAPI route adds the effective request root_path to generated servers",
-    ),
-    _source(
-        "fastapi/applications.py",
-        1160,
-        1163,
-        "FastAPI writes its effective root_path into the ASGI request scope",
-    ),
-)
-
 
 OPENAPI_SERVERS_ROOT_PATH_PREFIX_TEST_REVIEW_MAPPINGS = {
     "tests/test_openapi_servers.py": _module(
@@ -375,69 +342,6 @@ OPENAPI_SERVERS_ROOT_PATH_PREFIX_TEST_REVIEW_MAPPINGS = {
                     ),
                     *_CONFIGURED_SERVER_COPY_SOURCES,
                     *_ROOT_PATH_SOURCES,
-                ),
-            ),
-        },
-    ),
-    "tests/test_deprecated_openapi_prefix.py": _module(
-        "The module checks the deprecated openapi_prefix alias in request scope and in generated OpenAPI servers.",
-        {
-            "test_main": _function(
-                "tests/test_deprecated_openapi_prefix.py",
-                16,
-                19,
-                ("app-routing", "openapi-docs"),
-                _BODY,
-                "The deprecated constructor prefix becomes request.scope.root_path and appears in the ordinary route response.",
-                (
-                    _link(
-                        _PREFIX_REVIEW_RECIPE,
-                        "fastapi.applications.root-path.deprecated-prefix-fallback",
-                        ("read-deprecated-prefix-and-warning",),
-                        _BODY,
-                    ),
-                ),
-                "The workflow uses the deprecated constructor argument and observes the resulting root_path through an independently authored route. Its prefix, path, and body fields differ from the source; exact body bytes are stricter than response.json() equality. The source's HTTP status assertion is also observed. The diagnostic body additionally reports the emitted deprecation log record, which the source test does not assert.",
-                (
-                    _source(
-                        "tests/test_deprecated_openapi_prefix.py",
-                        5,
-                        10,
-                        "The source configures openapi_prefix and returns request.scope.root_path",
-                    ),
-                    *_DEPRECATED_PREFIX_SOURCES,
-                ),
-            ),
-            "test_openapi": _function(
-                "tests/test_deprecated_openapi_prefix.py",
-                22,
-                45,
-                ("openapi-docs",),
-                _OPENAPI,
-                "The source snapshots the generated OpenAPI paths and server URL after configuring openapi_prefix.",
-                (
-                    _link(
-                        _PREFIX_REVIEW_RECIPE,
-                        "fastapi.applications.root-path.deprecated-prefix-fallback",
-                        ("read-deprecated-prefix-openapi",),
-                        _OPENAPI,
-                    ),
-                    _link(
-                        _OPENAPI_OPERATIONS_RECIPE,
-                        "fastapi.openapi.deprecated-openapi-prefix.openapi",
-                        ("openapi",),
-                        _OPENAPI,
-                    ),
-                ),
-                "The new case selects /servers and /paths for a route on an app configured directly with openapi_prefix; the existing OpenAPI operation case independently covers the same deprecated argument with different prefix/path values. Neither compares the complete source snapshot, including info, operationId, response description, or exact route; the selected JSON pointers and status remain the claimed observations. The constructor's deprecation log is exposed on the separate diagnostic route, although the source test does not assert it.",
-                (
-                    _source(
-                        "tests/test_deprecated_openapi_prefix.py",
-                        5,
-                        10,
-                        "The source configures openapi_prefix and registers GET /app",
-                    ),
-                    *_DEPRECATED_PREFIX_SOURCES,
                 ),
             ),
         },

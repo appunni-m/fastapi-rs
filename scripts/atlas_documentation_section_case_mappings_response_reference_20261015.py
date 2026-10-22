@@ -82,8 +82,10 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015 = {
         ),
     ),
     ("advanced/additional-responses.md", "combine-predefined-responses-and-custom-ones"): _workflow(
-        "Combine predefined responses and custom ones "
-        "{ #combine-predefined-responses-and-custom-ones }",
+        (
+            "Combine predefined responses and custom ones "
+            "{ #combine-predefined-responses-and-custom-ones }"
+        ),
         212,
         241,
         _ADDITIONAL_OPENAPI,

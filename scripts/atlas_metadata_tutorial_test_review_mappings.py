@@ -1,4 +1,4 @@
-"""Source-reviewed metadata tutorial mappings for FastAPI 0.141.1.
+"""Source-reviewed metadata tutorial mappings for FastAPI 0.157.0.
 
 This is a builder-shaped data sidecar. Its case links point to existing
 input-only workflows plus one small input-only route workflow for the two
@@ -12,8 +12,8 @@ from typing import Any
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -21,7 +21,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI, TestClient, and response contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "pinned model and OpenAPI-object validation/encoding dependency",
     },
 }
@@ -68,7 +68,7 @@ def _review(
                 test_path,
                 start,
                 end,
-                "upstream FastAPI 0.141.1 test function and asserted observations",
+                "upstream FastAPI 0.157.0 test function and asserted observations",
             ),
             *supporting_sources,
         ],
@@ -137,8 +137,8 @@ _HTTP_AND_OPENAPI_SOURCES = (
     ),
     _source(
         "fastapi/routing.py",
-        706,
-        750,
+        746,
+        791,
         "FastAPI executes the endpoint and prepares non-Response return values for the configured response class",
     ),
     _source(
@@ -164,26 +164,26 @@ _HTTP_AND_OPENAPI_SOURCES = (
 _OPENAPI_SOURCES = (
     _source(
         "fastapi/applications.py",
-        873,
-        890,
+        871,
+        888,
         "FastAPI stores API metadata, OpenAPI URL, tag metadata, and documentation URLs on the application",
     ),
     _source(
         "fastapi/applications.py",
-        1070,
-        1103,
+        1085,
+        1118,
         "FastAPI builds and caches the OpenAPI object from application metadata and routes",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        585,
-        627,
+        570,
+        612,
         "FastAPI assembles OpenAPI info and route/model fields from application metadata",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        672,
-        679,
+        657,
+        664,
         "FastAPI attaches tag metadata and validates/encodes the OpenAPI object through its Pydantic model",
     ),
     _source(
@@ -203,20 +203,20 @@ _OPENAPI_SOURCES = (
 _URL_AND_DOCS_SOURCES = (
     _source(
         "fastapi/applications.py",
-        199,
-        221,
+        222,
+        244,
         "FastAPI openapi_url configuration and default",
     ),
     _source(
         "fastapi/applications.py",
-        398,
-        445,
+        421,
+        468,
         "FastAPI Swagger UI and ReDoc URL configuration and defaults",
     ),
     _source(
         "fastapi/applications.py",
-        1105,
-        1158,
+        1120,
+        1173,
         "FastAPI conditionally registers OpenAPI, Swagger UI, and ReDoc routes",
     ),
     _source(
@@ -236,14 +236,14 @@ _URL_AND_DOCS_SOURCES = (
 _TAG_SOURCES = (
     _source(
         "fastapi/applications.py",
-        222,
-        281,
+        245,
+        304,
         "FastAPI documents openapi_tags and their relationship to path-operation tags",
     ),
     _source(
         "fastapi/openapi/utils.py",
-        672,
-        679,
+        657,
+        664,
         "FastAPI appends tag metadata and encodes the OpenAPI Pydantic model",
     ),
 )
@@ -252,7 +252,7 @@ _COMMON_GATE = (
     "Source-backed candidate only; this atlas review is not executable parity evidence. "
     "FastAPI owns metadata storage, route setup, OpenAPI assembly, and Swagger/ReDoc HTML "
     "generation. Starlette 1.6.0 owns the generic TestClient/ASGI transport and response "
-    "message handling through the sibling Starlette-RS contract. Pydantic 2.13.4 owns its "
+    "message handling through the sibling Starlette-RS contract. Pydantic 2.13.5 owns its "
     "model behavior; these source examples declare no input models. FastAPI's OpenAPI "
     "endpoint does pass its schema through FastAPI-declared Pydantic models, so that "
     "conversion boundary remains separately attributable."
@@ -267,7 +267,7 @@ METADATA_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
         "functions": {},
         "mapping_status": "source-backed-exclusion",
         "exclusion_reason": "Empty test package initializer; it contains no executable behavior or assertions.",
-        "contract_gate": "Source exclusion based on the zero-byte FastAPI 0.141.1 initializer; there is no case ID or observable contract in this file.",
+        "contract_gate": "Source exclusion based on the zero-byte FastAPI 0.157.0 initializer; there is no case ID or observable contract in this file.",
     },
     "tests/test_tutorial/test_metadata/test_tutorial001.py": {
         "rationale": "The module checks a metadata-configured item route and the generated OpenAPI document.",
@@ -324,7 +324,7 @@ METADATA_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 ),
                 workflow_cases=(_GUIDE_METADATA_OPENAPI, _METADATA001_SUMMARY_DESCRIPTION),
                 stimulus_notes="The docs-openapi-interface workflow observes broad metadata behavior; metadata-summary-description-upstream independently isolates app summary, description, terms of service, contact, and license fields in OpenAPI info.",
-                contract_gate="Partial candidate: the linked independent case checks /info, /tags, and /paths, not every field in this test's full snapshot, and uses different metadata values. FastAPI owns schema assembly; FastAPI's OpenAPI Pydantic model and Pydantic 2.13.4 encode that schema; Starlette 1.6.0 supplies JSONResponse and the generic ASGI transport.",
+                contract_gate="Partial candidate: the linked independent case checks /info, /tags, and /paths, not every field in this test's full snapshot, and uses different metadata values. FastAPI owns schema assembly; FastAPI's OpenAPI Pydantic model and Pydantic 2.13.5 encode that schema; Starlette 1.6.0 supplies JSONResponse and the generic ASGI transport.",
             ),
         },
     },
@@ -341,8 +341,8 @@ METADATA_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
             ),
             _source(
                 "fastapi/applications.py",
-                591,
-                624,
+                614,
+                647,
                 "FastAPI license_info identifier/url input contract",
             ),
         ],
@@ -386,8 +386,8 @@ METADATA_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     ),
                     _source(
                         "fastapi/applications.py",
-                        591,
-                        624,
+                        614,
+                        647,
                         "FastAPI license_info identifier contract",
                     ),
                     *_OPENAPI_SOURCES,
@@ -395,7 +395,7 @@ METADATA_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 ),
                 workflow_cases=(_METADATA001_1_OPENAPI, _GUIDE_METADATA_OPENAPI),
                 stimulus_notes="Reuse metadata-tutorial001-1-upstream.yaml::fastapi.test.test-tutorial-test-metadata-test-tutorial001-1.test-openapi-schema (openapi action; http.status and openapi.document), which observes /info/license for the identifier variant. The guide metadata case additionally observes /info, /tags, and /paths but has different API values.",
-                contract_gate="Partial candidate: the identifier workflow observes only /info/license, while the source test snapshots the complete OpenAPI document. The generic metadata workflow covers /info, /tags, and /paths with different values. FastAPI assembles OpenAPI; its OpenAPI model uses Pydantic 2.13.4; Starlette 1.6.0 owns the response transport.",
+                contract_gate="Partial candidate: the identifier workflow observes only /info/license, while the source test snapshots the complete OpenAPI document. The generic metadata workflow covers /info, /tags, and /paths with different values. FastAPI assembles OpenAPI; its OpenAPI model uses Pydantic 2.13.5; Starlette 1.6.0 owns the response transport.",
             ),
         },
     },
@@ -477,7 +477,7 @@ METADATA_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 ),
                 workflow_cases=(_METADATA002_OPENAPI, _GUIDE_METADATA_OPENAPI),
                 stimulus_notes="Reuse metadata-tutorial002-upstream.yaml::fastapi.test.test-tutorial-test-metadata-test-tutorial002.test-openapi-schema (configured-openapi-location action observes /paths) and docs-openapi-interface.yaml::fastapi.docs.openapi-interface.tutorial-metadata.openapi-metadata (observes /info, /tags, /paths with different API values).",
-                contract_gate="Partial candidate: the tutorial workflow observes /paths but not the full schema snapshot; the guide workflow covers /info, /tags, and /paths with a different metadata app. FastAPI owns URL registration and schema assembly; Pydantic 2.13.4 is the OpenAPI model conversion boundary, and Starlette 1.6.0 owns the generic JSON response/ASGI transport.",
+                contract_gate="Partial candidate: the tutorial workflow observes /paths but not the full schema snapshot; the guide workflow covers /info, /tags, and /paths with a different metadata app. FastAPI owns URL registration and schema assembly; Pydantic 2.13.5 is the OpenAPI model conversion boundary, and Starlette 1.6.0 owns the generic JSON response/ASGI transport.",
             ),
         },
     },
@@ -538,7 +538,7 @@ METADATA_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 ),
                 workflow_cases=(_GUIDE_METADATA_OPENAPI,),
                 stimulus_notes="Reuse docs-openapi-interface.yaml::fastapi.docs.openapi-interface.tutorial-metadata.openapi-metadata (openapi action; http.status and openapi.document). Its /info, /tags, and /paths values differ, so this maps generated metadata mechanics only.",
-                contract_gate="Partial candidate: the independent case does not combine the source app's custom docs_url/redoc_url with the OpenAPI request and does not match the full snapshot values. FastAPI owns schema generation; its OpenAPI Pydantic model uses pinned Pydantic 2.13.4; Starlette 1.6.0 supplies JSONResponse and ASGI delivery.",
+                contract_gate="Partial candidate: the independent case does not combine the source app's custom docs_url/redoc_url with the OpenAPI request and does not match the full snapshot values. FastAPI owns schema generation; its OpenAPI Pydantic model uses pinned Pydantic 2.13.5; Starlette 1.6.0 supplies JSONResponse and ASGI delivery.",
             ),
             "test_swagger_ui_default_url": _review(
                 "tests/test_tutorial/test_metadata/test_tutorial003.py",
@@ -674,7 +674,7 @@ METADATA_TUTORIAL_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 ),
                 workflow_cases=(_METADATA004_OPENAPI, _GUIDE_METADATA_OPENAPI),
                 stimulus_notes="Reuse metadata-tutorial004-upstream.yaml::fastapi.test.test-tutorial-test-metadata-test-tutorial004.test-openapi-schema (openapi action observes /tags/1/externalDocs) and docs-openapi-interface.yaml::fastapi.docs.openapi-interface.tutorial-metadata.openapi-metadata (observes /info, /tags, /paths with different API values).",
-                contract_gate="Partial candidate: the exact tutorial workflow observes only /tags/1/externalDocs plus HTTP status, not the full snapshot; the broader guide case observes /info, /tags, /paths with a different app. FastAPI orders/builds tag metadata and assembles OpenAPI; its OpenAPI model conversion uses Pydantic 2.13.4. Starlette 1.6.0 owns generic JSON response and test transport.",
+                contract_gate="Partial candidate: the exact tutorial workflow observes only /tags/1/externalDocs plus HTTP status, not the full snapshot; the broader guide case observes /info, /tags, /paths with a different app. FastAPI orders/builds tag metadata and assembles OpenAPI; its OpenAPI model conversion uses Pydantic 2.13.5. Starlette 1.6.0 owns generic JSON response and test transport.",
             ),
         },
     },

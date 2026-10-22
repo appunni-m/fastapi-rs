@@ -1,4 +1,4 @@
-"""Reviewed section mappings for FastAPI 0.141.1's Lifespan Events page.
+"""Reviewed section mappings for FastAPI 0.157.0's Lifespan Events page.
 
 This sidecar separates FastAPI registration/deprecation evidence from generic
 ASGI lifecycle behavior owned by Starlette-RS. The atlas builder consumes only
@@ -8,8 +8,8 @@ the section-keyed mappings; the richer review notes remain evidence metadata.
 from __future__ import annotations
 
 FASTAPI_SOURCE = {
-    "version": "0.141.1",
-    "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+    "version": "0.157.0",
+    "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     "path": "docs/en/docs/advanced/events.md",
 }
 
@@ -301,7 +301,7 @@ FASTAPI_EVENTS_DOCUMENTATION_REVIEW = {
             "case_ids": ["fastapi.lifecycle.mounted-subapp-lifespan-exclusion"],
             "observed_selectors": list(_LIFESPAN_SELECTORS) + list(_HTTP_SELECTORS),
             "exclusion_reason": (
-                "The available input observes mount and lifespan behavior, but FastAPI 0.141.1 "
+                "The available input observes mount and lifespan behavior, but FastAPI 0.157.0 "
                 "does not own generic mount dispatch. Starlette-RS owns that inherited contract; "
                 "do not count these selectors as FastAPI event behavior."
             ),
@@ -419,8 +419,8 @@ DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015 = {
             "before-request/after-all-requests timing."
         ),
         (
-            "FastAPI wires its lifespan context into the router (fastapi/routing.py:2520-2537) "
-            "and dispatches legacy event callbacks (fastapi/routing.py:6363-6445). The selected "
+            "FastAPI wires its lifespan context into the router (fastapi/routing.py:2594-2611) "
+            "and dispatches legacy event callbacks (fastapi/routing.py:6470-6552). The selected "
             "FastAPI-specific evidence is the callback trace; the page's resource setup and "
             "generic ASGI timing are not separately claimed."
         ),
@@ -453,8 +453,8 @@ DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015 = {
             "against startup and shutdown."
         ),
         (
-            "FastAPI 0.141.1 accepts a lifespan parameter and chooses it for router lifespan "
-            "dispatch (fastapi/applications.py:527-538; fastapi/routing.py:2520-2537). The "
+            "FastAPI 0.157.0 accepts a lifespan parameter and chooses it for router lifespan "
+            "dispatch (fastapi/applications.py:550-561; fastapi/routing.py:2594-2611). The "
             "ASGI protocol outcome itself remains Starlette-RS behavior."
         ),
     ),
@@ -473,7 +473,7 @@ DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015 = {
         ),
         (
             "FastAPI passes the supplied lifespan context into router lifespan handling "
-            "(fastapi/routing.py:2520-2537); the callback trace is the only selected FastAPI "
+            "(fastapi/routing.py:2594-2611); the callback trace is the only selected FastAPI "
             "observation."
         ),
     ),
@@ -492,7 +492,7 @@ DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015 = {
         ),
         (
             "FastAPI's constructor accepts and forwards the lifespan parameter "
-            "(fastapi/applications.py:527-538; fastapi/routing.py:2520-2537)."
+            "(fastapi/applications.py:550-561; fastapi/routing.py:2594-2611)."
         ),
     ),
     (_EVENTS_PAGE, "alternative-events-deprecated"): _workflow(
@@ -513,7 +513,7 @@ DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015 = {
         ),
         (
             "FastAPI's on_event method delegates registration and is deprecated "
-            "(fastapi/applications.py:4654-4681; fastapi/routing.py:6363-6445). The combined "
+            "(fastapi/applications.py:4696-4723; fastapi/routing.py:6470-6552). The combined "
             "recipe directly supplies both APIs; its lifespan action supports the selected "
             "callback-precedence observation, while generic protocol selectors remain harness "
             "observations."
@@ -536,7 +536,7 @@ DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015 = {
         ),
         (
             "FastAPI registers deprecated startup handlers through on_event and includes the "
-            "router event callback list (fastapi/routing.py:6363-6445). Request scheduling is "
+            "router event callback list (fastapi/routing.py:6470-6552). Request scheduling is "
             "outside this selected behavior."
         ),
     ),
@@ -556,7 +556,7 @@ DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015 = {
             "semantics, and log contents are not observed."
         ),
         (
-            "FastAPI's deprecated on_event registration is in fastapi/routing.py:6363-6445. "
+            "FastAPI's deprecated on_event registration is in fastapi/routing.py:6470-6552. "
             "The selected workload traces callbacks only; file I/O is application code."
         ),
     ),
@@ -575,7 +575,7 @@ DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015 = {
         ),
         (
             "The lifespan parameter is a FastAPI constructor input "
-            "(fastapi/applications.py:527-538); the selected callback trace represents its "
+            "(fastapi/applications.py:550-561); the selected callback trace represents its "
             "startup/cleanup integration."
         ),
     ),

@@ -16,8 +16,8 @@ FASTAPI_ROOT = PROJECT.parent / "fastapi"
 TEST_ROOT = FASTAPI_ROOT / "tests"
 
 SOURCE_IDENTITY = {
-    "fastapi_version": "0.141.1",
-    "fastapi_commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+    "fastapi_version": "0.157.0",
+    "fastapi_commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     "starlette_version": "1.6.0",
     "starlette_commit": "4f250d6b814587e20c5365f0a5f0c4d42bcb929f",
 }
@@ -123,32 +123,32 @@ def _module(
 
 _ROUTER_INCLUDE = _source(
     "fastapi/routing.py",
-    3268,
-    3319,
+    3375,
+    3426,
     "FastAPI rejects cyclic router inclusion, validates empty prefixes, and merges included routes/lifespans",
 )
 _DEPENDENCY_SOLVER = _source(
     "fastapi/dependencies/utils.py",
-    566,
-    680,
+    637,
+    762,
     "FastAPI enters generator dependencies, applies overrides, caches dependency results, and resolves dependency values",
 )
 _LIFESPAN_MERGE = _source(
     "fastapi/routing.py",
-    233,
-    254,
+    242,
+    263,
     "FastAPI merges app and router lifespan contexts and combines yielded state",
 )
 _WEBSOCKET_ROUTE = _source(
     "fastapi/routing.py",
-    801,
-    837,
+    855,
+    891,
     "FastAPI constructs APIWebSocketRoute dependency graphs and installs the matched FastAPI route in scope",
 )
 _WEBSOCKET_RESOLUTION = _source(
     "fastapi/routing.py",
-    764,
-    797,
+    808,
+    851,
     "FastAPI resolves WebSocket dependencies and applies its WebSocket validation handler",
 )
 _WEBSOCKET_VALIDATION_CLOSE = _source(
@@ -165,8 +165,8 @@ _HTTP_EXCEPTION = _source(
 )
 _APP_HANDLER_REGISTRATION = _source(
     "fastapi/applications.py",
-    1000,
-    1012,
+    997,
+    1009,
     "FastAPI installs default HTTP/WebSocket handlers and retains user-supplied handlers",
 )
 _STARLETTE_EXCEPTION_DISPATCH = _source(
@@ -269,8 +269,8 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 (
                     _source(
                         "fastapi/applications.py",
-                        1176,
-                        1217,
+                        1218,
+                        1259,
                         "FastAPI path-operation decorator accepts and stores the configured status code",
                     ),
                 ),
@@ -297,8 +297,8 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 (
                     _source(
                         "fastapi/dependencies/utils.py",
-                        271,
-                        347,
+                        314,
+                        389,
                         "FastAPI inspects callable endpoint signatures while building dependency nodes",
                     ),
                 ),
@@ -389,8 +389,8 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 (
                     _source(
                         "fastapi/routing.py",
-                        3281,
-                        3295,
+                        3388,
+                        3402,
                         "FastAPI rejects a route whose path and router include prefix are both empty",
                     ),
                 ),
@@ -940,8 +940,8 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                     _DEPENDENCY_SOLVER,
                     _source(
                         "fastapi/applications.py",
-                        1020,
-                        1062,
+                        1032,
+                        1077,
                         "FastAPI positions AsyncExitStackMiddleware inside user middleware to preserve ContextVar state",
                     ),
                 ),
@@ -1315,14 +1315,14 @@ APP_DEPENDENCY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, Any]] = {
                 (
                     _source(
                         "fastapi/routing.py",
-                        1731,
-                        1762,
+                        1792,
+                        1823,
                         "FastAPI checks included-router candidates in order and retains only the first partial match unless a full match is found",
                     ),
                     _source(
                         "fastapi/routing.py",
-                        2719,
-                        2759,
+                        2793,
+                        2860,
                         "FastAPI APIRouter dispatch selects a full route before probing a slash-adjusted redirect path",
                     ),
                 ),
@@ -1521,8 +1521,8 @@ APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS: dict[str, dict[str, dict[str, object]]]
             (
                 _source(
                     "fastapi/applications.py",
-                    1105,
-                    1158,
+                    1120,
+                    1173,
                     "FastAPI configures its OpenAPI, Swagger UI, OAuth redirect, and ReDoc routes",
                 ),
             ),
@@ -1542,8 +1542,8 @@ APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS: dict[str, dict[str, dict[str, object]]]
             (
                 _source(
                     "fastapi/openapi/utils.py",
-                    290,
-                    400,
+                    275,
+                    385,
                     "FastAPI composes route metadata into OpenAPI operations",
                 ),
             ),
@@ -1557,8 +1557,8 @@ APP_DEPENDENCY_TEST_FUNCTION_EXCLUSIONS: dict[str, dict[str, dict[str, object]]]
             (
                 _source(
                     "fastapi/dependencies/utils.py",
-                    656,
-                    680,
+                    738,
+                    762,
                     "FastAPI caches dependencies under keys that include security scopes",
                 ),
             ),

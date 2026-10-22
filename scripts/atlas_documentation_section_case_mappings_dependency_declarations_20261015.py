@@ -87,7 +87,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
         (
             "The pinned example defines `common_parameters(q, skip, limit)` and returns its "
             "values (`../fastapi/docs_src/dependencies/tutorial001_an_py310.py:8-9`). "
-            "FastAPI 0.141.1 inspects a dependency callable's signature and builds its "
+            "FastAPI 0.157.0 inspects a dependency callable's signature and builds its "
             "parameter fields in `get_dependant` "
             "(`../fastapi/fastapi/dependencies/utils.py:271-347`), then resolves it for the "
             "request (`../fastapi/fastapi/dependencies/utils.py:619-690`)."
@@ -124,7 +124,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
             "The pinned example declares `Depends(common_parameters)` on both route "
             "functions and returns the injected value "
             "(`../fastapi/docs_src/dependencies/tutorial001_an_py310.py:13-19`). "
-            "FastAPI 0.141.1 recursively adds the declared callable as a dependant and "
+            "FastAPI 0.157.0 recursively adds the declared callable as a dependant and "
             "inserts its resolved result under the parameter name "
             "(`../fastapi/fastapi/dependencies/utils.py:302-331,677-680`)."
         ),
@@ -147,7 +147,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
             "The pinned `tutorial001_02` example assigns `Annotated[dict, "
             "Depends(common_parameters)]` to `CommonsDep` and annotates two routes with it "
             "(`../fastapi/docs_src/dependencies/tutorial001_02_an_py310.py:12-22`). "
-            "FastAPI 0.141.1 extracts `Depends` metadata from `Annotated` while analyzing "
+            "FastAPI 0.157.0 extracts `Depends` metadata from `Annotated` while analyzing "
             "the callable signature (`../fastapi/fastapi/dependencies/utils.py:381-445`)."
         ),
     ),
@@ -170,7 +170,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
         ),
         (
             "The page states that synchronous and asynchronous path/dependency functions "
-            "can be mixed. FastAPI 0.141.1 awaits coroutine dependencies and sends other "
+            "can be mixed. FastAPI 0.157.0 awaits coroutine dependencies and sends other "
             "callables through `run_in_threadpool` in `solve_dependencies` "
             "(`../fastapi/fastapi/dependencies/utils.py:619-680`); that helper is provided "
             "by the pinned Starlette 1.6.0."
@@ -191,7 +191,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
         ),
         (
             "The pinned tutorial says dependency and sub-dependency requirements appear in "
-            "OpenAPI. FastAPI 0.141.1 walks each route's dependency graph to collect its "
+            "OpenAPI. FastAPI 0.157.0 walks each route's dependency graph to collect its "
             "path, query, header, and cookie fields before generating operation parameters "
             "(`../fastapi/fastapi/openapi/utils.py:99-129,311-360`)."
         ),
@@ -232,7 +232,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
             "The pinned `tutorial005` example declares `query_or_cookie_extractor` with a "
             "`Depends(query_extractor)` child "
             "(`../fastapi/docs_src/dependencies/tutorial005_an_py310.py:8-25`). "
-            "FastAPI 0.141.1 recursively constructs and solves sub-dependencies "
+            "FastAPI 0.157.0 recursively constructs and solves sub-dependencies "
             "(`../fastapi/fastapi/dependencies/utils.py:302-331,619-680`)."
         ),
     ),
@@ -251,7 +251,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
         ),
         (
             "The pinned `tutorial005` page says nested dependency requirements are added "
-            "to OpenAPI. FastAPI 0.141.1 traverses dependant nodes, gathers their fields, "
+            "to OpenAPI. FastAPI 0.157.0 traverses dependant nodes, gathers their fields, "
             "and emits operation parameters "
             "(`../fastapi/fastapi/openapi/utils.py:99-129,159-210,311-360`)."
         ),
@@ -265,7 +265,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
             "Those behaviors are mapped at their source-specific headings below."
         ),
         (
-            "FastAPI 0.141.1 analyzes dependency callable signatures in `get_dependant` "
+            "FastAPI 0.157.0 analyzes dependency callable signatures in `get_dependant` "
             "(`../fastapi/fastapi/dependencies/utils.py:271-347`); this page-level heading "
             "adds no separate request or observation."
         ),
@@ -300,7 +300,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
         ),
         (
             "The page explains that classes are callable and that FastAPI analyzes callable "
-            "parameters. FastAPI 0.141.1 obtains a typed signature and uses it to build "
+            "parameters. FastAPI 0.157.0 obtains a typed signature and uses it to build "
             "dependency fields (`../fastapi/fastapi/dependencies/utils.py:198-227,271-347`). "
             "The active case exercises an analogous class dependency."
         ),
@@ -326,7 +326,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
             "The pinned `tutorial002` class declares `q`, `skip`, and `limit` on `__init__` "
             "and the path operation depends on `CommonQueryParams` "
             "(`../fastapi/docs_src/dependencies/tutorial002_an_py310.py:11-25`). "
-            "FastAPI 0.141.1 inspects the callable signature and recursively analyzes its "
+            "FastAPI 0.157.0 inspects the callable signature and recursively analyzes its "
             "parameters (`../fastapi/fastapi/dependencies/utils.py:271-347`)."
         ),
     ),
@@ -346,7 +346,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
         (
             "The pinned section says FastAPI calls the class and passes the instance to "
             "the route (`../fastapi/docs/en/docs/tutorial/dependencies/classes-as-"
-            "dependencies.md:92-99`). FastAPI 0.141.1 solves the dependency and stores its "
+            "dependencies.md:92-99`). FastAPI 0.157.0 solves the dependency and stores its "
             "result under the declared parameter name "
             "(`../fastapi/fastapi/dependencies/utils.py:619-680`)."
         ),
@@ -371,7 +371,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
         ),
         (
             "The pinned section distinguishes the callable passed to `Depends` from the "
-            "parameter's type annotation. FastAPI 0.141.1 reads `Depends` from `Annotated` "
+            "parameter's type annotation. FastAPI 0.157.0 reads `Depends` from `Annotated` "
             "or a default and infers an omitted callable from the type annotation "
             "(`../fastapi/fastapi/dependencies/utils.py:381-471`)."
         ),
@@ -395,7 +395,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
         (
             "The pinned `tutorial004` example uses `Annotated[CommonQueryParams, "
             "Depends()]` (`../fastapi/docs_src/dependencies/tutorial004_an_py310.py:11-25`). "
-            "FastAPI 0.141.1 copies an empty `Depends`, fills its dependency from the "
+            "FastAPI 0.157.0 copies an empty `Depends`, fills its dependency from the "
             "annotation, and builds the resulting callable graph "
             "(`../fastapi/fastapi/dependencies/utils.py:443-471,271-347`)."
         ),
@@ -403,7 +403,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
     (_SUB_DEPENDENCIES, "sub-dependencies"): _excluded(
         "Sub-dependencies { #sub-dependencies }",
         1,
-        105,
+        107,
         (
             "The H1 summarizes dependency nesting and cache reuse; its concrete graph and "
             "cache behaviors are mapped at the child headings."
@@ -433,7 +433,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
         (
             "The pinned example's `query_extractor` accepts optional `q` and returns it "
             "(`../fastapi/docs_src/dependencies/tutorial005_an_py310.py:8-9`). FastAPI "
-            "0.141.1 constructs that child from the parent's `Depends` annotation and "
+            "0.157.0 constructs that child from the parent's `Depends` annotation and "
             "passes the solved value to the parent "
             "(`../fastapi/fastapi/dependencies/utils.py:302-331,640-680`)."
         ),
@@ -459,7 +459,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
         (
             "The pinned `query_or_cookie_extractor` declares `Depends(query_extractor)` "
             "and a `Cookie()` parameter (`../fastapi/docs_src/dependencies/tutorial005_"
-            "an_py310.py:12-19`). FastAPI 0.141.1 recursively builds the child dependant "
+            "an_py310.py:12-19`). FastAPI 0.157.0 recursively builds the child dependant "
             "and resolves it before calling its parent "
             "(`../fastapi/fastapi/dependencies/utils.py:302-331,640-680`)."
         ),
@@ -484,14 +484,14 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
         (
             "The pinned route declares `Depends(query_or_cookie_extractor)` and returns its "
             "result (`../fastapi/docs_src/dependencies/tutorial005_an_py310.py:22-25`). "
-            "FastAPI 0.141.1 recursively solves child dependencies before invoking their "
+            "FastAPI 0.157.0 recursively solves child dependencies before invoking their "
             "parent (`../fastapi/fastapi/dependencies/utils.py:619-680`)."
         ),
     ),
     (_SUB_DEPENDENCIES, "using-the-same-dependency-multiple-times"): _workflow(
         "Using the same dependency multiple times { #using-the-same-dependency-multiple-times }",
         57,
-        88,
+        90,
         _CACHE,
         ["fastapi.dependencies.cache-reuse", "fastapi.dependencies.cache-bypass"],
         ["first-request", "next-request"],
@@ -503,15 +503,15 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
         ),
         (
             "The pinned section documents request-local dependency reuse and the `use_cache` "
-            "opt-out. FastAPI 0.141.1 computes a cache key, reuses a present value when the "
+            "opt-out. FastAPI 0.157.0 computes a cache key, reuses a present value when the "
             "edge is cache-enabled, and stores solved results "
             "(`../fastapi/fastapi/dependencies/utils.py:656-680`)."
         ),
     ),
     (_SUB_DEPENDENCIES, "recap"): _workflow(
         "Recap { #recap }",
-        89,
-        105,
+        91,
+        107,
         _QUERY_COOKIE,
         [
             "fastapi.dependencies.tutorial005.query-cookie.fallback",
@@ -528,7 +528,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
             "The pinned recap states that dependencies can form nested graphs; the preceding "
             "`tutorial005` source supplies a concrete parent/child graph "
             "(`../fastapi/docs_src/dependencies/tutorial005_an_py310.py:8-25`). FastAPI "
-            "0.141.1 recursively calls `get_dependant` while analyzing child declarations "
+            "0.157.0 recursively calls `get_dependant` while analyzing child declarations "
             "(`../fastapi/fastapi/dependencies/utils.py:302-331`)."
         ),
     ),
@@ -542,7 +542,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
             "behavior-specific child headings are mapped individually."
         ),
         (
-            "FastAPI 0.141.1 builds parameterless route dependency nodes in routing and "
+            "FastAPI 0.157.0 builds parameterless route dependency nodes in routing and "
             "solves them through the dependency solver "
             "(`../fastapi/fastapi/routing.py:855-869`; "
             "`../fastapi/fastapi/dependencies/utils.py:619-680`). This overview does not "
@@ -572,7 +572,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
             "The pinned `tutorial006` example declares two `Depends` values in the path "
             "operation decorator "
             "(`../fastapi/docs_src/dependencies/tutorial006_an_py310.py:8-20`). "
-            "FastAPI 0.141.1 converts parameterless declarations into dependant nodes "
+            "FastAPI 0.157.0 converts parameterless declarations into dependant nodes "
             "(`../fastapi/fastapi/routing.py:855-869`) and recursively resolves them "
             "(`../fastapi/fastapi/dependencies/utils.py:619-680`)."
         ),
@@ -608,7 +608,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
         (
             "The pinned example declares `Header()` parameters inside dependency callables "
             "(`../fastapi/docs_src/dependencies/tutorial006_an_py310.py:8,13`). FastAPI "
-            "0.141.1 analyzes each dependant signature and collects header fields "
+            "0.157.0 analyzes each dependant signature and collects header fields "
             "(`../fastapi/fastapi/dependencies/utils.py:271-347,681-690`)."
         ),
     ),
@@ -631,7 +631,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
         (
             "The pinned example raises `HTTPException` from each dependency when its "
             "header value is invalid (`../fastapi/docs_src/dependencies/tutorial006_an_"
-            "py310.py:8-16`). FastAPI 0.141.1 solves decorator dependencies through its "
+            "py310.py:8-16`). FastAPI 0.157.0 solves decorator dependencies through its "
             "dependency graph (`../fastapi/fastapi/dependencies/utils.py:619-680`); "
             "Starlette 1.6.0 owns generic HTTP exception response dispatch."
         ),
@@ -656,7 +656,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
             "dependency while its path operation has no dependency parameter "
             "(`../fastapi/docs_src/dependencies/tutorial006_an_py310.py:13-21`). This "
             "independently authored input uses different routes, names, header values, and "
-            "payloads to sample that shape. FastAPI 0.141.1 creates parameterless dependant "
+            "payloads to sample that shape. FastAPI 0.157.0 creates parameterless dependant "
             "nodes (`../fastapi/fastapi/routing.py:855-869`) and adds solved values to the "
             "parent only when the node has a parameter name "
             "(`../fastapi/fastapi/dependencies/utils.py:677-678`)."
@@ -680,7 +680,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
         (
             "This section links to the pinned Bigger Applications tutorial, whose router "
             "declares a `dependencies` list in `docs_src/bigger_applications/app_an_py310/"
-            "main.py` and applies it to its route. FastAPI 0.141.1 copies router-level "
+            "main.py` and applies it to its route. FastAPI 0.157.0 copies router-level "
             "dependencies into each added API route "
             "(`../fastapi/fastapi/routing.py:2300-2311,2927-2945`)."
         ),
@@ -699,7 +699,7 @@ DOC_SECTION_CASE_MAPPINGS_DEPENDENCY_DECLARATIONS_20261015 = {
             "application dependency and does not cover every route or dependency type."
         ),
         (
-            "The pinned section introduces application-wide dependencies. FastAPI 0.141.1 "
+            "The pinned section introduces application-wide dependencies. FastAPI 0.157.0 "
             "passes the constructor's dependency list into its root `APIRouter` "
             "(`../fastapi/fastapi/applications.py:984-999`), whose route graph is built "
             "and solved by FastAPI's dependency utilities "

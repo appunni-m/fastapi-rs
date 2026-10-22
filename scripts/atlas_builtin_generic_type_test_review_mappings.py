@@ -6,8 +6,8 @@ from typing import Any
 
 SOURCE_IDENTITIES = {
     "fastapi": {
-        "version": "0.141.1",
-        "commit": "95f8322ee1dcda7ceace7b1c4f6c9915b36d748f",
+        "version": "0.157.0",
+        "commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
     },
     "starlette": {
         "version": "1.6.0",
@@ -15,7 +15,7 @@ SOURCE_IDENTITIES = {
         "role": "sole generic ASGI request and response transport contract",
     },
     "pydantic": {
-        "version": "2.13.4",
+        "version": "2.13.5",
         "role": "request and response validation/serialization for Python generic annotations",
     },
 }
@@ -41,14 +41,14 @@ _TEST_SOURCE = _source(
 _FASTAPI_SOURCES = [
     _source(
         "fastapi/dependencies/utils.py",
-        271,
-        301,
+        314,
+        343,
         "FastAPI inspects typed endpoint signatures and builds request dependency fields",
     ),
     _source(
         "fastapi/routing.py",
-        301,
-        341,
+        321,
+        361,
         "FastAPI validates and serializes response fields before emitting JSON responses",
     ),
 ]
@@ -90,7 +90,7 @@ BUILTIN_GENERIC_TYPE_TEST_REVIEW_MAPPINGS = {
                 "contract_gate": (
                     "Partial: the source test is guarded by needs_py310 and is skipped before "
                     "Python 3.10; the project baseline starts at 3.10. Runtime annotation "
-                    "inspection and Pydantic 2.13.4 serialization details remain dependency-level contracts."
+                    "inspection and Pydantic 2.13.5 serialization details remain dependency-level contracts."
                 ),
             }
         },

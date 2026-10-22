@@ -35,7 +35,7 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
     ): _workflow(
         "Query Parameters and String Validations { #query-parameters-and-string-validations }",
         1,
-        450,
+        458,
         "tests/fixtures/input-recipes/parity/query-params-str-validations-section-cases-1016.yaml",
         ["fastapi.docs-section.query-params-str-validations.optional-query"],
         [
@@ -103,8 +103,10 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
         "tutorial/query-params-str-validations.md",
         "use-annotated-in-the-type-for-the-q-parameter",
     ): _excluded(
-        "Use `Annotated` in the type for the `q` parameter { #use-annotat"
-        "ed-in-the-type-for-the-q-parameter }",
+        (
+            "Use `Annotated` in the type for the `q` parameter "
+            "{ #use-annotated-in-the-type-for-the-q-parameter }"
+        ),
         42,
         63,
         "This section explains Python typing equivalence for Annotated[st"
@@ -118,8 +120,10 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
         "tutorial/query-params-str-validations.md",
         "add-query-to-annotated-in-the-q-parameter",
     ): _workflow(
-        "Add `Query` to `Annotated` in the `q` parameter { #add-query-to-"
-        "annotated-in-the-q-parameter }",
+        (
+            "Add `Query` to `Annotated` in the `q` parameter "
+            "{ #add-query-to-annotated-in-the-q-parameter }"
+        ),
         64,
         85,
         "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
@@ -148,8 +152,10 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
         "tutorial/query-params-str-validations.md",
         "alternative-old-query-as-the-default-value",
     ): _workflow(
-        "Alternative (old): `Query` as the default value { #alternative-o"
-        "ld-query-as-the-default-value }",
+        (
+            "Alternative (old): `Query` as the default value "
+            "{ #alternative-old-query-as-the-default-value }"
+        ),
         86,
         162,
         "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
@@ -178,8 +184,10 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
         "tutorial/query-params-str-validations.md",
         "query-as-the-default-value-or-in-annotated",
     ): _workflow(
-        "`Query` as the default value or in `Annotated` { #query-as-the-d"
-        "efault-value-or-in-annotated }",
+        (
+            "`Query` as the default value or in `Annotated` "
+            "{ #query-as-the-default-value-or-in-annotated }"
+        ),
         125,
         150,
         "tests/fixtures/input-recipes/parity/core-ambiguous-params-construction-upstream.yaml",
@@ -287,7 +295,7 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
     ("tutorial/query-params-str-validations.md", "required-parameters"): _workflow(
         "Required parameters { #required-parameters }",
         199,
-        230,
+        238,
         "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
         ["fastapi.docs-example.query-params-str-validations.tutorial006"],
         ["annotated-required-value-omitted", "openapi-query-contract"],
@@ -308,10 +316,10 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
             "and documents the parameter as required; Starlette owns generic HTTP transport."
         ),
     ),
-    ("tutorial/query-params-str-validations.md", "required-can-be-none"): _workflow(
-        "Required, can be `None` { #required-can-be-none }",
+    ("tutorial/query-params-str-validations.md", "required-parameters-and-none"): _workflow(
+        "Required parameters and `None` { #required-parameters-and-none }",
         223,
-        230,
+        238,
         "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
         ["fastapi.docs-example.query-params-str-validations.tutorial006c"],
         ["annotated-required-nullable-omitted", "openapi-query-contract"],
@@ -336,8 +344,8 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
     ),
     ("tutorial/query-params-str-validations.md", "query-parameter-list-multiple-values"): _workflow(
         "Query parameter list / multiple values { #query-parameter-list-multiple-values }",
-        231,
-        304,
+        239,
+        312,
         "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
         ["fastapi.docs-example.query-params-str-validations.tutorial011"],
         ["annotated-repeated-values", "openapi-query-contract"],
@@ -362,10 +370,12 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
         "tutorial/query-params-str-validations.md",
         "query-parameter-list-multiple-values-with-defaults",
     ): _workflow(
-        "Query parameter list / multiple values with defaults { #query-pa"
-        "rameter-list-multiple-values-with-defaults }",
-        268,
-        304,
+        (
+            "Query parameter list / multiple values with defaults "
+            "{ #query-parameter-list-multiple-values-with-defaults }"
+        ),
+        276,
+        312,
         "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
         ["fastapi.docs-example.query-params-str-validations.tutorial012"],
         ["annotated-default-list", "openapi-query-contract"],
@@ -389,8 +399,8 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
     ),
     ("tutorial/query-params-str-validations.md", "using-just-list"): _workflow(
         "Using just `list` { #using-just-list }",
-        291,
-        304,
+        299,
+        312,
         "tests/fixtures/input-recipes/parity/query-params-str-validations-section-cases-1016.yaml",
         ["fastapi.docs-section.query-params-str-validations.untyped-list-items"],
         [
@@ -418,8 +428,8 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
     ),
     ("tutorial/query-params-str-validations.md", "declare-more-metadata"): _workflow(
         "Declare more metadata { #declare-more-metadata }",
-        305,
-        326,
+        313,
+        334,
         "tests/fixtures/input-recipes/parity/query-params-str-validations"
         "-doc-title-description-examples.yaml",
         [
@@ -440,8 +450,8 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
     ),
     ("tutorial/query-params-str-validations.md", "alias-parameters"): _workflow(
         "Alias parameters { #alias-parameters }",
-        327,
-        346,
+        335,
+        354,
         "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
         ["fastapi.docs-example.query-params-str-validations.tutorial009"],
         ["annotated-aliased-value", "openapi-query-contract"],
@@ -463,8 +473,8 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
     ),
     ("tutorial/query-params-str-validations.md", "deprecating-parameters"): _workflow(
         "Deprecating parameters { #deprecating-parameters }",
-        347,
-        360,
+        355,
+        368,
         "tests/fixtures/input-recipes/parity/query-params-str-validations"
         "-doc-pattern-examples.yaml",
         ["fastapi.docs-example.query-params-str-validations.tutorial010"],
@@ -482,8 +492,8 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
     ),
     ("tutorial/query-params-str-validations.md", "exclude-parameters-from-openapi"): _workflow(
         "Exclude parameters from OpenAPI { #exclude-parameters-from-openapi }",
-        361,
-        366,
+        369,
+        374,
         "tests/fixtures/input-recipes/parity/query-params-str-validations"
         "-doc-exclude-schema-examples.yaml",
         ["fastapi.docs-example.query-params-str-validations.tutorial014"],
@@ -510,8 +520,8 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
     ),
     ("tutorial/query-params-str-validations.md", "custom-validation"): _workflow(
         "Custom Validation { #custom-validation }",
-        367,
-        428,
+        375,
+        436,
         "tests/fixtures/input-recipes/parity/query-params-str-validations-doc-examples.yaml",
         ["fastapi.docs-example.query-params-str-validations.tutorial015"],
         ["annotated-valid-prefix", "annotated-invalid-prefix", "openapi-query-contract"],
@@ -535,8 +545,8 @@ DOC_SECTION_CASE_MAPPINGS_QUERY_PARAMS_1016 = {
     ),
     ("tutorial/query-params-str-validations.md", "a-random-item"): _excluded(
         "A Random Item { #a-random-item }",
-        413,
-        428,
+        421,
+        436,
         "This section explains Python dict/list iteration, random.choice("
         "), and application-owned fallback data rather than FastAPI behav"
         "ior.",

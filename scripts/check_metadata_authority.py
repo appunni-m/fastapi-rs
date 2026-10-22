@@ -716,7 +716,7 @@ def validate_runtime_root_namespace_review(
         require_equal(
             f"{profile_name} public root runtime name count",
             root_module.get("public_runtime_name_count"),
-            41,
+            42,
         )
         root_names[profile_name] = {
             row["id"]

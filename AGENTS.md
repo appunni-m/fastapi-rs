@@ -1,6 +1,6 @@
 # Project rules
 
-- Pin FastAPI 0.141.1, Starlette 1.6.0, Starlette-RS, Python, and Pydantic.
+- Pin FastAPI 0.157.0, Starlette 1.6.0, Starlette-RS, Python, and Pydantic.
   Starlette 1.6 is sole oracle; sibling owns generic behavior.
 - Treat FastAPI-RS as greenfield: implement only the pinned FastAPI contract;
   do not add FastAPI-RS backward-compatibility shims.

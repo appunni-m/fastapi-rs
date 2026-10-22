@@ -161,7 +161,7 @@ def _identity(
     if kind == "fastapi":
         starlette = importlib.import_module("starlette")
         if _git(fastapi_root, "rev-parse", "HEAD") != expected["fastapi_source"]:
-            raise BenchmarkError("FastAPI oracle source revision is not pinned 0.141.1")
+            raise BenchmarkError("FastAPI oracle source revision is not pinned 0.157.0")
         if _git(starlette_root, "rev-parse", "HEAD") != expected["starlette_source"]:
             raise BenchmarkError("Starlette oracle source revision is not pinned 1.6.0")
         if importlib.metadata.version("fastapi") != expected["fastapi_version"]:

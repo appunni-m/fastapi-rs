@@ -1,0 +1,487 @@
+# Independent FastAPI 0.157.0 requests for Field metadata propagation.
+schema: fastapi-rs/python-asgi-workflow@17
+oracle_profile_extension: standard-multipart
+workload:
+  file: tests/fixtures/workloads/field_metadata_0157.py
+  factory: create_app
+  instantiate_per_case: true
+
+cases:
+  - case_id: fastapi.request-parameters.field-alias-preservation
+    verification: parity
+    factory_input: {}
+    construction_observation: &construction
+      kind: construction
+      selectors: [outcome, exception_class, exception_message]
+      comparison: exact
+    actions:
+      - action_id: path-alias
+        kind: http_request
+        scope:
+          type: http
+          asgi: &asgi
+            version: '3.0'
+            spec_version: '2.4'
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /parameters/path-alias/31
+          query_string: ''
+          root_path: ''
+          headers: &host_header [[host, testserver]]
+          client: &client [127.0.0.1, 123]
+          server: &server [testserver, 80]
+        receive_events: &empty_request
+          - {type: http.request, body: '', more_body: false}
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: path-validation-alias
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /parameters/path-validation-alias/32
+          query_string: ''
+          root_path: ''
+          headers: *host_header
+          client: *client
+          server: *server
+        receive_events: *empty_request
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: query-alias
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /parameters/query-alias
+          query_string: wire_key=41
+          root_path: ''
+          headers: *host_header
+          client: *client
+          server: *server
+        receive_events: *empty_request
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: query-validation-alias
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /parameters/query-validation-alias
+          query_string: wire_key=42
+          root_path: ''
+          headers: *host_header
+          client: *client
+          server: *server
+        receive_events: *empty_request
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: header-alias
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /parameters/header-alias
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [x-wire-token, '51']]
+          client: *client
+          server: *server
+        receive_events: *empty_request
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: header-validation-alias
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /parameters/header-validation-alias
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [x-wire-token, '52']]
+          client: *client
+          server: *server
+        receive_events: *empty_request
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: cookie-alias
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /parameters/cookie-alias
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [cookie, 'wire_key=61']]
+          client: *client
+          server: *server
+        receive_events: *empty_request
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: cookie-validation-alias
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /parameters/cookie-validation-alias
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [cookie, 'wire_key=62']]
+          client: *client
+          server: *server
+        receive_events: *empty_request
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: body-alias
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /parameters/body-alias
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, application/json]]
+          client: *client
+          server: *server
+        receive_events:
+          - {type: http.request, body: '{"wire_key":71}', more_body: false}
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: body-validation-alias
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /parameters/body-validation-alias
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, application/json]]
+          client: *client
+          server: *server
+        receive_events:
+          - {type: http.request, body: '{"wire_key":72}', more_body: false}
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: form-alias
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /parameters/form-alias
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, application/x-www-form-urlencoded]]
+          client: *client
+          server: *server
+        receive_events:
+          - {type: http.request, body: 'wire_key=81', more_body: false}
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: form-validation-alias
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /parameters/form-validation-alias
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, application/x-www-form-urlencoded]]
+          client: *client
+          server: *server
+        receive_events:
+          - {type: http.request, body: 'wire_key=82', more_body: false}
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: file-alias
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /parameters/file-alias
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, 'multipart/form-data; boundary=field-meta-boundary']]
+          client: *client
+          server: *server
+        receive_events:
+          - type: http.request
+            body: "--field-meta-boundary\r\nContent-Disposition: form-data; name=\"wire_key\"; filename=\"field.txt\"\r\nContent-Type: text/plain\r\n\r\nfile-alias-payload\r\n--field-meta-boundary--\r\n"
+            more_body: false
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: file-validation-alias
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /parameters/file-validation-alias
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, 'multipart/form-data; boundary=field-meta-boundary']]
+          client: *client
+          server: *server
+        receive_events:
+          - type: http.request
+            body: "--field-meta-boundary\r\nContent-Disposition: form-data; name=\"wire_key\"; filename=\"field.txt\"\r\nContent-Type: text/plain\r\n\r\nfile-validation-payload\r\n--field-meta-boundary--\r\n"
+            more_body: false
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+    source_evidence: &field_location_evidence
+      - {path: tests/test_request_params/test_field_metadata.py, kind: upstream_test}
+
+  - case_id: fastapi.request-parameters.inferred-body-aliases
+    verification: parity
+    factory_input: {}
+    construction_observation: *construction
+    actions:
+      - action_id: separate-inferred-body-fields
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /body/inferred-aliases
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, application/json]]
+          client: *client
+          server: *server
+        receive_events:
+          - {type: http.request, body: '{"active_items":[3,8],"archive_items":[2,5]}', more_body: false}
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+    source_evidence: &body_evidence
+      - {path: tests/test_request_params/test_field_metadata.py, kind: upstream_test}
+
+  - case_id: fastapi.request-parameters.discriminator-validation
+    verification: parity
+    factory_input: {}
+    construction_observation: *construction
+    actions:
+      - action_id: valid-tag
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /body/discriminator
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, application/json]]
+          client: *client
+          server: *server
+        receive_events:
+          - {type: http.request, body: '{"kind":"lynx"}', more_body: false}
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: unknown-tag
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /body/discriminator
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, application/json]]
+          client: *client
+          server: *server
+        receive_events:
+          - {type: http.request, body: '{"kind":"badger"}', more_body: false}
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+    source_evidence: &union_evidence
+      - {path: tests/test_request_params/test_field_metadata.py, kind: upstream_test}
+
+  - case_id: fastapi.request-parameters.field-metadata-alias-overrides-openapi
+    verification: parity
+    factory_input: {}
+    construction_observation: *construction
+    actions:
+      - action_id: query-alias-metadata-values
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /metadata/query
+          query_string: source_name=101&route_choice=102&cleared=103
+          root_path: ''
+          headers: *host_header
+          client: *client
+          server: *server
+        receive_events: *empty_request
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: body-alias-metadata-values
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: POST
+          scheme: http
+          path: /metadata/body
+          query_string: ''
+          root_path: ''
+          headers: [[host, testserver], [content-type, application/json]]
+          client: *client
+          server: *server
+        receive_events:
+          - {type: http.request, body: '{"source_name":201,"route_choice":202,"cleared":203}', more_body: false}
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: alias-metadata-openapi
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /openapi.json
+          query_string: ''
+          root_path: ''
+          headers: *host_header
+          client: *client
+          server: *server
+        receive_events: *empty_request
+        observations:
+          - {kind: http_response, selectors: [status], comparison: exact}
+          - kind: openapi
+            json_pointers:
+              - /paths/~1metadata~1query/get/parameters
+              - /paths/~1metadata~1body/post/requestBody
+              - /components/schemas
+            comparison: exact
+    source_evidence: &metadata_evidence
+      - {path: tests/test_request_params/test_field_metadata.py, kind: upstream_test}
+
+  - case_id: fastapi.request-parameters.inferred-query-alias-defaults
+    verification: parity
+    factory_input: {}
+    construction_observation: *construction
+    actions:
+      - action_id: path-and-aliased-query-present
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /inferred/14
+          query_string: batch_size=4
+          root_path: ''
+          headers: *host_header
+          client: *client
+          server: *server
+        receive_events: *empty_request
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: query-default-applied
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /inferred/15
+          query_string: ''
+          root_path: ''
+          headers: *host_header
+          client: *client
+          server: *server
+        receive_events: *empty_request
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: inferred-query-default-factory
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /inferred
+          query_string: ''
+          root_path: ''
+          headers: *host_header
+          client: *client
+          server: *server
+        receive_events: *empty_request
+        observations:
+          - {kind: http_response, selectors: [status, body], comparison: exact}
+      - action_id: inferred-query-openapi
+        kind: http_request
+        scope:
+          type: http
+          asgi: *asgi
+          http_version: '1.1'
+          method: GET
+          scheme: http
+          path: /openapi.json
+          query_string: ''
+          root_path: ''
+          headers: *host_header
+          client: *client
+          server: *server
+        receive_events: *empty_request
+        observations:
+          - {kind: http_response, selectors: [status], comparison: exact}
+          - kind: openapi
+            json_pointers:
+              - /paths/~1inferred~1{resource_id}/get/parameters
+              - /paths/~1inferred/get/parameters
+            comparison: exact
+    source_evidence: &query_evidence
+      - {path: tests/test_request_params/test_field_metadata.py, kind: upstream_test}
