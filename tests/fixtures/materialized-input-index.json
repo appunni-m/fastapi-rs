@@ -33566,6 +33566,51 @@
       ]
     },
     {
+      "id": "response-model-skip-defaults-upstream",
+      "input_path": "tests/fixtures/inputs/parity/response-model-skip-defaults-upstream.json",
+      "input_sha256": "45628d8d0b5ebf338b4416b28df8033173053a89310318c687ab0ed45d547d06",
+      "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+      "recipe_sha256": "6b7d069d16bc3ee337b63ebb44bfd2ca9b38146605fb5fd93305c7f4c248b787",
+      "case_ids": [
+        "fastapi.response-model.skip-defaults.subclass-projection",
+        "fastapi.response-model.skip-defaults.exclude-unset",
+        "fastapi.response-model.skip-defaults.exclude-defaults",
+        "fastapi.response-model.skip-defaults.exclude-none"
+      ],
+      "workload_path": "tests/fixtures/workloads/response_model_skip_defaults_upstream.py",
+      "workload_sha256": "ef8d4552d7abaf7b18143fab30ba265cc57b3cd15e49c4a49337818a3bdbd5a8",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.response-model.skip-defaults.subclass-projection",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_skip_defaults.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response-model.skip-defaults.exclude-unset",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_skip_defaults.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response-model.skip-defaults.exclude-defaults",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_skip_defaults.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.response-model.skip-defaults.exclude-none",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_skip_defaults.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "response-model-tutorial-review",
       "input_path": "tests/fixtures/inputs/parity/response-model-tutorial-review.json",
       "input_sha256": "cbfc26c4c3f7b106356bf3926c7aa00d8776cb28b0d37058e923bc210d0457a1",
@@ -68746,6 +68791,23 @@
       "observation_selectors": [
         "http.body.bytes",
         "http.headers.ordered",
+        "http.status"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_skip_defaults.py",
+      "fixture_id": "fastapi.test.test-skip-defaults",
+      "workflow_id": "response-model-skip-defaults-upstream",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.response-model.skip-defaults.exclude-defaults",
+        "fastapi.response-model.skip-defaults.exclude-none",
+        "fastapi.response-model.skip-defaults.exclude-unset",
+        "fastapi.response-model.skip-defaults.subclass-projection"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
         "http.status"
       ]
     },

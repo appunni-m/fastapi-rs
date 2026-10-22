@@ -442800,6 +442800,41 @@
                   "path": "starlette/responses.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 90,
+                  "line": 88,
+                  "path": "tests/test_skip_defaults.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 338,
+                  "line": 301,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 738,
+                  "line": 727,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 213,
+                  "line": 190,
+                  "path": "fastapi/_compat/v2.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 201,
+                  "line": 181,
+                  "path": "starlette/responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -442807,15 +442842,22 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 90,
+            "line": 88,
+            "path": "tests/test_skip_defaults.py",
+            "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc"
+          },
           "id": "fastapi.test.test-skip-defaults.test-return-defaults",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "http.body.bytes",
-            "http.body.json"
+            "http.status",
+            "http.body.bytes"
           ],
           "reviewed_mapping": {
-            "rationale": "A response model includes default-valued fields under the default configuration.",
+            "contract_gate": "Partial: this independent Pydantic model and HTTP input exercise one response filter policy and compare status plus exact response bytes. The mapping does not claim the source model names or full upstream assertion set. Pydantic owns model field state; Starlette 1.6.0 owns generic JSON response rendering and ASGI transport.",
+            "rationale": "FastAPI filters a subclass response through the declared base model and omits unset nested defaults.",
             "source_evidence": [
               {
                 "end_line": 90,
@@ -442838,16 +442880,64 @@
                 "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 181
+              },
+              {
+                "end_line": 90,
+                "path": "tests/test_skip_defaults.py",
+                "role": "upstream test stimulus and asserted behavior",
+                "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc",
+                "start_line": 88
+              },
+              {
+                "end_line": 338,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI validates response content and applies the route's response-model filter flags",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 301
+              },
+              {
+                "end_line": 738,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI forwards unset, default, and null filters to response serialization",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 727
+              },
+              {
+                "end_line": 213,
+                "path": "fastapi/_compat/v2.py",
+                "role": "FastAPI forwards response field filters into Pydantic TypeAdapter serialization",
+                "sha256": "b031b28b588a4855bd2ee27b9f807ad7ed72ad0235347452c2c15144bb8527c9",
+                "start_line": 190
+              },
+              {
+                "end_line": 201,
+                "path": "starlette/responses.py",
+                "role": "Starlette 1.6.0 renders the serialized response as JSON bytes",
+                "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 181
               }
             ],
-            "stimulus_notes": "Input-only workflow: tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml::fastapi.response-model-data-filter.exclude-unset-none. FastAPI owns response-model filtering; Starlette 1.6.0 owns generic JSON response rendering and ASGI transport."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml case fastapi.response-model.skip-defaults.subclass-projection, action project-subclass-through-base-model; the independently named model and values exercise the selected response policy.",
+            "workflow_case": {
+              "action_ids": [
+                "project-subclass-through-base-model"
+              ],
+              "case_id": "fastapi.response-model.skip-defaults.subclass-projection",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+              "workflow_id": "response-model-skip-defaults-upstream"
+            }
           },
           "selector_evidence": [
             {
               "feature_id": "response-serialization",
               "selectors": [
-                "http.body.bytes",
-                "http.body.json"
+                "http.status",
+                "http.body.bytes"
               ]
             }
           ],
@@ -442857,7 +442947,19 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Input-only workflow: tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml::fastapi.response-model-data-filter.exclude-unset-none. FastAPI owns response-model filtering; Starlette 1.6.0 owns generic JSON response rendering and ASGI transport."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml case fastapi.response-model.skip-defaults.subclass-projection, action project-subclass-through-base-model; the independently named model and values exercise the selected response policy.",
+          "workflow_case": {
+            "action_ids": [
+              "project-subclass-through-base-model"
+            ],
+            "case_id": "fastapi.response-model.skip-defaults.subclass-projection",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+            "workflow_id": "response-model-skip-defaults-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -442884,6 +442986,41 @@
                   "path": "starlette/responses.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 95,
+                  "line": 93,
+                  "path": "tests/test_skip_defaults.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 338,
+                  "line": 301,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 738,
+                  "line": 727,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 213,
+                  "line": 190,
+                  "path": "fastapi/_compat/v2.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 201,
+                  "line": 181,
+                  "path": "starlette/responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -442891,15 +443028,22 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 95,
+            "line": 93,
+            "path": "tests/test_skip_defaults.py",
+            "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc"
+          },
           "id": "fastapi.test.test-skip-defaults.test-return-exclude-unset",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "http.body.bytes",
-            "http.body.json"
+            "http.status",
+            "http.body.bytes"
           ],
           "reviewed_mapping": {
-            "rationale": "Response serialization excludes fields that were not explicitly set.",
+            "contract_gate": "Partial: this independent Pydantic model and HTTP input exercise one response filter policy and compare status plus exact response bytes. The mapping does not claim the source model names or full upstream assertion set. Pydantic owns model field state; Starlette 1.6.0 owns generic JSON response rendering and ASGI transport.",
+            "rationale": "FastAPI retains explicitly set null and default-valued fields while excluding fields that were never set.",
             "source_evidence": [
               {
                 "end_line": 95,
@@ -442922,16 +443066,64 @@
                 "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 181
+              },
+              {
+                "end_line": 95,
+                "path": "tests/test_skip_defaults.py",
+                "role": "upstream test stimulus and asserted behavior",
+                "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc",
+                "start_line": 93
+              },
+              {
+                "end_line": 338,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI validates response content and applies the route's response-model filter flags",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 301
+              },
+              {
+                "end_line": 738,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI forwards unset, default, and null filters to response serialization",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 727
+              },
+              {
+                "end_line": 213,
+                "path": "fastapi/_compat/v2.py",
+                "role": "FastAPI forwards response field filters into Pydantic TypeAdapter serialization",
+                "sha256": "b031b28b588a4855bd2ee27b9f807ad7ed72ad0235347452c2c15144bb8527c9",
+                "start_line": 190
+              },
+              {
+                "end_line": 201,
+                "path": "starlette/responses.py",
+                "role": "Starlette 1.6.0 renders the serialized response as JSON bytes",
+                "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 181
               }
             ],
-            "stimulus_notes": "Input-only workflow: tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml::fastapi.response-model-data-filter.exclude-unset-none. FastAPI owns response-model filtering; Starlette 1.6.0 owns generic JSON response rendering and ASGI transport."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml case fastapi.response-model.skip-defaults.exclude-unset, action apply-exclude-unset-policy; the independently named model and values exercise the selected response policy.",
+            "workflow_case": {
+              "action_ids": [
+                "apply-exclude-unset-policy"
+              ],
+              "case_id": "fastapi.response-model.skip-defaults.exclude-unset",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+              "workflow_id": "response-model-skip-defaults-upstream"
+            }
           },
           "selector_evidence": [
             {
               "feature_id": "response-serialization",
               "selectors": [
-                "http.body.bytes",
-                "http.body.json"
+                "http.status",
+                "http.body.bytes"
               ]
             }
           ],
@@ -442941,7 +443133,19 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Input-only workflow: tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml::fastapi.response-model-data-filter.exclude-unset-none. FastAPI owns response-model filtering; Starlette 1.6.0 owns generic JSON response rendering and ASGI transport."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml case fastapi.response-model.skip-defaults.exclude-unset, action apply-exclude-unset-policy; the independently named model and values exercise the selected response policy.",
+          "workflow_case": {
+            "action_ids": [
+              "apply-exclude-unset-policy"
+            ],
+            "case_id": "fastapi.response-model.skip-defaults.exclude-unset",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+            "workflow_id": "response-model-skip-defaults-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -442968,6 +443172,41 @@
                   "path": "starlette/responses.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 100,
+                  "line": 98,
+                  "path": "tests/test_skip_defaults.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 338,
+                  "line": 301,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 738,
+                  "line": 727,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 213,
+                  "line": 190,
+                  "path": "fastapi/_compat/v2.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 201,
+                  "line": 181,
+                  "path": "starlette/responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -442975,15 +443214,22 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 100,
+            "line": 98,
+            "path": "tests/test_skip_defaults.py",
+            "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc"
+          },
           "id": "fastapi.test.test-skip-defaults.test-return-exclude-defaults",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "http.body.bytes",
-            "http.body.json"
+            "http.status",
+            "http.body.bytes"
           ],
           "reviewed_mapping": {
-            "rationale": "Response serialization excludes fields equal to their model defaults.",
+            "contract_gate": "Partial: this independent Pydantic model and HTTP input exercise one response filter policy and compare status plus exact response bytes. The mapping does not claim the source model names or full upstream assertion set. Pydantic owns model field state; Starlette 1.6.0 owns generic JSON response rendering and ASGI transport.",
+            "rationale": "FastAPI omits explicitly set fields whose values equal their declared defaults.",
             "source_evidence": [
               {
                 "end_line": 100,
@@ -443006,16 +443252,64 @@
                 "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 181
+              },
+              {
+                "end_line": 100,
+                "path": "tests/test_skip_defaults.py",
+                "role": "upstream test stimulus and asserted behavior",
+                "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc",
+                "start_line": 98
+              },
+              {
+                "end_line": 338,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI validates response content and applies the route's response-model filter flags",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 301
+              },
+              {
+                "end_line": 738,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI forwards unset, default, and null filters to response serialization",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 727
+              },
+              {
+                "end_line": 213,
+                "path": "fastapi/_compat/v2.py",
+                "role": "FastAPI forwards response field filters into Pydantic TypeAdapter serialization",
+                "sha256": "b031b28b588a4855bd2ee27b9f807ad7ed72ad0235347452c2c15144bb8527c9",
+                "start_line": 190
+              },
+              {
+                "end_line": 201,
+                "path": "starlette/responses.py",
+                "role": "Starlette 1.6.0 renders the serialized response as JSON bytes",
+                "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 181
               }
             ],
-            "stimulus_notes": "Input-only workflow: tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml::fastapi.response-model-data-filter.exclude-unset-none. FastAPI owns response-model filtering; Starlette 1.6.0 owns generic JSON response rendering and ASGI transport."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml case fastapi.response-model.skip-defaults.exclude-defaults, action apply-exclude-defaults-policy; the independently named model and values exercise the selected response policy.",
+            "workflow_case": {
+              "action_ids": [
+                "apply-exclude-defaults-policy"
+              ],
+              "case_id": "fastapi.response-model.skip-defaults.exclude-defaults",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+              "workflow_id": "response-model-skip-defaults-upstream"
+            }
           },
           "selector_evidence": [
             {
               "feature_id": "response-serialization",
               "selectors": [
-                "http.body.bytes",
-                "http.body.json"
+                "http.status",
+                "http.body.bytes"
               ]
             }
           ],
@@ -443025,7 +443319,19 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Input-only workflow: tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml::fastapi.response-model-data-filter.exclude-unset-none. FastAPI owns response-model filtering; Starlette 1.6.0 owns generic JSON response rendering and ASGI transport."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml case fastapi.response-model.skip-defaults.exclude-defaults, action apply-exclude-defaults-policy; the independently named model and values exercise the selected response policy.",
+          "workflow_case": {
+            "action_ids": [
+              "apply-exclude-defaults-policy"
+            ],
+            "case_id": "fastapi.response-model.skip-defaults.exclude-defaults",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+            "workflow_id": "response-model-skip-defaults-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -443052,6 +443358,41 @@
                   "path": "starlette/responses.py",
                   "source": "reviewed-source-span",
                   "term": "curated source review"
+                },
+                {
+                  "end_line": 105,
+                  "line": 103,
+                  "path": "tests/test_skip_defaults.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 338,
+                  "line": 301,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 738,
+                  "line": 727,
+                  "path": "fastapi/routing.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 213,
+                  "line": 190,
+                  "path": "fastapi/_compat/v2.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
+                },
+                {
+                  "end_line": 201,
+                  "line": 181,
+                  "path": "starlette/responses.py",
+                  "source": "reviewed-source-span",
+                  "term": "curated source review"
                 }
               ]
             }
@@ -443059,15 +443400,22 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 105,
+            "line": 103,
+            "path": "tests/test_skip_defaults.py",
+            "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc"
+          },
           "id": "fastapi.test.test-skip-defaults.test-return-exclude-none",
           "mapping_scope": "reviewed_source_mapping",
-          "mapping_status": "reviewed_source_candidate",
+          "mapping_status": "contract_gated_source_candidate",
           "observation_selectors": [
-            "http.body.bytes",
-            "http.body.json"
+            "http.status",
+            "http.body.bytes"
           ],
           "reviewed_mapping": {
-            "rationale": "Response serialization excludes fields whose values are None.",
+            "contract_gate": "Partial: this independent Pydantic model and HTTP input exercise one response filter policy and compare status plus exact response bytes. The mapping does not claim the source model names or full upstream assertion set. Pydantic owns model field state; Starlette 1.6.0 owns generic JSON response rendering and ASGI transport.",
+            "rationale": "FastAPI omits null-valued fields while retaining non-null defaults.",
             "source_evidence": [
               {
                 "end_line": 105,
@@ -443090,16 +443438,64 @@
                 "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
                 "source_authority": "Starlette 1.6.0",
                 "start_line": 181
+              },
+              {
+                "end_line": 105,
+                "path": "tests/test_skip_defaults.py",
+                "role": "upstream test stimulus and asserted behavior",
+                "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc",
+                "start_line": 103
+              },
+              {
+                "end_line": 338,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI validates response content and applies the route's response-model filter flags",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 301
+              },
+              {
+                "end_line": 738,
+                "path": "fastapi/routing.py",
+                "role": "FastAPI forwards unset, default, and null filters to response serialization",
+                "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+                "start_line": 727
+              },
+              {
+                "end_line": 213,
+                "path": "fastapi/_compat/v2.py",
+                "role": "FastAPI forwards response field filters into Pydantic TypeAdapter serialization",
+                "sha256": "b031b28b588a4855bd2ee27b9f807ad7ed72ad0235347452c2c15144bb8527c9",
+                "start_line": 190
+              },
+              {
+                "end_line": 201,
+                "path": "starlette/responses.py",
+                "role": "Starlette 1.6.0 renders the serialized response as JSON bytes",
+                "sha256": "10a5f318bb014296e57d9a3f6ffa51d478e21b07d5bf978597dba2ec9dc21e4a",
+                "source_authority": "Starlette 1.6.0",
+                "start_line": 181
               }
             ],
-            "stimulus_notes": "Input-only workflow: tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml::fastapi.response-model-data-filter.exclude-unset-none. FastAPI owns response-model filtering; Starlette 1.6.0 owns generic JSON response rendering and ASGI transport."
+            "stimulus_notes": "Use tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml case fastapi.response-model.skip-defaults.exclude-none, action apply-exclude-none-policy; the independently named model and values exercise the selected response policy.",
+            "workflow_case": {
+              "action_ids": [
+                "apply-exclude-none-policy"
+              ],
+              "case_id": "fastapi.response-model.skip-defaults.exclude-none",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+              "workflow_id": "response-model-skip-defaults-upstream"
+            }
           },
           "selector_evidence": [
             {
               "feature_id": "response-serialization",
               "selectors": [
-                "http.body.bytes",
-                "http.body.json"
+                "http.status",
+                "http.body.bytes"
               ]
             }
           ],
@@ -443109,7 +443505,19 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "Input-only workflow: tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml::fastapi.response-model-data-filter.exclude-unset-none. FastAPI owns response-model filtering; Starlette 1.6.0 owns generic JSON response rendering and ASGI transport."
+          "stimulus_design_notes": "Use tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml case fastapi.response-model.skip-defaults.exclude-none, action apply-exclude-none-policy; the independently named model and values exercise the selected response policy.",
+          "workflow_case": {
+            "action_ids": [
+              "apply-exclude-none-policy"
+            ],
+            "case_id": "fastapi.response-model.skip-defaults.exclude-none",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+            "workflow_id": "response-model-skip-defaults-upstream"
+          }
         },
         {
           "feature_evidence": [
@@ -443192,6 +443600,12 @@
           "feature_ids": [
             "response-serialization"
           ],
+          "function_source_ref": {
+            "end_line": 110,
+            "line": 108,
+            "path": "tests/test_skip_defaults.py",
+            "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc"
+          },
           "id": "fastapi.test.test-skip-defaults.test-return-exclude-unset-none",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -443276,7 +443690,19 @@
                 "start_line": 181
               }
             ],
-            "stimulus_notes": "The recipe and workload provide one independent HTTP input and selected observations; they contain no expected response values or copied upstream test body."
+            "stimulus_notes": "The recipe and workload provide one independent HTTP input and selected observations; they contain no expected response values or copied upstream test body.",
+            "workflow_case": {
+              "action_ids": [
+                "apply-combined-unset-and-null-filter"
+              ],
+              "case_id": "fastapi.response-model-data-filter.exclude-unset-none",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
+              "workflow_id": "response-model-data-filter-exclude-unset-none-review"
+            }
           },
           "selector_evidence": [
             {
@@ -443293,7 +443719,19 @@
           "stimulus_design": [
             "Register an endpoint with the documented response type, status, header/cookie, filtering, or streaming configuration and invoke it with input-only data."
           ],
-          "stimulus_design_notes": "The recipe and workload provide one independent HTTP input and selected observations; they contain no expected response values or copied upstream test body."
+          "stimulus_design_notes": "The recipe and workload provide one independent HTTP input and selected observations; they contain no expected response values or copied upstream test body.",
+          "workflow_case": {
+            "action_ids": [
+              "apply-combined-unset-and-null-filter"
+            ],
+            "case_id": "fastapi.response-model-data-filter.exclude-unset-none",
+            "observation_selectors": [
+              "http.status",
+              "http.body.bytes"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
+            "workflow_id": "response-model-data-filter-exclude-unset-none-review"
+          }
         },
         {
           "feature_evidence": [
@@ -443913,6 +444351,22 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/response-model-serialization.yaml",
           "workflow_id": "response-model-serialization"
+        },
+        {
+          "case_ids": [
+            "fastapi.response-model.skip-defaults.exclude-defaults",
+            "fastapi.response-model.skip-defaults.exclude-none",
+            "fastapi.response-model.skip-defaults.exclude-unset",
+            "fastapi.response-model.skip-defaults.subclass-projection"
+          ],
+          "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+          "workflow_id": "response-model-skip-defaults-upstream"
         }
       ],
       "input_only": true,
@@ -443971,6 +444425,20 @@
             "http.status"
           ],
           "workflow_id": "response-model-serialization"
+        },
+        {
+          "case_ids": [
+            "fastapi.response-model.skip-defaults.exclude-defaults",
+            "fastapi.response-model.skip-defaults.exclude-none",
+            "fastapi.response-model.skip-defaults.exclude-unset",
+            "fastapi.response-model.skip-defaults.subclass-projection"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "workflow_id": "response-model-skip-defaults-upstream"
         }
       ],
       "source_evidence": {

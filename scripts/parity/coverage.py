@@ -940,6 +940,56 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
         ("http.body.bytes", "http.status"),
     ),
     (
+        "tests/test_skip_defaults.py",
+        "test_return_defaults",
+    ): _reviewed_direct_link(
+        "response-model-skip-defaults-upstream",
+        "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+        "fastapi.response-model.skip-defaults.subclass-projection",
+        ("project-subclass-through-base-model",),
+        ("http.body.bytes", "http.status"),
+    ),
+    (
+        "tests/test_skip_defaults.py",
+        "test_return_exclude_unset",
+    ): _reviewed_direct_link(
+        "response-model-skip-defaults-upstream",
+        "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+        "fastapi.response-model.skip-defaults.exclude-unset",
+        ("apply-exclude-unset-policy",),
+        ("http.body.bytes", "http.status"),
+    ),
+    (
+        "tests/test_skip_defaults.py",
+        "test_return_exclude_defaults",
+    ): _reviewed_direct_link(
+        "response-model-skip-defaults-upstream",
+        "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+        "fastapi.response-model.skip-defaults.exclude-defaults",
+        ("apply-exclude-defaults-policy",),
+        ("http.body.bytes", "http.status"),
+    ),
+    (
+        "tests/test_skip_defaults.py",
+        "test_return_exclude_none",
+    ): _reviewed_direct_link(
+        "response-model-skip-defaults-upstream",
+        "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+        "fastapi.response-model.skip-defaults.exclude-none",
+        ("apply-exclude-none-policy",),
+        ("http.body.bytes", "http.status"),
+    ),
+    (
+        "tests/test_skip_defaults.py",
+        "test_return_exclude_unset_none",
+    ): _reviewed_direct_link(
+        "response-model-data-filter-exclude-unset-none-review",
+        "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
+        "fastapi.response-model-data-filter.exclude-unset-none",
+        ("apply-combined-unset-and-null-filter",),
+        ("http.status", "http.body.bytes"),
+    ),
+    (
         "tests/test_stream_bare_type.py",
         "test_jsonl_router_typed_stream",
     ): (
@@ -3453,6 +3503,7 @@ def validate_compatibility_artifacts(
                 "tests/test_tutorial/test_dataclasses/test_tutorial002.py",
                 "tests/test_tutorial/test_dataclasses/test_tutorial003.py",
                 "tests/test_params_repr.py",
+                "tests/test_skip_defaults.py",
                 "tests/test_query.py",
                 "tests/test_union_body.py",
                 "tests/test_union_body_discriminator.py",

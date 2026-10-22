@@ -272,6 +272,67 @@ def _inferred_iterable_policy_case(test_path, start, end, rationale, workflow, w
     )
 
 
+_RESPONSE_MODEL_FILTER_POLICY = (
+    _source(
+        "fastapi/routing.py",
+        301,
+        338,
+        "FastAPI validates response content and applies the route's response-model filter flags",
+    ),
+    _source(
+        "fastapi/routing.py",
+        727,
+        738,
+        "FastAPI forwards unset, default, and null filters to response serialization",
+    ),
+    _source(
+        "fastapi/_compat/v2.py",
+        190,
+        213,
+        "FastAPI forwards response field filters into Pydantic TypeAdapter serialization",
+    ),
+    _source(
+        "starlette/responses.py",
+        181,
+        201,
+        "Starlette 1.6.0 renders the serialized response as JSON bytes",
+    ),
+)
+_RESPONSE_MODEL_SKIP_DEFAULTS_RECIPE = (
+    "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml"
+)
+
+
+def _response_model_skip_defaults_case(test_path, start, end, case_slug, action_id, rationale):
+    case_id = f"fastapi.response-model.skip-defaults.{case_slug}"
+    workflow_case = {
+        "workflow_id": "response-model-skip-defaults-upstream",
+        "recipe_path": _RESPONSE_MODEL_SKIP_DEFAULTS_RECIPE,
+        "case_id": case_id,
+        "action_ids": [action_id],
+        "observation_selectors": ["http.body.bytes", "http.status"],
+    }
+    return _case(
+        test_path,
+        start,
+        end,
+        ["response-serialization"],
+        ["http.status", "http.body.bytes"],
+        rationale,
+        f"Use {_RESPONSE_MODEL_SKIP_DEFAULTS_RECIPE} case {case_id}, action {action_id}; "
+        "the independently named model and values exercise the selected response policy.",
+        implementation=_RESPONSE_MODEL_FILTER_POLICY[0],
+        additional_sources=_RESPONSE_MODEL_FILTER_POLICY[1:],
+        contract_gate=(
+            "Partial: this independent Pydantic model and HTTP input exercise one response "
+            "filter policy and compare status plus exact response bytes. The mapping does not "
+            "claim the source model names or full upstream assertion set. Pydantic owns model "
+            "field state; Starlette 1.6.0 owns generic JSON response rendering and ASGI transport."
+        ),
+        workflow_case=workflow_case,
+    )
+
+
 RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
     "tests/test_additional_response_extra.py": {
         "functions": {
@@ -696,6 +757,38 @@ RESPONSE_OPENAPI_TEST_REVIEW_MAPPINGS = {
     },
     "tests/test_skip_defaults.py": {
         "functions": {
+            "test_return_defaults": _response_model_skip_defaults_case(
+                "tests/test_skip_defaults.py",
+                88,
+                90,
+                "subclass-projection",
+                "project-subclass-through-base-model",
+                "FastAPI filters a subclass response through the declared base model and omits unset nested defaults.",
+            ),
+            "test_return_exclude_unset": _response_model_skip_defaults_case(
+                "tests/test_skip_defaults.py",
+                93,
+                95,
+                "exclude-unset",
+                "apply-exclude-unset-policy",
+                "FastAPI retains explicitly set null and default-valued fields while excluding fields that were never set.",
+            ),
+            "test_return_exclude_defaults": _response_model_skip_defaults_case(
+                "tests/test_skip_defaults.py",
+                98,
+                100,
+                "exclude-defaults",
+                "apply-exclude-defaults-policy",
+                "FastAPI omits explicitly set fields whose values equal their declared defaults.",
+            ),
+            "test_return_exclude_none": _response_model_skip_defaults_case(
+                "tests/test_skip_defaults.py",
+                103,
+                105,
+                "exclude-none",
+                "apply-exclude-none-policy",
+                "FastAPI omits null-valued fields while retaining non-null defaults.",
+            ),
             "test_return_iterable_exclude_unset": _inferred_iterable_policy_case(
                 "tests/test_skip_defaults.py",
                 113,

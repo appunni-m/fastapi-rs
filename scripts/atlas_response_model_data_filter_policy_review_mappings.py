@@ -94,6 +94,10 @@ _FUNCTION = {
         "they contain no expected response values or copied upstream test body."
     ),
     "workflow_cases": [_workflow_link()],
+    "workflow_case": {
+        "workflow_id": "response-model-data-filter-exclude-unset-none-review",
+        **_workflow_link(),
+    },
     "supporting_sources": [
         _test_function_span("tests/test_skip_defaults.py", "test_return_exclude_unset_none"),
         _source(

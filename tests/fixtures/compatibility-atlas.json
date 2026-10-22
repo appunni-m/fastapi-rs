@@ -616930,6 +616930,22 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/response-model-serialization.yaml",
             "workflow_id": "response-model-serialization"
+          },
+          {
+            "case_ids": [
+              "fastapi.response-model.skip-defaults.exclude-defaults",
+              "fastapi.response-model.skip-defaults.exclude-none",
+              "fastapi.response-model.skip-defaults.exclude-unset",
+              "fastapi.response-model.skip-defaults.subclass-projection"
+            ],
+            "coverage_scope": "Partial independent sample across 4 case(s); observes http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+            "workflow_id": "response-model-skip-defaults-upstream"
           }
         ],
         "mapping_rule": "whole-token source signals plus explicitly reviewed function-to-feature mappings; candidate only",
@@ -616937,42 +616953,132 @@
           {
             "case_id": "fastapi.test.test-skip-defaults.test-return-defaults",
             "end_line": 90,
+            "function_source_ref": {
+              "end_line": 90,
+              "line": 88,
+              "path": "tests/test_skip_defaults.py",
+              "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc"
+            },
             "line": 88,
             "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "reviewed_source_candidate",
-            "name": "test_return_defaults"
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_return_defaults",
+            "workflow_case": {
+              "action_ids": [
+                "project-subclass-through-base-model"
+              ],
+              "case_id": "fastapi.response-model.skip-defaults.subclass-projection",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+              "workflow_id": "response-model-skip-defaults-upstream"
+            }
           },
           {
             "case_id": "fastapi.test.test-skip-defaults.test-return-exclude-unset",
             "end_line": 95,
+            "function_source_ref": {
+              "end_line": 95,
+              "line": 93,
+              "path": "tests/test_skip_defaults.py",
+              "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc"
+            },
             "line": 93,
             "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "reviewed_source_candidate",
-            "name": "test_return_exclude_unset"
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_return_exclude_unset",
+            "workflow_case": {
+              "action_ids": [
+                "apply-exclude-unset-policy"
+              ],
+              "case_id": "fastapi.response-model.skip-defaults.exclude-unset",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+              "workflow_id": "response-model-skip-defaults-upstream"
+            }
           },
           {
             "case_id": "fastapi.test.test-skip-defaults.test-return-exclude-defaults",
             "end_line": 100,
+            "function_source_ref": {
+              "end_line": 100,
+              "line": 98,
+              "path": "tests/test_skip_defaults.py",
+              "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc"
+            },
             "line": 98,
             "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "reviewed_source_candidate",
-            "name": "test_return_exclude_defaults"
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_return_exclude_defaults",
+            "workflow_case": {
+              "action_ids": [
+                "apply-exclude-defaults-policy"
+              ],
+              "case_id": "fastapi.response-model.skip-defaults.exclude-defaults",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+              "workflow_id": "response-model-skip-defaults-upstream"
+            }
           },
           {
             "case_id": "fastapi.test.test-skip-defaults.test-return-exclude-none",
             "end_line": 105,
+            "function_source_ref": {
+              "end_line": 105,
+              "line": 103,
+              "path": "tests/test_skip_defaults.py",
+              "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc"
+            },
             "line": 103,
             "mapping_scope": "reviewed_source_mapping",
-            "mapping_status": "reviewed_source_candidate",
-            "name": "test_return_exclude_none"
+            "mapping_status": "contract_gated_source_candidate",
+            "name": "test_return_exclude_none",
+            "workflow_case": {
+              "action_ids": [
+                "apply-exclude-none-policy"
+              ],
+              "case_id": "fastapi.response-model.skip-defaults.exclude-none",
+              "observation_selectors": [
+                "http.body.bytes",
+                "http.status"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+              "workflow_id": "response-model-skip-defaults-upstream"
+            }
           },
           {
             "case_id": "fastapi.test.test-skip-defaults.test-return-exclude-unset-none",
             "end_line": 110,
+            "function_source_ref": {
+              "end_line": 110,
+              "line": 108,
+              "path": "tests/test_skip_defaults.py",
+              "sha256": "52dd45cd3d327da99634da3c711ca5a77205f512d93e8775b43fbb7a680887dc"
+            },
             "line": 108,
             "mapping_scope": "reviewed_source_mapping",
             "mapping_status": "contract_gated_source_candidate",
-            "name": "test_return_exclude_unset_none"
+            "name": "test_return_exclude_unset_none",
+            "workflow_case": {
+              "action_ids": [
+                "apply-combined-unset-and-null-filter"
+              ],
+              "case_id": "fastapi.response-model-data-filter.exclude-unset-none",
+              "observation_selectors": [
+                "http.status",
+                "http.body.bytes"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/response-model-data-filter-exclude-unset-none-review.yaml",
+              "workflow_id": "response-model-data-filter-exclude-unset-none-review"
+            }
           },
           {
             "case_id": "fastapi.test.test-skip-defaults.test-return-iterable-exclude-unset",
@@ -617150,6 +617256,20 @@
             "http.status"
           ],
           "workflow_id": "response-model-serialization"
+        },
+        {
+          "case_ids": [
+            "fastapi.response-model.skip-defaults.exclude-defaults",
+            "fastapi.response-model.skip-defaults.exclude-none",
+            "fastapi.response-model.skip-defaults.exclude-unset",
+            "fastapi.response-model.skip-defaults.subclass-projection"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/response-model-skip-defaults-upstream.yaml",
+          "selectors": [
+            "http.body.bytes",
+            "http.status"
+          ],
+          "workflow_id": "response-model-skip-defaults-upstream"
         }
       ],
       "source_path": "tests/test_skip_defaults.py",
