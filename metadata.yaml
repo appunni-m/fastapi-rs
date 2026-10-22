@@ -20388,8 +20388,9 @@ reviewed_api_contract_overlay:
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
+        rust_binding: fastapi-rs/src/openapi_models.rs::GraphDefinition::Enum
         known_gaps:
-          - Evidence is through the linked consumer field, not a standalone alias/enum identity contract; other consumers and validation/serialization remain unproven.
+          - Direct module/object identity is mapped, but enum-member identity and standalone member values are not; consumer evidence is through Parameter.in_, and other consumers and validation/serialization remain unproven.
       source_evidence:
         - path: fastapi/openapi/models.py
           kind: source-definition
@@ -20397,15 +20398,20 @@ reviewed_api_contract_overlay:
           start_line: 221
           end_line: 225
       supported_slice: >-
-        Enum container declaration only: the child rows declare cookie, header, path, and query values; no
-        direct enum identity/member-value workflow is mapped. ParameterInType values are observed only as
-        accepted/rejected values consumed by Parameter.in_.
+        Enum declaration and module binding only: the module identity workflow compares the
+        fastapi.openapi.models.ParameterInType import path and object identity. Child rows declare cookie,
+        header, path, and query; those values are observed only through accepted/rejected Parameter.in_
+        consumer inputs. Direct member identity and standalone member values are not mapped.
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+          case_id: fastapi.openapi-models.module-identity
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
           case_id: fastapi.openapi-models.parameter-in-type.accepted-values
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-alias-enum-public-api.yaml
           case_id: fastapi.openapi-models.parameter-in-type.invalid-value
       observation_selectors:
+        - python.import_path
+        - python.object_identity
         - python.pydantic_model_result
         - python.call_outcome
     fastapi.openapi.models.ParameterInType.cookie:

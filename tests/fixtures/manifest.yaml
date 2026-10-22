@@ -1437,7 +1437,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 191
     symbols_with_operation_fixture_refs: 461
-    operation_fixture_refs: 2824
+    operation_fixture_refs: 2825
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -44478,6 +44478,17 @@ api_surface_contract:
       - python.import_path
       - python.object_identity
     operation_fixture_refs:
+    - workflow_id: openapi-model-module-identity
+      input_path: tests/fixtures/inputs/parity/openapi-model-module-identity.json
+      input_sha256: 43aa7d3f83b415cfe5e6a433e0e60ccf0b694de72014cf57f42e71e169f76907
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-model-module-identity.yaml
+      recipe_sha256: 7c3b9fe8153a1856e663a3106ebb9735aadde0b4175f92da220cd48f19e3ee0d
+      workload_path: tests/fixtures/workloads/openapi_models_module_identity.py
+      workload_sha256: 4fd835a0d1168816b47e32b9e3ae0d7beac17c4daae059479bea74d4e009e3ef
+      case_id: fastapi.openapi-models.module-identity
+      observation_selectors:
+      - python.import_path
+      - python.object_identity
     - workflow_id: openapi-alias-enum-public-api
       input_path: tests/fixtures/inputs/parity/openapi-alias-enum-public-api.json
       input_sha256: a1711ec82ccb8306b1a7c4494e5d7ec61a1f6c722a2dc27624e6a6996823c27f
@@ -44527,10 +44538,11 @@ api_surface_contract:
         - /api_candidates/763
       status: partial-contract
       disposition: unresolved
-      rust_binding: null
+      rust_binding: fastapi-rs/src/openapi_models.rs::GraphDefinition::Enum
       known_gaps:
-      - Evidence is through the linked consumer field, not a standalone alias/enum identity contract;
-        other consumers and validation/serialization remain unproven.
+      - Direct module/object identity is mapped, but enum-member identity and standalone member values
+        are not; consumer evidence is through Parameter.in_, and other consumers and validation/serialization
+        remain unproven.
   - id: fastapi.openapi.models.ParameterInType.cookie
     kind: field
     source_candidate_ref: /api_candidates/764
