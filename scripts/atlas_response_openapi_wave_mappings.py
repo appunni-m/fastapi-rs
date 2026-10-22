@@ -1342,7 +1342,7 @@ RESPONSE_OPENAPI_REVIEW_GAPS = {
     },
     "tests/test_response_set_response_code_empty.py": {
         "test_openapi_schema": {
-            "reason": "The status-overwrite runtime input does not compare the source's complete OpenAPI snapshot for its declared 204 response and parameter schema.",
+            "reason": "An independent OpenAPI input now covers the declared 204 status and required integer path parameter. It uses a different route path, parameter name, operation ID, and literal document, so the pinned source snapshot is not claimed as byte-for-byte reproduced.",
             "supporting_sources": [
                 _source(
                     "tests/test_response_set_response_code_empty.py",

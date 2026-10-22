@@ -90,6 +90,12 @@ _STARLETTE_STREAM_SEND = _source(
     255,
     "Starlette 1.6.0 emits StreamingResponse status and body chunks",
 )
+_OPENAPI_ROUTE = _source(
+    "fastapi/openapi/utils.py",
+    311,
+    420,
+    "FastAPI derives OpenAPI parameters from the route and retains its declared success status",
+)
 
 
 RESPONSE_STATUS_BODY_TEST_REVIEW_MAPPINGS = {
@@ -182,6 +188,36 @@ RESPONSE_STATUS_BODY_TEST_REVIEW_MAPPINGS = {
                 coverage_notes=[
                     "Partial runtime mapping: the existing action observes the overridden status and raw body bytes, supporting the source's 400 status and nonempty response assertions.",
                     "The action uses a different path, identifier, and JSON payload. It does not compare the source's parsed JSON object or cover test_openapi_schema's full OpenAPI snapshot.",
+                ],
+            ),
+            "test_openapi_schema": _case(
+                "tests/test_response_set_response_code_empty.py",
+                32,
+                104,
+                ["openapi-docs"],
+                ["openapi.document"],
+                "The declared 204 success status and required integer path parameter are represented in the generated OpenAPI operation, even though the request-time Response can select a different status.",
+                "Reuse pending-source-wave-a.yaml case fastapi.source-wave-a.response-status.openapi, action openapi. Its independent DELETE route declares status 204, has a required integer path parameter, and mutates the injected Response status at request time. A direct ASGI GET compares the complete parsed OpenAPI document without storing expected output.",
+                implementation_sources=[
+                    _source(
+                        "tests/test_response_set_response_code_empty.py",
+                        8,
+                        23,
+                        "The source declares a 204 DELETE route with an integer path parameter and a request-time status override",
+                    ),
+                ],
+                contract_sources=[_OPENAPI_ROUTE],
+                contract_gate="The linked input compares the complete OpenAPI document for an independently authored route with the same declared 204 status and required integer path parameter. Its route path, parameter name, operation ID, and generated literal document differ, so this direct link covers the structural behavior and does not assert byte-for-byte equality with the source snapshot.",
+                workflow_case={
+                    "workflow_id": "pending-source-wave-a",
+                    "recipe_path": "tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml",
+                    "case_id": "fastapi.source-wave-a.response-status.openapi",
+                    "action_ids": ["openapi"],
+                    "observation_selectors": ["openapi.document"],
+                },
+                coverage_notes=[
+                    "Direct function link: the action observes the full OpenAPI document for an independent route with a declared 204 status and required integer path parameter.",
+                    "The route path, identifier, operation ID, and literal OpenAPI document are intentionally independent from the pinned test source.",
                 ],
             ),
         },

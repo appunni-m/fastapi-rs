@@ -441,6 +441,16 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
         ("http.status", "http.headers.ordered", "http.body.bytes"),
     ),
     (
+        "tests/test_response_set_response_code_empty.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "pending-source-wave-a",
+        "tests/fixtures/input-recipes/parity/pending-source-wave-a.yaml",
+        "fastapi.source-wave-a.response-status.openapi",
+        ("openapi",),
+        ("openapi.document",),
+    ),
+    (
         "tests/test_stream_status_code.py",
         "test_status_code",
     ): _reviewed_direct_link(
