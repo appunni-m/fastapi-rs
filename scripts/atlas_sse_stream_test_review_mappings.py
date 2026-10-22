@@ -18,7 +18,11 @@ SOURCE_IDENTITIES = {
     "pydantic": {"version": "2.13.4", "role": "pinned model validation and encoding dependency"},
 }
 
-__all__ = ["SSE_STREAM_TEST_REVIEW_MAPPINGS", "SOURCE_IDENTITIES"]
+__all__ = [
+    "SSE_STREAM_TEST_REVIEW_MAPPINGS",
+    "SSE_TEST_FUNCTION_WORKFLOW_CASES",
+    "SOURCE_IDENTITIES",
+]
 
 
 def _source(path, start, end, role):
@@ -32,6 +36,152 @@ def _link(recipe_path, case_id, action_ids, selectors):
         "action_ids": list(action_ids),
         "observation_selectors": list(selectors),
     }
+
+
+def _test_function_case(recipe, case_id, action_ids, selectors):
+    return {
+        "workflow_id": recipe.rsplit("/", 1)[-1].removesuffix(".yaml"),
+        "recipe_path": recipe,
+        "case_id": case_id,
+        "action_ids": list(action_ids),
+        "observation_selectors": list(selectors),
+    }
+
+
+_SSE_RECIPE = "tests/fixtures/input-recipes/parity/sse.yaml"
+_SSE_CASE_PREFIX = "fastapi.test.test-sse.test-"
+
+SSE_TEST_FUNCTION_WORKFLOW_CASES = {
+    "test_async_generator_with_model": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "async-generator-with-model",
+        ["get-typed-model-stream"],
+        ["http.body.bytes", "http.headers.ordered", "http.status"],
+    ),
+    "test_sync_generator_with_model": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "sync-generator-with-model",
+        ["get-sync-model-stream"],
+        ["http.body.bytes", "http.headers.ordered", "http.status"],
+    ),
+    "test_async_generator_no_annotation": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "async-generator-no-annotation",
+        ["get-async-unannotated-stream"],
+        ["http.body.bytes", "http.headers.ordered", "http.status"],
+    ),
+    "test_sync_generator_no_annotation": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "sync-generator-no-annotation",
+        ["get-sync-unannotated-stream"],
+        ["http.body.bytes", "http.headers.ordered", "http.status"],
+    ),
+    "test_dict_items": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "dict-items",
+        ["get-dict-stream"],
+        ["http.body.bytes", "http.status"],
+    ),
+    "test_post_method_sse": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "post-method-sse",
+        ["post-model-stream"],
+        ["http.body.bytes", "http.headers.ordered", "http.status"],
+    ),
+    "test_sse_events_with_fields": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "sse-events-with-fields",
+        ["get-event-fields"],
+        ["http.body.bytes", "http.status"],
+    ),
+    "test_mixed_plain_and_sse_events": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "mixed-plain-and-sse-events",
+        ["get-mixed-stream"],
+        ["http.body.bytes", "http.status"],
+    ),
+    "test_string_data_json_encoded": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "string-data-json-encoded",
+        ["get-string-data-stream"],
+        ["http.body.bytes", "http.status"],
+    ),
+    "test_raw_data_sent_without_json_encoding": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "raw-data-sent-without-json-encoding",
+        ["get-raw-data"],
+        ["http.body.bytes", "http.status"],
+    ),
+    "test_sse_on_router_included_in_app": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "sse-on-router-included-in-app",
+        ["get-router-events"],
+        ["http.body.bytes", "http.headers.ordered", "http.status"],
+    ),
+    "test_sse_router_typed_stream": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "sse-router-typed-stream",
+        ["get-router-typed-stream"],
+        ["http.body.bytes", "http.headers.ordered", "http.status"],
+    ),
+    "test_sse_router_typed_openapi_schema": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "sse-router-typed-openapi-schema",
+        ["get-router-typed-openapi-schema"],
+        ["docs.response.status", "http.status", "openapi.document", "openapi.paths"],
+    ),
+    "test_no_keepalive_when_fast": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "no-keepalive-when-fast",
+        ["get-fast-stream-without-keepalive"],
+        ["http.body.bytes", "http.status"],
+    ),
+    "test_format_sse_event_splitlines_behavior_in_data": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "format-sse-event-splitlines-behavior-in-data",
+        [
+            "trailing-lf",
+            "two-trailing-lf",
+            "only-lf",
+            "crlf",
+            "cr",
+            "unicode-line-separator",
+            "vertical-tab",
+            "empty",
+        ],
+        ["http.body.bytes"],
+    ),
+    "test_format_sse_event_splitlines_behavior_in_comment": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "format-sse-event-splitlines-behavior-in-comment",
+        ["comment-trailing-lf"],
+        ["http.body.bytes"],
+    ),
+    "test_default_response_class_on_app_stream": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "default-response-class-on-app-stream",
+        ["get-app-default-sse-stream"],
+        ["http.body.bytes", "http.headers.ordered", "http.status"],
+    ),
+    "test_default_response_class_on_app_openapi_schema": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "default-response-class-on-app-openapi-schema",
+        ["get-app-default-sse-openapi"],
+        ["docs.response.status", "http.status", "openapi.document", "openapi.paths"],
+    ),
+    "test_default_response_class_on_parent_router_stream": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "default-response-class-on-parent-router-stream",
+        ["get-parent-router-default-sse-stream"],
+        ["http.body.bytes", "http.headers.ordered", "http.status"],
+    ),
+    "test_default_response_class_on_parent_router_openapi_schema": _test_function_case(
+        _SSE_RECIPE,
+        _SSE_CASE_PREFIX + "default-response-class-on-parent-router-openapi-schema",
+        ["get-parent-router-default-sse-openapi"],
+        ["docs.response.status", "http.status", "openapi.document", "openapi.paths"],
+    ),
+}
 
 
 def _workflow_recipe(function_rows):

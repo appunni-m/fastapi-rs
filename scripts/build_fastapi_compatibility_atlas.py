@@ -2156,14 +2156,12 @@ merge_test_review_mappings(
                 "test_format_sse_event_splitlines_behavior_in_data": reviewed_case(
                     ["response-serialization"],
                     ["http.body.bytes"],
-                    "The workload returns the exact bytes from format_sse_event as the ASGI response body, without a JSON or text transformation.",
-                    contract_gate="Requires fastapi.sse.format_sse_event to be explicitly included in the full API manifest.",
+                    "The test's private event formatter line splitting is observed as exact bytes through an EventSourceResponse body; this test mapping makes no public API claim for format_sse_event.",
                 ),
                 "test_format_sse_event_splitlines_behavior_in_comment": reviewed_case(
                     ["response-serialization"],
                     ["http.body.bytes"],
-                    "The workload returns the exact bytes from format_sse_event as the ASGI response body, without a JSON or text transformation.",
-                    contract_gate="Requires fastapi.sse.format_sse_event to be explicitly included in the full API manifest.",
+                    "The test's private event formatter line splitting is observed as exact bytes through an EventSourceResponse body; this test mapping makes no public API claim for format_sse_event.",
                 ),
                 "test_default_response_class_on_app_stream": reviewed_case(
                     ["response-serialization"],
@@ -3435,6 +3433,7 @@ from atlas_response_model_tutorial_test_review_mappings import (  # noqa: E402
 )
 from atlas_sse_stream_test_review_mappings import (  # noqa: E402
     SSE_STREAM_TEST_REVIEW_MAPPINGS,
+    SSE_TEST_FUNCTION_WORKFLOW_CASES,
 )
 
 merge_test_review_mappings(ERROR_TUTORIAL_TEST_REVIEW_MAPPINGS)
@@ -3446,6 +3445,16 @@ merge_test_review_mappings(SSE_STREAM_TEST_REVIEW_MAPPINGS)
 merge_test_review_mappings(RESPONSE_MODEL_TUTORIAL_TEST_REVIEW_MAPPINGS)
 merge_test_review_mappings(CUSTOM_RESPONSE_TUTORIAL_TEST_REVIEW_MAPPINGS)
 merge_test_review_mappings(BUILTIN_GENERIC_TYPE_TEST_REVIEW_MAPPINGS)
+
+for _sse_function_name, _sse_workflow_case in SSE_TEST_FUNCTION_WORKFLOW_CASES.items():
+    _sse_function_review = TEST_REVIEW_MAPPINGS["tests/test_sse.py"]["functions"][
+        _sse_function_name
+    ]
+    _sse_function_review["workflow_case"] = {
+        **_sse_workflow_case,
+        "action_ids": list(_sse_workflow_case["action_ids"]),
+        "observation_selectors": list(_sse_workflow_case["observation_selectors"]),
+    }
 
 from atlas_tutorial_response_body_input_review_mappings import (  # noqa: E402
     TUTORIAL_RESPONSE_BODY_INPUT_REVIEW_MAPPINGS,

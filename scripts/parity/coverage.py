@@ -1331,6 +1331,9 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
 from scripts.atlas_request_parameter_wave_mappings import (  # noqa: E402
     REQUEST_PARAMETER_FUNCTION_MAPPINGS,
 )
+from scripts.atlas_sse_stream_test_review_mappings import (  # noqa: E402
+    SSE_TEST_FUNCTION_WORKFLOW_CASES,
+)
 from scripts.atlas_union_error_context_review_mappings import (  # noqa: E402
     UNION_ERROR_CONTEXT_TEST_REVIEW_MAPPINGS,
 )
@@ -1363,6 +1366,17 @@ for _test_path in ("tests/test_params_repr.py", "tests/test_query.py"):
                 tuple(_direct_link["observation_selectors"]),
             )
         )
+
+for _function_name, _direct_link in SSE_TEST_FUNCTION_WORKFLOW_CASES.items():
+    REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS[("tests/test_sse.py", _function_name)] = (
+        _reviewed_direct_link(
+            _direct_link["workflow_id"],
+            _direct_link["recipe_path"],
+            _direct_link["case_id"],
+            _direct_link["action_ids"],
+            _direct_link["observation_selectors"],
+        )
+    )
 
 
 def _fail(message: str) -> None:
@@ -3595,6 +3609,7 @@ def validate_compatibility_artifacts(
                 "tests/test_union_forms.py",
                 "tests/test_union_inherited_body.py",
                 "tests/test_validation_error_context.py",
+                "tests/test_sse.py",
             }:
                 expected_direct_links = {
                     function_name: row[2]
