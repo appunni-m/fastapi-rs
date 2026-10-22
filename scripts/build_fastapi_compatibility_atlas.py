@@ -4428,19 +4428,23 @@ DOC_EXAMPLE_EXCLUSION_OVERRIDES = {
         "static serving, and template rendering are owned by Starlette-RS and Jinja2."
     ),
     "docs_src/opentelemetry/tutorial001_py310.py": (
-        "This example configures an OpenTelemetry tracer provider and console exporter. Its "
-        "trace/export effects are outside the current observation selectors; the constructor "
-        "surface is tracked separately, without claiming telemetry signal parity."
+        "This example constructs a default FastAPI app and registers a route. The default "
+        "constructor slice and first ASGI slice cover selected app behavior, but no telemetry "
+        "selector observes the traces, metrics, or logs that are the example's central claim; "
+        "exclude it from independent example coverage until those signals are observable."
     ),
     "docs_src/opentelemetry/tutorial002_py310.py": (
-        "This example disables FastAPI operation spans. The span-emission difference is not "
-        "observable through the current parity selectors; the telemetry constructor option is "
-        "tracked separately, without claiming telemetry signal parity."
+        "This example creates an OpenTelemetry TracerProvider, installs a BatchSpanProcessor "
+        "with a ConsoleSpanExporter, and passes the provider through FastAPI's telemetry "
+        "dictionary. The current constructor recipe has no provider-injection case and no "
+        "selector for emitted spans or exporter effects, so this example remains excluded "
+        "until those observations are available."
     ),
     "docs_src/opentelemetry/tutorial003_py310.py": (
-        "This example configures FastAPI telemetry options whose span and request-context "
-        "effects are outside the current observation selectors; the constructor surface is "
-        "tracked separately, without claiming telemetry signal parity."
+        "This example passes operation_spans=False to FastAPI. Constructor acceptance for this "
+        "option is mapped at the documentation-section level, but no telemetry selector "
+        "observes whether request and operation spans are suppressed; exclude its runtime "
+        "claim until a span observation is available."
     ),
     "docs_src/wsgi/tutorial001_py310.py": (
         "This example bridges Flask through third-party a2wsgi and Starlette's WSGIMiddleware. "
@@ -6779,11 +6783,11 @@ from atlas_documentation_section_case_mappings_sub_applications_20261015 import 
 from atlas_documentation_section_case_mappings_ui_clients_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_UI_CLIENTS_20261015,
 )
-from atlas_telemetry_documentation_section_review_mappings_20261022 import (  # noqa: E402
-    DOC_SECTION_CASE_MAPPINGS_OPENTELEMETRY_20261022,
-)
 from atlas_events_documentation_section_review_mappings_20261015 import (  # noqa: E402
     DOC_SECTION_CASE_MAPPINGS_EVENTS_20261015,
+)
+from atlas_telemetry_documentation_section_review_mappings_20261022 import (  # noqa: E402
+    DOC_SECTION_CASE_MAPPINGS_OPENTELEMETRY_20261022,
 )
 
 for _doc_path, _rows in DOC_PAGE_CASE_LINK_COMPLETIONS_WAVE_L.items():

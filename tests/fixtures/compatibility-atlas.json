@@ -82022,7 +82022,7 @@
       "uncertain": 59
     },
     "documentation_headings_inheriting_page_exclusion": 460,
-    "documentation_headings_without_feature_signal": 3,
+    "documentation_headings_without_feature_signal": 0,
     "documentation_pages": 156,
     "documentation_pages_candidate_links_pending_behavior_review": 0,
     "documentation_pages_excluded": 50,
@@ -82035,8 +82035,8 @@
     "documentation_python_examples_with_independent_input_workflow_link": 335,
     "documentation_python_examples_with_reviewed_partial_mapping": 335,
     "documentation_python_source_files": 467,
-    "documentation_section_candidates": 2169,
-    "documentation_sections_excluded": 1611,
+    "documentation_section_candidates": 2172,
+    "documentation_sections_excluded": 1614,
     "documentation_sections_pending_behavior_review": 0,
     "documentation_sections_with_reviewed_partial_mapping": 558,
     "documentation_support_files_excluded": 91,
@@ -167585,7 +167585,7 @@
       "document_pages": [
         "docs/en/docs/advanced/opentelemetry.md"
       ],
-      "exclusion_reason": "This example configures an OpenTelemetry tracer provider and console exporter. Its trace/export effects are outside the current observation selectors; the constructor surface is tracked separately, without claiming telemetry signal parity.",
+      "exclusion_reason": "This example constructs a default FastAPI app and registers a route. The default constructor slice and first ASGI slice cover selected app behavior, but no telemetry selector observes the traces, metrics, or logs that are the example's central claim; exclude it from independent example coverage until those signals are observable.",
       "feature_ids": [],
       "fixture_id": null,
       "id": "documented-example:docs_src/opentelemetry/tutorial001_py310.py",
@@ -167708,7 +167708,7 @@
       "document_pages": [
         "docs/en/docs/advanced/opentelemetry.md"
       ],
-      "exclusion_reason": "This example disables FastAPI operation spans. The span-emission difference is not observable through the current parity selectors; the telemetry constructor option is tracked separately, without claiming telemetry signal parity.",
+      "exclusion_reason": "This example creates an OpenTelemetry TracerProvider, installs a BatchSpanProcessor with a ConsoleSpanExporter, and passes the provider through FastAPI's telemetry dictionary. The current constructor recipe has no provider-injection case and no selector for emitted spans or exporter effects, so this example remains excluded until those observations are available.",
       "feature_ids": [],
       "fixture_id": null,
       "id": "documented-example:docs_src/opentelemetry/tutorial002_py310.py",
@@ -167831,7 +167831,7 @@
       "document_pages": [
         "docs/en/docs/advanced/opentelemetry.md"
       ],
-      "exclusion_reason": "This example configures FastAPI telemetry options whose span and request-context effects are outside the current observation selectors; the constructor surface is tracked separately, without claiming telemetry signal parity.",
+      "exclusion_reason": "This example passes operation_spans=False to FastAPI. Constructor acceptance for this option is mapped at the documentation-section level, but no telemetry selector observes whether request and operation spans are suppressed; exclude its runtime claim until a span observation is available.",
       "feature_ids": [],
       "fixture_id": null,
       "id": "documented-example:docs_src/opentelemetry/tutorial003_py310.py",
@@ -282363,6 +282363,21 @@
             "start_line": 1
           },
           {
+            "candidate_observation_selectors": [],
+            "candidate_selector_evidence": [],
+            "end_line": 27,
+            "exclusion_reason": "This section demonstrates adding the standard extra with the uv package manager. The runtime fixture profile does not install packages or observe extra resolution; dependency identities and optional-feature roles are tracked in the dependency graph instead.",
+            "feature_evidence": [],
+            "feature_ids": [],
+            "heading": "Install FastAPI { #install-fastapi }",
+            "independent_workflow_mappings": [],
+            "observation_selectors": [],
+            "review_rationale": "FastAPI 0.157.0's pinned section at docs/en/docs/advanced/opentelemetry.md:15-27 gives the uv add command for the standard extra. This is a package installation and optional-extra resolution step, not an in-process request/API stimulus; the current fixture profile has no package-manager observation.",
+            "review_status": "excluded",
+            "selector_evidence": [],
+            "start_line": 15
+          },
+          {
             "candidate_observation_selectors": [
               "http.body.bytes",
               "http.body.json",
@@ -282436,6 +282451,21 @@
               }
             ],
             "start_line": 28
+          },
+          {
+            "candidate_observation_selectors": [],
+            "candidate_selector_evidence": [],
+            "end_line": 43,
+            "exclusion_reason": "The described metrics dashboard and hosted telemetry behavior require the external FastAPI Cloud service and account; the local parity fixtures cannot create or observe that service.",
+            "feature_evidence": [],
+            "feature_ids": [],
+            "heading": "FastAPI Cloud { #fastapi-cloud }",
+            "independent_workflow_mappings": [],
+            "observation_selectors": [],
+            "review_rationale": "FastAPI 0.157.0's pinned section at docs/en/docs/advanced/opentelemetry.md:36-43 describes deployment to FastAPI Cloud and its hosted metrics dashboard. These service operations are outside the independently executable FastAPI library contract.",
+            "review_status": "excluded",
+            "selector_evidence": [],
+            "start_line": 36
           },
           {
             "candidate_observation_selectors": [],
@@ -282762,6 +282792,21 @@
               }
             ],
             "start_line": 81
+          },
+          {
+            "candidate_observation_selectors": [],
+            "candidate_selector_evidence": [],
+            "end_line": 106,
+            "exclusion_reason": "The section documents global and injected provider selection, automatic exporter registration, and provider shutdown behavior. Current selectors do not observe provider identity, emitted spans/metrics/logs, exporter setup, or lifecycle effects.",
+            "feature_evidence": [],
+            "feature_ids": [],
+            "heading": "Configure providers and exporters { #configure-providers-and-exporters }",
+            "independent_workflow_mappings": [],
+            "observation_selectors": [],
+            "review_rationale": "FastAPI 0.157.0's pinned section at docs/en/docs/advanced/opentelemetry.md:83-106 describes provider/exporter configuration and links tutorial002, which injects a TracerProvider configured with BatchSpanProcessor and ConsoleSpanExporter. The current constructor cases do not exercise that provider input, and no telemetry signal or exporter selector exists, so the section remains excluded pending a deterministic telemetry profile.",
+            "review_status": "excluded",
+            "selector_evidence": [],
+            "start_line": 83
           },
           {
             "candidate_observation_selectors": [

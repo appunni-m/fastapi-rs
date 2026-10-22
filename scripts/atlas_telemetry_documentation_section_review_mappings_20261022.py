@@ -13,6 +13,43 @@ _OPERATIONS_DISABLED = "fastapi.telemetry.constructor-operation-spans-disabled"
 _SIGNALS_DISABLED = "fastapi.telemetry.constructor-signals-disabled"
 
 DOC_SECTION_CASE_MAPPINGS_OPENTELEMETRY_20261022 = {
+    (_PAGE, "install-fastapi"): {
+        "status": "excluded",
+        "heading": "Install FastAPI { #install-fastapi }",
+        "start_line": 15,
+        "end_line": 27,
+        "exclusion_reason": (
+            "This section demonstrates adding the standard extra with the uv package manager. "
+            "The runtime fixture profile does not install packages or observe extra resolution; "
+            "dependency identities and optional-feature roles are tracked in the dependency "
+            "graph instead."
+        ),
+        "rationale": (
+            "FastAPI 0.157.0's pinned section at "
+            "docs/en/docs/advanced/opentelemetry.md:15-27 gives the uv add command for the "
+            "standard extra. This is a package installation and optional-extra resolution step, "
+            "not an "
+            "in-process request/API stimulus; the current fixture profile has no package-manager "
+            "observation."
+        ),
+    },
+    (_PAGE, "fastapi-cloud"): {
+        "status": "excluded",
+        "heading": "FastAPI Cloud { #fastapi-cloud }",
+        "start_line": 36,
+        "end_line": 43,
+        "exclusion_reason": (
+            "The described metrics dashboard and hosted telemetry behavior require the external "
+            "FastAPI Cloud service and account; the local parity fixtures cannot create or "
+            "observe that service."
+        ),
+        "rationale": (
+            "FastAPI 0.157.0's pinned section at "
+            "docs/en/docs/advanced/opentelemetry.md:36-43 describes deployment to FastAPI Cloud "
+            "and its hosted metrics dashboard. These service operations are outside the "
+            "independently executable FastAPI library contract."
+        ),
+    },
     (_PAGE, "opentelemetry"): {
         "heading": "OpenTelemetry { #opentelemetry }",
         "start_line": 1,
@@ -120,6 +157,25 @@ DOC_SECTION_CASE_MAPPINGS_OPENTELEMETRY_20261022 = {
             "their settings at docs/en/docs/advanced/opentelemetry.md:81-131. The linked "
             "constructor recipe selects only the three disabled-configuration calls and "
             "therefore establishes input acceptance, not telemetry runtime behavior."
+        ),
+    },
+    (_PAGE, "configure-providers-and-exporters"): {
+        "status": "excluded",
+        "heading": "Configure providers and exporters { #configure-providers-and-exporters }",
+        "start_line": 83,
+        "end_line": 106,
+        "exclusion_reason": (
+            "The section documents global and injected provider selection, automatic exporter "
+            "registration, and provider shutdown behavior. Current selectors do not observe "
+            "provider identity, emitted spans/metrics/logs, exporter setup, or lifecycle effects."
+        ),
+        "rationale": (
+            "FastAPI 0.157.0's pinned section at "
+            "docs/en/docs/advanced/opentelemetry.md:83-106 describes provider/exporter "
+            "configuration and links tutorial002, which injects a TracerProvider configured "
+            "with BatchSpanProcessor and ConsoleSpanExporter. The current constructor cases do "
+            "not exercise that provider input, and no telemetry signal or exporter selector "
+            "exists, so the section remains excluded pending a deterministic telemetry profile."
         ),
     },
     (_PAGE, "trace-request-operations"): {
