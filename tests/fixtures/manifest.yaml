@@ -523,7 +523,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: bd883c04c4deabae76e92297bf6dc78f838d89dc7968e4471e689b52399eacee
+    sha256: 8d7503bd71ac371ff8ffa37527c4845778ed341c83d540db72b9e1f0319da5c5
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1831
@@ -668,11 +668,8 @@ unresolved:
     pointer: /unresolved_compatibility_points
     item_id: starlette-rs-surface-review
   starlette_rs_streaming_taskgroup_callback:
-    state: identity-checked target mismatch; sibling-owned fix pending
-    source_artifact: compatibility_atlas
-    pointer: /unresolved_compatibility_points
-    item_id: starlette-rs-streaming-taskgroup-callback
-    question: The pinned Starlette-RS streaming adapter passes a custom awaitable factory to AnyIO TaskGroup.start_soon, which requires a native coroutine callback.
+    state: resolved on the FastAPI 0.157.0 runtime lock; identity-checked 3/3 parity passes
+    evidence_ref: docs/atlas/reviews/stream-cancellation-2026-10-22.md
   starlette_rs_target_identity:
     state: unresolved
     source_artifact: compatibility_atlas

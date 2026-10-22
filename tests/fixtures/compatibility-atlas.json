@@ -792574,12 +792574,6 @@
       "status": "crosswalk-generated; support-and-revision-review-pending"
     },
     {
-      "evidence": "The live identity-checked `stream-cancellation` input workflow (`tests/fixtures/input-recipes/parity/stream-cancellation.yaml`) compares FastAPI 0.157.0 at 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1 and Starlette 1.6.0 at 4f250d6b814587e20c5365f0a5f0c4d42bcb929f with FastAPI-RS at bd100876afc3953fb4e1331be82da2cde1dd87a8, built against the pinned Starlette-RS revision 4139a72449bf5751e8902fb1c7175ee7f191d338; all three target cases fail. Each stream action raises `AttributeError: 'builtins.AwaitableFactory' object has no attribute '__qualname__'` while AnyIO 4.12.1 TaskGroup.start_soon handles the custom PyO3 awaitable factory, before the streaming iterator starts. The yielded-dependency follow-up observes resource cleanup, but the cancelled request still fails. This generic ASGI response behavior is Starlette-RS-owned; adding `__qualname__` alone is not a fix.",
-      "id": "starlette-rs-streaming-taskgroup-callback",
-      "question": "Does the pinned Starlette-RS ASGI 2.0 StreamingResponse disconnect race pass a native coroutine callback to AnyIO TaskGroup.start_soon, preserving stream cancellation and request-scoped dependency cleanup?",
-      "status": "identity-checked target mismatch; sibling-owned fix pending"
-    },
-    {
       "evidence": "FastAPI AST inventory explicitly excludes Pydantic-generated BaseModel surfaces.",
       "id": "pydantic-runtime-generated-api",
       "question": "Which inherited/runtime-generated Pydantic model methods and schemas are externally observable through FastAPI's OpenAPI models and facade?",

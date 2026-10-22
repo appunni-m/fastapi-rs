@@ -12969,26 +12969,6 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "evidence": f"The merged FastAPI coverage matrix assigns Starlette-RS ownership areas, and direct re-export/subclass/helper edges reference the sibling catalog and reviewed dispositions. FastAPI-RS metadata and CI pin the local sibling at {starlette_rs_revision[:12]}; the initial FastAPI-RS slice consumes it, while full cross-project behavior review remains open.",
         },
         {
-            "id": "starlette-rs-streaming-taskgroup-callback",
-            "status": "identity-checked target mismatch; sibling-owned fix pending",
-            "question": "Does the pinned Starlette-RS ASGI 2.0 StreamingResponse disconnect race pass a native coroutine callback to AnyIO TaskGroup.start_soon, preserving stream cancellation and request-scoped dependency cleanup?",
-            "evidence": (
-                f"The live identity-checked `stream-cancellation` input workflow "
-                f"(`tests/fixtures/input-recipes/parity/stream-cancellation.yaml`) "
-                f"compares FastAPI {FASTAPI_VERSION} at {FASTAPI_COMMIT} and Starlette "
-                f"{STARLETTE_VERSION} at {STARLETTE_COMMIT} with FastAPI-RS at "
-                f"bd100876afc3953fb4e1331be82da2cde1dd87a8, built against the pinned "
-                f"Starlette-RS revision {starlette_rs_revision}; all three target cases "
-                f"fail. Each stream action raises `AttributeError: 'builtins.AwaitableFactory' "
-                f"object has no attribute '__qualname__'` while AnyIO 4.12.1 "
-                f"TaskGroup.start_soon handles the custom PyO3 awaitable factory, before "
-                f"the streaming iterator starts. The yielded-dependency follow-up observes "
-                f"resource cleanup, but the cancelled request still fails. This generic "
-                f"ASGI response behavior is Starlette-RS-owned; adding `__qualname__` alone "
-                f"is not a fix."
-            ),
-        },
-        {
             "id": "pydantic-runtime-generated-api",
             "status": "pending",
             "question": "Which inherited/runtime-generated Pydantic model methods and schemas are externally observable through FastAPI's OpenAPI models and facade?",
