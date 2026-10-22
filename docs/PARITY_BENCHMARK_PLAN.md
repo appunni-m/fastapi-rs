@@ -54,23 +54,19 @@ consumer-surface benchmark results.
 
 ## Benchmark evidence freshness
 
-All timing results below still use the previous FastAPI 0.141.1 source pin.
-Keep their identities and measured values as historical evidence; they do not
-establish performance for the current 0.157.0 baseline. The current focused
-parity receipt is recorded in the parity section below.
+The current FastAPI 0.157.0 baseline has a fresh, identity-checked first-slice
+measurement in the [2026-10-23 report](benchmarks/2026-10-23-39db162.md).
+Its 15-case parity gate passed 15/15. On one macOS arm64 host, FastAPI-RS was
+1.216x FastAPI median latency and 1.531x p95 latency. This is a slower result,
+not a speedup claim, and applies only to the declared direct-ASGI workload.
+The report records the target, oracle, Starlette-RS, manifest, workload, and
+receipt identities.
 
-The latest recorded direct-ASGI timing evidence on that previous source pin is
-the [seven-workload refresh](benchmarks/2026-10-22-f9a345f.md). All seven
-workloads completed with fresh identity-checked parity gates: 48/48 selected
-observations. The runs bind FastAPI-RS `f9a345fdce889c6a837b188367b1c43a1acdf331`,
-FastAPI 0.141.1, Starlette 1.6.0, and Starlette-RS
-`4139a72449bf5751e8902fb1c7175ee7f191d338`; the fixture manifest SHA-256 is
-`56bce10094c595950b07eaeda7283a4b8c5088af54ce4414034fbfb670cacd4e`. The suite
-receipt is `benchmark-results/suite-20261021T220513Z-5b324b01-f174-4afa-9ffb-91f1441878c7.json`
-(SHA-256 `82e4ba3ccde3c028a500eee7cab7dedee4ce0dc5fc5b64dab3d712b594e3c7a0`).
-FastAPI-RS median and p95 latency exceeded FastAPI's in all seven workloads.
-This is a single-host direct-ASGI result, not a full-parity or general
-performance claim.
+The [seven-workload refresh](benchmarks/2026-10-22-f9a345f.md) remains useful
+historical evidence for FastAPI 0.141.1. Its 48/48 selected observations
+passed, and FastAPI-RS median and p95 latency exceeded FastAPI's in all seven
+workloads. Its older source and manifest identities do not establish
+performance for the active 0.157.0 baseline.
 
 The earlier [large-response-model refresh](benchmarks/2026-10-21-57aec8c.md)
 passed its one-case gate at a prior target and manifest; it is historical to
@@ -97,7 +93,7 @@ identity-checked parity gate passes for the current target.
 
 ## Parity suite
 
-The first fourteen-case HTTP request/response slice has a Rust-owned target,
+The first fifteen-case HTTP request/response slice has a Rust-owned target,
 pass-through `fastapi` facade, isolated workers, and an exact comparator. The
 `make parity-first-slice` command regenerates the input from its recipe, checks
 that its case IDs exactly match the manifest declaration, runs both pinned
@@ -105,18 +101,18 @@ products, and stores the comparison in ignored `parity-results/`; CI runs this
 gate. For local runs, set `STARLETTE_RS_SOURCE` to a checkout at the pinned
 `4139a72449bf5751e8902fb1c7175ee7f191d338` revision if the sibling default is
 on another commit; the target identity gate rejects a mismatch. The current
-identity-checked comparison passed 14/14 at FastAPI-RS
-`df7a3de679208c35976027b3f4873d74d5567773` with FastAPI 0.157.0 at
+identity-checked comparison passed 15/15 at FastAPI-RS
+`39db162ad99a25445a3ffce94b0e9c80d1ef3043` with FastAPI 0.157.0 at
 `386a28af2f87af1a32ac26d88f07b7f58ab2dfb1`, Starlette 1.6.0, and Starlette-RS
 `4139a72449bf5751e8902fb1c7175ee7f191d338`. The comparison receipt is
-`parity-results/comparisons/19355fe1-12e1-49c9-9ac1-be637353ef58.json`; it binds
+`parity-results/comparisons/8c76cf9e-7200-4df1-8c9b-0e7cee607545.json`; it binds
 manifest SHA-256
-`ef73450dd119cd3da3248b7dc353ee984160471579143d808b506afc8ef36a88` and target
+`827764700cc27233098327b1e9e9e638269c86a6fda58bca5f576a19b318360a` and target
 source-tree SHA-256
-`62eaf983cc429b291dcdebafeaed46cca35ac88cc37b11bd47318fa019bb41c3`. This
-validates only the fourteen declared cases. It does not establish broader API
-or feature parity. Broader parity remains incomplete, and no timing benchmark
-has been run for the 0.157.0 baseline.
+`6c94a24249e2f89ae68012e11100f5ac2dd7e848dbddb635b8a832341dbce4ab`. This
+validates only the fifteen declared cases. It does not establish broader API
+or feature parity. Broader parity remains incomplete; current timing evidence
+is limited to the first-slice workload documented above.
 
 Direct Python API workflows use isolated source and target workers, a versioned
 result schema, and exact comparison. The 2026-10-14 receipt below contains one
@@ -212,7 +208,7 @@ Each report applies only to the measured revision and workload.
 
 `benchmarks/workloads/first-slice-valid-asgi.yaml` defines the first runnable
 measurement. `make benchmark-first-slice` rebuilds the pinned target extension
-with Cargo's release profile, runs the complete fourteen-case identity-checked
+with Cargo's release profile, runs the complete fifteen-case identity-checked
 parity gate, then measures the valid item request in three
 isolated processes: FastAPI 0.157.0 with Starlette 1.6.0, the FastAPI-RS release
 extension with the pinned Starlette-RS source, and a plain Starlette 1.6.0
