@@ -91,16 +91,17 @@ ORACLE_EXACT_PACKAGE_SET_PROFILE_IDS = frozenset(
     }
 )
 ORACLE_BASE_PACKAGES = {
-    "annotated-doc": "0.0.4",
+    "annotated-doc": "0.0.5",
     "annotated-types": "0.7.0",
-    "anyio": "4.12.1",
+    "anyio": "4.14.2",
     "fastapi": "0.157.0",
     "idna": "3.18",
+    "opentelemetry-api": "1.44.0",
     "pydantic": "2.13.5",
     "pydantic-core": "2.46.5",
     "starlette": "1.6.0",
     "typing-extensions": "4.16.0",
-    "typing-inspection": "0.4.2",
+    "typing-inspection": "0.4.4",
 }
 PINNED_SOURCE_COMMITS = {
     "fastapi": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",

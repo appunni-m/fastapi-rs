@@ -41,6 +41,7 @@ impl ApplicationSignatureBuilder {
                 "application signature contract is not pinned to FastAPI 0.157.0",
             ));
         }
+        register_telemetry_signature_type(py, module)?;
         Ok(Self {
             contract,
             core_module: module.clone().unbind(),
@@ -343,6 +344,7 @@ impl ApplicationSignatureBuilder {
                 "params.Depends" => module.getattr("ParamsDepends"),
                 "routing.APIRoute" => module.getattr("APIRoute"),
                 "routing.APIRouter" => module.getattr("APIRouter"),
+                "telemetry._api.TelemetryConfig" => module.getattr("TelemetryConfig"),
                 "utils.generate_unique_id" => module.getattr("_generate_unique_id"),
                 _ => Err(PyValueError::new_err(format!(
                     "unmapped source-owned application signature type: {source_name}"
@@ -356,4 +358,19 @@ impl ApplicationSignatureBuilder {
         };
         py.import(module_name)?.getattr(attribute_name)
     }
+}
+
+fn register_telemetry_signature_type(py: Python<'_>, module: &Bound<'_, PyModule>) -> PyResult<()> {
+    if module.hasattr("TelemetryConfig")? {
+        return Ok(());
+    }
+    let fields = PyDict::new(py);
+    let kwargs = PyDict::new(py);
+    kwargs.set_item("total", false)?;
+    let telemetry_config = py
+        .import("typing_extensions")?
+        .getattr("TypedDict")?
+        .call(("TelemetryConfig", fields), Some(&kwargs))?;
+    telemetry_config.setattr("__module__", "fastapi.telemetry._api")?;
+    module.setattr("TelemetryConfig", telemetry_config)
 }

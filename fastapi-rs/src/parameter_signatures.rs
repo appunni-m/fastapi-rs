@@ -218,6 +218,7 @@ fn build_annotation<'py>(
             let name: String = descriptor.get_item("qualified_name")?.extract()?;
             resolve_qualified_name(py, &name)
         }
+        "literal" => descriptor.get_item("value"),
         "annotated" => build_annotated(py, descriptor, documentation),
         "generic" => build_generic(py, descriptor, documentation),
         "annotation_sequence" => build_annotation_sequence(py, descriptor, documentation),
@@ -260,14 +261,37 @@ fn build_generic<'py>(
     descriptor: &Bound<'py, PyAny>,
     documentation: &Bound<'py, PyAny>,
 ) -> PyResult<Bound<'py, PyAny>> {
-    if !descriptor.get_item("alias_name")?.is_none() {
-        return Err(PyValueError::new_err(
-            "named generic aliases are outside the reviewed signature contract",
-        ));
-    }
+    let alias_name: Option<String> = descriptor.get_item("alias_name")?.extract()?;
     let origin_name: String = descriptor.get_item("origin")?.extract()?;
+    let argument_specs = descriptor.get_item("arguments")?;
+    if let Some(alias_name) = alias_name {
+        if alias_name != "Optional" || origin_name != "typing.Union" {
+            return Err(PyValueError::new_err(format!(
+                "unsupported named generic alias in signature contract: {alias_name}"
+            )));
+        }
+        if argument_specs.len()? != 2 {
+            return Err(PyValueError::new_err(
+                "the Optional signature alias must contain a value and NoneType",
+            ));
+        }
+        let none_spec = argument_specs.get_item(1)?;
+        let none_kind: String = none_spec.get_item("kind")?.extract()?;
+        let none_name: String = none_spec.get_item("qualified_name")?.extract()?;
+        if none_kind != "type" || none_name != "builtins.NoneType" {
+            return Err(PyValueError::new_err(
+                "the Optional signature alias must end with NoneType",
+            ));
+        }
+        let inner = build_annotation(py, &argument_specs.get_item(0)?, documentation)?;
+        return py
+            .import("typing")?
+            .getattr("Optional")?
+            .getattr("__getitem__")?
+            .call1((inner,));
+    }
     let mut arguments = Vec::new();
-    for argument in descriptor.get_item("arguments")?.try_iter()? {
+    for argument in argument_specs.try_iter()? {
         arguments.push(build_annotation(py, &argument?, documentation)?);
     }
     if origin_name == "types.UnionType" {
@@ -289,7 +313,11 @@ fn build_generic<'py>(
     } else {
         PyTuple::new(py, arguments)?.into_any()
     };
-    origin.getattr("__class_getitem__")?.call1((item,))
+    let subscription_method = match origin_name.as_str() {
+        "typing.Literal" | "typing.Union" => "__getitem__",
+        _ => "__class_getitem__",
+    };
+    origin.getattr(subscription_method)?.call1((item,))
 }
 
 fn build_annotation_sequence<'py>(
