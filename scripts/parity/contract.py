@@ -73,6 +73,7 @@ API_RESULT_SCHEMA_V13 = ROOT / "tests/fixtures/schemas/python-api-workflow-resul
 API_RESULT_SCHEMA_V14 = ROOT / "tests/fixtures/schemas/python-api-workflow-result-v14.schema.json"
 API_RESULT_SCHEMA_V15 = ROOT / "tests/fixtures/schemas/python-api-workflow-result-v15.schema.json"
 API_RESULT_SCHEMA_V16 = ROOT / "tests/fixtures/schemas/python-api-workflow-result-v16.schema.json"
+API_RESULT_SCHEMA_V17 = ROOT / "tests/fixtures/schemas/python-api-workflow-result-v17.schema.json"
 API_COMPARISON_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-comparison-v1.schema.json"
 API_COMPARISON_SCHEMA_V2 = ROOT / "tests/fixtures/schemas/python-api-comparison-v2.schema.json"
 API_COMPARISON_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-api-comparison-v3.schema.json"
@@ -173,6 +174,7 @@ API_RESULT_SCHEMA_V13_ID = "fastapi-rs/python-api-workflow-result@13"
 API_RESULT_SCHEMA_V14_ID = "fastapi-rs/python-api-workflow-result@14"
 API_RESULT_SCHEMA_V15_ID = "fastapi-rs/python-api-workflow-result@15"
 API_RESULT_SCHEMA_V16_ID = "fastapi-rs/python-api-workflow-result@16"
+API_RESULT_SCHEMA_V17_ID = "fastapi-rs/python-api-workflow-result@17"
 API_COMPARISON_SCHEMA_ID = "fastapi-rs/python-api-comparison@1"
 API_COMPARISON_SCHEMA_V2_ID = "fastapi-rs/python-api-comparison@2"
 API_COMPARISON_SCHEMA_V3_ID = "fastapi-rs/python-api-comparison@3"
@@ -219,7 +221,7 @@ API_RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     API_WORKFLOW_SCHEMA_V11_ID: API_RESULT_SCHEMA_V13_ID,
     API_WORKFLOW_SCHEMA_V12_ID: API_RESULT_SCHEMA_V14_ID,
     API_WORKFLOW_SCHEMA_V13_ID: API_RESULT_SCHEMA_V15_ID,
-    API_WORKFLOW_SCHEMA_V14_ID: API_RESULT_SCHEMA_V16_ID,
+    API_WORKFLOW_SCHEMA_V14_ID: API_RESULT_SCHEMA_V17_ID,
 }
 API_RESULT_SCHEMAS_BY_ID = {
     API_RESULT_SCHEMA_ID: API_RESULT_SCHEMA,
@@ -237,6 +239,7 @@ API_RESULT_SCHEMAS_BY_ID = {
     API_RESULT_SCHEMA_V14_ID: API_RESULT_SCHEMA_V14,
     API_RESULT_SCHEMA_V15_ID: API_RESULT_SCHEMA_V15,
     API_RESULT_SCHEMA_V16_ID: API_RESULT_SCHEMA_V16,
+    API_RESULT_SCHEMA_V17_ID: API_RESULT_SCHEMA_V17,
 }
 API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
     API_WORKFLOW_SCHEMA_ID: API_COMPARISON_SCHEMA_ID,
@@ -373,6 +376,7 @@ RESULT_SCHEMAS = {
     API_RESULT_SCHEMA_V14_ID: API_RESULT_SCHEMA_V14,
     API_RESULT_SCHEMA_V15_ID: API_RESULT_SCHEMA_V15,
     API_RESULT_SCHEMA_V16_ID: API_RESULT_SCHEMA_V16,
+    API_RESULT_SCHEMA_V17_ID: API_RESULT_SCHEMA_V17,
 }
 COMPARISON_SCHEMAS = {
     COMPARISON_SCHEMA_ID: COMPARISON_SCHEMA,
@@ -1532,7 +1536,7 @@ def read_manifest() -> dict[str, Any]:
         raise ContractError("manifest direct Python API v14 workflow contract is missing")
     if (
         api_workflow_v14_contract.get("schema_id") != API_WORKFLOW_SCHEMA_V14_ID
-        or api_workflow_v14_contract.get("result_schema_id") != API_RESULT_SCHEMA_V16_ID
+        or api_workflow_v14_contract.get("result_schema_id") != API_RESULT_SCHEMA_V17_ID
         or api_workflow_v14_contract.get("comparison_schema_id") != API_COMPARISON_SCHEMA_V14_ID
     ):
         raise ContractError("manifest direct Python API v14 schema identities are unsupported")
@@ -1541,7 +1545,7 @@ def read_manifest() -> dict[str, Any]:
         (
             "result_schema_path",
             "result_schema_sha256",
-            "direct Python API v16 result schema",
+            "direct Python API v17 result schema",
         ),
         (
             "comparison_schema_path",

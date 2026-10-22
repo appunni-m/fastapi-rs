@@ -602,13 +602,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: a42368f72d2e6b302cf9788e1129a1d3c8eb5b4a9c033bdf1861477c76cdb986
+    sha256: 20c68126bc80ebe62e62d3fd3f5ce2537f2664272aec3a3337cb55c322bfdea0
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: cac8df351bf84759f16ca130c47e4e01059c81424579c809ec20aeba1a19d0ea
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 726
-      cases: 2995
+      workflows: 727
+      cases: 2997
       partial_source_mappings: 1989
 
 contract_metadata:
@@ -1161,9 +1161,9 @@ unresolved:
     schema_id: fastapi-rs/python-api-workflow@14
     schema_path: tests/fixtures/schemas/python-api-workflow-v14.schema.json
     schema_sha256: 4b9a41571887a550dcc45163e7ecbee030d5b7521bcc2e53c725e6454fdd932b
-    result_schema_id: fastapi-rs/python-api-workflow-result@16
-    result_schema_path: tests/fixtures/schemas/python-api-workflow-result-v16.schema.json
-    result_schema_sha256: 5cbf3cfcbc420dd110d7e61190ab9291fd50fa7d234d5b62fcd60c9676cffee2
+    result_schema_id: fastapi-rs/python-api-workflow-result@17
+    result_schema_path: tests/fixtures/schemas/python-api-workflow-result-v17.schema.json
+    result_schema_sha256: 91fc418ee307e64f26db7822a71e3dbe6253bef89a77a0d222fbe7ae3002bf79
     comparison_schema_id: fastapi-rs/python-api-comparison@14
     comparison_schema_path: tests/fixtures/schemas/python-api-comparison-v14.schema.json
     comparison_schema_sha256: 1426f72b9aee269657d1515b30eac779aff8e48a1a98d906334da014dd61a1c7
@@ -1454,7 +1454,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 195
     symbols_with_operation_fixture_refs: 490
-    operation_fixture_refs: 2880
+    operation_fixture_refs: 2888
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -80581,6 +80581,30 @@ api_surface_contract:
       observation_selectors: &id037
       - python.import_path
       - python.object_identity
+    - workflow_id: sse-public-api-metadata
+      input_path: tests/fixtures/inputs/parity/sse-public-api-metadata.json
+      input_sha256: 153f1fb05e714cbc166be3b8d1659d648b0cd254184cf76b43dc39f89b115c2a
+      recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml
+      recipe_sha256: da41651de9b8945668f089c59bb9c376de35716f20608e224ddff5946b2ca658
+      workload_path: tests/fixtures/workloads/sse_public_api_metadata.py
+      workload_sha256: 340bdc3a29ffbcb986f695c9cfda5b53e808de71b0b420bc0892723688cdf1b2
+      case_id: fastapi.sse.event-source-response-public-metadata
+      probe_id: event-source-response-class-docstring
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: sse-public-api-metadata
+      input_path: tests/fixtures/inputs/parity/sse-public-api-metadata.json
+      input_sha256: 153f1fb05e714cbc166be3b8d1659d648b0cd254184cf76b43dc39f89b115c2a
+      recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml
+      recipe_sha256: da41651de9b8945668f089c59bb9c376de35716f20608e224ddff5946b2ca658
+      workload_path: tests/fixtures/workloads/sse_public_api_metadata.py
+      workload_sha256: 340bdc3a29ffbcb986f695c9cfda5b53e808de71b0b420bc0892723688cdf1b2
+      case_id: fastapi.sse.event-source-response-public-metadata
+      probe_id: event-source-response-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: sse
       input_path: tests/fixtures/inputs/parity/sse.json
@@ -80877,6 +80901,17 @@ api_surface_contract:
       - http.status
       - openapi.document
       - openapi.paths
+    - workflow_id: sse-public-api-metadata
+      input_path: tests/fixtures/inputs/parity/sse-public-api-metadata.json
+      input_sha256: 153f1fb05e714cbc166be3b8d1659d648b0cd254184cf76b43dc39f89b115c2a
+      recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml
+      recipe_sha256: da41651de9b8945668f089c59bb9c376de35716f20608e224ddff5946b2ca658
+      workload_path: tests/fixtures/workloads/sse_public_api_metadata.py
+      workload_sha256: 340bdc3a29ffbcb986f695c9cfda5b53e808de71b0b420bc0892723688cdf1b2
+      case_id: fastapi.sse.event-source-response-public-metadata
+      observation_selectors:
+      - python.attribute_value
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -80892,8 +80927,10 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.attribute_value
     - python.import_path
     - python.object_identity
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.sse.EventSourceResponse/supported_slice
@@ -80960,6 +80997,30 @@ api_surface_contract:
       observation_selectors:
       - python.import_path
       - python.object_identity
+    - workflow_id: sse-public-api-metadata
+      input_path: tests/fixtures/inputs/parity/sse-public-api-metadata.json
+      input_sha256: 153f1fb05e714cbc166be3b8d1659d648b0cd254184cf76b43dc39f89b115c2a
+      recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml
+      recipe_sha256: da41651de9b8945668f089c59bb9c376de35716f20608e224ddff5946b2ca658
+      workload_path: tests/fixtures/workloads/sse_public_api_metadata.py
+      workload_sha256: 340bdc3a29ffbcb986f695c9cfda5b53e808de71b0b420bc0892723688cdf1b2
+      case_id: fastapi.sse.server-sent-event-public-metadata
+      probe_id: server-sent-event-class-docstring
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: sse-public-api-metadata
+      input_path: tests/fixtures/inputs/parity/sse-public-api-metadata.json
+      input_sha256: 153f1fb05e714cbc166be3b8d1659d648b0cd254184cf76b43dc39f89b115c2a
+      recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml
+      recipe_sha256: da41651de9b8945668f089c59bb9c376de35716f20608e224ddff5946b2ca658
+      workload_path: tests/fixtures/workloads/sse_public_api_metadata.py
+      workload_sha256: 340bdc3a29ffbcb986f695c9cfda5b53e808de71b0b420bc0892723688cdf1b2
+      case_id: fastapi.sse.server-sent-event-public-metadata
+      probe_id: server-sent-event-signature-and-field-docs
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
     operation_fixture_refs:
     - workflow_id: sse
       input_path: tests/fixtures/inputs/parity/sse.json
@@ -81212,6 +81273,17 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: sse-public-api-metadata
+      input_path: tests/fixtures/inputs/parity/sse-public-api-metadata.json
+      input_sha256: 153f1fb05e714cbc166be3b8d1659d648b0cd254184cf76b43dc39f89b115c2a
+      recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml
+      recipe_sha256: da41651de9b8945668f089c59bb9c376de35716f20608e224ddff5946b2ca658
+      workload_path: tests/fixtures/workloads/sse_public_api_metadata.py
+      workload_sha256: 340bdc3a29ffbcb986f695c9cfda5b53e808de71b0b420bc0892723688cdf1b2
+      case_id: fastapi.sse.server-sent-event-public-metadata
+      observation_selectors:
+      - python.attribute_value
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -81228,8 +81300,10 @@ api_surface_contract:
     - http.status
     - openapi.document
     - openapi.paths
+    - python.attribute_value
     - python.import_path
     - python.object_identity
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.sse.ServerSentEvent/supported_slice
@@ -81316,6 +81390,17 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: sse-public-api-metadata
+      input_path: tests/fixtures/inputs/parity/sse-public-api-metadata.json
+      input_sha256: 153f1fb05e714cbc166be3b8d1659d648b0cd254184cf76b43dc39f89b115c2a
+      recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml
+      recipe_sha256: da41651de9b8945668f089c59bb9c376de35716f20608e224ddff5946b2ca658
+      workload_path: tests/fixtures/workloads/sse_public_api_metadata.py
+      workload_sha256: 340bdc3a29ffbcb986f695c9cfda5b53e808de71b0b420bc0892723688cdf1b2
+      case_id: fastapi.sse.server-sent-event-public-metadata
+      observation_selectors:
+      - python.attribute_value
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -81326,6 +81411,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.sse.ServerSentEvent.comment/supported_slice
@@ -81479,6 +81565,17 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: sse-public-api-metadata
+      input_path: tests/fixtures/inputs/parity/sse-public-api-metadata.json
+      input_sha256: 153f1fb05e714cbc166be3b8d1659d648b0cd254184cf76b43dc39f89b115c2a
+      recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml
+      recipe_sha256: da41651de9b8945668f089c59bb9c376de35716f20608e224ddff5946b2ca658
+      workload_path: tests/fixtures/workloads/sse_public_api_metadata.py
+      workload_sha256: 340bdc3a29ffbcb986f695c9cfda5b53e808de71b0b420bc0892723688cdf1b2
+      case_id: fastapi.sse.server-sent-event-public-metadata
+      observation_selectors:
+      - python.attribute_value
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -81491,6 +81588,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.sse.ServerSentEvent.data/supported_slice
@@ -81623,6 +81721,17 @@ api_surface_contract:
       - construction.exception_class
       - construction.exception_message
       - construction.outcome
+    - workflow_id: sse-public-api-metadata
+      input_path: tests/fixtures/inputs/parity/sse-public-api-metadata.json
+      input_sha256: 153f1fb05e714cbc166be3b8d1659d648b0cd254184cf76b43dc39f89b115c2a
+      recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml
+      recipe_sha256: da41651de9b8945668f089c59bb9c376de35716f20608e224ddff5946b2ca658
+      workload_path: tests/fixtures/workloads/sse_public_api_metadata.py
+      workload_sha256: 340bdc3a29ffbcb986f695c9cfda5b53e808de71b0b420bc0892723688cdf1b2
+      case_id: fastapi.sse.server-sent-event-public-metadata
+      observation_selectors:
+      - python.attribute_value
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -81635,6 +81744,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.sse.ServerSentEvent.event/supported_slice
@@ -81751,6 +81861,17 @@ api_surface_contract:
       - construction.exception_class
       - construction.exception_message
       - construction.outcome
+    - workflow_id: sse-public-api-metadata
+      input_path: tests/fixtures/inputs/parity/sse-public-api-metadata.json
+      input_sha256: 153f1fb05e714cbc166be3b8d1659d648b0cd254184cf76b43dc39f89b115c2a
+      recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml
+      recipe_sha256: da41651de9b8945668f089c59bb9c376de35716f20608e224ddff5946b2ca658
+      workload_path: tests/fixtures/workloads/sse_public_api_metadata.py
+      workload_sha256: 340bdc3a29ffbcb986f695c9cfda5b53e808de71b0b420bc0892723688cdf1b2
+      case_id: fastapi.sse.server-sent-event-public-metadata
+      observation_selectors:
+      - python.attribute_value
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -81763,6 +81884,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.sse.ServerSentEvent.id/supported_slice
@@ -81858,6 +81980,17 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: sse-public-api-metadata
+      input_path: tests/fixtures/inputs/parity/sse-public-api-metadata.json
+      input_sha256: 153f1fb05e714cbc166be3b8d1659d648b0cd254184cf76b43dc39f89b115c2a
+      recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml
+      recipe_sha256: da41651de9b8945668f089c59bb9c376de35716f20608e224ddff5946b2ca658
+      workload_path: tests/fixtures/workloads/sse_public_api_metadata.py
+      workload_sha256: 340bdc3a29ffbcb986f695c9cfda5b53e808de71b0b420bc0892723688cdf1b2
+      case_id: fastapi.sse.server-sent-event-public-metadata
+      observation_selectors:
+      - python.attribute_value
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -81870,6 +82003,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.sse.ServerSentEvent.raw_data/supported_slice
@@ -81977,6 +82111,17 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: sse-public-api-metadata
+      input_path: tests/fixtures/inputs/parity/sse-public-api-metadata.json
+      input_sha256: 153f1fb05e714cbc166be3b8d1659d648b0cd254184cf76b43dc39f89b115c2a
+      recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml
+      recipe_sha256: da41651de9b8945668f089c59bb9c376de35716f20608e224ddff5946b2ca658
+      workload_path: tests/fixtures/workloads/sse_public_api_metadata.py
+      workload_sha256: 340bdc3a29ffbcb986f695c9cfda5b53e808de71b0b420bc0892723688cdf1b2
+      case_id: fastapi.sse.server-sent-event-public-metadata
+      observation_selectors:
+      - python.attribute_value
+      - python.signature
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -81989,6 +82134,7 @@ api_surface_contract:
     - http.body.bytes
     - http.headers.ordered
     - http.status
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.sse.ServerSentEvent.retry/supported_slice

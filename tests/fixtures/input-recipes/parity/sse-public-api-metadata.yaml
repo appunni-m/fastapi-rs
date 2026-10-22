@@ -1,0 +1,48 @@
+schema: fastapi-rs/python-api-workflow@14
+workload:
+  file: tests/fixtures/workloads/sse_public_api_metadata.py
+  factory: create_bundles
+  instantiate_per_case: true
+cases:
+  - case_id: fastapi.sse.event-source-response-public-metadata
+    probes:
+      - probe_id: event-source-response-signature
+        public_callable:
+          module: fastapi.sse
+          attribute: EventSourceResponse
+        argument_bundle: unused
+        observations:
+          - {kind: python_signature, selector: signature, comparison: exact}
+      - probe_id: event-source-response-class-docstring
+        public_callable:
+          module: fastapi.sse
+          attribute: EventSourceResponse
+        argument_bundle: unused
+        observations:
+          - {kind: python_class_docstring, selector: value, comparison: exact}
+    source_evidence:
+      - path: fastapi/sse.py
+        kind: upstream_api_definition
+        sha256: dbb674abc00eec4c4a416290384a5383de22b04fcd55cb87037dfe60bf7e3ebd
+        symbol_id: fastapi.sse.EventSourceResponse
+  - case_id: fastapi.sse.server-sent-event-public-metadata
+    probes:
+      - probe_id: server-sent-event-signature-and-field-docs
+        public_callable:
+          module: fastapi.sse
+          attribute: ServerSentEvent
+        argument_bundle: unused
+        observations:
+          - {kind: python_signature, selector: signature, comparison: exact}
+      - probe_id: server-sent-event-class-docstring
+        public_callable:
+          module: fastapi.sse
+          attribute: ServerSentEvent
+        argument_bundle: unused
+        observations:
+          - {kind: python_class_docstring, selector: value, comparison: exact}
+    source_evidence:
+      - path: fastapi/sse.py
+        kind: upstream_api_definition
+        sha256: dbb674abc00eec4c4a416290384a5383de22b04fcd55cb87037dfe60bf7e3ebd
+        symbol_id: fastapi.sse.ServerSentEvent

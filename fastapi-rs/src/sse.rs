@@ -2,7 +2,86 @@
 
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
-use pyo3::types::{PyBytes, PyDict, PyTuple};
+use pyo3::types::{PyBytes, PyDict, PyTuple, PyType};
+
+const EVENT_SOURCE_RESPONSE_DOC: &str = r#"Streaming response with `text/event-stream` media type.
+
+    Use as `response_class=EventSourceResponse` on a *path operation* that uses `yield`
+    to enable Server Sent Events (SSE) responses.
+
+    Works with **any HTTP method** (`GET`, `POST`, etc.), which makes it compatible
+    with protocols like MCP that stream SSE over `POST`.
+
+    The actual encoding logic lives in the FastAPI routing layer. This class
+    serves mainly as a marker and sets the correct `Content-Type`.
+    "#;
+
+const SERVER_SENT_EVENT_DOC: &str = r#"Represents a single Server-Sent Event.
+
+    When `yield`ed from a *path operation function* that uses
+    `response_class=EventSourceResponse`, each `ServerSentEvent` is encoded
+    into the [SSE wire format](https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream)
+    (`text/event-stream`).
+
+    If you yield a plain object (dict, Pydantic model, etc.) instead, it is
+    automatically JSON-encoded and sent as the `data:` field.
+
+    All `data` values **including plain strings** are JSON-serialized.
+
+    For example, `data="hello"` produces `data: "hello"` on the wire (with
+    quotes).
+    "#;
+
+const SSE_DATA_DOC: &str = r#"
+            The event payload.
+
+            Can be any JSON-serializable value: a Pydantic model, dict, list,
+            string, number, etc. It is **always** serialized to JSON: strings
+            are quoted (`"hello"` becomes `data: "hello"` on the wire).
+
+            Mutually exclusive with `raw_data`.
+            "#;
+
+const SSE_RAW_DATA_DOC: &str = r#"
+            Raw string to send as the `data:` field **without** JSON encoding.
+
+            Use this when you need to send pre-formatted text, HTML fragments,
+            CSV lines, or any non-JSON payload. The string is placed directly
+            into the `data:` field as-is.
+
+            Mutually exclusive with `data`.
+            "#;
+
+const SSE_EVENT_DOC: &str = r#"
+            Optional event type name.
+
+            Maps to `addEventListener(event, ...)` on the browser. When omitted,
+            the browser dispatches on the generic `message` event. Must be a
+            single line.
+            "#;
+
+const SSE_ID_DOC: &str = r#"
+            Optional event ID.
+
+            The browser sends this value back as the `Last-Event-ID` header on
+            automatic reconnection. **Must be a single line** and must not contain
+            null (`\0`) characters.
+            "#;
+
+const SSE_RETRY_DOC: &str = r#"
+            Optional reconnection time in **milliseconds**.
+
+            Tells the browser how long to wait before reconnecting after the
+            connection is lost. Must be a non-negative integer.
+            "#;
+
+const SSE_COMMENT_DOC: &str = r#"
+            Optional comment line(s).
+
+            Comment lines start with `:` in the SSE wire format and are ignored by
+            `EventSource` clients. Useful for keep-alive pings to prevent
+            proxy/load-balancer timeouts.
+            "#;
 
 #[pyfunction(signature = (*, data_str = None, event = None, id = None, retry = None, comment = None))]
 fn format_sse_event(
@@ -56,12 +135,12 @@ fn split_sse_lines(value: &str) -> impl Iterator<Item = &str> {
 }
 
 #[pyfunction]
-fn validate_event(value: &Bound<'_, PyAny>) -> PyResult<Py<PyAny>> {
+fn _check_event_single_line(value: &Bound<'_, PyAny>) -> PyResult<Py<PyAny>> {
     validate_single_line(value, "event")
 }
 
 #[pyfunction]
-fn validate_id(value: &Bound<'_, PyAny>) -> PyResult<Py<PyAny>> {
+fn _check_id_valid(value: &Bound<'_, PyAny>) -> PyResult<Py<PyAny>> {
     if !value.is_none() && value.extract::<String>()?.contains('\0') {
         return Err(PyValueError::new_err(
             "SSE 'id' must not contain null characters",
@@ -100,31 +179,60 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     format_function.setattr("__module__", "fastapi.sse")?;
     module.add_function(format_function)?;
 
-    let event_validator = wrap_pyfunction!(validate_event, module)?;
-    let id_validator = wrap_pyfunction!(validate_id, module)?;
+    let event_validator = wrap_pyfunction!(_check_event_single_line, module)?;
+    event_validator.setattr("__module__", "fastapi.sse")?;
+    let id_validator = wrap_pyfunction!(_check_id_valid, module)?;
+    id_validator.setattr("__module__", "fastapi.sse")?;
     let exclusivity_validator = wrap_pyfunction!(validate_data_exclusivity, module)?;
     let pydantic = py.import("pydantic")?;
     let typing = py.import("typing")?;
-    let optional_str = typing
-        .getattr("Optional")?
-        .get_item(py.get_type::<pyo3::types::PyString>())?;
+    let annotated_doc = py.import("annotated_doc")?.getattr("Doc")?;
+    let none_type = py.import("types")?.getattr("NoneType")?;
+    let type_type = py.get_type::<PyType>();
+    let optional_str = type_type.call_method1(
+        "__or__",
+        (py.get_type::<pyo3::types::PyString>(), none_type.clone()),
+    )?;
     let annotated = typing.getattr("Annotated")?;
 
     let event_after_validator = pydantic
         .getattr("AfterValidator")?
         .call1((event_validator,))?;
-    let event_annotation = annotated.get_item((optional_str.clone(), event_after_validator))?;
+    let event_annotation = annotated.get_item((
+        optional_str.clone(),
+        event_after_validator,
+        annotated_doc.call1((SSE_EVENT_DOC,))?,
+    ))?;
     let id_after_validator = pydantic.getattr("AfterValidator")?.call1((id_validator,))?;
-    let id_annotation = annotated.get_item((optional_str.clone(), id_after_validator))?;
+    let id_annotation = annotated.get_item((
+        optional_str.clone(),
+        id_after_validator,
+        annotated_doc.call1((SSE_ID_DOC,))?,
+    ))?;
+    let data_annotation = annotated.get_item((
+        typing.getattr("Any")?,
+        annotated_doc.call1((SSE_DATA_DOC,))?,
+    ))?;
+    let raw_data_annotation = annotated.get_item((
+        optional_str.clone(),
+        annotated_doc.call1((SSE_RAW_DATA_DOC,))?,
+    ))?;
+    let comment_annotation = annotated.get_item((
+        optional_str.clone(),
+        annotated_doc.call1((SSE_COMMENT_DOC,))?,
+    ))?;
 
     let field = pydantic.getattr("Field")?;
-    let retry_annotation = typing
-        .getattr("Optional")?
-        .get_item(py.get_type::<pyo3::types::PyInt>())?;
+    let retry_base_annotation =
+        type_type.call_method1("__or__", (py.get_type::<pyo3::types::PyInt>(), none_type))?;
     let retry_field_kwargs = PyDict::new(py);
-    retry_field_kwargs.set_item("default", py.None())?;
     retry_field_kwargs.set_item("ge", 0)?;
     let retry_field = field.call((), Some(&retry_field_kwargs))?;
+    let retry_annotation = annotated.get_item((
+        retry_base_annotation,
+        retry_field,
+        annotated_doc.call1((SSE_RETRY_DOC,))?,
+    ))?;
 
     let validators = PyDict::new(py);
     let model_validator_kwargs = PyDict::new(py);
@@ -136,15 +244,16 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     validators.set_item("validate_data_exclusivity", model_validator)?;
 
     let fields = PyDict::new(py);
-    fields.set_item("data", (typing.getattr("Any")?, py.None()))?;
-    fields.set_item("raw_data", (optional_str.clone(), py.None()))?;
+    fields.set_item("data", (data_annotation, py.None()))?;
+    fields.set_item("raw_data", (raw_data_annotation, py.None()))?;
     fields.set_item("event", (event_annotation, py.None()))?;
     fields.set_item("id", (id_annotation, py.None()))?;
-    fields.set_item("retry", (retry_annotation, retry_field))?;
-    fields.set_item("comment", (optional_str, py.None()))?;
+    fields.set_item("retry", (retry_annotation, py.None()))?;
+    fields.set_item("comment", (comment_annotation, py.None()))?;
 
     let create_kwargs = PyDict::new(py);
     create_kwargs.set_item("__module__", "fastapi.sse")?;
+    create_kwargs.set_item("__doc__", SERVER_SENT_EVENT_DOC)?;
     create_kwargs.set_item("__validators__", validators)?;
     for (name, value) in fields.iter() {
         create_kwargs.set_item(name, value)?;
@@ -160,6 +269,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     let bases = PyTuple::new(py, [streaming_response])?;
     let attributes = PyDict::new(py);
     attributes.set_item("__module__", "fastapi.sse")?;
+    attributes.set_item("__doc__", EVENT_SOURCE_RESPONSE_DOC)?;
     attributes.set_item("media_type", "text/event-stream")?;
     let response_class = py.import("builtins")?.getattr("type")?.call1((
         "EventSourceResponse",

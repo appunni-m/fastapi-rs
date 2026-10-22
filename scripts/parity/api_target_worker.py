@@ -154,6 +154,9 @@ def run_target(
                 api_worker.WORKFLOW_SCHEMA_V9_ID,
                 api_worker.WORKFLOW_SCHEMA_V10_ID,
                 api_worker.WORKFLOW_SCHEMA_V11_ID,
+                api_worker.WORKFLOW_SCHEMA_V12_ID,
+                api_worker.WORKFLOW_SCHEMA_V13_ID,
+                api_worker.WORKFLOW_SCHEMA_V14_ID,
             },
         )
     )

@@ -243,6 +243,28 @@ def _metadata(value: Any, project_value: Callable[[Any], Any], *, depth: int) ->
         if set(vars(value)) != {"documentation"} or type(value.documentation) is not str:
             raise SignatureAnnotationError("Doc annotation has unreviewed fields or values")
         return {"kind": "doc", "qualified_name": name, "documentation": value.documentation}
+    after_validator_type = getattr(
+        importlib.import_module("pydantic.functional_validators"), "AfterValidator", None
+    )
+    if after_validator_type is not None and type(value) is after_validator_type:
+        slots = type(value).__dict__.get("__slots__")
+        function = value.func
+        module = getattr(function, "__module__", None)
+        qualified_name = getattr(function, "__qualname__", None)
+        if (
+            slots != ("func",)
+            or not (inspect.isfunction(function) or inspect.isbuiltin(function))
+            or not isinstance(module, str)
+            or not isinstance(qualified_name, str)
+        ):
+            raise SignatureAnnotationError(
+                "AfterValidator annotation has unreviewed fields or callable identity"
+            )
+        return {
+            "kind": "after_validator",
+            "qualified_name": _type_name(value),
+            "function": f"{module}.{qualified_name}",
+        }
     deprecated_type = getattr(importlib.import_module("typing_extensions"), "deprecated", None)
     if deprecated_type is not None and type(value) is deprecated_type:
         name = _type_name(value)

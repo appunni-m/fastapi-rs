@@ -40756,6 +40756,87 @@
       ]
     },
     {
+      "id": "sse-public-api-metadata",
+      "input_path": "tests/fixtures/inputs/parity/sse-public-api-metadata.json",
+      "input_sha256": "153f1fb05e714cbc166be3b8d1659d648b0cd254184cf76b43dc39f89b115c2a",
+      "recipe_path": "tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml",
+      "recipe_sha256": "da41651de9b8945668f089c59bb9c376de35716f20608e224ddff5946b2ca658",
+      "case_ids": [
+        "fastapi.sse.event-source-response-public-metadata",
+        "fastapi.sse.server-sent-event-public-metadata"
+      ],
+      "workload_path": "tests/fixtures/workloads/sse_public_api_metadata.py",
+      "workload_sha256": "340bdc3a29ffbcb986f695c9cfda5b53e808de71b0b420bc0892723688cdf1b2",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.sse.event-source-response-public-metadata",
+          "symbol_id": "fastapi.sse.EventSourceResponse",
+          "path": "fastapi/sse.py",
+          "sha256": "dbb674abc00eec4c4a416290384a5383de22b04fcd55cb87037dfe60bf7e3ebd"
+        },
+        {
+          "case_id": "fastapi.sse.server-sent-event-public-metadata",
+          "symbol_id": "fastapi.sse.ServerSentEvent",
+          "path": "fastapi/sse.py",
+          "sha256": "dbb674abc00eec4c4a416290384a5383de22b04fcd55cb87037dfe60bf7e3ebd"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.sse.event-source-response-public-metadata",
+          "probe_id": "event-source-response-class-docstring",
+          "symbol_id": "fastapi.sse.EventSourceResponse",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.sse.event-source-response-public-metadata",
+          "probe_id": "event-source-response-signature",
+          "symbol_id": "fastapi.sse.EventSourceResponse",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.sse.server-sent-event-public-metadata",
+          "probe_id": "server-sent-event-class-docstring",
+          "symbol_id": "fastapi.sse.ServerSentEvent",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.sse.server-sent-event-public-metadata",
+          "probe_id": "server-sent-event-signature-and-field-docs",
+          "symbol_id": "fastapi.sse.ServerSentEvent",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.sse.event-source-response-public-metadata",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.sse.EventSourceResponse"
+          ]
+        },
+        {
+          "case_id": "fastapi.sse.server-sent-event-public-metadata",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.sse.ServerSentEvent"
+          ]
+        }
+      ]
+    },
+    {
       "id": "standalone-apiroute-asgi",
       "input_path": "tests/fixtures/inputs/parity/standalone-apiroute-asgi.json",
       "input_sha256": "f86ff049d15df70657129decd4062eea52f0b4aeb0da7452a63141e10b0cc59e",

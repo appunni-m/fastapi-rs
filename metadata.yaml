@@ -5190,8 +5190,9 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-default-response-class-on-app-openapi-schema}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-default-response-class-on-parent-router-stream}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-default-response-class-on-parent-router-openapi-schema}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml, case_id: fastapi.sse.event-source-response-public-metadata}
       feature_ids: [response-serialization, openapi-docs]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, openapi.document, python.signature, python.attribute_value]
       supported_slice: >-
         FastAPI's EventSourceResponse marker is used as an explicit response
         class and as an app or router default. The linked SSE workflow compares
@@ -5201,7 +5202,9 @@ reviewed_api_contract_overlay:
         exact response bodies for async and sync streams that idle past the
         pinned 15-second default interval, including the inserted ping between
         events. The private interval override, cancellation, disconnect, and
-        generic response construction remain outside this slice.
+        generic response construction remain outside this slice. Its direct
+        API contract also compares the class docstring and inherited constructor
+        signature.
     fastapi.sse.ServerSentEvent:
       target_binding:
         implementation_owner: fastapi-rs
@@ -5242,8 +5245,9 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-multiline-comment-and-null-data}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-empty-raw-data}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-retry-boundaries}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml, case_id: fastapi.sse.server-sent-event-public-metadata}
       feature_ids: [response-serialization, request-validation]
-      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, construction.exception_class, construction.exception_message]
+      observation_selectors: [http.status, http.headers.ordered, http.body.bytes, construction.exception_class, construction.exception_message, python.signature, python.attribute_value]
       supported_slice: >-
         The registered Pydantic event model serializes JSON data and raw data
         into selected SSE wire fields. The linked cases cover event/comment/id/
@@ -5252,7 +5256,9 @@ reviewed_api_contract_overlay:
         Additional cases cover nested JSON-compatible values, Pydantic model
         data, line-split comments, empty raw data, explicit null data, and retry
         boundaries. Other Pydantic model behavior and unobserved field
-        combinations remain outside this slice.
+        combinations remain outside this slice. The direct API case compares
+        the class docstring and generated constructor signature, including
+        source-authored Doc metadata for all six fields.
     fastapi.sse.ServerSentEvent.comment:
       target_binding:
         implementation_owner: fastapi-rs
@@ -5275,12 +5281,14 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-sse-events-with-fields}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-multiline-comment-and-null-data}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml, case_id: fastapi.sse.server-sent-event-public-metadata}
       feature_ids: [response-serialization]
-      observation_selectors: [http.body.bytes]
+      observation_selectors: [http.body.bytes, python.signature]
       supported_slice: >-
         The comment field contributes the observed SSE comment line and splits
         LF, CRLF, and CR separators into comment lines, including a trailing
-        empty line. Other comment character combinations remain unproven.
+        empty line. Other comment character combinations remain unproven. Its
+        constructor signature also preserves the source field Doc metadata.
     fastapi.sse.ServerSentEvent.data:
       target_binding:
         implementation_owner: fastapi-rs
@@ -5308,13 +5316,15 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-data-json-compatible-values}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-pydantic-model-data}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-multiline-comment-and-null-data}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml, case_id: fastapi.sse.server-sent-event-public-metadata}
       feature_ids: [response-serialization, request-validation]
-      observation_selectors: [http.body.bytes, construction.exception_class, construction.exception_message]
+      observation_selectors: [http.body.bytes, construction.exception_class, construction.exception_message, python.signature]
       supported_slice: >-
         The data field serializes strings, nested JSON-compatible arrays and
         scalars, and Pydantic model values; None is observed as an omitted data
         line. It participates in data/raw_data exclusivity. Other JSON values
-        and serializer options remain outside this slice.
+        and serializer options remain outside this slice. Its constructor
+        signature also preserves the source field Doc metadata.
     fastapi.sse.ServerSentEvent.event:
       target_binding:
         implementation_owner: fastapi-rs
@@ -5341,12 +5351,14 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-lf}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-cr}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.event-crlf}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml, case_id: fastapi.sse.server-sent-event-public-metadata}
       feature_ids: [response-serialization, request-validation]
-      observation_selectors: [http.body.bytes, construction.exception_class, construction.exception_message]
+      observation_selectors: [http.body.bytes, construction.exception_class, construction.exception_message, python.signature]
       supported_slice: >-
         The event field is emitted for selected valid values and rejects LF,
         CR, and CRLF inputs as single-line violations. Other event-name inputs
-        remain outside this slice.
+        remain outside this slice. Its constructor signature also preserves the
+        source field Doc metadata.
     fastapi.sse.ServerSentEvent.id:
       target_binding:
         implementation_owner: fastapi-rs
@@ -5372,12 +5384,14 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.id-lf}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.id-cr}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-single-line-fields-reject-newlines.id-crlf}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml, case_id: fastapi.sse.server-sent-event-public-metadata}
       feature_ids: [response-serialization, request-validation]
-      observation_selectors: [http.body.bytes, construction.exception_class, construction.exception_message]
+      observation_selectors: [http.body.bytes, construction.exception_class, construction.exception_message, python.signature]
       supported_slice: >-
         The id field is emitted for the selected valid value and rejects a
         null character plus LF, CR, and CRLF. Other ID values remain outside
-        this slice.
+        this slice. Its constructor signature also preserves the source field
+        Doc metadata.
     fastapi.sse.ServerSentEvent.raw_data:
       target_binding:
         implementation_owner: fastapi-rs
@@ -5401,13 +5415,15 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-raw-data-sent-without-json-encoding}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-data-and-raw-data-mutually-exclusive}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-empty-raw-data}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml, case_id: fastapi.sse.server-sent-event-public-metadata}
       feature_ids: [response-serialization, request-validation]
-      observation_selectors: [http.body.bytes, construction.exception_class, construction.exception_message]
+      observation_selectors: [http.body.bytes, construction.exception_class, construction.exception_message, python.signature]
       supported_slice: >-
         Raw strings are emitted without JSON quoting for the selected text,
         HTML, and CSV samples, and simultaneous non-null data/raw_data is
         rejected; an empty raw payload remains an explicit empty data line.
-        Other raw payload types remain outside this slice.
+        Other raw payload types remain outside this slice. Its constructor
+        signature also preserves the source field Doc metadata.
     fastapi.sse.ServerSentEvent.retry:
       target_binding:
         implementation_owner: fastapi-rs
@@ -5432,12 +5448,14 @@ reviewed_api_contract_overlay:
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-negative-retry-rejected}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-float-retry-rejected}
         - {recipe_path: tests/fixtures/input-recipes/parity/sse.yaml, case_id: fastapi.test.test-sse.test-server-sent-event-retry-boundaries}
+        - {recipe_path: tests/fixtures/input-recipes/parity/sse-public-api-metadata.yaml, case_id: fastapi.sse.server-sent-event-public-metadata}
       feature_ids: [response-serialization, request-validation]
-      observation_selectors: [http.body.bytes, construction.exception_class, construction.exception_message]
+      observation_selectors: [http.body.bytes, construction.exception_class, construction.exception_message, python.signature]
       supported_slice: >-
         The retry field emits zero and a large non-negative integer, and rejects
         negative and fractional retry values. Other numeric coercions remain
-        outside this slice.
+        outside this slice. Its constructor signature also preserves the source
+        constraint and field Doc metadata.
     fastapi.Header:
       target_binding:
         implementation_owner: fastapi-rs

@@ -86,6 +86,7 @@ RESULT_SCHEMA_V13_ID = "fastapi-rs/python-api-workflow-result@13"
 RESULT_SCHEMA_V14_ID = "fastapi-rs/python-api-workflow-result@14"
 RESULT_SCHEMA_V15_ID = "fastapi-rs/python-api-workflow-result@15"
 RESULT_SCHEMA_V16_ID = "fastapi-rs/python-api-workflow-result@16"
+RESULT_SCHEMA_V17_ID = "fastapi-rs/python-api-workflow-result@17"
 RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
     WORKFLOW_SCHEMA_V2_ID: RESULT_SCHEMA_V3_ID,
@@ -100,7 +101,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V11_ID: RESULT_SCHEMA_V13_ID,
     WORKFLOW_SCHEMA_V12_ID: RESULT_SCHEMA_V14_ID,
     WORKFLOW_SCHEMA_V13_ID: RESULT_SCHEMA_V15_ID,
-    WORKFLOW_SCHEMA_V14_ID: RESULT_SCHEMA_V16_ID,
+    WORKFLOW_SCHEMA_V14_ID: RESULT_SCHEMA_V17_ID,
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@11"
@@ -1050,11 +1051,11 @@ def _validate_workflow_callables(
                 or "argument_bundle" in probe
             ):
                 raise WorkerError(
-                    "Literal type alias observation requires one v12 through v14 public-attribute probe"
+                    "Literal type alias observation requires one v12 through v14 "
+                    "public-attribute probe"
                 )
             if exception_instance_selected and (
-                workflow.get("schema")
-                not in {WORKFLOW_SCHEMA_V13_ID, WORKFLOW_SCHEMA_V14_ID}
+                workflow.get("schema") not in {WORKFLOW_SCHEMA_V13_ID, WORKFLOW_SCHEMA_V14_ID}
                 or len(observations) != 1
                 or "public_callable" not in probe
                 or "argument_bundle" not in probe
