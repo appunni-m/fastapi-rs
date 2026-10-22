@@ -81,7 +81,7 @@ def create_app() -> FastAPI:
 
     @app.get("/file")
     async def file_response():
-        return FileResponse(Path(__file__))
+        return FileResponse(file_response_class_input)
 
     @app.get("/file-inline")
     async def inline_file_response():

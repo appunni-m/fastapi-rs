@@ -16,11 +16,11 @@ def create_app() -> FastAPI:
 
     @app.get("/fastapi", response_class=RedirectResponse)
     async def redirect_fastapi():
-        return "/destination"
+        return "https://fastapi.tiangolo.com"
 
     @app.get("/pydantic", response_class=RedirectResponse, status_code=302)
     async def redirect_pydantic():
-        return "/destination"
+        return "https://docs.pydantic.dev/"
 
     @app.get("/legacy/")
     def get_legacy_data():

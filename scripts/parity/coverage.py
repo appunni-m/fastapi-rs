@@ -182,6 +182,26 @@ def _wave_h_bigger_applications_direct(case_slug, action_id):
 
 REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
     (
+        "tests/test_tutorial/test_custom_response/test_tutorial002_tutorial003_tutorial004.py",
+        "test_get_custom_response",
+    ): _reviewed_direct_link(
+        "custom-response-tutorial002-upstream",
+        "tests/fixtures/input-recipes/parity/custom-response-tutorial002-upstream.yaml",
+        "fastapi.custom-response.tutorial002.items-response",
+        ("items",),
+        ("http.status", "http.headers.ordered", "http.body.bytes"),
+    ),
+    (
+        "tests/test_tutorial/test_custom_response/test_tutorial002_tutorial003_tutorial004.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "custom-response-tutorial002-upstream",
+        "tests/fixtures/input-recipes/parity/custom-response-tutorial002-upstream.yaml",
+        "fastapi.custom-response.tutorial002.openapi",
+        ("openapi",),
+        ("docs.response.status", "http.status", "openapi.document", "openapi.paths"),
+    ),
+    (
         "tests/test_tutorial/test_custom_response/test_tutorial005.py",
         "test_get",
     ): _reviewed_direct_link(
@@ -219,6 +239,46 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
         "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
         "fastapi.test.test-tutorial-test-custom-response-test-tutorial006.test-openapi-schema",
         ("request",),
+        ("docs.response.status", "http.status", "openapi.document", "openapi.paths"),
+    ),
+    (
+        "tests/test_tutorial/test_custom_response/test_tutorial006b.py",
+        "test_redirect_response_class",
+    ): _reviewed_direct_link(
+        "responses-background-upstream",
+        "tests/fixtures/input-recipes/parity/responses-background-upstream.yaml",
+        "fastapi.test.test-tutorial-test-custom-response-test-tutorial006b.test-redirect-response-class",
+        ("redirect",),
+        ("http.status", "http.headers.ordered"),
+    ),
+    (
+        "tests/test_tutorial/test_custom_response/test_tutorial006b.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "responses-background-upstream",
+        "tests/fixtures/input-recipes/parity/responses-background-upstream.yaml",
+        "fastapi.test.test-tutorial-test-custom-response-test-tutorial006b.test-openapi-schema",
+        ("openapi-schema",),
+        ("docs.response.status", "http.status", "openapi.document", "openapi.paths"),
+    ),
+    (
+        "tests/test_tutorial/test_custom_response/test_tutorial006c.py",
+        "test_redirect_status_code",
+    ): _reviewed_direct_link(
+        "responses-background-upstream",
+        "tests/fixtures/input-recipes/parity/responses-background-upstream.yaml",
+        "fastapi.test.test-tutorial-test-custom-response-test-tutorial006c.test-redirect-status-code",
+        ("redirect",),
+        ("http.status", "http.headers.ordered"),
+    ),
+    (
+        "tests/test_tutorial/test_custom_response/test_tutorial006c.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "custom-response-tutorial006c-openapi-review",
+        "tests/fixtures/input-recipes/parity/custom-response-tutorial006c-openapi-review.yaml",
+        "fastapi.custom-response.tutorial006c.openapi-response-status",
+        ("openapi-route-status",),
         ("docs.response.status", "http.status", "openapi.document", "openapi.paths"),
     ),
     (
@@ -260,6 +320,16 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
             "http.body.bytes",
             "asgi.send.message_types",
         ),
+    ),
+    (
+        "tests/test_tutorial/test_custom_response/test_tutorial009.py",
+        "test_get",
+    ): _reviewed_direct_link(
+        "starlette-response-runtime-upstream",
+        "tests/fixtures/input-recipes/parity/starlette-response-runtime-upstream.yaml",
+        "fastapi.test.test-tutorial-test-custom-response-test-tutorial009.test-get",
+        ("request",),
+        ("http.status", "http.headers.ordered", "http.body.bytes"),
     ),
     (
         "tests/test_tutorial/test_custom_response/test_tutorial009b.py",
@@ -3335,8 +3405,12 @@ def validate_compatibility_artifacts(
                 "tests/test_additional_responses_default_validationerror.py",
                 "tests/test_additional_responses_router.py",
                 "tests/test_response_model_data_filter.py",
+                "tests/test_tutorial/test_custom_response/test_tutorial002_tutorial003_tutorial004.py",
                 "tests/test_tutorial/test_custom_response/test_tutorial005.py",
                 "tests/test_tutorial/test_custom_response/test_tutorial006.py",
+                "tests/test_tutorial/test_custom_response/test_tutorial006b.py",
+                "tests/test_tutorial/test_custom_response/test_tutorial006c.py",
+                "tests/test_tutorial/test_custom_response/test_tutorial009.py",
                 "tests/test_tutorial/test_custom_response/test_tutorial010.py",
                 "tests/test_tutorial/test_bigger_applications/test_main.py",
                 "tests/test_tutorial/test_dataclasses/test_tutorial001.py",
