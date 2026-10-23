@@ -12,7 +12,7 @@ This page is the navigation and ownership crosswalk for the active FastAPI-RS de
 | Pydantic source/target pin | `pydantic==2.13.5`, `pydantic-core==2.46.5`; Pydantic owns the Python model API and native Core engine. |
 | Starlette-RS implementation contract | Exact source pin is in [`metadata.yaml`](../metadata.yaml); generic ASGI behavior belongs to that sibling project. |
 
-FastAPI 0.157.0 newly declares `opentelemetry-api` in its default runtime closure and has an optional `opentelemetry` extra. Those are upstream source facts, not FastAPI-RS target runtime dependencies. The target dependency surface is separately declared in [`pyproject.toml`](../pyproject.toml), Cargo manifests, and profile locks.
+FastAPI 0.157.0 declares `opentelemetry-api` in its default runtime closure and has an optional `opentelemetry` extra. FastAPI-RS now directly pins the required `opentelemetry-api==1.44.0` in its own runtime profile; the optional SDK/exporter stack remains outside the target runtime. The target dependency surface is declared separately in [`pyproject.toml`](../pyproject.toml), Cargo manifests, and profile locks. Having the API dependency present does not mean FastAPI-RS telemetry behavior is implemented.
 
 ## FastAPI-RS target Pydantic profile
 

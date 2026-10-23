@@ -14,10 +14,12 @@ routing, dependency resolution, validation orchestration, serialization/OpenAPI,
 middleware, lifecycle, and protocol control flow belongs in Rust.
 
 FastAPI 0.157.0's default `opentelemetry-api` edge and optional/test telemetry
-packages are properties of this upstream graph; this inventory does not add
-them as FastAPI-RS target runtime dependencies. The target runtime remains
-defined by its own manifest and profile. The graph faithfully reports FastAPI
-0.157.0's upstream source-lock dependency versions for dependency analysis.
+packages are properties of this upstream graph. FastAPI-RS separately pins
+`opentelemetry-api==1.44.0` as a target runtime dependency, matching the
+required upstream API package; the optional SDK/exporter stack remains outside
+the target runtime. The API dependency is present, but Rust-owned telemetry
+behavior is not yet implemented. The graph faithfully reports FastAPI 0.157.0's
+upstream source-lock dependency versions for dependency analysis.
 That lock resolves Starlette 1.7.0, while
 compatibility and parity use Starlette 1.6.0 at
 `4f250d6b814587e20c5365f0a5f0c4d42bcb929f` as the sole selected oracle. FastAPI
