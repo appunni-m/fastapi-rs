@@ -18113,6 +18113,46 @@
       ]
     },
     {
+      "id": "openapi-dependency-graph-20x101",
+      "input_path": "tests/fixtures/inputs/parity/openapi-dependency-graph-20x101.json",
+      "input_sha256": "0f140ec72df6b82a80fed7d10bd6dc0629df0162d50ce46e4d97c0eab1511a52",
+      "recipe_path": "tests/fixtures/input-recipes/parity/openapi-dependency-graph-20x101.yaml",
+      "recipe_sha256": "22716545d6278786b3e64f30560f51fe6e6003aa61b53084720f2fb12e465e54",
+      "case_ids": [
+        "fastapi.openapi.dependency-graph-20-routes-101-levels"
+      ],
+      "workload_path": "tests/fixtures/workloads/openapi_dependency_graph_20x101.py",
+      "workload_sha256": "09726e983d324a27f20b8570a7ecc013155eaeeba884da2ab2391e3ea1f6ebb1",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.openapi.dependency-graph-20-routes-101-levels",
+          "symbol_id": "fastapi.applications.FastAPI.openapi",
+          "path": "fastapi/applications.py",
+          "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.openapi.dependency-graph-20-routes-101-levels",
+          "probe_id": "cold-openapi-schema",
+          "symbol_id": "fastapi.applications.FastAPI.openapi",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.openapi.dependency-graph-20-routes-101-levels",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.applications.FastAPI.openapi"
+          ]
+        }
+      ]
+    },
+    {
       "id": "openapi-docs",
       "input_path": "tests/fixtures/inputs/parity/openapi-docs.json",
       "input_sha256": "5a72374b4b17f9e7de647fdccd67611a532aa6872403e4f704b9c2516abf515a",

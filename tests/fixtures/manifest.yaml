@@ -627,13 +627,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@12
-    sha256: 604b685c9ac967c2f36ed794e213d6d1847ceeac69ec0cc31f9ad49845220ab6
+    sha256: 0ac18e15fae629dff18f45a331c4954060bb35be2df6adfb8627176f9dc09dcb
     schema_path: tests/fixtures/schemas/materialized-input-index-v12.schema.json
     schema_sha256: 668c3c0e71c739ab05d23b414f07c4ccfe6227116094891280943a8326e1d77a
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 744
-      cases: 3126
+      workflows: 745
+      cases: 3127
       partial_source_mappings: 2029
 
 contract_metadata:
@@ -20274,6 +20274,18 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    - workflow_id: openapi-dependency-graph-20x101
+      input_path: tests/fixtures/inputs/parity/openapi-dependency-graph-20x101.json
+      input_sha256: 0f140ec72df6b82a80fed7d10bd6dc0629df0162d50ce46e4d97c0eab1511a52
+      recipe_path: tests/fixtures/input-recipes/parity/openapi-dependency-graph-20x101.yaml
+      recipe_sha256: 22716545d6278786b3e64f30560f51fe6e6003aa61b53084720f2fb12e465e54
+      workload_path: tests/fixtures/workloads/openapi_dependency_graph_20x101.py
+      workload_sha256: 09726e983d324a27f20b8570a7ecc013155eaeeba884da2ab2391e3ea1f6ebb1
+      case_id: fastapi.openapi.dependency-graph-20-routes-101-levels
+      probe_id: cold-openapi-schema
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
     - workflow_id: operation-signatures-upstream
       input_path: tests/fixtures/inputs/parity/operation-signatures-upstream.json
       input_sha256: a4be66068dd3757c66ef7999255dbf6ff275ddc593501065f84f6332a633e9d0

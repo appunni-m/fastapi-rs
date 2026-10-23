@@ -12939,11 +12939,7 @@ impl CallablePlan {
                         });
                     }
                 }
-                ParameterSource::Dependency { plan, .. } => {
-                    parameters.extend(
-                        plan.openapi_parameters_with_model_fields(py, flatten_model_sources)?,
-                    );
-                }
+                ParameterSource::Dependency { .. } => {}
                 ParameterSource::Input { .. }
                 | ParameterSource::WebSocket
                 | ParameterSource::Request
@@ -12951,6 +12947,15 @@ impl CallablePlan {
                 | ParameterSource::Response
                 | ParameterSource::BackgroundTasks
                 | ParameterSource::SecurityScopes => {}
+            }
+        }
+        // FastAPI flattens each dependant's own parameter fields before
+        // visiting its child dependencies. OpenAPI later resolves duplicate
+        // (location, name) pairs with the last field taking precedence.
+        for parameter in &self.parameters {
+            if let ParameterSource::Dependency { plan, .. } = &parameter.source {
+                parameters
+                    .extend(plan.openapi_parameters_with_model_fields(py, flatten_model_sources)?);
             }
         }
         parameters.sort_by_key(|parameter| match parameter.location.as_str() {

@@ -1,0 +1,28 @@
+schema: fastapi-rs/python-api-workflow@3
+workload:
+  file: tests/fixtures/workloads/openapi_dependency_graph_20x101.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.openapi.dependency-graph-20-routes-101-levels
+  probes:
+  - probe_id: cold-openapi-schema
+    public_callable:
+      module: fastapi.applications
+      attribute: FastAPI.openapi
+    argument_bundle: openapi-dependency-graph
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: tests/benchmarks/test_openapi.py
+    kind: upstream_test
+    sha256: 6ce278e7eca76a053c485db7cd98c9ae227a4fc10ffce0f2d9b775c8259eee13
+  - path: tests/benchmarks/utils.py
+    kind: upstream_test
+    sha256: 5348fc3a13ef31003cf3e6c5dad92d432a27db6dc947fb2d200897f8e65c25c8
+  - path: fastapi/applications.py
+    kind: upstream_api_definition
+    sha256: a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca
+    symbol_id: fastapi.applications.FastAPI.openapi
