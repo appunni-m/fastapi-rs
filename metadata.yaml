@@ -16340,6 +16340,22 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
           workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.read-full-bytes
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.write-then-read
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value, python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.close-then-read
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value, python.call_outcome]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.negative-seek-error
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.call_outcome]
       supported_slice: >-
         The root alias is the same class as `fastapi.datastructures.UploadFile` in the
         pinned source. The linked input cases map constructor and four method
@@ -16584,6 +16600,22 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
           workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.read-full-bytes
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.write-then-read
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value, python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.close-then-read
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value, python.call_outcome]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.negative-seek-error
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.call_outcome]
       supported_slice: >-
         The public class constructs from BytesIO and SpooledTemporaryFile objects, exposes selected
         file metadata, supports the linked awaited file-operation sequence, generates its Pydantic
@@ -16597,7 +16629,9 @@ reviewed_api_contract_overlay:
         Constructor and property cases compare omitted headers, duplicate case-insensitive content-type
         values, and reassignment of file, filename, size, and headers. A multipart route case checks
         that FastAPI injects the exact UploadFile object exposed by Request.form(); other file types
-        and input values remain outside this partial slice.
+        and input values remain outside this partial slice. Direct API workflows also compare exact
+        bytes from full, bounded, and EOF reads, write/seek/read state transitions, and selected
+        closed-file and invalid-seek errors.
 
     fastapi.datastructures.UploadFile.close:
       target_binding:
@@ -16645,6 +16679,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
           workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.close-then-read
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value, python.call_outcome]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.write-after-close-error
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value, python.call_outcome]
       supported_slice: >-
         Awaited close returns `None` and closes BytesIO and spooled file objects; a selected
         underlying OSError propagates and leaves the failing file open.
@@ -16798,9 +16840,9 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The workflow checks positive and default full reads, a read after writing, one propagated
-            OSError, and reads after spooled threshold equality, crossing, and pre-rollover; other
-            sizes, EOF, file types, and exception types remain unverified.
+            The workflows check exact direct full, bounded, post-seek, post-write, and EOF bytes,
+            one propagated OSError, and spooled reads after threshold equality, crossing, and
+            pre-rollover; other sizes, file types, and exception types remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -16837,10 +16879,35 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile.metadata-constructor-and-mutation-edges
           workload_path: tests/fixtures/workloads/uploadfile_metadata_edges.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.read-full-bytes
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.read-limited-bytes
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.seek-then-read
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value, python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.write-then-read
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value, python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.read-at-eof
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value, python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.close-then-read
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value, python.call_outcome]
       supported_slice: >-
         Forward the optional byte count to awaited Starlette `UploadFile.read`; return bytes and
         propagate a selected underlying OSError. The workflow reads spooled files before and after
-        threshold equality, crossing, and pre-rollover.
+        threshold equality, crossing, and pre-rollover. Direct API cases compare exact bytes for
+        full, bounded, post-seek, post-write, and EOF reads, plus a selected read after close.
 
     fastapi.datastructures.UploadFile.seek:
       target_binding:
@@ -16849,8 +16916,8 @@ reviewed_api_contract_overlay:
         known_gaps:
           - >-
             The workflow checks offsets zero and two for BytesIO, one underlying OSError, and offset
-            zero after spooled threshold equality, crossing, and pre-rollover; negative/large offsets,
-            other file types, and other exception types remain unverified.
+            zero after spooled threshold equality, crossing, and pre-rollover, plus a negative-offset
+            error; large offsets, other file types, and other exception types remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -16883,10 +16950,27 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.spooled-storage-thresholds
           workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.seek-then-read
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value, python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.write-then-read
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value, python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.read-at-eof
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value, python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.negative-seek-error
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.call_outcome]
       supported_slice: >-
         Forward a required byte offset to awaited Starlette `UploadFile.seek`; return `None` and
         propagate a selected underlying OSError. The workflow seeks spooled files before reading
-        after threshold equality, crossing, and pre-rollover.
+        after threshold equality, crossing, and pre-rollover. Direct API cases also compare seek/read
+        state transitions and the exact negative-offset failure.
 
     fastapi.datastructures.UploadFile.size:
       target_binding:
@@ -16934,9 +17018,10 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            The workflow checks a one-byte BytesIO overwrite and spooled writes at threshold equality,
-            crossing, and pre-rollover, plus one propagated OSError and its size update; appends,
-            longer writes, other file types, and other exception types remain unverified.
+            The workflows check a two-byte BytesIO overwrite and write-after-close failure, plus
+            spooled writes at threshold equality, crossing, and pre-rollover and one propagated
+            OSError with its size update; appends, longer writes, other file types, and other exception
+            types remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -16969,10 +17054,19 @@ reviewed_api_contract_overlay:
           case_id: fastapi.uploadfile-io.spooled-storage-thresholds
           workload_path: tests/fixtures/workloads/uploadfile_spooled_storage.py
           observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.write-then-read
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value, python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+          case_id: fastapi.direct-api-uploadfile.io.write-after-close-error
+          workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+          observation_selectors: [python.return_value, python.call_outcome]
       supported_slice: >-
         Forward bytes to awaited Starlette `UploadFile.write`; return `None`. Spooled writes are
         compared at threshold equality, crossing, and pre-rollover. A selected underlying OSError
-        propagates after the observed size increment.
+        propagates after the observed size increment. Direct API cases compare an overwrite through
+        a following exact read and a write attempted after close.
 
     fastapi.exceptions.HTTPException:
       target_binding:

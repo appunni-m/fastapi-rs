@@ -600,13 +600,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: bd2d21899804d23612cc8160cccceb242c06bf940fb24463744e9bfd31d63fd7
+    sha256: a43c0abc60259cb845a026d774f8a74725e34dafec1576e2c3dbee67911df509
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: 61ec8ca935acdac54c98e148d48e90879bc3d3cfe68315db856332ef55a38bf9
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 738
-      cases: 3099
+      workflows: 739
+      cases: 3107
       partial_source_mappings: 2018
 
 contract_metadata:
@@ -1476,7 +1476,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 196
     symbols_with_operation_fixture_refs: 490
-    operation_fixture_refs: 3007
+    operation_fixture_refs: 3029
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -9286,6 +9286,48 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.read-full-bytes
+      observation_selectors:
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.write-then-read
+      observation_selectors:
+      - python.attribute_value
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.close-then-read
+      observation_selectors:
+      - python.attribute_value
+      - python.call_outcome
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.negative-seek-error
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs:
     - workflow_id: root-alias-identity
       input_path: tests/fixtures/inputs/parity/root-alias-identity.json
@@ -25930,6 +25972,48 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.read-full-bytes
+      observation_selectors:
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.write-then-read
+      observation_selectors:
+      - python.attribute_value
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.close-then-read
+      observation_selectors:
+      - python.attribute_value
+      - python.call_outcome
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.negative-seek-error
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -26010,6 +26094,30 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.close-then-read
+      probe_id: close
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.write-after-close-error
+      probe_id: close
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
     operation_fixture_refs:
     - workflow_id: direct-api-uploadfile-signatures
       input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
@@ -26099,6 +26207,28 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.close-then-read
+      observation_selectors:
+      - python.attribute_value
+      - python.call_outcome
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.write-after-close-error
+      observation_selectors:
+      - python.attribute_value
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -26112,6 +26242,7 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.request_schema
+    - python.attribute_value
     - python.signature
     operation_scope:
       status: slice-described
@@ -26604,6 +26735,78 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.close-then-read
+      probe_id: read-closed
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.read-at-eof
+      probe_id: read-eof
+      probe_kind: callable
+      observation_selectors:
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.read-full-bytes
+      probe_id: read-full
+      probe_kind: callable
+      observation_selectors:
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.read-limited-bytes
+      probe_id: read-limited
+      probe_kind: callable
+      observation_selectors:
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.seek-then-read
+      probe_id: read
+      probe_kind: callable
+      observation_selectors:
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.write-then-read
+      probe_id: read
+      probe_kind: callable
+      observation_selectors:
+      - python.return_value.bytes
     operation_fixture_refs:
     - workflow_id: direct-api-uploadfile-signatures
       input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
@@ -26693,6 +26896,70 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.read-full-bytes
+      observation_selectors:
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.read-limited-bytes
+      observation_selectors:
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.seek-then-read
+      observation_selectors:
+      - python.attribute_value
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.write-then-read
+      observation_selectors:
+      - python.attribute_value
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.read-at-eof
+      observation_selectors:
+      - python.attribute_value
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.close-then-read
+      observation_selectors:
+      - python.attribute_value
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -26706,6 +26973,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.request_schema
+    - python.call_outcome
+    - python.return_value.bytes
     - python.signature
     operation_scope:
       status: slice-described
@@ -26723,9 +26992,9 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The workflow checks positive and default full reads, a read after writing, one propagated OSError,
-        and reads after spooled threshold equality, crossing, and pre-rollover; other sizes, EOF, file
-        types, and exception types remain unverified.
+      - The workflows check exact direct full, bounded, post-seek, post-write, and EOF bytes, one propagated
+        OSError, and spooled reads after threshold equality, crossing, and pre-rollover; other sizes,
+        file types, and exception types remain unverified.
   - id: fastapi.datastructures.UploadFile.seek
     kind: method
     source_candidate_ref: /api_candidates/333
@@ -26770,6 +27039,54 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.negative-seek-error
+      probe_id: negative-seek
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.read-at-eof
+      probe_id: seek-eof
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.seek-then-read
+      probe_id: seek
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.write-then-read
+      probe_id: rewind
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
     operation_fixture_refs:
     - workflow_id: direct-api-uploadfile-signatures
       input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
@@ -26845,6 +27162,49 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.seek-then-read
+      observation_selectors:
+      - python.attribute_value
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.write-then-read
+      observation_selectors:
+      - python.attribute_value
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.read-at-eof
+      observation_selectors:
+      - python.attribute_value
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.negative-seek-error
+      observation_selectors:
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -26858,6 +27218,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.request_schema
+    - python.attribute_value
+    - python.call_outcome
     - python.signature
     operation_scope:
       status: slice-described
@@ -26876,8 +27238,8 @@ api_surface_contract:
       rust_binding: null
       known_gaps:
       - The workflow checks offsets zero and two for BytesIO, one underlying OSError, and offset zero
-        after spooled threshold equality, crossing, and pre-rollover; negative/large offsets, other file
-        types, and other exception types remain unverified.
+        after spooled threshold equality, crossing, and pre-rollover, plus a negative-offset error; large
+        offsets, other file types, and other exception types remain unverified.
   - id: fastapi.datastructures.UploadFile.size
     kind: field
     source_candidate_ref: /api_candidates/334
@@ -27049,6 +27411,30 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.signature
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.write-after-close-error
+      probe_id: write-closed
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.write-then-read
+      probe_id: write
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
     operation_fixture_refs:
     - workflow_id: direct-api-uploadfile-signatures
       input_path: tests/fixtures/inputs/parity/direct-api-uploadfile-signatures.json
@@ -27124,6 +27510,28 @@ api_surface_contract:
       - construction.outcome
       - http.body.bytes
       - http.status
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.write-then-read
+      observation_selectors:
+      - python.attribute_value
+      - python.return_value.bytes
+    - workflow_id: uploadfile-direct-io
+      input_path: tests/fixtures/inputs/parity/uploadfile-direct-io.json
+      input_sha256: cde0fb7e248161a4e1108368edb39ad99bfb2c606193886eb9511536d3c9ef23
+      recipe_path: tests/fixtures/input-recipes/parity/uploadfile-direct-io.yaml
+      recipe_sha256: 1b9f37a581142a4b87a51349fc06863d0279fc13b4fcb8ed35d83a8f3508074d
+      workload_path: tests/fixtures/workloads/uploadfile_direct_io.py
+      workload_sha256: bec438ab768ec4f3e4a7d93ab61c3eabb8f10b115e7edb06089d8f4ab182bc7d
+      case_id: fastapi.direct-api-uploadfile.io.write-after-close-error
+      observation_selectors:
+      - python.attribute_value
+      - python.call_outcome
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -27137,6 +27545,8 @@ api_surface_contract:
     - openapi.document
     - openapi.paths
     - openapi.request_schema
+    - python.attribute_value
+    - python.call_outcome
     - python.signature
     operation_scope:
       status: slice-described
@@ -27154,9 +27564,9 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The workflow checks a one-byte BytesIO overwrite and spooled writes at threshold equality, crossing,
-        and pre-rollover, plus one propagated OSError and its size update; appends, longer writes, other
-        file types, and other exception types remain unverified.
+      - The workflows check a two-byte BytesIO overwrite and write-after-close failure, plus spooled writes
+        at threshold equality, crossing, and pre-rollover and one propagated OSError with its size update;
+        appends, longer writes, other file types, and other exception types remain unverified.
   - id: fastapi.encoders.jsonable_encoder
     kind: function
     source_candidate_ref: /api_candidates/558

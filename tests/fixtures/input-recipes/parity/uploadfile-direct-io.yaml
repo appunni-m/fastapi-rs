@@ -1,0 +1,212 @@
+schema: fastapi-rs/python-api-workflow@15
+workload:
+  file: tests/fixtures/workloads/uploadfile_direct_io.py
+  factory: create_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.direct-api-uploadfile.io.read-full-bytes
+  probes:
+  - probe_id: read-full
+    public_callable:
+      module: fastapi.datastructures
+      attribute: UploadFile.read
+    argument_bundle: read-full
+    observations:
+    - kind: python_bytes_return_value
+      selector: value_base64
+      comparison: exact
+  source_evidence:
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+    symbol_id: fastapi.datastructures.UploadFile.read
+- case_id: fastapi.direct-api-uploadfile.io.read-limited-bytes
+  probes:
+  - probe_id: read-limited
+    public_callable:
+      module: fastapi.datastructures
+      attribute: UploadFile.read
+    argument_bundle: read-limited
+    observations:
+    - kind: python_bytes_return_value
+      selector: value_base64
+      comparison: exact
+  source_evidence:
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+    symbol_id: fastapi.datastructures.UploadFile.read
+- case_id: fastapi.direct-api-uploadfile.io.seek-then-read
+  probes:
+  - probe_id: seek
+    public_callable:
+      module: fastapi.datastructures
+      attribute: UploadFile.seek
+    argument_bundle: seek-then-read-seek
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: read
+    public_callable:
+      module: fastapi.datastructures
+      attribute: UploadFile.read
+    argument_bundle: seek-then-read-read
+    observations:
+    - kind: python_bytes_return_value
+      selector: value_base64
+      comparison: exact
+  source_evidence:
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+    symbol_id: fastapi.datastructures.UploadFile.read
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+    symbol_id: fastapi.datastructures.UploadFile.seek
+- case_id: fastapi.direct-api-uploadfile.io.write-then-read
+  probes:
+  - probe_id: write
+    public_callable:
+      module: fastapi.datastructures
+      attribute: UploadFile.write
+    argument_bundle: write-then-read-write
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: rewind
+    public_callable:
+      module: fastapi.datastructures
+      attribute: UploadFile.seek
+    argument_bundle: write-then-read-seek
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: read
+    public_callable:
+      module: fastapi.datastructures
+      attribute: UploadFile.read
+    argument_bundle: write-then-read-read
+    observations:
+    - kind: python_bytes_return_value
+      selector: value_base64
+      comparison: exact
+  source_evidence:
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+    symbol_id: fastapi.datastructures.UploadFile.read
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+    symbol_id: fastapi.datastructures.UploadFile.seek
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+    symbol_id: fastapi.datastructures.UploadFile.write
+- case_id: fastapi.direct-api-uploadfile.io.read-at-eof
+  probes:
+  - probe_id: seek-eof
+    public_callable:
+      module: fastapi.datastructures
+      attribute: UploadFile.seek
+    argument_bundle: read-at-eof-seek
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: read-eof
+    public_callable:
+      module: fastapi.datastructures
+      attribute: UploadFile.read
+    argument_bundle: read-at-eof-read
+    observations:
+    - kind: python_bytes_return_value
+      selector: value_base64
+      comparison: exact
+  source_evidence:
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+    symbol_id: fastapi.datastructures.UploadFile.read
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+    symbol_id: fastapi.datastructures.UploadFile.seek
+- case_id: fastapi.direct-api-uploadfile.io.close-then-read
+  probes:
+  - probe_id: close
+    public_callable:
+      module: fastapi.datastructures
+      attribute: UploadFile.close
+    argument_bundle: close-then-read-close
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: read-closed
+    public_callable:
+      module: fastapi.datastructures
+      attribute: UploadFile.read
+    argument_bundle: close-then-read-read
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+    symbol_id: fastapi.datastructures.UploadFile.close
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+    symbol_id: fastapi.datastructures.UploadFile.read
+- case_id: fastapi.direct-api-uploadfile.io.negative-seek-error
+  probes:
+  - probe_id: negative-seek
+    public_callable:
+      module: fastapi.datastructures
+      attribute: UploadFile.seek
+    argument_bundle: negative-seek
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+    symbol_id: fastapi.datastructures.UploadFile.seek
+- case_id: fastapi.direct-api-uploadfile.io.write-after-close-error
+  probes:
+  - probe_id: close
+    public_callable:
+      module: fastapi.datastructures
+      attribute: UploadFile.close
+    argument_bundle: write-after-close-close
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  - probe_id: write-closed
+    public_callable:
+      module: fastapi.datastructures
+      attribute: UploadFile.write
+    argument_bundle: write-after-close-write
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+    symbol_id: fastapi.datastructures.UploadFile.close
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+    symbol_id: fastapi.datastructures.UploadFile.write
