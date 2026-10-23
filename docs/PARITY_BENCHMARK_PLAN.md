@@ -265,6 +265,10 @@ graph used by the focused parity case. App and route construction stay outside
 the timer; clearing `openapi_schema` and calling the public method are inside.
 The runner performs an untimed observation check, then records five warmups
 and 100 timed calls per subject in isolated source and target processes.
+The first measurement at FastAPI-RS `d8b4142` is recorded in the
+[cold OpenAPI report](benchmarks/2026-10-23-d8b4142-openapi-api.md): parity
+passed 1/1, with FastAPI-RS at 2.988x FastAPI median and 5.453x p95 latency on
+one macOS arm64 host.
 
 Run `make benchmark-api API_BENCHMARK_COMPARISON=parity-results/comparisons/<passing-receipt>.json`
 after preparing the pinned oracle and target environments. This command
