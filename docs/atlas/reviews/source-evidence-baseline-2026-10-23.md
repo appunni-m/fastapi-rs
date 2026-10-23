@@ -1,9 +1,9 @@
 # FastAPI 0.157.0 source-evidence and parity snapshot
 
 - Review date: 2026-10-23
-- FastAPI-RS main when this note was refreshed: `1ed1f20c53946bb27a16982d242cc3bf521d8699`
+- FastAPI-RS main when this note was refreshed: `9ebe7b645c57fd7db3a8eac6350ec76e6baf7f71`
 - Earlier FastAPI-RS parity target: `e52fba0708185a312c9dae6b4c6e887fbd39972c`
-- Current manifest SHA-256: `9a600d458c39683e04a81f3a68020e0e2a23a0881fc40a2821ccaa4b44b20a2`
+- Current manifest SHA-256: `103329e2d2efa3a34943557dc7dfd7bed6cbf124dbe96a8dab587b97b5163681`
 
 ## Pinned identities
 
@@ -67,6 +67,26 @@ native binary SHA-256
 workflow includes the OpenAPI case affected by the intervening OpenAPI changes;
 the other 14 cases passed as part of the selected workflow, not as proof of
 broader parity.
+
+The `application-attributes` workflow selected only the three FastAPI version
+cases `version-reassignment-after-openapi-cache`, `empty-version`, and
+`version-deletion`; all 3 matched. Comparison receipt
+`dda59c10-7fd7-42b6-99ec-f1c2ac406404`, input SHA-256
+`8a032f8d26c4f88f6b5436917449c3a9ab43dbafaa556cd4288d302130041e08`, indexed
+input SHA-256
+`bf9d5fc1c40767a8513eac814de06d956a5e604ccb621105a050ea94b54cc88b`, and
+manifest SHA-256
+`4fdc7f5709b45d5d7de97a86a54996a010c3e07afa31f1331c52bf0b6f9f0367`. The
+target was built at revision `077a720c6317731916f10424a9e0e74eba7af1f6` with
+source-tree SHA-256
+`f6cfb5dd07a014c6cd937d3d6cd702be296f1ba3d6aa5a8ee56cd1851a7c7329`, binary
+SHA-256
+`f452e08426a8aed903e52c896c02786407fe8d53781d00cfbb36e28f2dc9e28`, and
+Starlette-RS `4139a72449bf5751e8902fb1c7175ee7f191d338`. A subsequent metadata-only
+overlay update records these cases and leaves non-string version values
+unresolved. The receipt remains evidence for its recorded target and manifest
+identity; it is not a claim that the whole application-attributes workflow
+passed.
 
 The `validation-exception-api-contract` workflow ran only
 `fastapi.validation-exceptions.direct-api-contract` after the private native
