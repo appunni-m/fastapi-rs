@@ -54,13 +54,15 @@ consumer-surface benchmark results.
 
 ## Benchmark evidence freshness
 
-The current FastAPI 0.157.0 baseline has a fresh, identity-checked first-slice
-measurement in the [2026-10-23 report](benchmarks/2026-10-23-39db162.md).
-Its 15-case parity gate passed 15/15. On one macOS arm64 host, FastAPI-RS was
-1.216x FastAPI median latency and 1.531x p95 latency. This is a slower result,
-not a speedup claim, and applies only to the declared direct-ASGI workload.
-The report records the target, oracle, Starlette-RS, manifest, workload, and
-receipt identities.
+The current FastAPI 0.157.0 baseline has an identity-checked first-slice
+measurement at pushed target `1ef5d0f` in the
+[2026-10-23 report](benchmarks/2026-10-23-1ef5d0f.md). Its 15-case parity gate
+passed 15/15. On one macOS arm64 host, FastAPI-RS was 1.218x FastAPI median
+latency and 2.223x p95 latency. This is slower, not a speedup claim, and applies
+only to the declared direct-ASGI workload. The report records target, oracle,
+Starlette-RS, manifest, workload, runtime, and receipt identities. The earlier
+[2026-10-23 measurement at `39db162`](benchmarks/2026-10-23-39db162.md) remains
+historical to current main.
 
 The [seven-workload refresh](benchmarks/2026-10-22-f9a345f.md) remains useful
 historical evidence for FastAPI 0.141.1. Its 48/48 selected observations
@@ -76,8 +78,8 @@ The previous completed seven-workload suite is recorded in
 [the 2026-10-21 report](benchmarks/2026-10-21-8c7eb97.md). It binds FastAPI-RS
 `8c7eb970cabd5fee871bc0a9fcf1691b9d4014f3` and the previous fixture manifest,
 so it is historical to current main. Its receipt is preserved under
-`benchmark-results/stale/`; the current suite and its evidence are recorded in
-the 2026-10-22 report above.
+`benchmark-results/stale/`. The later 2026-10-22 seven-workload report above
+also measures FastAPI 0.141.1 and is historical to the active 0.157.0 baseline.
 The 2026-10-19 report remains historical because it binds an earlier target
 and fixture manifest. Its suite receipt is archived at
 `benchmark-results/archive/stale-manifest-20261019/suite-20261019T091804Z-650d1f09-bdaf-4cc3-b125-21c3ae0b7f33.json`.
@@ -102,14 +104,14 @@ gate. For local runs, set `STARLETTE_RS_SOURCE` to a checkout at the pinned
 `4139a72449bf5751e8902fb1c7175ee7f191d338` revision if the sibling default is
 on another commit; the target identity gate rejects a mismatch. The current
 identity-checked comparison passed 15/15 at FastAPI-RS
-`39db162ad99a25445a3ffce94b0e9c80d1ef3043` with FastAPI 0.157.0 at
+`1ef5d0f16e8234dd20e0e4d3058888b5416f34e4` with FastAPI 0.157.0 at
 `386a28af2f87af1a32ac26d88f07b7f58ab2dfb1`, Starlette 1.6.0, and Starlette-RS
 `4139a72449bf5751e8902fb1c7175ee7f191d338`. The comparison receipt is
-`parity-results/comparisons/8c76cf9e-7200-4df1-8c9b-0e7cee607545.json`; it binds
-manifest SHA-256
-`827764700cc27233098327b1e9e9e638269c86a6fda58bca5f576a19b318360a` and target
+`parity-results/comparisons/d2450a19-d59f-42a2-9aa6-2b8f8da06f3c.json`; it
+binds manifest SHA-256
+`b35e68ebdee0432cc394016d82b56fabccb9fdd5938c1e2f6e787b269494393f` and target
 source-tree SHA-256
-`6c94a24249e2f89ae68012e11100f5ac2dd7e848dbddb635b8a832341dbce4ab`. This
+`c298323adda9687e4a18d6e538ba3fe1a57befe284d6eade8650a43a4b388cb8`. This
 validates only the fifteen declared cases. It does not establish broader API
 or feature parity. Broader parity remains incomplete; current timing evidence
 is limited to the first-slice workload documented above.
