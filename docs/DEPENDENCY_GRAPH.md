@@ -16,10 +16,16 @@ middleware, lifecycle, and protocol control flow belongs in Rust.
 FastAPI 0.157.0's default `opentelemetry-api` edge and optional/test telemetry
 packages are properties of this upstream graph. FastAPI-RS separately pins
 `opentelemetry-api==1.44.0` as a target runtime dependency, matching the
-required upstream API package; the optional SDK/exporter stack remains outside
-the target runtime. The API dependency is present, but Rust-owned telemetry
-behavior is not yet implemented. The graph faithfully reports FastAPI 0.157.0's
-upstream source-lock dependency versions for dependency analysis.
+required upstream API package. The target currently records one HTTP SERVER
+span when an application supplies a tracer provider; this is a partial
+Rust-owned implementation, not complete telemetry parity. Global-provider
+fallback, incoming trace-context extraction, and the other telemetry signals
+remain open. The parity-only target profile pins
+`opentelemetry-sdk==1.44.0` and
+`opentelemetry-semantic-conventions==0.65b0` for recording-span comparison;
+neither package is part of the target runtime. The graph faithfully reports
+FastAPI 0.157.0's upstream source-lock dependency versions for dependency
+analysis.
 That lock resolves Starlette 1.7.0, while
 compatibility and parity use Starlette 1.6.0 at
 `4f250d6b814587e20c5365f0a5f0c4d42bcb929f` as the sole selected oracle. FastAPI
