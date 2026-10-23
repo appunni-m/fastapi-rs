@@ -1,41 +1,93 @@
-# FastAPI 0.157.0 source-evidence revalidation
+# FastAPI 0.157.0 source-evidence and parity snapshot
 
-Review date: 2026-10-23
+- Review date: 2026-10-23
+- FastAPI-RS main: `e52fba0708185a312c9dae6b4c6e887fbd39972c`
+- Manifest SHA-256: `caefe574340ff873c8fb5ac7d8403235bf21d8a42a48872e546d4656018d18f5`
 
-## Active identities
+## Pinned identities
 
-The active contract is FastAPI 0.157.0 at `386a28af2f87af1a32ac26d88f07b7f58ab2dfb1`, Starlette 1.6.0 at `4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS at `4139a72449bf5751e8902fb1c7175ee7f191d338`. The source authority also pins Pydantic 2.13.5 and pydantic-core 2.46.5, with CPython 3.12.13 as the oracle runtime. `make metadata-check STARLETTE_RS_SOURCE=/private/tmp/starlette-rs-4139` confirmed these identities.
+- FastAPI 0.157.0: `386a28af2f87af1a32ac26d88f07b7f58ab2dfb1`.
+- Starlette 1.6.0: `4f250d6b814587e20c5365f0a5f0c4d42bcb929f` (sole Starlette oracle).
+- Starlette-RS: `4139a72449bf5751e8902fb1c7175ee7f191d338`.
+- Pydantic 2.13.5, pydantic-core 2.46.5, and CPython 3.12.13.
 
-## Atlas and fixture review
+The identities are declared by the active metadata and source artifacts. The
+current target identity recorded in the focused parity receipts is revision
+`e52fba0708185a312c9dae6b4c6e887fbd39972c`, source-tree SHA-256
+`fe307044aa2938bb7d4bac8b0458fd4deae0813dca3f1948d82f01c52d06d989`, and
+native binary SHA-256
+`40676a3159e985e9564b16ff94204476802a511152082aa3851da4ee855bc274`.
 
-The current generated atlas records 1,831 API candidates: 493 supported, 1,279 private/internal, and 59 uncertain. It maps all 472 in-scope upstream test modules to independent workflows and records 55 module exclusions. Of 156 documentation pages, 106 have reviewed workflow links and 50 are excluded; no candidate page, test module, or Python documentation example remains pending behavior review. The atlas also records 558 reviewed documentation section mappings, 335 linked documentation examples, and 913 fixture designs. The remaining uncertain APIs and unimplemented operation targets are explicit work, not support claims.
+## Current atlas and target scope
 
-Active source mappings and recipes were checked against the 0.157.0 checkout. Any retained 0.141.1 references are labeled as historical provenance. The documented-page mapping for the bodyless 204 workflow now flows through the same reviewed wave-L map used by both the atlas and materialized index, including its construction selectors. Generated inputs, parity results, and their historical receipts remain local evidence; the recipes, mappings, manifest, and atlas sources are the reviewed artifacts.
+Counts below were read from the generated `tests/fixtures/compatibility-atlas.json`
+and `tests/fixtures/manifest.yaml` at the revisions above. Source API
+classification does not claim FastAPI-RS implementation support.
 
-The inventory's deprecation scan now assigns parameter annotations and warning calls to their owning methods instead of duplicating them under the parent class. The refreshed atlas records 23 deprecation-bearing symbols, including `FastAPI.on_event`, `APIRouter.on_event`, and the parameter constructors. Class-level deprecations remain on `UJSONResponse` and `ORJSONResponse`. Warning categories and runtime timing remain behavior questions; the source ledger is evidence, not a claim that those warning cases have passed parity.
+| Inventory | Current count |
+| --- | ---: |
+| Source API candidates | 1,831 |
+| Source-supported / private-internal / uncertain | 494 / 1,279 / 58 |
+| Supported inherited Starlette operations | 9 of 13 reviewed candidates |
+| Upstream test modules linked to input workflows | 473 of 527; 54 excluded with reasons |
+| Documentation pages linked / excluded | 106 / 50 of 156 |
+| Documentation Python examples linked / excluded | 335 / 41; 91 support files excluded |
+| Reviewed documentation sections / excluded | 559 / 1,613 of 2,172 |
+| Input-only fixture designs / function designs | 914 / 2,363 |
+| Exact test-function workflow/case links | 1,041 |
+| Target API entries fully supported / unresolved | 29 / 473 of 502 |
 
-The new `model-extra-request-parameters-upstream` input exercises FastAPI's default header underscore conversion using a raw `x_user_id` header. It caught a target mismatch: the request correctly failed validation, but FastAPI-RS reported the Python field name `x_user_id` in the error location while FastAPI reports the normalized header alias `x-user-id`. FastAPI-RS now applies that alias translation to Pydantic header-model error locations when `loc_by_alias` and underscore conversion are enabled. The four-case workflow then matched exactly.
+No candidate page, test module, or documentation Python example remains pending
+behavior review. A reviewed partial mapping is not complete feature coverage.
+The current manifest still has 473 unresolved target API entries; this project
+does not have full FastAPI parity.
 
-## Focused parity evidence
+The source inventory records 23 deprecation-bearing symbols. Parameter
+annotations and warning calls are assigned to their owning methods; class-level
+deprecations include `UJSONResponse` and `ORJSONResponse`. This is source
+evidence, not proof of warning-category or runtime-timing parity.
 
-The current identity-checked workflows matched against FastAPI 0.157.0:
+## Current focused parity evidence
 
-- `model-extra-request-parameters-upstream`: 4/4 cases, including the new header alias case.
-- `response-204-bodyless-isolated-upstream`: 1/1 case.
-- `uploadfile-pydantic-contract`: 6/6 cases, including the `__format__` case.
-- `worker-dispatch`: 18/18 cases.
+The `validation-error-context-exact-review` workflow was run in two selected
+groups against the same manifest and target identity. Together, these receipts
+cover 13 selected cases, not the complete FastAPI error contract:
 
-The target result identity for these runs records Starlette-RS `4139a72449bf5751e8902fb1c7175ee7f191d338`, source-tree SHA-256 `507328420006b3ddf254875388486809b2acb325559f77ad87ec79574850818b`, and native binary SHA-256 `77755183189547b31b00e0944d1dd85bacfb68fa30d02b785e729e04095b2032`. The target revision was `f84074ce292f62ece155cc3ba6879e54508475ee` with this reviewed working-tree change.
+| Selected cases | Result | Comparison receipt | Input SHA-256 |
+| ---: | --- | --- | --- |
+| 5 | 5 passed, 0 failed | `257553d9-5be3-41e6-a9d5-fd21903818f6` | `d636f535494bdc1b79fd9bb7d54588495554806b765fda3ee5031ab9b49857eb` |
+| 8 | 8 passed, 0 failed | `f40b43b8-88bd-4b53-b070-a581f4f84007` | `4a83a7f4ecbdd8a7a7fc7e9e60f5e50f55dd1367a88cda1361c6b2ad0b048a2e` |
 
-`request-forms` remains mapped to the separate `standard-multipart` profile. Its recipe edits update provenance notes without changing requests or observations. That target profile is not provisioned in this checkout, and network access prevented installing it, so no new parity receipt is claimed for that workflow.
+Both comparison artifacts declare manifest SHA-256
+`caefe574340ff873c8fb5ac7d8403235bf21d8a42a48872e546d4656018d18f5`, pinned
+FastAPI and Starlette source commits above, and target revision, Starlette-RS,
+source-tree, and binary identities above. Generated inputs and results remain
+ignored local evidence; reviewed recipes and metadata are committed.
 
-## Validation
+## Earlier receipts retained as historical evidence
 
-- `make compatibility-atlas-update STARLETTE_RS_SOURCE=/private/tmp/starlette-rs-4139` completed, regenerated the atlas, fixture index, API contract, and passed parity validation.
-- `make metadata-check STARLETTE_RS_SOURCE=/private/tmp/starlette-rs-4139` passed.
-- `make api-contract-check STARLETTE_RS_SOURCE=/private/tmp/starlette-rs-4139` passed.
-- `make benchmark-contract-check STARLETTE_RS_SOURCE=/private/tmp/starlette-rs-4139` passed for all seven declarations. It structurally checked and retained one 0.141.1 suite as historical; no timing benchmark was run for 0.157.0.
-- `RUSTC_WRAPPER=/usr/bin/env make clippy STARLETTE_RS_SOURCE=/private/tmp/starlette-rs-4139` passed, including the Rust policy check; `cargo fmt --package fastapi-rs --package fastapi-rs-py` passed.
-- The `make fmt` wrapper could not prepare its hash-locked developer-tool environment because the package index was unreachable. Rust formatting was run directly. Target profile preparation had the same network limitation; the checked-in Cargo overlay and offline release build were used to rebuild the native extension before parity runs.
+The previously recorded `model-extra-request-parameters-upstream` (4/4),
+`response-204-bodyless-isolated-upstream` (1/1), `uploadfile-pydantic-contract`
+(6/6), and `worker-dispatch` (18/18) receipts targeted FastAPI-RS revision
+`f84074ce292f62ece155cc3ba6879e54508475ee`. They remain evidence for those
+specific inputs at that earlier target, but are not current-target receipts.
+They are not repeated here as proof of the current `e52fba0` target.
 
-No pytest, unittest, Cargo test, or broad parity campaign was run.
+The `jsonable-encoder.name-email` case passed 1/1 at target revision
+`f5bf63670dd4eb6a45250902a0f963da87542f24` with the active manifest SHA. The
+first-slice benchmark is recorded separately in
+[`docs/benchmarks/2026-10-23-f5bf636.md`](../../benchmarks/2026-10-23-f5bf636.md);
+it reports slower latency and throughput than FastAPI for its one direct-ASGI
+workload and does not establish broad performance.
+
+## Validation boundary
+
+The atlas counters and parity details in this snapshot were checked against the
+generated atlas, manifest, and comparison artifacts. The documentation edit
+does not change recipes, generated inputs, manifest data, or implementation;
+no parity workflow or broad test suite was rerun for it.
+
+The earlier validation record (`compatibility-atlas-update`, `metadata-check`,
+`api-contract-check`, `benchmark-contract-check`, `clippy`, and Rust formatting)
+belongs to the `f84074ce` snapshot. It is historical evidence and does not
+replace checks required by future atlas, metadata, or Rust code changes.
