@@ -15040,6 +15040,27 @@
       ]
     },
     {
+      "id": "instance-openapi-method",
+      "input_path": "tests/fixtures/inputs/parity/instance-openapi-method.json",
+      "input_sha256": "f39e0a044d58a0c76f8fb3fb5f9cf2f6024ad120c84f1df04948e40e40e16723",
+      "recipe_path": "tests/fixtures/input-recipes/parity/instance-openapi-method.yaml",
+      "recipe_sha256": "f5eaf17255d6f0698525ea7c39e1af434b3bbccb63ed662297329b568337ef74",
+      "case_ids": [
+        "fastapi.instance-openapi-method.instance-replacement"
+      ],
+      "workload_path": "tests/fixtures/workloads/instance_openapi_method.py",
+      "workload_sha256": "bdfd82c2e66d4b89cadbed47cb8f668d71ac30e5e4972d32944c61605345d297",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.instance-openapi-method.instance-replacement",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:how-to/extending-openapi.md"
+          ]
+        }
+      ]
+    },
+    {
       "id": "instance-openapi-schema",
       "input_path": "tests/fixtures/inputs/parity/instance-openapi-schema.json",
       "input_sha256": "080bd167506e2c63f4b2ce753841faf4e59a9042d82dd2225418ad4d47cc0837",
@@ -59471,6 +59492,24 @@
         "openapi.document",
         "python.warnings",
         "warnings.category_message"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:how-to/extending-openapi.md",
+      "fixture_id": "fastapi.docs.how-to-extending-openapi",
+      "workflow_id": "instance-openapi-method",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.instance-openapi-method.instance-replacement"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "docs.response.status",
+        "http.status",
+        "openapi.document"
       ]
     },
     {

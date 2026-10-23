@@ -18920,7 +18920,8 @@ impl FastApiCall {
         if let Some(openapi_url) = openapi_url.as_deref().filter(|url| !url.is_empty()) {
             if route_path == openapi_url && method == "GET" {
                 let root_path = root_path.trim_end_matches('/');
-                let schema = self.app.bind(py).getattr("openapi")?.call0()?.unbind();
+                let public_app = fastapi_public_instance(py, &self.app)?;
+                let schema = public_app.bind(py).getattr("openapi")?.call0()?.unbind();
                 let document =
                     openapi_document_for_root_path(py, schema, root_path, root_path_in_servers)?;
                 self.response_status = 200;

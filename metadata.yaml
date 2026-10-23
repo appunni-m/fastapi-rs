@@ -9015,6 +9015,22 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-examples-named-body-external.yaml
           case_id: fastapi.schema-extra-example.openapi-examples.named-body-external-value
         - *first_asgi_openapi
+        - recipe_path: tests/fixtures/input-recipes/parity/instance-openapi-schema.yaml
+          case_id: fastapi.instance-openapi-schema.mutated-field
+          workload_path: tests/fixtures/workloads/instance_openapi_schema.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/instance-openapi-schema.yaml
+          case_id: fastapi.instance-openapi-schema.deleted-field
+          workload_path: tests/fixtures/workloads/instance_openapi_schema.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/instance-openapi-schema.yaml
+          case_id: fastapi.instance-openapi-schema.deleted-then-reassigned
+          workload_path: tests/fixtures/workloads/instance_openapi_schema.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/instance-openapi-method.yaml
+          case_id: fastapi.instance-openapi-method.instance-replacement
+          workload_path: tests/fixtures/workloads/instance_openapi_method.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, openapi.document]
         - recipe_path: tests/fixtures/input-recipes/parity/fastapi-root-path-tutorial-review.yaml
           case_id: fastapi.applications.root-path.configured-over-incoming-scope
           workload_path: tests/fixtures/workloads/fastapi_root_path_tutorial_review.py
@@ -9205,10 +9221,15 @@ reviewed_api_contract_overlay:
         child; the input compares cache identity before and after mutation and
         observes the composed `/api/child/later` path. The built-in endpoint uses this canonical cache and adds
         a request root-path server to a shallow response copy without persisting
-        it, as covered by openapi-cache-root-path. Assigning custom
-        openapi_schema values, per-instance replacement of the openapi method,
-        deeper nested mutation shapes, callback declarations on path operations, and complete
-        OpenAPI parity remain outside this slice. The root-path fixture selects
+        it, as covered by openapi-cache-root-path. The `FastAPI.openapi_schema`
+        cases observe one custom-document assignment, deletion, and
+        delete-then-reassignment while preserving the prior route-version cache.
+        One zero-argument per-instance `openapi` replacement returning a custom
+        document is observed through `/openapi.json`. Other assignment timings,
+        callable signatures and error paths, deeper nested mutation shapes,
+        callback declarations on path operations, and complete OpenAPI parity
+        remain outside this slice.
+        The root-path fixture selects
         configured-prefix fallback and precedence, ASGI scope propagation,
         mutable `root_path` and `root_path_in_servers` attributes, and automatic
         server insertion gating. The existing-server case verifies that a
