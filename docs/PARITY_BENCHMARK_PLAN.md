@@ -55,7 +55,7 @@ consumer-surface benchmark results.
 ## Benchmark evidence freshness
 
 The latest FastAPI 0.157.0 first-slice measurement is bound to FastAPI-RS
-commit `b55f901` in the [2026-10-23 report](benchmarks/2026-10-23-b55f901.md).
+commit `f5bf636` in the [2026-10-23 report](benchmarks/2026-10-23-f5bf636.md).
 Its 15-case parity gate passed 15/15. On one macOS arm64 host, FastAPI-RS was
 1.228x FastAPI median latency and 1.414x p95 latency; sequential request-loop
 throughput was 0.770x FastAPI. This is slower, not a speedup claim, and applies

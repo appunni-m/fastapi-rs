@@ -140,11 +140,11 @@ for that run's identity, scope and remaining schema-order gaps.
 
 The current FastAPI 0.157.0 first-slice measurement passed its identity-checked
 15/15 parity gate. On one macOS arm64 host, FastAPI-RS median latency was
-1.218× the oracle and p95 latency was 2.223× the oracle, so this direct-ASGI
+1.237× the oracle and p95 latency was 1.454× the oracle, so this direct-ASGI
 workload was slower. It is one workload and does not establish broad
 performance or full parity. See the
-[current report](https://github.com/appunni-m/fastapi-rs/blob/main/docs/benchmarks/2026-10-23-1ef5d0f.md)
-and [benchmark evidence plan](docs/PARITY_BENCHMARK_PLAN.md).
+[current report](docs/benchmarks/2026-10-23-f5bf636.md) and
+[benchmark evidence plan](docs/PARITY_BENCHMARK_PLAN.md).
 
 Historical FastAPI 0.141.1 results remain in their original reports: the
 earlier seven-workload suite passed 45/45 selected parity observations, its
