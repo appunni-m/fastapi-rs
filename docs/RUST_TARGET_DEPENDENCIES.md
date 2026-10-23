@@ -152,19 +152,22 @@ are build-time support for this discovery/fallback path.
 
 ## Python package dependencies
 
-`pyproject.toml` directly pins `annotated-doc==0.0.5`, `pydantic==2.13.5`,
-`pydantic-core==2.46.5`, and `starlette-rs-py==0.1.0`. The external target
-profile resolves eight registry distributions in
+`pyproject.toml` directly pins `annotated-doc==0.0.5`,
+`opentelemetry-api==1.44.0`, `pydantic==2.13.5`, `pydantic-core==2.46.5`, and
+`starlette-rs-py==0.1.0`. The external target profile resolves nine registry distributions in
 [`requirements/target-runtime-cpython-3.12.13.lock`](../requirements/target-runtime-cpython-3.12.13.lock).
 That lock is for CPython 3.12.13; the project requires Python >=3.10, so
 conditional edges can differ on other supported interpreters. The local
 Starlette-RS source install is pinned separately through `metadata.yaml` and is
-not a registry-lock entry. The FastAPI 0.157.0 oracle closure remains separate
-in [`DEPENDENCY_GRAPH.md`](DEPENDENCY_GRAPH.md).
+not a registry-lock entry. OpenTelemetry API is part of the FastAPI 0.157.0
+base runtime; its SDK and exporters remain optional consumer packages. The
+FastAPI 0.157.0 oracle closure remains separate in
+[`DEPENDENCY_GRAPH.md`](DEPENDENCY_GRAPH.md).
 
 | Distribution | Target role and dependency path | Purpose and consumer | Implementation/native parts | License evidence |
 | --- | --- | --- | --- | --- |
 | `annotated-doc` 0.0.5 | Direct FastAPI-RS runtime pin. | Rust imports `annotated_doc.Doc` through PyO3 to construct Python `Annotated` documentation metadata for public signatures, parameters, security APIs, and exceptions (`fastapi-rs-py/src/lib.rs`, `fastapi-rs/src/parameters.rs`, `fastapi-rs/src/errors.rs`). | Python package; no native component indicated by its wheel metadata. | [MIT](https://pypi.org/pypi/annotated-doc/0.0.5/json) |
+| `opentelemetry-api` 1.44.0 | Direct FastAPI-RS runtime pin matching FastAPI 0.157.0's required base dependency. | Supplies OpenTelemetry context, tracing, metrics, and logging API/provider objects. The target dependency is present; Rust-owned instrumentation and request-local telemetry behavior remain unimplemented. | Python API package; no native component indicated by its 1.44.0 wheel metadata. | [Apache-2.0](https://pypi.org/pypi/opentelemetry-api/1.44.0/json) |
 | `pydantic` 2.13.5 | Direct FastAPI-RS runtime pin. | Python model, `Field`, `TypeAdapter`, validation-error, and schema APIs called from Rust through PyO3 for model validation and OpenAPI/schema generation (`fastapi-rs/src/application_runtime.rs`, `fastapi-rs/src/openapi_models.rs`). | Python package and orchestration; model definitions and user validators remain Python objects. | [MIT](https://pypi.org/pypi/pydantic/2.13.5/json) |
 | `pydantic-core` 2.46.5 | Direct FastAPI-RS runtime pin; also Pydantic's required Core dependency. | Provides CoreSchema helpers, undefined sentinels, URL values, and Pydantic's validation/serialization engine; FastAPI-RS calls the pinned Python API through PyO3 (`fastapi-rs/src/datastructures.rs`, `fastapi-rs/src/encoding.rs`, `fastapi-rs/src/openapi_models.rs`). | Separate Pydantic-owned Rust/PyO3 extension wheel; outside this workspace's Cargo graph. | [MIT](https://pypi.org/pypi/pydantic-core/2.46.5/json) |
 | `annotated-types` 0.7.0 | Pydantic runtime transitive dependency (`pydantic -> annotated-types`). | Supplies Python `Annotated` constraint metadata that Pydantic consumes when constructing and validating fields; FastAPI-RS passes field metadata to Pydantic rather than implementing these types. | Python-only metadata types; no native component indicated by its wheel metadata. | [MIT](https://pypi.org/pypi/annotated-types/0.7.0/json) |

@@ -354,6 +354,22 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
         ("pydantic-core", pydantic["pydantic_core_version"]),
     ):
         require_equal(f"target runtime package {package}", packages.get(package), expected)
+    oracle_packages = manifest.get("oracle_profile", {}).get("packages", {})
+    opentelemetry_version = oracle_packages.get("opentelemetry-api")
+    if not isinstance(opentelemetry_version, str):
+        raise MetadataError("FastAPI oracle profile must pin opentelemetry-api")
+    require_equal(
+        "target runtime package opentelemetry-api",
+        packages.get("opentelemetry-api"),
+        opentelemetry_version,
+    )
+    target_project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    target_dependencies = target_project.get("project", {}).get("dependencies", [])
+    require_equal(
+        "target package direct opentelemetry-api dependency",
+        f"opentelemetry-api=={opentelemetry_version}" in target_dependencies,
+        True,
+    )
     for source_distribution in ("fastapi", "starlette"):
         if source_distribution in packages:
             raise MetadataError(

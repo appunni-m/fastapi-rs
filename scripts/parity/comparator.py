@@ -39,6 +39,7 @@ SHARED_ORACLE_PACKAGES = {
     "annotated-types",
     "anyio",
     "idna",
+    "opentelemetry-api",
     "pydantic",
     "pydantic-core",
     "typing-extensions",
