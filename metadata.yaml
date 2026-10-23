@@ -7462,6 +7462,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/_compat/v2.py, symbol: ModelField}
         - {path: docs/en/docs/tutorial/response-model.md}
         - {path: docs/en/docs/advanced/custom-response.md}
+        - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: fastapi/routing.py, symbol: _populate_api_route_state}
         - {path: fastapi/utils.py, symbol: create_model_field}
         - {path: fastapi/__init__.py}
@@ -7599,6 +7600,7 @@ reviewed_api_contract_overlay:
         - {path: fastapi/_compat/v2.py, symbol: ModelField}
         - {path: docs/en/docs/tutorial/response-model.md}
         - {path: docs/en/docs/advanced/custom-response.md}
+        - {path: docs/en/docs/advanced/additional-responses.md}
         - {path: fastapi/routing.py, symbol: _populate_api_route_state}
         - {path: fastapi/utils.py, symbol: create_model_field}
         - {path: fastapi/applications.py, symbol: include_router}
@@ -7828,6 +7830,18 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-composition-upstream.yaml
           case_id: fastapi.test.test-tutorial-test-bigger-applications-test-main.test-admin
           workload_path: tests/fixtures/workloads/router_composition_upstream.py
+        - recipe_path: tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml
+          case_id: fastapi.docs.bigger-applications.main-router-composition
+          workload_path: tests/fixtures/workloads/bigger_applications_sections_20261015.py
+        - recipe_path: tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml
+          case_id: fastapi.docs.bigger-applications.repeated-router-prefixes
+          workload_path: tests/fixtures/workloads/bigger_applications_sections_20261015.py
+        - recipe_path: tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml
+          case_id: fastapi.docs.bigger-applications.response-precedence
+          workload_path: tests/fixtures/workloads/bigger_applications_sections_20261015.py
+        - recipe_path: tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml
+          case_id: fastapi.docs.bigger-applications.nested-router-live-addition
+          workload_path: tests/fixtures/workloads/bigger_applications_sections_20261015.py
       feature_ids: [app-routing, request-validation, websocket-lifecycle, openapi-docs, response-serialization]
       observation_selectors: [http.status, http.body.bytes, websocket.event_order, websocket.messages, websocket.close_code, websocket.close_reason, openapi.document, openapi.paths, asgi.lifespan.event_order, asgi.lifespan.startup, asgi.lifespan.startup_contract, asgi.lifespan.scope_state, asgi.lifespan.shutdown, asgi.lifespan.application_errors, asgi.lifespan.workload_trace, warnings.category_message, http.headers.ordered, asgi.send.message_types, asgi.application_error.exception, construction.outcome, construction.exception_class, construction.exception_message]
       supported_slice: >-
@@ -7839,8 +7853,14 @@ reviewed_api_contract_overlay:
         tags and dependencies, and router/operation response metadata. Its
         OpenAPI request compares the complete document. It does not establish
         all include options or arbitrary dependency graphs.
-        This workflow does not establish include-level response-map precedence;
-        that behavior is covered separately by `bigger-applications.response-precedence`.
+        The four-case `bigger-applications-sections-20261015` workflow adds the
+        tutorial composition, repeated app inclusions at distinct prefixes,
+        nested inclusion followed by a live route addition, and selected
+        response-map descriptions. The response-precedence case observes the
+        400, 409, 412, 422, and 430 descriptions from app, include, router, and
+        operation maps; the nested live-addition case also maps to
+        `APIRouter.include_router`. Other mutation histories and response-map
+        combinations remain outside this slice.
         The callback include parameter is covered by
         `atlas-pending-callbacks-source-wave`, which observes the merged callback
         routes in an OpenAPI operation. Other unused include options remain
@@ -9319,6 +9339,9 @@ reviewed_api_contract_overlay:
           case_id: fastapi.docs.bigger-applications.response-precedence
           workload_path: tests/fixtures/workloads/bigger_applications_sections_20261015.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, openapi.document, openapi.paths]
+        - recipe_path: tests/fixtures/input-recipes/parity/bigger-applications-sections-20261015.yaml
+          case_id: fastapi.docs.bigger-applications.nested-router-live-addition
+          workload_path: tests/fixtures/workloads/bigger_applications_sections_20261015.py
         - *callbacks_openapi
       target_binding:
         implementation_owner: fastapi-rs
