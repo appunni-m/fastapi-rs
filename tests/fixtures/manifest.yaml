@@ -66558,16 +66558,15 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1113
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouteState::tags
       known_gaps:
-      - Input/workflow references exist, but no exact implementation binding or current comparison result
-        establishes this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - The current input verifies one operation-ID callback that receives a route with construction-provided
+        tags, appends one tag, and exposes the updated route state and OpenAPI tags. Direct APIRoute construction,
+        omitted/default tags, enum tags, and mutation timing outside this callback case remain unverified.
+      - Reassignment of tags, mutation after registration, and interactions with router-inherited tags
+        are not established by the selected callback case.
   - id: fastapi.routing.APIRouter
     kind: class
     source_candidate_ref: /api_candidates/1115
@@ -66763,16 +66762,16 @@ api_surface_contract:
         kind: fastapi_owned_or_adapter
         source_candidate_refs:
         - /api_candidates/1115
-      status: unresolved
+      status: partial-contract
       disposition: unresolved
-      rust_binding: null
+      rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__call__
       known_gaps:
-      - Input/workflow references exist, but no exact implementation binding or current comparison result
-        establishes this operation.
-      - No concrete FastAPI-RS implementation binding is established; path presence or root re-export
-        identity alone is not behavioral evidence.
-      - No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and source
-        identity evidence alone do not prove parity.
+      - Current parity covers the complete public constructor signature, selected redirect-slash behavior,
+        configured default dispatch for unmatched HTTP and WebSocket scopes, and one dependency-overrides
+        provider mounted as ASGI. Other constructor state and values remain unverified.
+      - Decorators, include_router composition, events, lifespan, and generic Starlette route matching
+        remain separate contracts. The direct add_api_route callback-default probe is semi-internal evidence
+        and does not establish its public behavior.
   - id: fastapi.routing.APIRouter.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/1116

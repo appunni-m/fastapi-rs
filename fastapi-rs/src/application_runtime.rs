@@ -1903,6 +1903,7 @@ struct PyApiRouteState {
     tags: Py<PyList>,
     summary: Option<String>,
     description: String,
+    description_initialized: bool,
     response_description: String,
     responses: Py<PyDict>,
     deprecated: Option<bool>,
@@ -2848,8 +2849,13 @@ impl PyApiRouteState {
     }
 
     #[getter]
-    fn description(&self) -> &str {
-        &self.description
+    fn description(&self) -> PyResult<&str> {
+        if !self.description_initialized {
+            return Err(PyAttributeError::new_err(
+                "'APIRoute' object has no attribute 'description'",
+            ));
+        }
+        Ok(&self.description)
     }
 
     #[setter]
@@ -3021,6 +3027,7 @@ fn clone_api_route(py: Python<'_>, route: &Py<PyAny>) -> PyResult<PyApiRouteStat
         tags: route.tags.clone_ref(py),
         summary: route.summary.clone(),
         description: route.description.clone(),
+        description_initialized: route.description_initialized,
         response_description: route.response_description.clone(),
         responses: route.responses.clone_ref(py),
         deprecated: route.deprecated,
@@ -3354,6 +3361,7 @@ fn new_api_route_view(
             tags: tags.unbind(),
             summary: config.summary.map(str::to_owned),
             description: config.description.to_owned(),
+            description_initialized: false,
             response_description: config.response_description.to_owned(),
             responses: config.responses.clone_ref(py),
             deprecated: config.deprecated,
@@ -3460,6 +3468,7 @@ fn api_route_view_and_unique_id(
     let unique_id =
         generated_unique_id(py, generate_unique_id_function, &public_route, operation_id)?;
     set_api_route_unique_id(py, &public_route, unique_id.bind(py))?;
+    set_api_route_description_initialized(py, &public_route)?;
     if let Some(cache) = cache {
         let mut cache = cache.borrow_mut();
         cache.public_route = Some(public_route.clone_ref(py));
@@ -3497,6 +3506,11 @@ fn set_api_route_unique_id(
     unique_id: &Bound<'_, PyAny>,
 ) -> PyResult<()> {
     api_route_state_mut(route.bind(py))?.unique_id = Some(unique_id.clone().unbind());
+    Ok(())
+}
+
+fn set_api_route_description_initialized(py: Python<'_>, route: &Py<PyAny>) -> PyResult<()> {
+    api_route_state_mut(route.bind(py))?.description_initialized = true;
     Ok(())
 }
 
@@ -10430,6 +10444,7 @@ fn merge_router_routes_from(
             source_route.operation_id.as_deref(),
         )?;
         set_api_route_unique_id(py, &effective_route, unique_id_value.bind(py))?;
+        set_api_route_description_initialized(py, &effective_route)?;
         let unique_id = python_string_value(unique_id_value.bind(py))?;
         let methods = api_route_methods(effective_route_context.bind(py))?;
         let route_scope = if path.starts_with('/') {

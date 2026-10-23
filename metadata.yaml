@@ -17102,17 +17102,17 @@ reviewed_api_contract_overlay:
     fastapi.routing.APIRoute.tags:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
+        rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouteState::tags
         known_gaps:
           - >-
-            Input/workflow references exist, but no exact implementation binding or current comparison
-            result establishes this operation.
+            The current input verifies one operation-ID callback that receives a route with
+            construction-provided tags, appends one tag, and exposes the updated route state and
+            OpenAPI tags. Direct APIRoute construction, omitted/default tags, enum tags, and mutation
+            timing outside this callback case remain unverified.
           - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Reassignment of tags, mutation after registration, and interactions with router-inherited
+            tags are not established by the selected callback case.
       source_evidence:
         - path: fastapi/routing.py
           kind: source-definition
@@ -17122,24 +17122,27 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - *generate_unique_id_callback_mutation
       supported_slice: >-
-        Read and mutate the APIRoute tag list supplied at construction, or an
-        empty list when absent; operation-ID callback list mutations are retained
-        on the registered route and emitted in OpenAPI.
+        During the selected operation-ID callback, expose a route's
+        construction-provided tag list, retain an appended tag on the registered
+        route, and emit the updated list in OpenAPI. The identity-checked
+        generate-unique-id callback workflow covers this slice; direct APIRoute
+        construction, omitted tags, and other mutation timing remain unverified.
 
     fastapi.routing.APIRouter:
       target_binding:
         implementation_owner: fastapi-rs
-        status: unresolved
+        status: partial-contract
+        rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::__call__
         known_gaps:
           - >-
-            Input/workflow references exist, but no exact implementation binding or current comparison
-            result establishes this operation.
+            Current parity covers the complete public constructor signature, selected redirect-slash
+            behavior, configured default dispatch for unmatched HTTP and WebSocket scopes, and one
+            dependency-overrides provider mounted as ASGI. Other constructor state and values remain
+            unverified.
           - >-
-            No concrete FastAPI-RS implementation binding is established; path presence or root
-            re-export identity alone is not behavioral evidence.
-          - >-
-            No current-HHEAD identity-checked FastAPI-RS comparison receipt is linked; fixture and
-            source identity evidence alone do not prove parity.
+            Decorators, include_router composition, events, lifespan, and generic Starlette route
+            matching remain separate contracts. The direct add_api_route callback-default probe is
+            semi-internal evidence and does not establish its public behavior.
       source_evidence:
         - path: fastapi/routing.py
           kind: source-definition
@@ -17174,7 +17177,9 @@ reviewed_api_contract_overlay:
         `inspect.signature(APIRouter)` contract against FastAPI 0.157.0. Direct ASGI
         inputs compare `redirect_slashes` on exact and slash-mismatched paths, a
         configured `default` on unmatched HTTP and WebSocket scopes, plus dependency
-        solving through an explicit dependency-overrides provider.
+        solving through an explicit dependency-overrides provider. The four
+        identity-checked indexed workflows match all six selected cases against the
+        pinned FastAPI 0.157.0 and Starlette 1.6.0 oracles.
         Other constructor state, path-operation decorators, `include_router`, event
         methods, and Starlette route matching remain their own operations/contracts.
         A separate input probes callback-visible defaults when the source's

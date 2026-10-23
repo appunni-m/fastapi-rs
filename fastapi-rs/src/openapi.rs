@@ -286,7 +286,7 @@ pub(crate) fn openapi_document(
                 message,
                 py.get_type::<PyUserWarning>(),
                 "fastapi/openapi/utils.py",
-                303,
+                288,
             ))?;
         }
         operation_ids.add(operation_id)?;
