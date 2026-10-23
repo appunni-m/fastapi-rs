@@ -627,13 +627,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@12
-    sha256: 68d4505611b06033810ce77566eb82c26c580a9c0d1cf96398d8d0cdc33beeac
+    sha256: a50eb9178e58f298b8625dc1b3296a629d272a663516b7cf95f992f20331c468
     schema_path: tests/fixtures/schemas/materialized-input-index-v12.schema.json
     schema_sha256: 668c3c0e71c739ab05d23b414f07c4ccfe6227116094891280943a8326e1d77a
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 740
-      cases: 3120
+      workflows: 741
+      cases: 3121
       partial_source_mappings: 2021
 
 contract_metadata:
@@ -1518,7 +1518,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 196
     symbols_with_operation_fixture_refs: 490
-    operation_fixture_refs: 3047
+    operation_fixture_refs: 3048
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -29097,6 +29097,18 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.call_outcome
+    - workflow_id: jsonable-encoder-nameemail
+      input_path: tests/fixtures/inputs/parity/jsonable-encoder-nameemail.json
+      input_sha256: 449d94fb7a5507def465ea75114e64a5a7c5ae10f6d888c38fbf16d5bf545959
+      recipe_path: tests/fixtures/input-recipes/parity/jsonable-encoder-nameemail.yaml
+      recipe_sha256: 4e5ef831a557f2d960b066b4d6f94d430bcecee3df9688ba1ba4c804d83c55da
+      workload_path: tests/fixtures/workloads/jsonable_encoder_nameemail.py
+      workload_sha256: 068dc07f164a594af54398e3a257eae11c95724d97a90a24cf4e0850b412820e
+      case_id: fastapi.jsonable-encoder.name-email
+      probe_id: validated-name-email
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
     - workflow_id: pydantic-core-encoder-compatibility
       input_path: tests/fixtures/inputs/parity/pydantic-core-encoder-compatibility.json
       input_sha256: e096e920b77815167dc69781e2f20b5303ce342a3de19ad2edd28cf10bf9973f
@@ -29263,6 +29275,16 @@ api_surface_contract:
       case_id: fastapi.jsonable-encoder-atlas-wave.pydantic-v1-model-rejection
       observation_selectors:
       - python.call_outcome
+    - workflow_id: jsonable-encoder-nameemail
+      input_path: tests/fixtures/inputs/parity/jsonable-encoder-nameemail.json
+      input_sha256: 449d94fb7a5507def465ea75114e64a5a7c5ae10f6d888c38fbf16d5bf545959
+      recipe_path: tests/fixtures/input-recipes/parity/jsonable-encoder-nameemail.yaml
+      recipe_sha256: 4e5ef831a557f2d960b066b4d6f94d430bcecee3df9688ba1ba4c804d83c55da
+      workload_path: tests/fixtures/workloads/jsonable_encoder_nameemail.py
+      workload_sha256: 068dc07f164a594af54398e3a257eae11c95724d97a90a24cf4e0850b412820e
+      case_id: fastapi.jsonable-encoder.name-email
+      observation_selectors:
+      - python.attribute_value
     - workflow_id: pydantic-core-encoder-compatibility
       input_path: tests/fixtures/inputs/parity/pydantic-core-encoder-compatibility.json
       input_sha256: e096e920b77815167dc69781e2f20b5303ce342a3de19ad2edd28cf10bf9973f
@@ -29306,10 +29328,10 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs-py/src/lib.rs::PyJsonableEncoder::__call__
       known_gaps:
-      - Registry inputs cover the standard entries and the Pydantic Core Url/AnyUrl and Color entries;
-        NameEmail and optional pydantic_extra_types.Color remain unprobed. Recursive/cyclic graphs, every
-        arbitrary-object conversion path, all validation failures, and third-party serialization protocols
-        also remain uncovered.
+      - Registry inputs cover the standard entries, Pydantic Core Url/AnyUrl and Color, and one validated
+        NameEmail value under the email-validation profile; optional pydantic_extra_types.Color remains
+        unprobed. Recursive/cyclic graphs, every arbitrary-object conversion path, all validation failures,
+        and third-party serialization protocols also remain uncovered.
   - id: fastapi.exception_handlers.http_exception_handler
     kind: async_function
     source_candidate_ref: /api_candidates/567

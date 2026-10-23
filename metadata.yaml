@@ -6545,8 +6545,9 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            Registry inputs cover the standard entries and the Pydantic Core Url/AnyUrl and
-            Color entries; NameEmail and optional pydantic_extra_types.Color remain unprobed.
+            Registry inputs cover the standard entries, Pydantic Core Url/AnyUrl and Color,
+            and one validated NameEmail value under the email-validation profile; optional
+            pydantic_extra_types.Color remains unprobed.
             Recursive/cyclic graphs, every arbitrary-object conversion path, all validation
             failures, and third-party serialization protocols also remain uncovered.
         rust_binding: "fastapi-rs-py/src/lib.rs::PyJsonableEncoder::__call__"
@@ -6554,9 +6555,9 @@ reviewed_api_contract_overlay:
         Direct-call behavior is bounded to the listed encoder recipes: signature, recursive
         JSON-compatible output for their dataclass/Pydantic/mapping/container inputs, covered
         built-in type conversions, alias and exclusion options, exact/base custom encoders,
-        Pydantic Core Url/AnyUrl conversion, and the selected unsupported-value/Pydantic-v1
-        errors; NameEmail, optional extra Color, and unselected third-party object protocols
-        remain outside scope.
+        Pydantic Core Url/AnyUrl conversion, the validated NameEmail conversion under the
+        email-validation profile, and the selected unsupported-value/Pydantic-v1 errors;
+        optional extra Color and unselected third-party object protocols remain outside scope.
       rust_binding: fastapi-rs-py/src/lib.rs::PyJsonableEncoder::__call__
       source_evidence:
         - {path: fastapi/encoders.py, symbol: jsonable_encoder}
@@ -6585,6 +6586,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.jsonable-encoder-atlas-wave.unsupported-value-error
         - recipe_path: tests/fixtures/input-recipes/parity/jsonable-encoder-atlas-wave.yaml
           case_id: fastapi.jsonable-encoder-atlas-wave.pydantic-v1-model-rejection
+        - recipe_path: tests/fixtures/input-recipes/parity/jsonable-encoder-nameemail.yaml
+          case_id: fastapi.jsonable-encoder.name-email
         - recipe_path: tests/fixtures/input-recipes/parity/pydantic-core-encoder-compatibility.yaml
           case_id: fastapi.jsonable-encoder.pydantic-undefined
         - recipe_path: tests/fixtures/input-recipes/parity/pydantic-core-encoder-compatibility.yaml

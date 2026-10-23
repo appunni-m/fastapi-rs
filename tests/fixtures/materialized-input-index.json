@@ -16008,6 +16008,46 @@
       ]
     },
     {
+      "id": "jsonable-encoder-nameemail",
+      "input_path": "tests/fixtures/inputs/parity/jsonable-encoder-nameemail.json",
+      "input_sha256": "449d94fb7a5507def465ea75114e64a5a7c5ae10f6d888c38fbf16d5bf545959",
+      "recipe_path": "tests/fixtures/input-recipes/parity/jsonable-encoder-nameemail.yaml",
+      "recipe_sha256": "4e5ef831a557f2d960b066b4d6f94d430bcecee3df9688ba1ba4c804d83c55da",
+      "case_ids": [
+        "fastapi.jsonable-encoder.name-email"
+      ],
+      "workload_path": "tests/fixtures/workloads/jsonable_encoder_nameemail.py",
+      "workload_sha256": "068dc07f164a594af54398e3a257eae11c95724d97a90a24cf4e0850b412820e",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.jsonable-encoder.name-email",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "path": "fastapi/encoders.py",
+          "sha256": "4cc09230eca6435892f6bc25a2185e214dbedfe994d5103feb63ad269137caad"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.jsonable-encoder.name-email",
+          "probe_id": "validated-name-email",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.jsonable-encoder.name-email",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.encoders.jsonable_encoder"
+          ]
+        }
+      ]
+    },
+    {
       "id": "large-response-model",
       "input_path": "tests/fixtures/inputs/parity/large-response-model.json",
       "input_sha256": "8659166f3530ff2ecc5239a4b01e2d9f6df9ddbb2b5d95437ea7c84da39b6e5c",
