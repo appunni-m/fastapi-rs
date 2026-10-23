@@ -253,7 +253,8 @@ DOC_SECTION_CASE_MAPPINGS_RESPONSE_REFERENCE_20261015 = {
         (
             "FastAPI 0.157.0 provides EventSourceResponse and the ServerSentEvent field model "
             "in fastapi/sse.py:20-34 and :52-156; its routing layer serializes yielded SSE "
-            "items at fastapi/routing.py:560-591,620-623. The selected workflow action observes one "
+            "items at fastapi/routing.py:560-591,620-623. The selected workflow "
+            "action observes one "
             "completed event stream while generic response streaming belongs to Starlette 1.6.0."
         ),
     ),

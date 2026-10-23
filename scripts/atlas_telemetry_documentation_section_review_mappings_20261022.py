@@ -1,9 +1,7 @@
 """Reviewed OpenTelemetry documentation section mappings for FastAPI 0.157.0."""
 
 _PAGE = "advanced/opentelemetry.md"
-_CONSTRUCTOR_RECIPE = (
-    "tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml"
-)
+_CONSTRUCTOR_RECIPE = "tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml"
 _CLI_RECIPE = "tests/fixtures/input-recipes/parity/fastapi-cli-documented-process-v2.yaml"
 _CLI_GUIDE_REQUEST = "fastapi.cli.process.opentelemetry-guide-request"
 

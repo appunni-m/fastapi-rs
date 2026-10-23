@@ -474,9 +474,7 @@ def _validate_saved_suite_artifacts(
     if not RESULT_ROOT.exists():
         return 0, 0
     loaded_by_id = {entry[0]["id"]: entry for entry in loaded}
-    current_fastapi_commit = contract.read_manifest()["oracle_profile"]["source_commits"][
-        "fastapi"
-    ]
+    current_fastapi_commit = contract.read_manifest()["oracle_profile"]["source_commits"]["fastapi"]
     current_count = 0
     historical_count = 0
     paths = sorted(RESULT_ROOT.glob("suite-*.json"))

@@ -64,3 +64,107 @@ cases:
   - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, kind: upstream_test}
   - {path: docs_src/metadata/tutorial004_py310.py, kind: upstream_documentation}
   - {path: docs/en/docs/tutorial/metadata.md, kind: upstream_documentation}
+- case_id: fastapi.applications.constructor.openapi-tags-default-omitted
+  factory_input: {}
+  construction_observation: {kind: construction, selectors: [outcome, exception_class, exception_message], comparison: exact}
+  actions:
+  - action_id: observe-omitted-default-tags
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /configured-tags, query_string: '', root_path: '', headers: [[host, testserver]], client: [127.0.0.1, 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  source_evidence:
+  - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, kind: upstream_test}
+  - {path: docs_src/metadata/tutorial004_py310.py, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/metadata.md, kind: upstream_documentation}
+- case_id: fastapi.applications.constructor.openapi-tags-default-none
+  factory_input: {tags: null}
+  construction_observation: {kind: construction, selectors: [outcome, exception_class, exception_message], comparison: exact}
+  actions:
+  - action_id: observe-default-tags
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /configured-tags, query_string: '', root_path: '', headers: [[host, testserver]], client: [127.0.0.1, 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  source_evidence:
+  - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, kind: upstream_test}
+  - {path: docs_src/metadata/tutorial004_py310.py, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/metadata.md, kind: upstream_documentation}
+- case_id: fastapi.applications.constructor.openapi-tags-empty-list
+  factory_input: {tags: []}
+  construction_observation: {kind: construction, selectors: [outcome, exception_class, exception_message], comparison: exact}
+  actions:
+  - action_id: observe-empty-tags
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /configured-tags, query_string: '', root_path: '', headers: [[host, testserver]], client: [127.0.0.1, 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  source_evidence:
+  - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, kind: upstream_test}
+  - {path: docs_src/metadata/tutorial004_py310.py, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/metadata.md, kind: upstream_documentation}
+- case_id: fastapi.applications.constructor.openapi-tags-mutated-input
+  factory_input:
+    tags: [{name: original, description: Original tag}]
+    append_tag: {name: appended, description: Added after construction}
+  construction_observation: {kind: construction, selectors: [outcome, exception_class, exception_message], comparison: exact}
+  actions:
+  - action_id: observe-mutated-input
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /configured-tags, query_string: '', root_path: '', headers: [[host, testserver]], client: [127.0.0.1, 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  source_evidence:
+  - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, kind: upstream_test}
+  - {path: docs_src/metadata/tutorial004_py310.py, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/metadata.md, kind: upstream_documentation}
+- case_id: fastapi.applications.constructor.openapi-tags-reassignment-after-deletion
+  factory_input:
+    tags: [{name: original, description: Original tag}]
+    delete_openapi_tags: true
+    replacement_tags: [{name: replacement, description: Replacement tag}]
+  construction_observation: {kind: construction, selectors: [outcome, exception_class, exception_message], comparison: exact}
+  actions:
+  - action_id: observe-reassigned-tags
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /configured-tags, query_string: '', root_path: '', headers: [[host, testserver]], client: [127.0.0.1, 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  source_evidence:
+  - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, kind: upstream_test}
+  - {path: docs_src/metadata/tutorial004_py310.py, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/metadata.md, kind: upstream_documentation}
+- case_id: fastapi.applications.constructor.openapi-tags-deletion-hides-attribute
+  factory_input:
+    tags: [{name: original, description: Original tag}]
+    delete_openapi_tags: true
+  construction_observation: {kind: construction, selectors: [outcome, exception_class, exception_message], comparison: exact}
+  actions:
+  - action_id: observe-deleted-attribute
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /configured-tags, query_string: '', root_path: '', headers: [[host, testserver]], client: [127.0.0.1, 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  source_evidence:
+  - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, kind: upstream_test}
+  - {path: docs_src/metadata/tutorial004_py310.py, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/metadata.md, kind: upstream_documentation}
+- case_id: fastapi.applications.constructor.openapi-tags-deletion-openapi-error
+  factory_input:
+    tags: [{name: original, description: Original tag}]
+    delete_openapi_tags: true
+    generate_openapi_at_construction: true
+  construction_observation: {kind: construction, selectors: [outcome, exception_class, exception_message], comparison: exact}
+  actions: []
+  source_evidence:
+  - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, kind: upstream_test}
+  - {path: docs_src/metadata/tutorial004_py310.py, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/metadata.md, kind: upstream_documentation}
+- case_id: fastapi.applications.constructor.openapi-tags-invalid-value
+  factory_input: {tags: not-a-tag-list, generate_openapi_at_construction: true}
+  construction_observation: {kind: construction, selectors: [outcome, exception_class, exception_message], comparison: exact}
+  actions: []
+  source_evidence:
+  - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, kind: upstream_test}
+  - {path: docs_src/metadata/tutorial004_py310.py, kind: upstream_documentation}
+  - {path: docs/en/docs/tutorial/metadata.md, kind: upstream_documentation}

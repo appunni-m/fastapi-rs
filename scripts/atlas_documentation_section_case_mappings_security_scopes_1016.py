@@ -58,7 +58,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
             "records, or application authorization policy."
         ),
         (
-            "Partial page mapping against FastAPI 0.157.0 at 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1: the pinned page is "
+            "Partial page mapping against FastAPI 0.157.0 at "
+            "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1: the pinned page is "
             "docs/en/docs/advanced/security/oauth2-scopes.md#L1-L274; FastAPI's boundaries are "
             "fastapi/security/oauth2.py#L14-L160, #L433-L507, #L653-L693, "
             "fastapi/dependencies/utils.py#L314-L389, #L809-L812, and "
@@ -343,7 +344,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_SCOPES_1016 = {
             "application authorization decisions."
         ),
         (
-            "Partial page mapping against FastAPI 0.157.0 at 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1: the pinned page is "
+            "Partial page mapping against FastAPI 0.157.0 at "
+            "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1: the pinned page is "
             "docs/en/docs/tutorial/security/oauth2-jwt.md#L1-L277; relevant framework surfaces "
             "are fastapi/security/oauth2.py#L14-L160, #L433-L507, #L653-L693, "
             "fastapi/dependencies/utils.py#L314-L389, #L809-L812, and "

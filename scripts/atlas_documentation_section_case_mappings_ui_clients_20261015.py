@@ -88,7 +88,8 @@ _SWAGGER_RATIONALE = (
 _OPENAPI_VERSION_RATIONALE = (
     "FastAPI 0.157.0 exposes its configured OpenAPI version through get_openapi, places it "
     "in the root schema object, and serves that schema from the configured OpenAPI endpoint "
-    "(fastapi/openapi/utils.py:570-614; fastapi/applications.py:1085-1118,1120-1135). The pinned page "
+    "(fastapi/openapi/utils.py:570-614; fastapi/applications.py:1085-1118,1120-1135). "
+    "The pinned page "
     "states that SDK generators must support OpenAPI 3.1 at "
     "docs/en/docs/advanced/generate-clients.md:17-20. The linked action observes only the "
     "server-generated version field; it does not run or claim compatibility for any external "

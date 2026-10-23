@@ -5089,7 +5089,7 @@ DOC_PAGE_REVIEW_MAPPINGS["advanced/opentelemetry.md"] = {
                 "http.status",
                 "http.body.bytes",
             ],
-        }
+        },
     ],
 }
 

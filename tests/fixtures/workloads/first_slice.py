@@ -33,7 +33,10 @@ async def set_created_status(response: Response) -> None:
     response.status_code = status.HTTP_201_CREATED
 
 
-async def inherit_created_status(result=Depends(set_created_status)):
+_CREATED_STATUS_DEPENDENCY = Depends(set_created_status)
+
+
+async def inherit_created_status(result=_CREATED_STATUS_DEPENDENCY):
     return result
 
 

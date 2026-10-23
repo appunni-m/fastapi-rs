@@ -177,7 +177,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         ),
         (
             "The pinned page is docs/en/docs/tutorial/security/index.md#L59-L99. FastAPI "
-            "0.157.0 at 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1 builds API-key security metadata in "
+            "0.157.0 at 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1 "
+            "builds API-key security metadata in "
             "fastapi/security/api_key.py#L55-L68, #L134-L145 and projects security "
             "dependencies in fastapi/openapi/utils.py#L98-L155. The exact case cites this "
             "documentation page; Starlette 1.6.0 at 4f250d6 provides generic ASGI response "
@@ -239,7 +240,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
             "The pinned page is docs/en/docs/tutorial/security/first-steps.md#L19-L24. "
             "FastAPI 0.157.0 extracts an opaque Bearer parameter in "
             "fastapi/security/oauth2.py#L536-L544 and injects dependencies in "
-            "fastapi/dependencies/utils.py#L314-L389, #L657-L819. The recipe's source_evidence includes "
+            "fastapi/dependencies/utils.py#L314-L389, #L657-L819. The recipe's "
+            "source_evidence includes "
             "this exact page. Starlette 1.6.0 at 4f250d6 owns generic response transport "
             "through starlette/responses.py#L163-L171."
         ),
@@ -431,7 +433,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
             "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L19-L30. "
             "FastAPI 0.157.0 returns the opaque Bearer parameter in "
             "fastapi/security/oauth2.py#L536-L544 and solves nested dependencies in "
-            "fastapi/dependencies/utils.py#L314-L389, #L657-L819. The selected case source_evidence "
+            "fastapi/dependencies/utils.py#L314-L389, #L657-L819. The selected "
+            "case source_evidence "
             "names this exact page."
         ),
     ),
@@ -470,7 +473,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         (
             "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L37-L62. "
             "FastAPI 0.157.0 solves dependency inputs in "
-            "fastapi/dependencies/utils.py#L314-L389, #L657-L819 and projects security dependencies in "
+            "fastapi/dependencies/utils.py#L314-L389, #L657-L819 and projects "
+            "security dependencies in "
             "fastapi/openapi/utils.py#L98-L155. The exact recipe case cites this page; "
             "Starlette 1.6.0 at 4f250d6 provides generic response transport in "
             "starlette/responses.py#L163-L171."
@@ -492,7 +496,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         (
             "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L63-L78. "
             "FastAPI 0.157.0 resolves the selected dependency graph in "
-            "fastapi/dependencies/utils.py#L314-L389, #L657-L819; the exact current-user recipe case "
+            "fastapi/dependencies/utils.py#L314-L389, #L657-L819; the exact "
+            "current-user recipe case "
             "cites this page and returns only an app-defined dict."
         ),
     ),
@@ -512,7 +517,8 @@ DOC_SECTION_CASE_MAPPINGS_SECURITY_INTRO_20261015 = {
         (
             "The pinned page is docs/en/docs/tutorial/security/get-current-user.md#L79-L96. "
             "FastAPI 0.157.0's dependency solver is in "
-            "fastapi/dependencies/utils.py#L314-L389, #L657-L819; the selected case contains one route "
+            "fastapi/dependencies/utils.py#L314-L389, #L657-L819; the selected "
+            "case contains one route "
             "and one successful request, so only that bounded composition is mapped."
         ),
     ),

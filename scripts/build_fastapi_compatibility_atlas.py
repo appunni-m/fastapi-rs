@@ -11175,9 +11175,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             for action in materialized_case.get("actions", [])
             if isinstance(action, dict) and isinstance(action.get("action_id"), str)
         }
-        if len(action_by_id) != len(materialized_case.get("actions", [])) or not set(
-            action_ids
-        ) <= action_by_id.keys():
+        if (
+            len(action_by_id) != len(materialized_case.get("actions", []))
+            or not set(action_ids) <= action_by_id.keys()
+        ):
             raise AtlasError(
                 "direct function workflow link names missing or duplicate actions for "
                 f"{recipe_path}::{case_ids[0]}"

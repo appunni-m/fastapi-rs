@@ -24791,26 +24791,59 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/applications.py, kind: instance-assignment, symbol: openapi_tags, owner: FastAPI, initializer: __init__, start_line: 880, end_line: 880}
         - {path: fastapi/applications.py, kind: source-use, symbol: openapi, start_line: 1084, end_line: 1103}
+        - {path: fastapi/openapi/utils.py, kind: source-use, symbol: get_openapi, start_line: 579, end_line: 664}
         - {path: docs/en/docs/tutorial/metadata.md}
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
           case_id: fastapi.applications.constructor.openapi-tags
           workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-default-none
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-default-omitted
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-empty-list
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-mutated-input
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-reassignment-after-deletion
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-deletion-hides-attribute
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-deletion-openapi-error
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-invalid-value
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
       feature_ids: [openapi-docs]
       observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json, openapi.document]
       supported_slice: >-
-        The constructor stores the documented `openapi_tags` value on the app;
-        the linked case reads that public field and observes the generated
-        top-level OpenAPI tags, including nested external documentation. Empty
-        and invalid values, reassignment after OpenAPI caching, and arbitrary
-        mutable tag values remain outside this slice.
+        The constructor stores the documented `openapi_tags` value on the app.
+        Inputs compare an omitted default, explicit None, an empty list, mutation
+        of the original list after construction, reassignment after deletion, attribute
+        deletion, OpenAPI access after deletion, invalid non-list metadata, and
+        generated top-level tags including nested external documentation.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::openapi_tags
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - The linked case establishes one populated value; default, empty, invalid, mutation, and deletion behavior remain unverified.
+          - Repeated deletion, malformed individual Tag fields, non-list iterable values, custom mutable containers, and mutation after a cached OpenAPI schema has been generated remain unverified.
 
     fastapi.applications.FastAPI.root_path:
       source_evidence:

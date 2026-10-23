@@ -2351,6 +2351,16 @@ impl PyFastApiProxyPropertyDescriptor {
             state.contact_is_set = false;
             return Ok(());
         }
+        if self.member == "openapi_tags" {
+            let mut state = state.extract::<PyRefMut<'_, PyFastApi>>()?;
+            if !state.openapi_tags_is_set {
+                return Err(PyAttributeError::new_err(
+                    "'FastAPI' object has no attribute 'openapi_tags'",
+                ));
+            }
+            state.openapi_tags_is_set = false;
+            return Ok(());
+        }
         state.delattr(self.member.as_str())?;
         Ok(())
     }
@@ -4611,6 +4621,7 @@ pub(crate) struct PyFastApi {
     openapi_version: String,
     openapi_url: Option<String>,
     openapi_tags: Py<PyAny>,
+    openapi_tags_is_set: bool,
     servers: Py<PyAny>,
     root_path: String,
     root_path_in_servers: bool,
@@ -4823,7 +4834,13 @@ impl OpenApiAppSnapshot {
             summary: app.summary.clone(),
             description: app.description.clone(),
             openapi_version: app.openapi_version.clone(),
-            openapi_tags: app.openapi_tags.clone_ref(py),
+            openapi_tags: if app.openapi_tags_is_set {
+                app.openapi_tags.clone_ref(py)
+            } else {
+                return Err(PyAttributeError::new_err(
+                    "'FastAPI' object has no attribute 'openapi_tags'",
+                ));
+            },
             terms_of_service: app.terms_of_service.clone(),
             contact: fastapi_contact_value(py, app)?,
             license_info: app.license_info.as_ref().map(|value| value.clone_ref(py)),
@@ -5723,6 +5740,7 @@ impl PyFastApi {
             openapi_version: "3.1.0".to_owned(),
             openapi_url: openapi_url.map(str::to_owned),
             openapi_tags,
+            openapi_tags_is_set: true,
             servers,
             root_path,
             root_path_in_servers,
@@ -6000,13 +6018,19 @@ impl PyFastApi {
     }
 
     #[getter]
-    fn openapi_tags(&self, py: Python<'_>) -> Py<PyAny> {
-        self.openapi_tags.clone_ref(py)
+    fn openapi_tags(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        if !self.openapi_tags_is_set {
+            return Err(PyAttributeError::new_err(
+                "'FastAPI' object has no attribute 'openapi_tags'",
+            ));
+        }
+        Ok(self.openapi_tags.clone_ref(py))
     }
 
     #[setter]
     fn set_openapi_tags(&mut self, openapi_tags: Py<PyAny>) {
         self.openapi_tags = openapi_tags;
+        self.openapi_tags_is_set = true;
     }
 
     #[getter]

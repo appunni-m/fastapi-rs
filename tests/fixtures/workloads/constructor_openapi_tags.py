@@ -6,7 +6,18 @@ from fastapi import FastAPI
 
 
 def create_app(factory_input: dict[str, Any], _event_trace: list[str]) -> FastAPI:
-    app = FastAPI(openapi_tags=factory_input["tags"])
+    if "tags" in factory_input:
+        tags = factory_input["tags"]
+        app = FastAPI(openapi_tags=tags)
+    else:
+        tags = None
+        app = FastAPI()
+    if "append_tag" in factory_input:
+        tags.append(factory_input["append_tag"])
+    if "delete_openapi_tags" in factory_input:
+        del app.openapi_tags
+    if "replacement_tags" in factory_input:
+        app.openapi_tags = factory_input["replacement_tags"]
 
     @app.get("/users/", tags=["users"])
     async def get_users():
@@ -18,6 +29,14 @@ def create_app(factory_input: dict[str, Any], _event_trace: list[str]) -> FastAP
 
     @app.get("/configured-tags", include_in_schema=False)
     async def configured_tags():
-        return app.openapi_tags
+        if "delete_openapi_tags" in factory_input and "replacement_tags" not in factory_input:
+            return {"attribute_exists": hasattr(app, "openapi_tags")}
+        return {
+            "attribute": app.openapi_tags,
+            "schema_tags": app.openapi().get("tags"),
+        }
+
+    if factory_input.get("generate_openapi_at_construction", False):
+        app.openapi()
 
     return app
