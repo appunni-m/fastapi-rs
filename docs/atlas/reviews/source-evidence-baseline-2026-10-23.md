@@ -1,9 +1,9 @@
 # FastAPI 0.157.0 source-evidence and parity snapshot
 
 - Review date: 2026-10-23
-- FastAPI-RS main when this note was refreshed: `d032baf2f9e660a7fd15cf11a889d37664671c88`
+- FastAPI-RS main when this note was refreshed: `1ed1f20c53946bb27a16982d242cc3bf521d8699`
 - Earlier FastAPI-RS parity target: `e52fba0708185a312c9dae6b4c6e887fbd39972c`
-- Current manifest SHA-256: `4142a1b897968c940574f37b6adbaed346da585437419c710c1e04bcd441fa`
+- Current manifest SHA-256: `9a600d458c39683e04a81f3a68020e0e2a23a0881fc40a2821ccaa4b44b20a2`
 
 ## Pinned identities
 
@@ -51,6 +51,22 @@ deprecations include `UJSONResponse` and `ORJSONResponse`. This is source
 evidence, not proof of warning-category or runtime-timing parity.
 
 ## Retained focused parity evidence
+
+The `first-asgi-request` workflow matched all 15 selected cases at current
+`main` (`1ed1f20c53946bb27a16982d242cc3bf521d8699`) against FastAPI 0.157.0
+`386a28af2f87af1a32ac26d88f07b7f58ab2dfb1`, Starlette 1.6.0
+`4f250d6b814587e20c5365f0a5f0c4d42bcb929f`, and Starlette-RS
+`4139a72449bf5751e8902fb1c7175ee7f191d338`. The comparison receipt is
+`d72e6222-cfff-4b55-aab8-0213bcad479f`, with input SHA-256
+`f86389f4c4540db8122d11742d60549adb27082d2adbda7590e37492450edc14`,
+manifest SHA-256 `9a600d458c39683e04a81f3a68020e0e2a23a0881fc40a2821ccaa4b44b20a2`,
+target source-tree SHA-256
+`a063f899a67ad3663b1699252b144daf55f5a851990a22753607ba5e62732bf3`, and
+native binary SHA-256
+`16f1334ad26e2d2047cf5bd51e64f5ae0311a676f82ece1544a6232453722287`. This
+workflow includes the OpenAPI case affected by the intervening OpenAPI changes;
+the other 14 cases passed as part of the selected workflow, not as proof of
+broader parity.
 
 The `validation-exception-api-contract` workflow ran only
 `fastapi.validation-exceptions.direct-api-contract` after the private native
