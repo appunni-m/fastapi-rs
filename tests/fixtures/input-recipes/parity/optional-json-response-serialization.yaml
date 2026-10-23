@@ -19,7 +19,7 @@ cases:
     - category: fastapi.exceptions.FastAPIDeprecationWarning
       message: >-
         ORJSONResponse is deprecated, FastAPI now serializes data directly to JSON bytes via Pydantic when a return type or response model is set, which is faster and doesn't need a custom response class. Read more in the FastAPI docs: https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model and https://fastapi.tiangolo.com/tutorial/response-model/
-      source: {filename: fastapi/routing.py, lineno: 144}
+      source: {filename: fastapi/routing.py, lineno: 153}
       target: {filename: starlette/middleware/errors.py, lineno: 58}
       rationale: >-
         FastAPI emits this warning through its Python routing frame; FastAPI-RS dispatches in Rust, so that frame does not exist. Keep the exact warning identity and observed source/target locations.
@@ -56,7 +56,7 @@ cases:
     - category: fastapi.exceptions.FastAPIDeprecationWarning
       message: >-
         UJSONResponse is deprecated, FastAPI now serializes data directly to JSON bytes via Pydantic when a return type or response model is set, which is faster and doesn't need a custom response class. Read more in the FastAPI docs: https://fastapi.tiangolo.com/advanced/custom-response/#orjson-or-response-model and https://fastapi.tiangolo.com/tutorial/response-model/
-      source: {filename: fastapi/routing.py, lineno: 144}
+      source: {filename: fastapi/routing.py, lineno: 153}
       target: {filename: starlette/middleware/errors.py, lineno: 58}
       rationale: >-
         FastAPI emits this warning through its Python routing frame; FastAPI-RS dispatches in Rust, so that frame does not exist. Keep the exact warning identity and observed source/target locations.

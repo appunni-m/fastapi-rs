@@ -17129,8 +17129,20 @@ reviewed_api_contract_overlay:
           case_id: fastapi.deprecated-responses.ujson-success-asgi
           workload_path: tests/fixtures/workloads/optional_json_response_serialization.py
           observation_selectors: [http.status, http.headers.ordered, http.body.bytes, http.body.json, warnings.category_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/ujson-response-json-serializers.yaml
+          case_id: fastapi.responses.ujson-response.render-signature
+          workload_path: tests/fixtures/workloads/ujson_response_json_serializers.py
+          observation_selectors: [python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/ujson-response-json-serializers.yaml
+          case_id: fastapi.responses.ujson-response.render-bytes
+          workload_path: tests/fixtures/workloads/ujson_response_json_serializers.py
+          observation_selectors: [python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/ujson-response-json-serializers.yaml
+          case_id: fastapi.responses.ujson-response.render-unsupported-object
+          workload_path: tests/fixtures/workloads/ujson_response_json_serializers.py
+          observation_selectors: [python.call_outcome]
       feature_ids: [public-api-errors, response-serialization]
-      observation_selectors: [asgi.send.message_types, asgi.application_error.exception, warnings.category_message, http.status, openapi.document]
+      observation_selectors: [asgi.send.message_types, asgi.application_error.exception, warnings.category_message, http.status, http.body.bytes, openapi.document, python.signature, python.return_value.bytes, python.call_outcome]
       supported_slice: >-
         Deprecated JSON response subclass with route-level OpenAPI projection. The pinned base
         profile compares the deprecation warning and exact missing-dependency assertion; the
@@ -17141,7 +17153,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Successful serialization with optional `ujson`, subclassing, and broader class reflection remain unverified.
+          - Subclassing and broader class reflection remain unverified.
           - The source warning points to FastAPI's Python routing frame, which has no native target counterpart; the selected parity recipe records and narrowly normalizes the exact pinned source/target warning locations.
 
     fastapi.responses.UJSONResponse.render:
@@ -17162,17 +17174,30 @@ reviewed_api_contract_overlay:
           case_id: fastapi.deprecated-responses.ujson-success-asgi
           workload_path: tests/fixtures/workloads/optional_json_response_serialization.py
           observation_selectors: [http.body.bytes, http.body.json, warnings.category_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/ujson-response-json-serializers.yaml
+          case_id: fastapi.responses.ujson-response.render-signature
+          workload_path: tests/fixtures/workloads/ujson_response_json_serializers.py
+          observation_selectors: [python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/ujson-response-json-serializers.yaml
+          case_id: fastapi.responses.ujson-response.render-bytes
+          workload_path: tests/fixtures/workloads/ujson_response_json_serializers.py
+          observation_selectors: [python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/ujson-response-json-serializers.yaml
+          case_id: fastapi.responses.ujson-response.render-unsupported-object
+          workload_path: tests/fixtures/workloads/ujson_response_json_serializers.py
+          observation_selectors: [python.call_outcome]
       feature_ids: [public-api-errors, response-serialization]
-      observation_selectors: [asgi.send.message_types, asgi.application_error.exception, warnings.category_message]
+      observation_selectors: [asgi.send.message_types, asgi.application_error.exception, warnings.category_message, python.signature, python.return_value.bytes, python.call_outcome, http.body.bytes]
       supported_slice: >-
         Preserve the exact missing-`ujson` assertion reached when the pinned base-profile request
-        invokes rendering, and compare successful UTF-8 response bytes when optional `ujson` is
-        installed. Arbitrary content and direct method signature behavior remain unverified.
+        invokes rendering; compare the direct render signature, exact bytes for the selected
+        Unicode input, and unsupported-object error; and compare successful UTF-8 response bytes
+        when optional `ujson` is installed. Other content values remain unverified.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Arbitrary content and direct render-signature behavior remain unverified.
+          - Other content values, direct invalid-arity error wording, and Python callable-descriptor reflection remain unverified.
           - Warning filename and line differ because Rust-owned dispatch has no FastAPI Python routing frame; only the exact observed warning identity and location pair is normalized in the selected recipe.
 
     fastapi.routing.APIRoute.response_class:

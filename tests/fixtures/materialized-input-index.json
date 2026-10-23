@@ -23041,9 +23041,9 @@
     {
       "id": "optional-json-response-serialization",
       "input_path": "tests/fixtures/inputs/parity/optional-json-response-serialization.json",
-      "input_sha256": "e25e2bba65ae356a841860e5e138d794eb279f2fc4905345a281fc5cf0cc81b4",
+      "input_sha256": "9d15b7cafb925746dbcdb947e3a217e3eab849ee4c533404c37c494f8098d17f",
       "recipe_path": "tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml",
-      "recipe_sha256": "d7ae08182cca8f6e8d4e54364084ed3318f584dc131c20ac16a780612e17e608",
+      "recipe_sha256": "aa939cee0f2d61049ab9a9e6a0286500856123b3a3e25291e889772312c9adec",
       "case_ids": [
         "fastapi.deprecated-responses.orjson-success-asgi",
         "fastapi.deprecated-responses.ujson-success-asgi"
@@ -43385,6 +43385,92 @@
           "verification": "parity",
           "requirement_refs": [
             "source:upstream-test:tests/test_typing_python39.py"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ujson-response-json-serializers",
+      "input_path": "tests/fixtures/inputs/parity/ujson-response-json-serializers.json",
+      "input_sha256": "72f30de2e4dfa7aed2bc4d0a4e3fc9bf283a5104e9bebc30c0bb2f18d08bde7c",
+      "recipe_path": "tests/fixtures/input-recipes/parity/ujson-response-json-serializers.yaml",
+      "recipe_sha256": "d032c2381782846f448a6ade7a408a7fc8ae9b244289ac0e9b56ef59cc7585cd",
+      "case_ids": [
+        "fastapi.responses.ujson-response.render-signature",
+        "fastapi.responses.ujson-response.render-bytes",
+        "fastapi.responses.ujson-response.render-unsupported-object"
+      ],
+      "workload_path": "tests/fixtures/workloads/ujson_response_json_serializers.py",
+      "workload_sha256": "bac3db0cf81ae0b472cb4f49fff300f484c19387f7beab830c760a609e00ccfa",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.responses.ujson-response.render-bytes",
+          "symbol_id": "fastapi.responses.UJSONResponse.render",
+          "path": "fastapi/responses.py",
+          "sha256": "04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d"
+        },
+        {
+          "case_id": "fastapi.responses.ujson-response.render-signature",
+          "symbol_id": "fastapi.responses.UJSONResponse.render",
+          "path": "fastapi/responses.py",
+          "sha256": "04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d"
+        },
+        {
+          "case_id": "fastapi.responses.ujson-response.render-unsupported-object",
+          "symbol_id": "fastapi.responses.UJSONResponse.render",
+          "path": "fastapi/responses.py",
+          "sha256": "04cec9b6267f1b88f667b42f1d4cd5d4ab593e78cea027d7df946a6179590e1d"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.responses.ujson-response.render-bytes",
+          "probe_id": "render-bytes",
+          "symbol_id": "fastapi.responses.UJSONResponse.render",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.return_value.bytes"
+          ]
+        },
+        {
+          "case_id": "fastapi.responses.ujson-response.render-signature",
+          "probe_id": "render-signature",
+          "symbol_id": "fastapi.responses.UJSONResponse.render",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.signature"
+          ]
+        },
+        {
+          "case_id": "fastapi.responses.ujson-response.render-unsupported-object",
+          "probe_id": "render-unsupported-object",
+          "symbol_id": "fastapi.responses.UJSONResponse.render",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.responses.ujson-response.render-signature",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.responses.UJSONResponse.render"
+          ]
+        },
+        {
+          "case_id": "fastapi.responses.ujson-response.render-bytes",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.responses.UJSONResponse.render"
+          ]
+        },
+        {
+          "case_id": "fastapi.responses.ujson-response.render-unsupported-object",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.responses.UJSONResponse.render"
           ]
         }
       ]
