@@ -79,7 +79,7 @@ fn emit_warning_explicit(py: Python<'_>) -> PyResult<()> {
         OPERATION_ID_FOR_PATH_WARNING,
         category,
         "fastapi/openapi/utils.py",
-        278,
+        263,
     ))?;
     Ok(())
 }

@@ -1181,7 +1181,7 @@ fn warn_deprecation(
             message,
             warning,
             "fastapi/param_functions.py",
-            2249,
+            2355,
         ))?;
     } else {
         let stacklevel = match (warning_class, root_origin) {
