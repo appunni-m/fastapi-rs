@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import base64
 import datetime as dt
 import importlib
 import inspect
@@ -53,6 +54,7 @@ WORKFLOW_SCHEMA_V11_ID = "fastapi-rs/python-api-workflow@11"
 WORKFLOW_SCHEMA_V12_ID = "fastapi-rs/python-api-workflow@12"
 WORKFLOW_SCHEMA_V13_ID = "fastapi-rs/python-api-workflow@13"
 WORKFLOW_SCHEMA_V14_ID = "fastapi-rs/python-api-workflow@14"
+WORKFLOW_SCHEMA_V15_ID = "fastapi-rs/python-api-workflow@15"
 WORKFLOW_SCHEMA_IDS = frozenset(
     {
         WORKFLOW_SCHEMA_ID,
@@ -69,6 +71,7 @@ WORKFLOW_SCHEMA_IDS = frozenset(
         WORKFLOW_SCHEMA_V12_ID,
         WORKFLOW_SCHEMA_V13_ID,
         WORKFLOW_SCHEMA_V14_ID,
+        WORKFLOW_SCHEMA_V15_ID,
     }
 )
 RESULT_SCHEMA_ID = "fastapi-rs/python-api-workflow-result@2"
@@ -87,6 +90,7 @@ RESULT_SCHEMA_V14_ID = "fastapi-rs/python-api-workflow-result@14"
 RESULT_SCHEMA_V15_ID = "fastapi-rs/python-api-workflow-result@15"
 RESULT_SCHEMA_V16_ID = "fastapi-rs/python-api-workflow-result@16"
 RESULT_SCHEMA_V17_ID = "fastapi-rs/python-api-workflow-result@17"
+RESULT_SCHEMA_V18_ID = "fastapi-rs/python-api-workflow-result@18"
 RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_ID: RESULT_SCHEMA_ID,
     WORKFLOW_SCHEMA_V2_ID: RESULT_SCHEMA_V3_ID,
@@ -102,6 +106,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V12_ID: RESULT_SCHEMA_V14_ID,
     WORKFLOW_SCHEMA_V13_ID: RESULT_SCHEMA_V15_ID,
     WORKFLOW_SCHEMA_V14_ID: RESULT_SCHEMA_V17_ID,
+    WORKFLOW_SCHEMA_V15_ID: RESULT_SCHEMA_V18_ID,
 }
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 ATLAS_SCHEMA_ID = "fastapi-rs/compatibility-atlas@11"
@@ -1006,10 +1011,27 @@ def _validate_workflow_callables(
                 if isinstance(observation, dict)
                 and observation.get("kind") == "python_enum_behavior"
             ]
+            bytes_return_value_selected = any(
+                isinstance(observation, dict)
+                and observation.get("kind") == "python_bytes_return_value"
+                for observation in observations
+            )
+            if bytes_return_value_selected and (
+                workflow.get("schema") != WORKFLOW_SCHEMA_V15_ID
+                or len(observations) != 1
+                or "public_callable" not in probe
+                or "argument_bundle" not in probe
+                or "public_attribute" in probe
+                or "public_module" in probe
+                or "capture_warnings" in probe
+            ):
+                raise WorkerError(
+                    "bytes return-value observation requires one v15 public-callable invocation"
+                )
             if enum_behavior_observations:
                 enum_operation = enum_behavior_observations[0].get("operation")
                 if (
-                    workflow.get("schema") != WORKFLOW_SCHEMA_V14_ID
+                    workflow.get("schema") not in {WORKFLOW_SCHEMA_V14_ID, WORKFLOW_SCHEMA_V15_ID}
                     or len(observations) != 1
                     or len(enum_behavior_observations) != 1
                     or "public_module" in probe
@@ -1043,6 +1065,7 @@ def _validate_workflow_callables(
                     WORKFLOW_SCHEMA_V12_ID,
                     WORKFLOW_SCHEMA_V13_ID,
                     WORKFLOW_SCHEMA_V14_ID,
+                    WORKFLOW_SCHEMA_V15_ID,
                 }
                 or len(observations) != 1
                 or "public_attribute" not in probe
@@ -1055,7 +1078,12 @@ def _validate_workflow_callables(
                     "public-attribute probe"
                 )
             if exception_instance_selected and (
-                workflow.get("schema") not in {WORKFLOW_SCHEMA_V13_ID, WORKFLOW_SCHEMA_V14_ID}
+                workflow.get("schema")
+                not in {
+                    WORKFLOW_SCHEMA_V13_ID,
+                    WORKFLOW_SCHEMA_V14_ID,
+                    WORKFLOW_SCHEMA_V15_ID,
+                }
                 or len(observations) != 1
                 or "public_callable" not in probe
                 or "argument_bundle" not in probe
@@ -1073,6 +1101,7 @@ def _validate_workflow_callables(
                     WORKFLOW_SCHEMA_V12_ID,
                     WORKFLOW_SCHEMA_V13_ID,
                     WORKFLOW_SCHEMA_V14_ID,
+                    WORKFLOW_SCHEMA_V15_ID,
                 }
                 or len(observations) != 1
                 or "public_callable" not in probe
@@ -1094,6 +1123,7 @@ def _validate_workflow_callables(
                         WORKFLOW_SCHEMA_V12_ID,
                         WORKFLOW_SCHEMA_V13_ID,
                         WORKFLOW_SCHEMA_V14_ID,
+                        WORKFLOW_SCHEMA_V15_ID,
                     }
                     or not binding_identity_selected
                     or len(observations) != 1
@@ -1131,6 +1161,7 @@ def _validate_workflow_callables(
                         WORKFLOW_SCHEMA_V12_ID,
                         WORKFLOW_SCHEMA_V13_ID,
                         WORKFLOW_SCHEMA_V14_ID,
+                        WORKFLOW_SCHEMA_V15_ID,
                     }
                     or not isinstance(public_callable, dict)
                     or public_callable.get("module") != "fastapi.background"
@@ -1156,6 +1187,7 @@ def _validate_workflow_callables(
                         WORKFLOW_SCHEMA_V12_ID,
                         WORKFLOW_SCHEMA_V13_ID,
                         WORKFLOW_SCHEMA_V14_ID,
+                        WORKFLOW_SCHEMA_V15_ID,
                     }
                     or any(
                         key in probe
@@ -1173,6 +1205,7 @@ def _validate_workflow_callables(
                             WORKFLOW_SCHEMA_V12_ID,
                             WORKFLOW_SCHEMA_V13_ID,
                             WORKFLOW_SCHEMA_V14_ID,
+                            WORKFLOW_SCHEMA_V15_ID,
                         }
                     )
                     or len(observations) != 2
@@ -1228,6 +1261,7 @@ def _validate_workflow_callables(
                     WORKFLOW_SCHEMA_V12_ID,
                     WORKFLOW_SCHEMA_V13_ID,
                     WORKFLOW_SCHEMA_V14_ID,
+                    WORKFLOW_SCHEMA_V15_ID,
                 }
                 or len(observations) != 1
                 or "public_callable" not in probe
@@ -1249,6 +1283,7 @@ def _validate_workflow_callables(
                     WORKFLOW_SCHEMA_V12_ID,
                     WORKFLOW_SCHEMA_V13_ID,
                     WORKFLOW_SCHEMA_V14_ID,
+                    WORKFLOW_SCHEMA_V15_ID,
                 }
                 or len(observations) != 1
                 or "public_callable" not in probe
@@ -1433,6 +1468,10 @@ async def _run_probe(
         has_return_value_observation = any(
             observation["kind"] == "python_return_value" for observation in probe["observations"]
         )
+        has_bytes_return_value_observation = any(
+            observation["kind"] == "python_bytes_return_value"
+            for observation in probe["observations"]
+        )
         has_pydantic_model_result_observation = any(
             observation["kind"] == "python_pydantic_model_result"
             for observation in probe["observations"]
@@ -1461,6 +1500,7 @@ async def _run_probe(
         call_outcome = None
         if (
             has_return_value_observation
+            or has_bytes_return_value_observation
             or has_pydantic_model_result_observation
             or has_parameter_metadata_observation
             or has_exception_instance_observation
@@ -1545,6 +1585,16 @@ async def _run_probe(
                         values["nonfinite_floats"] = nonfinite_floats
                 else:
                     values = {"value": _json_safe(result)}
+            elif observation["kind"] == "python_bytes_return_value":
+                if type(result) is not bytes:
+                    raise TypeError(
+                        "bytes return-value observation requires an exact builtins.bytes result"
+                    )
+                values = {
+                    "encoding": "base64",
+                    "byte_length": len(result),
+                    "value_base64": base64.b64encode(result).decode("ascii"),
+                }
             elif observation["kind"] == "python_pydantic_model_result":
                 projected, nonfinite_floats = _pydantic_model_projection(result)
                 values = {"value": projected}
@@ -2020,6 +2070,7 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V12_ID,
                 WORKFLOW_SCHEMA_V13_ID,
                 WORKFLOW_SCHEMA_V14_ID,
+                WORKFLOW_SCHEMA_V15_ID,
             },
         )
     )

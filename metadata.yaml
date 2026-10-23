@@ -153,9 +153,9 @@ oracle_profile_extensions:
     id: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-json-serializers-orjson-3.13.0-ujson-6.0.0
     base_profile: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13
     lock:
-      path: requirements/json-serializers-cpython-3.12.13.lock
-      sha256: 3dbdb150d9a009b4ed93d519dc850ba9ac2f036276cc364d9b90ae0fb2dbe80a
-      profile: CPython 3.12.13 with orjson 3.13.0 and ujson 6.0.0
+      path: requirements/oracle-json-serializers-cpython-3.12.13.lock
+      sha256: 6efb11b5b1d0dd817331077faed0d6cc0547a759a85fbbbf36baaa7dfdeb2147
+      profile: CPython 3.12.13 with OpenTelemetry API 1.44.0, orjson 3.13.0, and ujson 6.0.0
     added_packages:
       orjson: 3.13.0
       ujson: 6.0.0
@@ -17080,15 +17080,29 @@ reviewed_api_contract_overlay:
           case_id: fastapi.responses.orjson-response.missing-optional-render
           workload_path: tests/fixtures/workloads/orjson_response_optional_render.py
           observation_selectors: [python.call_outcome]
+        - recipe_path: tests/fixtures/input-recipes/parity/orjson-response-json-serializers.yaml
+          case_id: fastapi.responses.orjson-response.render-signature
+          workload_path: tests/fixtures/workloads/orjson_response_json_serializers.py
+          observation_selectors: [python.signature]
+        - recipe_path: tests/fixtures/input-recipes/parity/orjson-response-json-serializers.yaml
+          case_id: fastapi.responses.orjson-response.render-bytes
+          workload_path: tests/fixtures/workloads/orjson_response_json_serializers.py
+          observation_selectors: [python.return_value.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/orjson-response-json-serializers.yaml
+          case_id: fastapi.responses.orjson-response.render-unsupported-object
+          workload_path: tests/fixtures/workloads/orjson_response_json_serializers.py
+          observation_selectors: [python.call_outcome]
         - recipe_path: tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml
           case_id: fastapi.deprecated-responses.orjson-success-asgi
           workload_path: tests/fixtures/workloads/optional_json_response_serialization.py
           observation_selectors: [http.body.bytes, http.body.json, warnings.category_message]
+      feature_ids: [response-serialization]
+      observation_selectors: [python.signature, python.return_value.bytes, python.call_outcome, http.body.bytes]
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Arbitrary nonstandard values and direct render-signature behavior remain unverified.
+          - NumPy-specific serialization, direct invalid-arity error wording, and Python function-descriptor reflection remain unverified.
 
     fastapi.responses.UJSONResponse:
       rust_binding: fastapi-rs/src/application_runtime.rs::register_ujson_response

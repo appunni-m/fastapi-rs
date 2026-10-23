@@ -23,6 +23,10 @@ WORKFLOW_SCHEMA_V8_ID = "fastapi-rs/python-api-workflow@8"
 WORKFLOW_SCHEMA_V9_ID = "fastapi-rs/python-api-workflow@9"
 WORKFLOW_SCHEMA_V10_ID = "fastapi-rs/python-api-workflow@10"
 WORKFLOW_SCHEMA_V11_ID = "fastapi-rs/python-api-workflow@11"
+WORKFLOW_SCHEMA_V12_ID = "fastapi-rs/python-api-workflow@12"
+WORKFLOW_SCHEMA_V13_ID = "fastapi-rs/python-api-workflow@13"
+WORKFLOW_SCHEMA_V14_ID = "fastapi-rs/python-api-workflow@14"
+WORKFLOW_SCHEMA_V15_ID = "fastapi-rs/python-api-workflow@15"
 
 
 def _diff(probe_id: str, path: str, source: Any, target: Any) -> dict[str, Any]:
@@ -166,9 +170,13 @@ def compare_api_workflow_results(
                 WORKFLOW_SCHEMA_V9_ID,
                 WORKFLOW_SCHEMA_V10_ID,
                 WORKFLOW_SCHEMA_V11_ID,
+                WORKFLOW_SCHEMA_V12_ID,
+                WORKFLOW_SCHEMA_V13_ID,
+                WORKFLOW_SCHEMA_V14_ID,
+                WORKFLOW_SCHEMA_V15_ID,
             }:
                 raise ContractError(
-                    "cross-module binding identity requires API workflow v8 through v11"
+                    "cross-module binding identity requires API workflow v8 through v15"
                 )
             if binding_identity_selected and (
                 source_status != "completed" or target_status != "completed"
@@ -194,6 +202,10 @@ def compare_api_workflow_results(
                 WORKFLOW_SCHEMA_V9_ID,
                 WORKFLOW_SCHEMA_V10_ID,
                 WORKFLOW_SCHEMA_V11_ID,
+                WORKFLOW_SCHEMA_V12_ID,
+                WORKFLOW_SCHEMA_V13_ID,
+                WORKFLOW_SCHEMA_V14_ID,
+                WORKFLOW_SCHEMA_V15_ID,
             }:
                 if probe_spec.get("capture_warnings") is True:
                     source_warnings = source_probe.get("warnings")
@@ -217,6 +229,21 @@ def compare_api_workflow_results(
                     raise ContractError(
                         f"direct API warning sidecar was not selected: {case_id}/{probe_id}"
                     )
+            bytes_return_value_selected = any(
+                observation.get("kind") == "python_bytes_return_value"
+                for observation in probe_spec["observations"]
+            )
+            if bytes_return_value_selected and (
+                source_status != "completed" or target_status != "completed"
+            ):
+                diffs.append(
+                    _diff(
+                        probe_id,
+                        f"{base}/bytes_return_value_completed",
+                        "completed on both products",
+                        {"source_status": source_status, "target_status": target_status},
+                    )
+                )
             if source_status == "product_error" and target_status == "product_error":
                 if not _json_exact_equal(source_probe.get("error"), target_probe.get("error")):
                     diffs.append(

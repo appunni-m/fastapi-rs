@@ -35,6 +35,7 @@ TARGET_TESTCLIENT_LOCK ?= $(CURDIR)/requirements/target-testclient-cpython-3.12.
 EMAIL_VALIDATION_LOCK ?= $(CURDIR)/requirements/email-validation-cpython-3.12.13.lock
 TEMPLATES_LOCK ?= $(CURDIR)/requirements/templates-cpython-3.12.13.lock
 JSON_SERIALIZERS_LOCK ?= $(CURDIR)/requirements/json-serializers-cpython-3.12.13.lock
+ORACLE_JSON_SERIALIZERS_LOCK ?= $(CURDIR)/requirements/oracle-json-serializers-cpython-3.12.13.lock
 TARGET_STANDARD_MULTIPART_LOCK ?= $(CURDIR)/requirements/target-standard-multipart-cpython-3.12.13.lock
 BUILD_TOOLS_ENV ?= $(CURDIR)/.venv-build-tools
 BUILD_TOOLS_PYTHON ?= $(BUILD_TOOLS_ENV)/bin/python
@@ -282,7 +283,7 @@ parity-prepare-oracle-templates: ## Prepare the paired, hash-locked source templ
 parity-prepare-oracle-json-serializers: ## Prepare the paired, hash-locked optional JSON serializer source profile
 	test -x "$(ORACLE_JSON_SERIALIZERS_PYTHON)" || $(UV) venv --python 3.12.13 "$(ORACLE_JSON_SERIALIZERS_ENV)"
 	$(ORACLE_JSON_SERIALIZERS_PYTHON) -c 'import platform, sys; (platform.python_implementation() == "CPython" and sys.version_info[:3] == (3, 12, 13)) or sys.exit("JSON serializer oracle profile requires CPython 3.12.13")'
-	$(UV) pip sync --python "$(ORACLE_JSON_SERIALIZERS_PYTHON)" --require-hashes "$(JSON_SERIALIZERS_LOCK)"
+	$(UV) pip sync --python "$(ORACLE_JSON_SERIALIZERS_PYTHON)" --require-hashes "$(ORACLE_JSON_SERIALIZERS_LOCK)"
 	$(UV) pip install --python "$(ORACLE_JSON_SERIALIZERS_PYTHON)" --no-deps --editable "$(FASTAPI_SOURCE)"
 	$(UV) pip install --python "$(ORACLE_JSON_SERIALIZERS_PYTHON)" --no-deps --editable "$(STARLETTE_SOURCE)"
 	$(UV) pip check --python "$(ORACLE_JSON_SERIALIZERS_PYTHON)"
@@ -437,7 +438,7 @@ parity-compare: ## Compare live source/target result artifacts exactly
 parity-compare-email-validation: ## Compare completed EmailStr oracle/target artifacts exactly
 	$(PYTHON) -m scripts.parity.cli compare --input "$(PARITY_EMAIL_INPUT)" --source-result "$(SOURCE_RESULT)" --target-result "$(TARGET_RESULT)"
 
-signature-workflow-migration-check: ## Require active signature recipes to use a supported API workflow (v5-v14)
+signature-workflow-migration-check: ## Require active signature recipes to use a supported API workflow (v5-v15)
 	$(PYTHON) scripts/migrate_signature_workflows.py
 
 parity-api-validate: parity-inputs signature-workflow-migration-check ## Validate a direct public Python API workflow

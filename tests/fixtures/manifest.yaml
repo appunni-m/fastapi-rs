@@ -123,9 +123,9 @@ oracle_profile_extensions:
     id: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-json-serializers-orjson-3.13.0-ujson-6.0.0
     base_profile: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13
     lock:
-      path: requirements/json-serializers-cpython-3.12.13.lock
-      sha256: 3dbdb150d9a009b4ed93d519dc850ba9ac2f036276cc364d9b90ae0fb2dbe80a
-      profile: CPython 3.12.13 with orjson 3.13.0 and ujson 6.0.0
+      path: requirements/oracle-json-serializers-cpython-3.12.13.lock
+      sha256: 6efb11b5b1d0dd817331077faed0d6cc0547a759a85fbbbf36baaa7dfdeb2147
+      profile: CPython 3.12.13 with OpenTelemetry API 1.44.0, orjson 3.13.0, and ujson 6.0.0
     added_packages:
       orjson: 3.13.0
       ujson: 6.0.0
@@ -572,10 +572,10 @@ source_artifacts:
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
     schema: fastapi-rs/observation-selector-catalog@1
-    sha256: 2fce7a58945add3a51660157cdcc1404e50b55757f8fb8c97e668a6fbed7a4b9
+    sha256: 571fbf9efdecf5f7561f4b609b834cd93f24e36cc44720773950673a46acc3bb
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
-      selectors: 58
+      selectors: 59
       parameterized_selectors: 1
   runtime_api_surface_core:
     path: tests/fixtures/runtime-api-surface-core.json
@@ -600,13 +600,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: f3fed337456014622dc85d3a258537e8937a6a1f91ef822151cb1300ce9068ab
+    sha256: 3c9ed305680ed2fafdd8be59fa77756ab5d00b33868d965700a79204ebf2437e
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: 61ec8ca935acdac54c98e148d48e90879bc3d3cfe68315db856332ef55a38bf9
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 736
-      cases: 3090
+      workflows: 737
+      cases: 3093
       partial_source_mappings: 2018
 
 contract_metadata:
@@ -1179,6 +1179,22 @@ unresolved:
       lookup, exact string/repr, in-process identity relations, and invalid
       lookup errors. Lookup operands are input bundles; recipes contain no
       expected values.
+  python_api_workflow_v15:
+    state: exact-bytes-return-observation; v1-v15-remain-supported
+    schema_id: fastapi-rs/python-api-workflow@15
+    schema_path: tests/fixtures/schemas/python-api-workflow-v15.schema.json
+    schema_sha256: 353a32933f67b3e4d642395d61b1d2b9b576508b8ac996a7aa76f8f9acdf7a36
+    result_schema_id: fastapi-rs/python-api-workflow-result@18
+    result_schema_path: tests/fixtures/schemas/python-api-workflow-result-v18.schema.json
+    result_schema_sha256: d59ef0511ce515c0414b89f354a121bf70160585473bda141f7c1e016c865c0d
+    comparison_schema_id: fastapi-rs/python-api-comparison@15
+    comparison_schema_path: tests/fixtures/schemas/python-api-comparison-v15.schema.json
+    comparison_schema_sha256: 142c0d4d349c7c3241a27e52b11d3de4dc480b1415eeed1832a41395ee6677e5
+    coverage: >-
+      Preserves direct API observations through v14 and adds an exact canonical
+      Base64 projection of a direct callable's builtins.bytes return value. The
+      input selects the callable and argument bundle only; expected bytes are not
+      stored in the workflow.
   python_process_workflow:
     state: standard-oracle-defined; target-console-entrypoint-unimplemented
     schema_id: fastapi-rs/python-process-workflow@1
@@ -1460,7 +1476,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 195
     symbols_with_operation_fixture_refs: 490
-    operation_fixture_refs: 2995
+    operation_fixture_refs: 2998
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -64583,6 +64599,42 @@ api_surface_contract:
       fixture_design_ref: /fixture_designs/387
       observation_selectors: *id018
     input_workflow_refs:
+    - workflow_id: orjson-response-json-serializers
+      input_path: tests/fixtures/inputs/parity/orjson-response-json-serializers.json
+      input_sha256: 2126f56b04570bf5ffecc9a57ace1df6ff346566ad0532ef7afcd259b8230a6e
+      recipe_path: tests/fixtures/input-recipes/parity/orjson-response-json-serializers.yaml
+      recipe_sha256: 17fa7d7d834f61060462012b5ee725d071c4ee2b3b08f338a5a6bdabc22d746e
+      workload_path: tests/fixtures/workloads/orjson_response_json_serializers.py
+      workload_sha256: 23c86f110b5677faa779cbe18b116a1c27d6f21176d29e6e3df9e9d381f27db5
+      case_id: fastapi.responses.orjson-response.render-bytes
+      probe_id: render-bytes
+      probe_kind: callable
+      observation_selectors:
+      - python.return_value.bytes
+    - workflow_id: orjson-response-json-serializers
+      input_path: tests/fixtures/inputs/parity/orjson-response-json-serializers.json
+      input_sha256: 2126f56b04570bf5ffecc9a57ace1df6ff346566ad0532ef7afcd259b8230a6e
+      recipe_path: tests/fixtures/input-recipes/parity/orjson-response-json-serializers.yaml
+      recipe_sha256: 17fa7d7d834f61060462012b5ee725d071c4ee2b3b08f338a5a6bdabc22d746e
+      workload_path: tests/fixtures/workloads/orjson_response_json_serializers.py
+      workload_sha256: 23c86f110b5677faa779cbe18b116a1c27d6f21176d29e6e3df9e9d381f27db5
+      case_id: fastapi.responses.orjson-response.render-signature
+      probe_id: render-signature
+      probe_kind: callable
+      observation_selectors:
+      - python.signature
+    - workflow_id: orjson-response-json-serializers
+      input_path: tests/fixtures/inputs/parity/orjson-response-json-serializers.json
+      input_sha256: 2126f56b04570bf5ffecc9a57ace1df6ff346566ad0532ef7afcd259b8230a6e
+      recipe_path: tests/fixtures/input-recipes/parity/orjson-response-json-serializers.yaml
+      recipe_sha256: 17fa7d7d834f61060462012b5ee725d071c4ee2b3b08f338a5a6bdabc22d746e
+      workload_path: tests/fixtures/workloads/orjson_response_json_serializers.py
+      workload_sha256: 23c86f110b5677faa779cbe18b116a1c27d6f21176d29e6e3df9e9d381f27db5
+      case_id: fastapi.responses.orjson-response.render-unsupported-object
+      probe_id: render-unsupported-object
+      probe_kind: callable
+      observation_selectors:
+      - python.call_outcome
     - workflow_id: orjson-response-optional-render
       input_path: tests/fixtures/inputs/parity/orjson-response-optional-render.json
       input_sha256: b3aecb0659fd71fc9095c88d557087a6660eeb883bff901fd89904991886dbff
@@ -64604,6 +64656,36 @@ api_surface_contract:
       workload_path: tests/fixtures/workloads/orjson_response_optional_render.py
       workload_sha256: 2f74f5d43cb7978d8871e8ae3a966c526cfc8741cc48298ada98ab4fad29a127
       case_id: fastapi.responses.orjson-response.missing-optional-render
+      observation_selectors:
+      - python.call_outcome
+    - workflow_id: orjson-response-json-serializers
+      input_path: tests/fixtures/inputs/parity/orjson-response-json-serializers.json
+      input_sha256: 2126f56b04570bf5ffecc9a57ace1df6ff346566ad0532ef7afcd259b8230a6e
+      recipe_path: tests/fixtures/input-recipes/parity/orjson-response-json-serializers.yaml
+      recipe_sha256: 17fa7d7d834f61060462012b5ee725d071c4ee2b3b08f338a5a6bdabc22d746e
+      workload_path: tests/fixtures/workloads/orjson_response_json_serializers.py
+      workload_sha256: 23c86f110b5677faa779cbe18b116a1c27d6f21176d29e6e3df9e9d381f27db5
+      case_id: fastapi.responses.orjson-response.render-signature
+      observation_selectors:
+      - python.signature
+    - workflow_id: orjson-response-json-serializers
+      input_path: tests/fixtures/inputs/parity/orjson-response-json-serializers.json
+      input_sha256: 2126f56b04570bf5ffecc9a57ace1df6ff346566ad0532ef7afcd259b8230a6e
+      recipe_path: tests/fixtures/input-recipes/parity/orjson-response-json-serializers.yaml
+      recipe_sha256: 17fa7d7d834f61060462012b5ee725d071c4ee2b3b08f338a5a6bdabc22d746e
+      workload_path: tests/fixtures/workloads/orjson_response_json_serializers.py
+      workload_sha256: 23c86f110b5677faa779cbe18b116a1c27d6f21176d29e6e3df9e9d381f27db5
+      case_id: fastapi.responses.orjson-response.render-bytes
+      observation_selectors:
+      - python.return_value.bytes
+    - workflow_id: orjson-response-json-serializers
+      input_path: tests/fixtures/inputs/parity/orjson-response-json-serializers.json
+      input_sha256: 2126f56b04570bf5ffecc9a57ace1df6ff346566ad0532ef7afcd259b8230a6e
+      recipe_path: tests/fixtures/input-recipes/parity/orjson-response-json-serializers.yaml
+      recipe_sha256: 17fa7d7d834f61060462012b5ee725d071c4ee2b3b08f338a5a6bdabc22d746e
+      workload_path: tests/fixtures/workloads/orjson_response_json_serializers.py
+      workload_sha256: 23c86f110b5677faa779cbe18b116a1c27d6f21176d29e6e3df9e9d381f27db5
+      case_id: fastapi.responses.orjson-response.render-unsupported-object
       observation_selectors:
       - python.call_outcome
     - workflow_id: optional-json-response-serialization
@@ -64633,6 +64715,8 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - python.call_outcome
+    - python.return_value.bytes
+    - python.signature
     operation_scope:
       status: slice-described
       metadata_ref: /reviewed_api_contract_overlay/operations/fastapi.responses.ORJSONResponse.render/supported_slice
@@ -64649,7 +64733,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::DeprecatedJsonResponseRenderDescriptor
       known_gaps:
-      - Arbitrary nonstandard values and direct render-signature behavior remain unverified.
+      - NumPy-specific serialization, direct invalid-arity error wording, and Python function-descriptor
+        reflection remain unverified.
   - id: fastapi.responses.PlainTextResponse
     kind: import_binding
     source_candidate_ref: /api_candidates/1061
