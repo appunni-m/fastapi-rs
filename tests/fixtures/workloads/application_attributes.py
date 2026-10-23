@@ -13,9 +13,11 @@ def create_app(factory_input: dict[str, Any], _workload_trace: list[str]) -> Fas
     options = factory_input.copy()
     summary_after_init = options.pop("_summary_after_init", _UNSET)
     summary_after_openapi = options.pop("_summary_after_openapi", _UNSET)
+    version_after_openapi = options.pop("_version_after_openapi", _UNSET)
     contact_after_init = options.pop("_contact_after_init", _UNSET)
     contact_after_openapi = options.pop("_contact_after_openapi", _UNSET)
     swagger_ui_parameters_after_init = options.pop("_swagger_ui_parameters_after_init", _UNSET)
+    delete_version_after_init = options.pop("_delete_version_after_init", False)
     delete_contact_after_init = options.pop("_delete_contact_after_init", False)
     openapi_after_contact_deletion = options.pop("_openapi_after_contact_deletion", False)
     delete_contact_after_openapi = options.pop("_delete_contact_after_openapi", False)
@@ -29,6 +31,16 @@ def create_app(factory_input: dict[str, Any], _workload_trace: list[str]) -> Fas
 
     @app.get("/_observe/application-attributes")
     def observe_application_attributes() -> dict[str, Any]:
+        if delete_version_after_init:
+            try:
+                version = app.version
+            except AttributeError as error:
+                return {
+                    "version_present": hasattr(app, "version"),
+                    "version_read_error_class": type(error).__name__,
+                    "version_read_error_message": str(error),
+                }
+            return {"version_present": True, "version": version}
         return {
             "summary": app.summary,
             "openapi_summary": app.openapi()["info"].get("summary"),
@@ -47,6 +59,11 @@ def create_app(factory_input: dict[str, Any], _workload_trace: list[str]) -> Fas
     if summary_after_openapi is not _UNSET:
         app.openapi()
         app.summary = summary_after_openapi
+    if version_after_openapi is not _UNSET:
+        app.openapi()
+        app.version = version_after_openapi
+    if delete_version_after_init:
+        delattr(app, "version")
     if delete_contact_after_init:
         delattr(app, "contact")
     if openapi_after_contact_deletion:

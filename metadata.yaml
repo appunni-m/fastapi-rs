@@ -8539,6 +8539,15 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
           case_id: fastapi.application.attributes.configured
           observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.version-reassignment-after-openapi-cache
+          observation_selectors: [http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.empty-version
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.version-deletion
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
         - recipe_path: tests/fixtures/input-recipes/parity/docs-reference-openapi.yaml
           case_id: fastapi.docs.reference-wave.openapi.fastapi-application-settings
           observation_selectors: [openapi.document]
@@ -8547,14 +8556,18 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         The pinned constructor stores `version`, and the metadata tutorial lists
         it as an OpenAPI field. The linked input-only cases compare its default
-        and configured public values, and observe the configured
-        `/info/version` value in the generated OpenAPI document.
+        and configured public values, observe the configured `/info/version`
+        value in the generated OpenAPI document, and verify that an empty
+        version raises the pinned constructor assertion. They also compare
+        reassignment after OpenAPI generation, where the live attribute changes
+        while the cached schema retains its original version, and deletion,
+        where subsequent lookup reports the missing public attribute.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::version
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Only one non-empty configured string is observed in generated OpenAPI; empty-version behavior, reassignment after schema generation, deletion, and non-string assignment remain unverified.
+          - Non-string constructor or runtime assignment, including its later OpenAPI validation and serialization behavior, remains unverified.
     fastapi.applications.FastAPI.terms_of_service:
       source_evidence:
         - path: fastapi/applications.py

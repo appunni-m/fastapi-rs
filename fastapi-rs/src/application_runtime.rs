@@ -2353,6 +2353,16 @@ impl PyFastApiProxyPropertyDescriptor {
             state.contact_is_set = false;
             return Ok(());
         }
+        if self.member == "version" {
+            let mut state = state.extract::<PyRefMut<'_, PyFastApi>>()?;
+            if !state.version_is_set {
+                return Err(PyAttributeError::new_err(
+                    "'FastAPI' object has no attribute 'version'",
+                ));
+            }
+            state.version_is_set = false;
+            return Ok(());
+        }
         if self.member == "openapi_schema" {
             let state = state.extract::<PyRefMut<'_, PyFastApi>>()?;
             let retired = {
@@ -4638,6 +4648,7 @@ pub(crate) struct PyFastApi {
     summary: Option<String>,
     description: String,
     version: String,
+    version_is_set: bool,
     openapi_version: String,
     openapi_url: Option<String>,
     openapi_tags: Py<PyAny>,
@@ -4818,6 +4829,15 @@ struct OpenApiAppSnapshot {
     operations: Vec<OpenApiRouteSnapshot>,
 }
 
+fn fastapi_version_value(app: &PyFastApi) -> PyResult<&str> {
+    if !app.version_is_set {
+        return Err(PyAttributeError::new_err(
+            "'FastAPI' object has no attribute 'version'",
+        ));
+    }
+    Ok(&app.version)
+}
+
 fn fastapi_contact_value(py: Python<'_>, app: &PyFastApi) -> PyResult<Option<Py<PyAny>>> {
     if !app.contact_is_set {
         return Err(PyAttributeError::new_err(
@@ -4871,7 +4891,7 @@ impl OpenApiAppSnapshot {
                 .as_ref()
                 .map(|value| value.clone_ref(py)),
             servers: app.servers.clone_ref(py),
-            version: app.version.clone(),
+            version: fastapi_version_value(app)?.to_owned(),
             separate_input_output_schemas: app.separate_input_output_schemas,
             operations,
         })
@@ -5782,6 +5802,7 @@ impl PyFastApi {
             summary,
             description: description.to_owned(),
             version: version.to_owned(),
+            version_is_set: true,
             openapi_version: "3.1.0".to_owned(),
             openapi_url: openapi_url.map(str::to_owned),
             openapi_tags,
@@ -5910,13 +5931,14 @@ impl PyFastApi {
     }
 
     #[getter]
-    fn version(&self) -> &str {
-        &self.version
+    fn version(&self) -> PyResult<&str> {
+        fastapi_version_value(self)
     }
 
     #[setter]
     fn set_version(&mut self, version: String) {
         self.version = version;
+        self.version_is_set = true;
     }
 
     #[getter]
