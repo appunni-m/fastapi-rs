@@ -43,6 +43,7 @@ WORKFLOW_SCHEMA_V14_ID = "fastapi-rs/python-asgi-workflow@14"
 WORKFLOW_SCHEMA_V15_ID = "fastapi-rs/python-asgi-workflow@15"
 WORKFLOW_SCHEMA_V16_ID = "fastapi-rs/python-asgi-workflow@16"
 WORKFLOW_SCHEMA_V17_ID = "fastapi-rs/python-asgi-workflow@17"
+WORKFLOW_SCHEMA_V18_ID = "fastapi-rs/python-asgi-workflow@18"
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
@@ -59,6 +60,7 @@ RESULT_SCHEMA_V14_ID = "fastapi-rs/python-asgi-workflow-result@14"
 RESULT_SCHEMA_V15_ID = "fastapi-rs/python-asgi-workflow-result@15"
 RESULT_SCHEMA_V16_ID = "fastapi-rs/python-asgi-workflow-result@16"
 RESULT_SCHEMA_V17_ID = "fastapi-rs/python-asgi-workflow-result@17"
+RESULT_SCHEMA_V18_ID = "fastapi-rs/python-asgi-workflow-result@18"
 ORACLE_PROFILE_ID = "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13"
 ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
     "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
@@ -82,12 +84,17 @@ ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
         "orjson": "3.13.0",
         "ujson": "6.0.0",
     },
+    "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-telemetry-sdk-1.44.0": {
+        "opentelemetry-sdk": "1.44.0",
+        "opentelemetry-semantic-conventions": "0.65b0",
+    },
 }
 ORACLE_EXACT_PACKAGE_SET_PROFILE_IDS = frozenset(
     {
         "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0",
         "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3",
         "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-json-serializers-orjson-3.13.0-ujson-6.0.0",
+        "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-telemetry-sdk-1.44.0",
     }
 )
 ORACLE_BASE_PACKAGES = {
@@ -496,6 +503,41 @@ def _header_pairs(headers: Any) -> list[list[str]]:
     return pairs
 
 
+def _telemetry_server_spans(app: Any) -> list[dict[str, Any]]:
+    """Project only completed HTTP server spans exposed by the parity workload."""
+    capture = getattr(app, "get_parity_finished_spans", None)
+    if not callable(capture):
+        raise WorkerError("telemetry.server_spans requires the workload capture protocol")
+    projected = []
+    for span in capture():
+        kind = getattr(getattr(span, "kind", None), "name", None)
+        if kind != "SERVER":
+            continue
+        status = getattr(span, "status", None)
+        status_code = getattr(getattr(status, "status_code", None), "name", None)
+        attributes = getattr(span, "attributes", None) or {}
+        events = []
+        for event in getattr(span, "events", ()):
+            event_attributes = getattr(event, "attributes", None) or {}
+            events.append(
+                {
+                    "name": event.name,
+                    "attributes": _json_safe(dict(event_attributes)),
+                }
+            )
+        projected.append(
+            {
+                "name": span.name,
+                "kind": kind,
+                "status_code": status_code,
+                "status_description": getattr(status, "description", None),
+                "attributes": _json_safe(dict(attributes)),
+                "events": events,
+            }
+        )
+    return projected
+
+
 def _pointer_get(document: Any, pointer: str) -> tuple[bool, Any]:
     value = document
     for escaped_segment in pointer.split("/")[1:]:
@@ -539,6 +581,7 @@ def _observe(
     workload_trace: list[str] | None = None,
     cancelled_caught: bool | None = None,
     include_selectors: bool = False,
+    app: Any | None = None,
 ) -> list[dict[str, Any]]:
     starts = [message for message in messages if message.get("type") == "http.response.start"]
     start = starts[0] if starts else None
@@ -548,6 +591,11 @@ def _observe(
         if message.get("type") == "http.response.body"
     )
     message_types = [message.get("type") for message in messages]
+    telemetry_spans = None
+    if any(observation["kind"] == "telemetry" for observation in observations):
+        if app is None:
+            raise WorkerError("telemetry observations require the ASGI application")
+        telemetry_spans = _telemetry_server_spans(app)
     result: list[dict[str, Any]] = []
     for index, observation in enumerate(observations):
         kind = observation["kind"]
@@ -565,6 +613,18 @@ def _observe(
             if "body_json" in selectors:
                 values["body_json"] = _strict_json_value(body)
             result.append({"index": index, "kind": kind, "values": values})
+        elif kind == "telemetry":
+            selector = observation["selector"]
+            if selector != "server_spans" or telemetry_spans is None:
+                raise WorkerError(f"worker does not support telemetry selector: {selector}")
+            result.append(
+                {
+                    "index": index,
+                    "kind": kind,
+                    "selector": selector,
+                    "values": {"spans": copy.deepcopy(telemetry_spans)},
+                }
+            )
         elif kind == "openapi":
             try:
                 document = json.loads(body.decode("utf-8"))
@@ -1167,6 +1227,7 @@ def _run_testclient_request_v1(
             messages,
             workload_trace=workload_trace,
             include_selectors=True,
+            app=app,
         )
         result = {
             "action_id": action["action_id"],
@@ -1275,6 +1336,7 @@ async def _run_action_v3(
             workload_trace=workload_trace,
             cancelled_caught=cancelled_caught,
             include_selectors=True,
+            app=app,
         )
     except Exception as exc:
         return _add_warning_sidecar(
@@ -1697,6 +1759,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V15_ID,
         WORKFLOW_SCHEMA_V16_ID,
         WORKFLOW_SCHEMA_V17_ID,
+        WORKFLOW_SCHEMA_V18_ID,
     }:
         raise WorkerError("workflow schema identity changed after host-side validation")
     fastapi_root = fastapi_root.resolve()
@@ -1722,6 +1785,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V15_ID,
         WORKFLOW_SCHEMA_V16_ID,
         WORKFLOW_SCHEMA_V17_ID,
+        WORKFLOW_SCHEMA_V18_ID,
     }:
         identity["fault_injection_compiled"] = None
     factory = _load_workload(workload_path, input_sha256, workflow["workload"]["factory"])
@@ -1741,6 +1805,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V15_ID,
         WORKFLOW_SCHEMA_V16_ID,
         WORKFLOW_SCHEMA_V17_ID,
+        WORKFLOW_SCHEMA_V18_ID,
     }:
         warning_package_roots = (
             [("fastapi", fastapi_root / "fastapi"), ("starlette", starlette_root / "starlette")]
@@ -1760,6 +1825,7 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V15_ID,
                 WORKFLOW_SCHEMA_V16_ID,
                 WORKFLOW_SCHEMA_V17_ID,
+                WORKFLOW_SCHEMA_V18_ID,
             }
             else []
         )
@@ -1778,11 +1844,14 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V15_ID,
                 WORKFLOW_SCHEMA_V16_ID,
                 WORKFLOW_SCHEMA_V17_ID,
+                WORKFLOW_SCHEMA_V18_ID,
             }
             else _run_cases_v3(workflow, factory, warning_package_roots)
         )
         result_schema_id = (
-            RESULT_SCHEMA_V17_ID
+            RESULT_SCHEMA_V18_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V18_ID
+            else RESULT_SCHEMA_V17_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V17_ID
             else RESULT_SCHEMA_V16_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V16_ID

@@ -45927,7 +45927,7 @@
                 "python.signature"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml",
-              "scope_note": "Partial constructor contract only: the independent inputs observe default app construction and acceptance of selected telemetry configuration dictionaries, plus the FastAPI constructor signature. They do not observe HTTP or WebSocket spans, metrics, log records, context data, provider/exporter effects, or the FastAPI Cloud service.",
+              "scope_note": "Partial constructor contract only: the independent inputs observe default app construction and acceptance of selected telemetry configuration dictionaries, plus the FastAPI constructor signature. A separate trace-request-operations mapping observes one root-path HTTP SERVER span. WebSocket spans, metrics, log records, context data, provider/exporter effects, and the FastAPI Cloud service remain outside those selected inputs.",
               "workflow_id": "telemetry-constructor-contract"
             }
           ],
@@ -45935,7 +45935,7 @@
             "python.call_outcome",
             "python.signature"
           ],
-          "review_rationale": "FastAPI 0.157.0 introduces the telemetry constructor parameter in fastapi/applications.py and defines its TypedDict settings in fastapi/telemetry/_api.py. The pinned OpenTelemetry guide at docs/en/docs/advanced/opentelemetry.md:1-158 describes many runtime signals beyond constructor acceptance. These four independent constructor calls map only the bounded configuration surface; emitted telemetry remains an explicit unresolved contract.",
+          "review_rationale": "FastAPI 0.157.0 introduces the telemetry constructor parameter in fastapi/applications.py and defines its TypedDict settings in fastapi/telemetry/_api.py. The pinned OpenTelemetry guide at docs/en/docs/advanced/opentelemetry.md:1-158 describes many runtime signals beyond constructor acceptance. These four independent constructor calls map only the bounded configuration surface. The separate trace-request-operations input maps one completed root-path HTTP SERVER span; broader emitted telemetry remains unresolved.",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {
@@ -46064,7 +46064,7 @@
           "candidate_observation_selectors": [],
           "candidate_selector_evidence": [],
           "end_line": 59,
-          "exclusion_reason": "This section describes environment-driven OTLP exporter configuration. Current parity observations do not capture exported telemetry or provider lifecycle, and the fixture profile does not start a collector. Keep these behaviors in the telemetry observation-contract backlog until a deterministic process and export observation is available.",
+          "exclusion_reason": "This section describes environment-driven OTLP exporter configuration. Current parity observations do not capture exporter selection or provider lifecycle; one separate input observes a root-path HTTP SERVER span, and the fixture profile does not start a collector. Keep these behaviors in the telemetry observation-contract backlog until a deterministic process and export observation is available.",
           "feature_evidence": [
             {
               "feature_id": "dependency-security",
@@ -46083,7 +46083,7 @@
           "heading": "Other monitoring services { #other-monitoring-services }",
           "independent_workflow_mappings": [],
           "observation_selectors": [],
-          "review_rationale": "FastAPI 0.157.0 documents FASTAPI_OTEL_AUTO_CONFIGURE and OTEL_EXPORTER_OTLP_* configuration at docs/en/docs/advanced/opentelemetry.md:44-59; fastapi/telemetry/_runtime.py implements endpoint selection and exporter registration. No current selector reports OTLP spans, metrics, logs, or shutdown effects, so this section is explicitly excluded from the present fixture denominator and remains an implementation backlog item.",
+          "review_rationale": "FastAPI 0.157.0 documents FASTAPI_OTEL_AUTO_CONFIGURE and OTEL_EXPORTER_OTLP_* configuration at docs/en/docs/advanced/opentelemetry.md:44-59; fastapi/telemetry/_runtime.py implements endpoint selection and exporter registration. The selected server-span projection does not report OTLP exporter selection, metrics, logs, or shutdown effects, so this section is excluded from the present fixture denominator and remains an implementation backlog item.",
           "review_status": "excluded",
           "selector_evidence": [],
           "start_line": 44
@@ -46359,7 +46359,7 @@
                 "python.signature"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml",
-              "scope_note": "Partial constructor mapping: inputs cover tracing=False, operation_spans=False, and all signal flags disabled. They do not inspect supplied providers, custom exporters, spans, logs, metrics, or provider shutdown.",
+              "scope_note": "Partial constructor mapping: inputs cover tracing=False, operation_spans=False, and all signal flags disabled. They do not inspect supplied providers, custom exporters, logs, metrics, or provider shutdown. A separate trace section maps one root-path HTTP SERVER span.",
               "workflow_id": "telemetry-constructor-contract"
             }
           ],
@@ -46367,7 +46367,7 @@
             "python.call_outcome",
             "python.signature"
           ],
-          "review_rationale": "FastAPI 0.157.0 defines tracing, metrics, logs, operation_spans, provider, and auto_configure fields in fastapi/telemetry/_api.py; the pinned guide describes their settings at docs/en/docs/advanced/opentelemetry.md:81-131. The linked constructor recipe selects only the three disabled-configuration calls and therefore establishes input acceptance, not telemetry runtime behavior.",
+          "review_rationale": "FastAPI 0.157.0 defines tracing, metrics, logs, operation_spans, provider, and auto_configure fields in fastapi/telemetry/_api.py; the pinned guide describes their settings at docs/en/docs/advanced/opentelemetry.md:81-131. The linked constructor recipe selects only the three disabled-configuration calls and therefore establishes input acceptance. The separate trace section maps one root-path HTTP SERVER span, not general telemetry runtime behavior.",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {
@@ -46390,13 +46390,13 @@
           "candidate_observation_selectors": [],
           "candidate_selector_evidence": [],
           "end_line": 106,
-          "exclusion_reason": "The section documents global and injected provider selection, automatic exporter registration, and provider shutdown behavior. Current selectors do not observe provider identity, emitted spans/metrics/logs, exporter setup, or lifecycle effects.",
+          "exclusion_reason": "The section documents global and injected provider selection, automatic exporter registration, and provider shutdown behavior. Current selectors do not observe provider identity, exporter setup, or lifecycle effects; the separate trace case observes only a root-path HTTP SERVER span.",
           "feature_evidence": [],
           "feature_ids": [],
           "heading": "Configure providers and exporters { #configure-providers-and-exporters }",
           "independent_workflow_mappings": [],
           "observation_selectors": [],
-          "review_rationale": "FastAPI 0.157.0's pinned section at docs/en/docs/advanced/opentelemetry.md:83-106 describes provider/exporter configuration and links tutorial002, which injects a TracerProvider configured with BatchSpanProcessor and ConsoleSpanExporter. The current constructor cases do not exercise that provider input, and no telemetry signal or exporter selector exists, so the section remains excluded pending a deterministic telemetry profile.",
+          "review_rationale": "FastAPI 0.157.0's pinned section at docs/en/docs/advanced/opentelemetry.md:83-106 describes provider/exporter configuration and links tutorial002, which injects a TracerProvider configured with BatchSpanProcessor and ConsoleSpanExporter. The current constructor cases do not exercise that provider input, and the span selector does not identify provider or exporter behavior, so the section remains excluded pending a broader deterministic telemetry profile.",
           "review_status": "excluded",
           "selector_evidence": [],
           "start_line": 83
@@ -46524,33 +46524,36 @@
           "heading": "Trace request operations { #trace-request-operations }",
           "independent_workflow_mappings": [
             {
+              "action_ids": [
+                "root-request"
+              ],
               "case_ids": [
-                "fastapi.telemetry.constructor-operation-spans-disabled"
+                "fastapi.telemetry.http-server-span-root"
               ],
               "coverage_status": "partial",
               "observation_selectors": [
-                "python.call_outcome"
+                "telemetry.server_spans"
               ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml",
-              "scope_note": "The selected case observes acceptance of operation_spans=False only. It does not observe dependency, endpoint, serialization, or background-task spans.",
-              "workflow_id": "telemetry-constructor-contract"
+              "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-server-span.yaml",
+              "scope_note": "One direct ASGI GET / input selects completed HTTP SERVER spans, including their name, status, attributes, and events. It does not cover the documented /items/1 route, operation spans, metrics, logs, context, export, or lifespan behavior.",
+              "workflow_id": "telemetry-server-span"
             }
           ],
           "observation_selectors": [
-            "python.call_outcome"
+            "telemetry.server_spans"
           ],
-          "review_rationale": "The pinned section at docs/en/docs/advanced/opentelemetry.md:107-117 describes FastAPI operation spans and the operation_spans setting. The input selects that setting through the public FastAPI constructor; no span selector is currently available, so span emission remains unresolved.",
+          "review_rationale": "The pinned section at docs/en/docs/advanced/opentelemetry.md:107-117 describes FastAPI request and operation spans. The linked input observes one root-path HTTP SERVER span through the parity-only SDK profile. Dependency, endpoint, serialization, and background-task spans remain outside this selected case.",
           "review_status": "reviewed_partial",
           "selector_evidence": [
             {
               "case_ids": [
-                "fastapi.telemetry.constructor-operation-spans-disabled"
+                "fastapi.telemetry.http-server-span-root"
               ],
-              "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml",
+              "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-server-span.yaml",
               "selectors": [
-                "python.call_outcome"
+                "telemetry.server_spans"
               ],
-              "workflow_id": "telemetry-constructor-contract"
+              "workflow_id": "telemetry-server-span"
             }
           ],
           "start_line": 107
@@ -46814,6 +46817,18 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml",
           "workflow_id": "telemetry-constructor-contract"
+        },
+        {
+          "case_ids": [
+            "fastapi.telemetry.http-server-span-root"
+          ],
+          "coverage_scope": "Partial independent sample across 1 case(s); observes telemetry.server_spans. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "telemetry.server_spans"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-server-span.yaml",
+          "workflow_id": "telemetry-server-span"
         }
       ],
       "input_only": true,
@@ -46822,7 +46837,8 @@
         "http.status",
         "process.exit_code",
         "python.call_outcome",
-        "python.signature"
+        "python.signature",
+        "telemetry.server_spans"
       ],
       "related_usage_sources": [],
       "reviewed_source_mapping": {
@@ -46911,11 +46927,13 @@
           "feature_id": null,
           "schema_extension_required": [
             "python.call_outcome",
-            "python.signature"
+            "python.signature",
+            "telemetry.server_spans"
           ],
           "selectors": [
             "python.call_outcome",
-            "python.signature"
+            "python.signature",
+            "telemetry.server_spans"
           ]
         }
       ],

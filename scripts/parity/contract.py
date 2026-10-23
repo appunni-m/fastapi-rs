@@ -42,6 +42,7 @@ WORKFLOW_SCHEMA_V14 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v14.sc
 WORKFLOW_SCHEMA_V15 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v15.schema.json"
 WORKFLOW_SCHEMA_V16 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v16.schema.json"
 WORKFLOW_SCHEMA_V17 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v17.schema.json"
+WORKFLOW_SCHEMA_V18 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v18.schema.json"
 PROCESS_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-process-workflow.schema.json"
 PROCESS_WORKFLOW_SCHEMA_V2 = ROOT / "tests/fixtures/schemas/python-process-workflow-v2.schema.json"
 API_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow.schema.json"
@@ -107,6 +108,7 @@ RESULT_SCHEMA_V14 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v
 RESULT_SCHEMA_V15 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v15.schema.json"
 RESULT_SCHEMA_V16 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v16.schema.json"
 RESULT_SCHEMA_V17 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v17.schema.json"
+RESULT_SCHEMA_V18 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v18.schema.json"
 COMPARISON_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v2.schema.json"
 COMPARISON_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v3.schema.json"
 COMPARISON_SCHEMA_V4 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v4.schema.json"
@@ -124,6 +126,7 @@ COMPARISON_SCHEMA_V15 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v1
 COMPARISON_SCHEMA_V16 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v16.schema.json"
 COMPARISON_SCHEMA_V17 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v17.schema.json"
 COMPARISON_SCHEMA_V18 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v18.schema.json"
+COMPARISON_SCHEMA_V19 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v19.schema.json"
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-asgi-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow@3"
 WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow@4"
@@ -140,6 +143,7 @@ WORKFLOW_SCHEMA_V14_ID = "fastapi-rs/python-asgi-workflow@14"
 WORKFLOW_SCHEMA_V15_ID = "fastapi-rs/python-asgi-workflow@15"
 WORKFLOW_SCHEMA_V16_ID = "fastapi-rs/python-asgi-workflow@16"
 WORKFLOW_SCHEMA_V17_ID = "fastapi-rs/python-asgi-workflow@17"
+WORKFLOW_SCHEMA_V18_ID = "fastapi-rs/python-asgi-workflow@18"
 PROCESS_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-process-workflow@1"
 PROCESS_WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-process-workflow@2"
 PROCESS_WORKFLOW_SCHEMA_IDS = frozenset({PROCESS_WORKFLOW_SCHEMA_ID, PROCESS_WORKFLOW_SCHEMA_V2_ID})
@@ -300,6 +304,7 @@ RESULT_SCHEMA_V14_ID = "fastapi-rs/python-asgi-workflow-result@14"
 RESULT_SCHEMA_V15_ID = "fastapi-rs/python-asgi-workflow-result@15"
 RESULT_SCHEMA_V16_ID = "fastapi-rs/python-asgi-workflow-result@16"
 RESULT_SCHEMA_V17_ID = "fastapi-rs/python-asgi-workflow-result@17"
+RESULT_SCHEMA_V18_ID = "fastapi-rs/python-asgi-workflow-result@18"
 COMPARISON_SCHEMA_ID = "fastapi-rs/python-asgi-comparison@2"
 COMPARISON_SCHEMA_V3_ID = "fastapi-rs/python-asgi-comparison@3"
 COMPARISON_SCHEMA_V4_ID = "fastapi-rs/python-asgi-comparison@4"
@@ -317,6 +322,7 @@ COMPARISON_SCHEMA_V15_ID = "fastapi-rs/python-asgi-comparison@15"
 COMPARISON_SCHEMA_V16_ID = "fastapi-rs/python-asgi-comparison@16"
 COMPARISON_SCHEMA_V17_ID = "fastapi-rs/python-asgi-comparison@17"
 COMPARISON_SCHEMA_V18_ID = "fastapi-rs/python-asgi-comparison@18"
+COMPARISON_SCHEMA_V19_ID = "fastapi-rs/python-asgi-comparison@19"
 
 WORKFLOW_SCHEMAS = {
     WORKFLOW_SCHEMA_ID: WORKFLOW_SCHEMA,
@@ -335,6 +341,7 @@ WORKFLOW_SCHEMAS = {
     WORKFLOW_SCHEMA_V15_ID: WORKFLOW_SCHEMA_V15,
     WORKFLOW_SCHEMA_V16_ID: WORKFLOW_SCHEMA_V16,
     WORKFLOW_SCHEMA_V17_ID: WORKFLOW_SCHEMA_V17,
+    WORKFLOW_SCHEMA_V18_ID: WORKFLOW_SCHEMA_V18,
     API_WORKFLOW_SCHEMA_ID: API_WORKFLOW_SCHEMA,
     API_WORKFLOW_SCHEMA_V2_ID: API_WORKFLOW_SCHEMA_V2,
     API_WORKFLOW_SCHEMA_V3_ID: API_WORKFLOW_SCHEMA_V3,
@@ -373,6 +380,7 @@ RESULT_SCHEMAS = {
     RESULT_SCHEMA_V15_ID: RESULT_SCHEMA_V15,
     RESULT_SCHEMA_V16_ID: RESULT_SCHEMA_V16,
     RESULT_SCHEMA_V17_ID: RESULT_SCHEMA_V17,
+    RESULT_SCHEMA_V18_ID: RESULT_SCHEMA_V18,
     API_RESULT_SCHEMA_ID: API_RESULT_SCHEMA,
     API_RESULT_SCHEMA_V3_ID: API_RESULT_SCHEMA_V3,
     API_RESULT_SCHEMA_V4_ID: API_RESULT_SCHEMA_V4,
@@ -409,6 +417,7 @@ COMPARISON_SCHEMAS = {
     COMPARISON_SCHEMA_V16_ID: COMPARISON_SCHEMA_V16,
     COMPARISON_SCHEMA_V17_ID: COMPARISON_SCHEMA_V17,
     COMPARISON_SCHEMA_V18_ID: COMPARISON_SCHEMA_V18,
+    COMPARISON_SCHEMA_V19_ID: COMPARISON_SCHEMA_V19,
     API_COMPARISON_SCHEMA_ID: API_COMPARISON_SCHEMA,
     API_COMPARISON_SCHEMA_V2_ID: API_COMPARISON_SCHEMA_V2,
     API_COMPARISON_SCHEMA_V3_ID: API_COMPARISON_SCHEMA_V3,
@@ -441,6 +450,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V15_ID: RESULT_SCHEMA_V15_ID,
     WORKFLOW_SCHEMA_V16_ID: RESULT_SCHEMA_V16_ID,
     WORKFLOW_SCHEMA_V17_ID: RESULT_SCHEMA_V17_ID,
+    WORKFLOW_SCHEMA_V18_ID: RESULT_SCHEMA_V18_ID,
     **API_RESULT_SCHEMA_IDS_BY_WORKFLOW,
 }
 COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
@@ -460,6 +470,7 @@ COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V15_ID: COMPARISON_SCHEMA_V16_ID,
     WORKFLOW_SCHEMA_V16_ID: COMPARISON_SCHEMA_V17_ID,
     WORKFLOW_SCHEMA_V17_ID: COMPARISON_SCHEMA_V18_ID,
+    WORKFLOW_SCHEMA_V18_ID: COMPARISON_SCHEMA_V19_ID,
     **API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
 }
 
@@ -634,13 +645,26 @@ def read_manifest() -> dict[str, Any]:
             "lock": {
                 "path": "requirements/oracle-json-serializers-cpython-3.12.13.lock",
                 "sha256": "6efb11b5b1d0dd817331077faed0d6cc0547a759a85fbbbf36baaa7dfdeb2147",
-                "profile": (
-                    "CPython 3.12.13 with OpenTelemetry API 1.44.0, orjson 3.13.0, and ujson 6.0.0"
-                ),
+                "profile": ("CPython 3.12.13 with orjson 3.13.0 and ujson 6.0.0"),
             },
             "added_packages": {"orjson": "3.13.0", "ujson": "6.0.0"},
             "fastapi_extra": None,
             "prepare_target": "parity-prepare-oracle-json-serializers",
+        },
+        "telemetry": {
+            "id": "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-telemetry-sdk-1.44.0",
+            "base_profile": profile["id"],
+            "lock": {
+                "path": "requirements/telemetry-parity-cpython-3.12.13.lock",
+                "sha256": "3cf8bf0ca13e743a38d26f7d1584b060977dca0253669a64b5183aeeeea6f6bd",
+                "profile": "CPython 3.12.13 parity-only profile with OpenTelemetry SDK 1.44.0",
+            },
+            "added_packages": {
+                "opentelemetry-sdk": "1.44.0",
+                "opentelemetry-semantic-conventions": "0.65b0",
+            },
+            "fastapi_extra": None,
+            "prepare_target": "parity-prepare-oracle-telemetry",
         },
     }
     if manifest.get("oracle_profile_extensions") != expected_extensions:
@@ -740,6 +764,21 @@ def read_manifest() -> dict[str, Any]:
             "added_packages": {"orjson": "3.13.0", "ujson": "6.0.0"},
             "fastapi_extra": None,
             "prepare_target": "parity-prepare-target-json-serializers",
+        },
+        "telemetry": {
+            "id": "fastapi-rs-telemetry-sdk-cpython-3.12.13-opentelemetry-sdk-1.44.0",
+            "base_profile": target["id"],
+            "lock": {
+                "path": "requirements/telemetry-parity-cpython-3.12.13.lock",
+                "sha256": "3cf8bf0ca13e743a38d26f7d1584b060977dca0253669a64b5183aeeeea6f6bd",
+                "profile": "CPython 3.12.13 parity-only profile with OpenTelemetry SDK 1.44.0",
+            },
+            "added_packages": {
+                "opentelemetry-sdk": "1.44.0",
+                "opentelemetry-semantic-conventions": "0.65b0",
+            },
+            "fastapi_extra": None,
+            "prepare_target": "parity-prepare-target-telemetry",
         },
     }
     if manifest.get("target_profile_extensions") != expected_target_extensions:
@@ -1225,6 +1264,26 @@ def read_manifest() -> dict[str, Any]:
         _verify_digest_ref(
             workflow_v17_contract.get(path_key),
             workflow_v17_contract.get(digest_key),
+            label,
+        )
+    workflow_v18_contract = unresolved.get("python_asgi_workflow_v18")
+    if not isinstance(workflow_v18_contract, dict):
+        raise ContractError("manifest Python/ASGI v18 workflow contract is missing")
+    if (
+        workflow_v18_contract.get("schema_id") != WORKFLOW_SCHEMA_V18_ID
+        or workflow_v18_contract.get("result_schema_id") != RESULT_SCHEMA_V18_ID
+        or workflow_v18_contract.get("comparison_schema_id") != COMPARISON_SCHEMA_V19_ID
+    ):
+        raise ContractError("manifest Python/ASGI v18 schema identities are unsupported")
+    workflow_v18_schema_refs = (
+        ("schema_path", "schema_sha256", "python-asgi-workflow v18 schema"),
+        ("result_schema_path", "result_schema_sha256", "workflow result v18 schema"),
+        ("comparison_schema_path", "comparison_schema_sha256", "comparison v19 schema"),
+    )
+    for path_key, digest_key, label in workflow_v18_schema_refs:
+        _verify_digest_ref(
+            workflow_v18_contract.get(path_key),
+            workflow_v18_contract.get(digest_key),
             label,
         )
     api_workflow_contract = (
@@ -1752,6 +1811,7 @@ def load_workflow(
             WORKFLOW_SCHEMA_V15_ID,
             WORKFLOW_SCHEMA_V16_ID,
             WORKFLOW_SCHEMA_V17_ID,
+            WORKFLOW_SCHEMA_V18_ID,
         }:
             try:
                 mode = verification_mode(case)
@@ -1886,6 +1946,7 @@ def load_workflow(
             WORKFLOW_SCHEMA_V15_ID,
             WORKFLOW_SCHEMA_V16_ID,
             WORKFLOW_SCHEMA_V17_ID,
+            WORKFLOW_SCHEMA_V18_ID,
         }:
             _validate_unique_ids(case["actions"], "action_id", f"actions in {case['case_id']}")
             if workflow_schema_id in {
@@ -1895,6 +1956,7 @@ def load_workflow(
                 WORKFLOW_SCHEMA_V15_ID,
                 WORKFLOW_SCHEMA_V16_ID,
                 WORKFLOW_SCHEMA_V17_ID,
+                WORKFLOW_SCHEMA_V18_ID,
             } and any(action["kind"] == "testclient_request" for action in case["actions"]):
                 if workflow.get("oracle_profile_extension") != "testclient":
                     raise ContractError(
@@ -1921,6 +1983,7 @@ def load_workflow(
                 WORKFLOW_SCHEMA_V15_ID,
                 WORKFLOW_SCHEMA_V16_ID,
                 WORKFLOW_SCHEMA_V17_ID,
+                WORKFLOW_SCHEMA_V18_ID,
             }:
                 lifespan_positions = [
                     index
@@ -1991,6 +2054,7 @@ def load_workflow(
                         WORKFLOW_SCHEMA_V15_ID,
                         WORKFLOW_SCHEMA_V16_ID,
                         WORKFLOW_SCHEMA_V17_ID,
+                        WORKFLOW_SCHEMA_V18_ID,
                     }
                     and action["kind"] == "websocket_conversation"
                 ):

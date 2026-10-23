@@ -1,0 +1,48 @@
+schema: fastapi-rs/python-asgi-workflow@18
+workload:
+  file: tests/fixtures/workloads/telemetry_server_span.py
+  factory: create_telemetry_app
+  instantiate_per_case: true
+oracle_profile_extension: telemetry
+cases:
+- case_id: fastapi.telemetry.http-server-span-root
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: root-request
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: telemetry
+      selector: server_spans
+      comparison: exact
+  source_evidence:
+  - path: tests/test_telemetry/test_semantic_conventions.py
+    kind: upstream_test
+  - path: tests/test_telemetry/test_http.py
+    kind: upstream_test
+  - path: docs/en/docs/advanced/opentelemetry.md
+    kind: upstream_documentation

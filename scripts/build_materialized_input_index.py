@@ -142,6 +142,9 @@ from scripts.atlas_events_documentation_section_review_mappings_20261015 import 
 from scripts.atlas_remaining_docs_wave_mappings import (
     DOC_PAGE_REVIEW_MAPPINGS as REMAINING_DOC_PAGE_REVIEW_MAPPINGS,
 )
+from scripts.atlas_telemetry_documentation_section_review_mappings_20261022 import (
+    DOC_SECTION_CASE_MAPPINGS_OPENTELEMETRY_20261022,
+)
 from scripts.atlas_tutorial_doc_review_mappings import (
     DOC_PAGE_REVIEW_MAPPINGS as TUTORIAL_DOC_PAGE_REVIEW_MAPPINGS,
 )
@@ -167,7 +170,7 @@ INPUT_DIR = ROOT / "tests/fixtures/inputs/parity"
 FASTAPI_SOURCE = (ROOT / "../fastapi").resolve()
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 INDEX_SCHEMA = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
-INDEX_SCHEMA_PATH = ROOT / "tests/fixtures/schemas/materialized-input-index-v11.schema.json"
+INDEX_SCHEMA_PATH = ROOT / "tests/fixtures/schemas/materialized-input-index-v12.schema.json"
 
 _REVIEWED_PAGE_SECTION_MAPPINGS = (
     DOC_SECTION_CASE_MAPPINGS_ASYNC_20261015,
@@ -211,6 +214,7 @@ _REVIEWED_PAGE_SECTION_MAPPINGS = (
     DOC_SECTION_CASE_MAPPINGS_FASTAPI_CLI_ENTRYPOINT_20261015,
     DOC_SECTION_CASE_MAPPINGS_FIRST_STEPS_20261015,
     DOC_SECTION_CASE_MAPPINGS_SETTINGS_20261015,
+    DOC_SECTION_CASE_MAPPINGS_OPENTELEMETRY_20261022,
 )
 
 

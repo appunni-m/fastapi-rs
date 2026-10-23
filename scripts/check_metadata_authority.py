@@ -365,6 +365,11 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
     )
     target_project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     target_dependencies = target_project.get("project", {}).get("dependencies", [])
+    if "opentelemetry-sdk" in packages or any(
+        dependency.lower().replace("_", "-").startswith("opentelemetry-sdk")
+        for dependency in target_dependencies
+    ):
+        raise MetadataError("OpenTelemetry SDK must remain outside the target runtime")
     require_equal(
         "target package direct opentelemetry-api dependency",
         f"opentelemetry-api=={opentelemetry_version}" in target_dependencies,
@@ -384,10 +389,11 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
         "standard-multipart",
         "templates",
         "json-serializers",
+        "telemetry",
     }:
         raise MetadataError(
             "target runtime optional profiles must declare TestClient, EmailStr, multipart, "
-            "templates, and JSON serializers"
+            "templates, JSON serializers, and telemetry parity"
         )
     if not isinstance(manifest_profiles, dict) or set(manifest_profiles) != set(optional_profiles):
         raise MetadataError("manifest target profiles differ from metadata.yaml")
@@ -458,6 +464,16 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
         or manifest_json_serializers_profile != json_serializers_oracle_profile
     ):
         raise MetadataError("JSON serializers oracle profile differs from metadata.yaml authority")
+    telemetry_oracle_profile = metadata.get("oracle_profile_extensions", {}).get("telemetry")
+    manifest_telemetry_profile = manifest.get("oracle_profile_extensions", {}).get("telemetry")
+    if (
+        not isinstance(telemetry_oracle_profile, dict)
+        or manifest_telemetry_profile != telemetry_oracle_profile
+    ):
+        raise MetadataError("telemetry parity oracle profile differs from metadata.yaml authority")
+    telemetry_profile = optional_profiles.get("telemetry")
+    if not isinstance(telemetry_profile, dict) or telemetry_profile.get("parity_only") is not True:
+        raise MetadataError("OpenTelemetry SDK profile must remain parity-only")
 
 
 def validate_fault_contract_policy(metadata: dict[str, Any], manifest: dict[str, Any]) -> None:

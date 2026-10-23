@@ -41,6 +41,7 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V15_ID,
     WORKFLOW_SCHEMA_V16_ID,
     WORKFLOW_SCHEMA_V17_ID,
+    WORKFLOW_SCHEMA_V18_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -53,7 +54,7 @@ from scripts.parity.process_contract import (
     load_process_workflow,
 )
 
-INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index-v11.schema.json"
+INDEX_SCHEMA = ROOT / "tests/fixtures/schemas/materialized-input-index-v12.schema.json"
 INDEX_SCHEMA_ID = MATERIALIZED_INPUT_INDEX_SCHEMA_ID
 API_OBSERVATION_SELECTORS = {
     "python_attribute_value": "python.attribute_value",
@@ -177,6 +178,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
         WORKFLOW_SCHEMA_V15_ID,
         WORKFLOW_SCHEMA_V16_ID,
         WORKFLOW_SCHEMA_V17_ID,
+        WORKFLOW_SCHEMA_V18_ID,
     }:
         selectors.update(
             f"construction.{selector}" for selector in case["construction_observation"]["selectors"]
@@ -198,6 +200,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
             WORKFLOW_SCHEMA_V15_ID,
             WORKFLOW_SCHEMA_V16_ID,
             WORKFLOW_SCHEMA_V17_ID,
+            WORKFLOW_SCHEMA_V18_ID,
         }
         and case.get("construction_observation", {}).get("capture_warnings") is True
     ):
@@ -220,6 +223,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                 WORKFLOW_SCHEMA_V15_ID,
                 WORKFLOW_SCHEMA_V16_ID,
                 WORKFLOW_SCHEMA_V17_ID,
+                WORKFLOW_SCHEMA_V18_ID,
             }
             and action.get("capture_warnings") is True
         ):
@@ -263,6 +267,8 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                         selectors.add("docs.response.body.bytes")
                 if "body_json" in observation["selectors"]:
                     selectors.add("http.body.json")
+            elif observation["kind"] == "telemetry":
+                selectors.add(f"telemetry.{observation['selector']}")
             elif observation["kind"] == "openapi":
                 pointers = observation["json_pointers"]
                 for pointer in pointers:
@@ -473,6 +479,7 @@ def validate_materialized_input_index(
                         not in {
                             WORKFLOW_SCHEMA_V16_ID,
                             WORKFLOW_SCHEMA_V17_ID,
+                            WORKFLOW_SCHEMA_V18_ID,
                         }
                         or symbol_id not in supported_api_symbols
                         or not source_matches_candidate
@@ -593,6 +600,7 @@ def validate_materialized_input_index(
                 WORKFLOW_SCHEMA_V15_ID,
                 WORKFLOW_SCHEMA_V16_ID,
                 WORKFLOW_SCHEMA_V17_ID,
+                WORKFLOW_SCHEMA_V18_ID,
             }:
                 try:
                     expected_mode = verification_mode(case)

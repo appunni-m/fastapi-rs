@@ -125,12 +125,24 @@ oracle_profile_extensions:
     lock:
       path: requirements/oracle-json-serializers-cpython-3.12.13.lock
       sha256: 6efb11b5b1d0dd817331077faed0d6cc0547a759a85fbbbf36baaa7dfdeb2147
-      profile: CPython 3.12.13 with OpenTelemetry API 1.44.0, orjson 3.13.0, and ujson 6.0.0
+      profile: CPython 3.12.13 with orjson 3.13.0 and ujson 6.0.0
     added_packages:
       orjson: 3.13.0
       ujson: 6.0.0
     fastapi_extra: null
     prepare_target: parity-prepare-oracle-json-serializers
+  telemetry:
+    id: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-telemetry-sdk-1.44.0
+    base_profile: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13
+    lock:
+      path: requirements/telemetry-parity-cpython-3.12.13.lock
+      sha256: 3cf8bf0ca13e743a38d26f7d1584b060977dca0253669a64b5183aeeeea6f6bd
+      profile: CPython 3.12.13 parity-only profile with OpenTelemetry SDK 1.44.0
+    added_packages:
+      opentelemetry-sdk: 1.44.0
+      opentelemetry-semantic-conventions: 0.65b0
+    fastapi_extra: null
+    prepare_target: parity-prepare-oracle-telemetry
 
 target_profile_extensions:
   standard-multipart:
@@ -194,6 +206,18 @@ target_profile_extensions:
       ujson: 6.0.0
     fastapi_extra: null
     prepare_target: parity-prepare-target-json-serializers
+  telemetry:
+    id: fastapi-rs-telemetry-sdk-cpython-3.12.13-opentelemetry-sdk-1.44.0
+    base_profile: fastapi-rs-python-consumer
+    lock:
+      path: requirements/telemetry-parity-cpython-3.12.13.lock
+      sha256: 3cf8bf0ca13e743a38d26f7d1584b060977dca0253669a64b5183aeeeea6f6bd
+      profile: CPython 3.12.13 parity-only profile with OpenTelemetry SDK 1.44.0
+    added_packages:
+      opentelemetry-sdk: 1.44.0
+      opentelemetry-semantic-conventions: 0.65b0
+    fastapi_extra: null
+    prepare_target: parity-prepare-target-telemetry
 
 target:
   id: fastapi-rs-python-consumer
@@ -523,7 +547,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 75861f6e0487fec3a899f9716da2884ed43a8da926775c68f78d0ad6f0659bba
+    sha256: 7080df2b38125007e30b314191ff420206997ddad3cb804c124e8230f3814f25
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1831
@@ -563,7 +587,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: d1ae1ccba3a4c8a338d8d7d6c8cbe5041be72ae62407aff29676e82189450548
+    sha256: dbc0f6013f2d748315980bb8d9a29f4983fcee705a91171149e8dc6542e06398
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 913
@@ -571,11 +595,11 @@ source_artifacts:
     source_artifact_pointer: /fixture_backlog_ref
   observation_selector_catalog:
     path: tests/fixtures/observation-selectors.json
-    schema: fastapi-rs/observation-selector-catalog@1
-    sha256: 571fbf9efdecf5f7561f4b609b834cd93f24e36cc44720773950673a46acc3bb
+    schema: fastapi-rs/observation-selector-catalog@2
+    sha256: ada03c893f09a0630d31e3c8af26c306830c20cf5ba5c767538aa6177d043eaa
     purpose: Exact projection semantics for the atlas and fixture selectors
     counts:
-      selectors: 59
+      selectors: 60
       parameterized_selectors: 1
   runtime_api_surface_core:
     path: tests/fixtures/runtime-api-surface-core.json
@@ -599,15 +623,15 @@ source_artifacts:
       pydantic_model_classes: 49
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
-    schema: fastapi-rs/materialized-input-index@11
-    sha256: 2651c4e235817c7ac239ba73f57b948301f291eb93ad043e8cdfa7ad63d22caf
-    schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
-    schema_sha256: 61ec8ca935acdac54c98e148d48e90879bc3d3cfe68315db856332ef55a38bf9
+    schema: fastapi-rs/materialized-input-index@12
+    sha256: 68d4505611b06033810ce77566eb82c26c580a9c0d1cf96398d8d0cdc33beeac
+    schema_path: tests/fixtures/schemas/materialized-input-index-v12.schema.json
+    schema_sha256: 668c3c0e71c739ab05d23b414f07c4ccfe6227116094891280943a8326e1d77a
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 739
-      cases: 3119
-      partial_source_mappings: 2020
+      workflows: 740
+      cases: 3120
+      partial_source_mappings: 2021
 
 contract_metadata:
   aliases:
@@ -673,7 +697,7 @@ unresolved:
     pointer: /unresolved_compatibility_points
     item_id: fastapi-source-evidence-revalidation
   fastapi_telemetry_observation_contract:
-    state: constructor-only; telemetry outputs and lifecycle unobserved
+    state: one-root-http-server-span-case; broader telemetry remains unverified
     source_artifact: compatibility_atlas
     pointer: /unresolved_compatibility_points
     item_id: fastapi-telemetry-observation-contract
@@ -963,6 +987,21 @@ unresolved:
       Adds the templates optional-feature profile to ASGI workflows so public
       Jinja2Templates response behavior can be exercised through an isolated,
       identity-checked FastAPI route and exact HTTP/ASGI observations.
+  python_asgi_workflow_v18:
+    state: telemetry-server-span-observation; v2-v18-remain-supported
+    schema_id: fastapi-rs/python-asgi-workflow@18
+    schema_path: tests/fixtures/schemas/python-asgi-workflow-v18.schema.json
+    schema_sha256: b0dbe0341f088e0755173ca984ed9c4029d64c73f30e8ea3d862428d1ab35164
+    result_schema_id: fastapi-rs/python-asgi-workflow-result@18
+    result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v18.schema.json
+    result_schema_sha256: 5b2f1a9eff7246a902096e90f3002b4b3fc986b36cdc76fc94bca571c74f70e6
+    comparison_schema_id: fastapi-rs/python-asgi-comparison@19
+    comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v19.schema.json
+    comparison_schema_sha256: cf6d2fd93cedbf6a85fb75cddc55cc03bf517206fde29bd12eb021fd07c1fa82
+    coverage: >-
+      Adds an input-only telemetry.server_spans observation for finished HTTP SERVER
+      spans under the parity-only telemetry SDK profile; it records names, statuses,
+      attributes, and ordered events without storing expected outputs.
   python_api_workflow:
     state: historical-input-schema-retained; active-signature-recipes-use-version-5
     schema_id: fastapi-rs/python-api-workflow@1
@@ -1476,7 +1515,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 196
     symbols_with_operation_fixture_refs: 490
-    operation_fixture_refs: 3045
+    operation_fixture_refs: 3047
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -5559,6 +5598,7 @@ api_surface_contract:
       - process.exit_code
       - python.call_outcome
       - python.signature
+      - telemetry.server_spans
     - coverage_matrix_ref: /coverage_matrix/510
       source_path: docs/en/docs/deployment/docker.md
       mapping_status: excluded
@@ -6123,6 +6163,7 @@ api_surface_contract:
     - python.call_outcome
     - python.signature
     - python.warnings
+    - telemetry.server_spans
     - warnings.category_message
     - websocket.event_order
     - websocket.messages
@@ -6145,10 +6186,10 @@ api_surface_contract:
       known_gaps:
       - The linked constructor workflow covers the exact signature, debug=True construction, rejection
         of removed openapi_prefix and arbitrary extra keywords, and empty-version behavior with OpenAPI
-        enabled or disabled. The linked telemetry workflow checks configuration acceptance only; emitted
-        signals, context, exporters, and lifespan effects are not observed. The linked ASGI workflow checks
-        selected route defaults, metadata, and OpenAPI omission; other constructor options and error branches
-        remain unproven.
+        enabled or disabled. A separate input observes one root-path HTTP SERVER span; metrics, logs,
+        context, exporters, and lifespan effects remain unobserved. The linked ASGI workflow checks selected
+        route defaults, metadata, and OpenAPI omission; other constructor options and error branches remain
+        unproven.
       - Application routing, lifecycle, middleware, dependency resolution, serialization, and OpenAPI
         behavior outside the linked cases are not established by this constructor slice.
       - Comparison receipts are generated under ignored parity-results and are not committed; regenerate
@@ -10095,6 +10136,19 @@ api_surface_contract:
       case_id: fastapi.telemetry.constructor-signals-disabled
       observation_selectors:
       - python.call_outcome
+    - workflow_id: telemetry-server-span
+      input_path: tests/fixtures/inputs/parity/telemetry-server-span.json
+      input_sha256: 37ef345207809937053fea370a0fb1479c883a17618b5f1564a1eb4fdede563d
+      recipe_path: tests/fixtures/input-recipes/parity/telemetry-server-span.yaml
+      recipe_sha256: 1ff2079406fb928d015ad8c5807568ffd3c58918443dcaa1b11d8fe03b5e858e
+      workload_path: tests/fixtures/workloads/telemetry_server_span.py
+      workload_sha256: 042c92ff9b8f9c10c1cce8d38bd14166488d392f30eeed5c28cc5023b5241459
+      case_id: fastapi.telemetry.http-server-span-root
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - telemetry.server_spans
     - workflow_id: openapi-extra-deep-merge-full-document-review
       input_path: tests/fixtures/inputs/parity/openapi-extra-deep-merge-full-document-review.json
       input_sha256: 6ff8e4cac56503534cd8ff3823bcf7950044b21eaa7bed636e623ee0f38695a2
@@ -10670,6 +10724,19 @@ api_surface_contract:
       observation_selectors:
       - python.signature
     operation_fixture_refs:
+    - workflow_id: telemetry-server-span
+      input_path: tests/fixtures/inputs/parity/telemetry-server-span.json
+      input_sha256: 37ef345207809937053fea370a0fb1479c883a17618b5f1564a1eb4fdede563d
+      recipe_path: tests/fixtures/input-recipes/parity/telemetry-server-span.yaml
+      recipe_sha256: 1ff2079406fb928d015ad8c5807568ffd3c58918443dcaa1b11d8fe03b5e858e
+      workload_path: tests/fixtures/workloads/telemetry_server_span.py
+      workload_sha256: 042c92ff9b8f9c10c1cce8d38bd14166488d392f30eeed5c28cc5023b5241459
+      case_id: fastapi.telemetry.http-server-span-root
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - telemetry.server_spans
     - workflow_id: application-callable-signatures
       input_path: tests/fixtures/inputs/parity/application-callable-signatures.json
       input_sha256: e6c4f36e5096a1165ef6825ba0b66a196d838cf56e3b783e4df5fa56ad57d435
@@ -11963,6 +12030,7 @@ api_surface_contract:
     - http.headers.ordered
     - http.status
     - python.signature
+    - telemetry.server_spans
     - validation.error_details
     operation_scope:
       status: slice-described
@@ -12023,8 +12091,9 @@ api_surface_contract:
         outside traversal7. The one-use user hook is not a native fault injection or proof of resource
         finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
         remain source evidence with private/internal classification.
-      - FastAPI's telemetry middleware and lifespan wrapper are source-backed but no linked workload observes
-        spans, metrics, logs, request-local context, exporter effects, or telemetry lifecycle behavior.
+      - FastAPI's telemetry middleware and lifespan wrapper are source-backed but the linked telemetry
+        workflow observes only one root-path HTTP SERVER span. Metrics, logs, request-local context, exporter
+        effects, WebSocket spans, and telemetry lifecycle behavior remain unobserved.
   - id: fastapi.applications.FastAPI.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/189
@@ -14660,9 +14729,9 @@ api_surface_contract:
         scheduling are outside this response-field gate.
       - Other FastAPI.__init__ options beyond the reviewed constructor slices remain unimplemented or
         unproven.
-      - The telemetry constructor inputs compare configuration acceptance and the signature only. Native
-        tracing, metrics, logs, context lifetime, exporter effects, and telemetry-aware lifespan behavior
-        remain unobserved.
+      - The telemetry constructor inputs compare configuration acceptance and the signature only. The
+        separate telemetry input observes one root-path HTTP SERVER span through FastAPI.__call__; metrics,
+        logs, context lifetime, exporter effects, and telemetry-aware lifespan behavior remain unobserved.
       - Visited included branches must prepare all own effective fields before publishing the vector,
         retry the whole unpublished branch after a later own constructor fails, descend into child branches
         only when matching reaches them, and retain successful fields across miss/redirect/handle paths.

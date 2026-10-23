@@ -123,6 +123,21 @@ target_runtime:
       prepare_target: parity-prepare-target-json-serializers
       source_profile: FastAPI 0.157.0 with its two optional JSON response serializers installed
       starlette_rs_profile: 1.6.0 core runtime
+    telemetry:
+      id: fastapi-rs-telemetry-sdk-cpython-3.12.13-opentelemetry-sdk-1.44.0
+      base_profile: fastapi-rs-python-consumer
+      lock:
+        path: requirements/telemetry-parity-cpython-3.12.13.lock
+        sha256: 3cf8bf0ca13e743a38d26f7d1584b060977dca0253669a64b5183aeeeea6f6bd
+        profile: CPython 3.12.13 parity-only profile with OpenTelemetry SDK 1.44.0
+      added_packages:
+        opentelemetry-sdk: 1.44.0
+        opentelemetry-semantic-conventions: 0.65b0
+      fastapi_extra: null
+      prepare_target: parity-prepare-target-telemetry
+      source_profile: FastAPI 0.157.0 paired OpenTelemetry SDK parity profile
+      starlette_rs_profile: 1.6.0 core runtime
+      parity_only: true
 
 oracle_profile_extensions:
   email-validation:
@@ -155,12 +170,24 @@ oracle_profile_extensions:
     lock:
       path: requirements/oracle-json-serializers-cpython-3.12.13.lock
       sha256: 6efb11b5b1d0dd817331077faed0d6cc0547a759a85fbbbf36baaa7dfdeb2147
-      profile: CPython 3.12.13 with OpenTelemetry API 1.44.0, orjson 3.13.0, and ujson 6.0.0
+      profile: CPython 3.12.13 with orjson 3.13.0 and ujson 6.0.0
     added_packages:
       orjson: 3.13.0
       ujson: 6.0.0
     fastapi_extra: null
     prepare_target: parity-prepare-oracle-json-serializers
+  telemetry:
+    id: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-telemetry-sdk-1.44.0
+    base_profile: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13
+    lock:
+      path: requirements/telemetry-parity-cpython-3.12.13.lock
+      sha256: 3cf8bf0ca13e743a38d26f7d1584b060977dca0253669a64b5183aeeeea6f6bd
+      profile: CPython 3.12.13 parity-only profile with OpenTelemetry SDK 1.44.0
+    added_packages:
+      opentelemetry-sdk: 1.44.0
+      opentelemetry-semantic-conventions: 0.65b0
+    fastapi_extra: null
+    prepare_target: parity-prepare-oracle-telemetry
 
 source_optional_dependencies:
   schema: fastapi-rs/source-optional-dependency-map@1
@@ -2356,8 +2383,9 @@ reviewed_api_contract_overlay:
             remain unimplemented or unproven.
           - >-
             The telemetry constructor inputs compare configuration acceptance and the
-            signature only. Native tracing, metrics, logs, context lifetime, exporter
-            effects, and telemetry-aware lifespan behavior remain unobserved.
+            signature only. The separate telemetry input observes one root-path HTTP
+            SERVER span through FastAPI.__call__; metrics, logs, context lifetime,
+            exporter effects, and telemetry-aware lifespan behavior remain unobserved.
           - &response_field_traversal_gap >-
             Visited included branches must prepare all own effective fields before
             publishing the vector, retry the whole unpublished branch after a later
@@ -6920,11 +6948,10 @@ reviewed_api_contract_overlay:
           - >-
             The linked constructor workflow covers the exact signature, debug=True construction,
             rejection of removed openapi_prefix and arbitrary extra keywords, and empty-version
-            behavior with OpenAPI enabled or disabled. The linked telemetry workflow checks
-            configuration acceptance only; emitted signals, context, exporters, and lifespan
-            effects are not observed. The linked ASGI workflow checks selected route defaults,
-            metadata, and OpenAPI omission; other constructor options and error branches remain
-            unproven.
+            behavior with OpenAPI enabled or disabled. A separate input observes one root-path
+            HTTP SERVER span; metrics, logs, context, exporters, and lifespan effects remain
+            unobserved. The linked ASGI workflow checks selected route defaults, metadata, and
+            OpenAPI omission; other constructor options and error branches remain unproven.
           - >-
             Application routing, lifecycle, middleware, dependency resolution, serialization, and
             OpenAPI behavior outside the linked cases are not established by this constructor slice.
@@ -6936,11 +6963,11 @@ reviewed_api_contract_overlay:
         The root export resolves to `fastapi.applications.FastAPI`. The linked direct API workflow
         compares the exact constructor signature, debug=True construction, rejection of the removed
         `openapi_prefix` keyword and arbitrary extra keywords, and empty-version validation with
-        OpenAPI enabled and disabled. A separate input checks acceptance of selected disabled
-        telemetry configurations; it does not observe telemetry signals or establish telemetry
-        runtime parity. The linked ASGI workflow compares selected route defaults, metadata, and
-        OpenAPI exclusion. Other constructor options and application behavior are outside this
-        bounded slice.
+        OpenAPI enabled and disabled. Separate inputs check acceptance of selected disabled
+        telemetry configurations and observe one root-path HTTP SERVER span from an ASGI GET /
+        request; this does not establish broader telemetry runtime parity. The linked ASGI workflow
+        compares selected route defaults, metadata, and OpenAPI exclusion. Other constructor
+        options and application behavior are outside this bounded slice.
       source_evidence:
         - {path: fastapi/__init__.py}
         - {path: fastapi/applications.py, symbol: FastAPI}
@@ -7042,6 +7069,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.telemetry.constructor-signals-disabled
           workload_path: tests/fixtures/workloads/telemetry_constructor.py
           observation_selectors: [python.call_outcome]
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-server-span.yaml
+          case_id: fastapi.telemetry.http-server-span-root
+          workload_path: tests/fixtures/workloads/telemetry_server_span.py
+          observation_selectors: [telemetry.server_spans]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml
           case_id: fastapi.openapi-extra.full-document-merge-add-override
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
@@ -7157,6 +7188,10 @@ reviewed_api_contract_overlay:
         - {path: tests/test_router_redirect_slashes.py}
         - {path: docs/en/docs/advanced/response-directly.md}
       fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-server-span.yaml
+          case_id: fastapi.telemetry.http-server-span-root
+          workload_path: tests/fixtures/workloads/telemetry_server_span.py
+          observation_selectors: [telemetry.server_spans]
         - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
           case_id: fastapi.application-callable-signatures.surface
           workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
@@ -7299,6 +7334,7 @@ reviewed_api_contract_overlay:
       feature_ids: [app-routing, dependency-security, response-serialization, python-data-encoding]
       observation_selectors:
         - python.signature
+        - telemetry.server_spans
         - http.status
         - http.headers.ordered
         - http.body.bytes
@@ -7364,9 +7400,11 @@ reviewed_api_contract_overlay:
         scope before route execution; the proxy-root-path-without-auto-server input
         observes that scope value in the endpoint response and the associated
         OpenAPI request. FastAPI 0.157.0 also wraps HTTP, WebSocket, and lifespan
-        execution with native telemetry. The linked workloads do not observe spans,
-        metrics, logs, request-local telemetry context, exporter effects, or
-        telemetry lifecycle behavior, so those behaviors remain unproven.
+        execution with native telemetry. One separate telemetry-profile input maps a
+        direct ASGI GET / and observes its completed HTTP SERVER span name, status,
+        attributes, and events. Metrics, logs, request-local telemetry context,
+        exporter effects, WebSocket spans, and telemetry lifecycle behavior remain
+        unobserved.
         Four additional-response cases cover media-type content merging, model-derived
         response schemas, preserved examples, and status-description defaults for
         declared responses; they do not establish arbitrary metadata-key or malformed
@@ -7408,8 +7446,9 @@ reviewed_api_contract_overlay:
           - *response_field_traversal_history_gap
           - >-
             FastAPI's telemetry middleware and lifespan wrapper are source-backed
-            but no linked workload observes spans, metrics, logs, request-local
-            context, exporter effects, or telemetry lifecycle behavior.
+            but the linked telemetry workflow observes only one root-path HTTP
+            SERVER span. Metrics, logs, request-local context, exporter effects,
+            WebSocket spans, and telemetry lifecycle behavior remain unobserved.
     fastapi.Response:
       target_binding:
         implementation_owner: starlette-rs

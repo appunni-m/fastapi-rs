@@ -13060,17 +13060,19 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         },
         {
             "id": "fastapi-telemetry-observation-contract",
-            "status": "constructor-only; telemetry outputs and lifecycle unobserved",
-            "question": "Which deterministic input and observation contract will compare FastAPI telemetry spans, metrics, logs, request-local context, provider/exporter ownership, and lifecycle without confusing them with HTTP or WebSocket outputs?",
+            "status": "one-root-http-server-span-case; broader telemetry remains unverified",
+            "question": "Which additional deterministic inputs will compare telemetry beyond one root-path HTTP SERVER span, including metrics, logs, request-local context, provider/exporter ownership, WebSocket spans, and lifecycle?",
             "evidence": (
                 "FastAPI 0.157.0 exposes native telemetry through FastAPI(telemetry=...), "
                 "fastapi.telemetry, middleware, and lifespan code; its pinned tests exercise "
                 "HTTP, WebSocket, validation, errors, background tasks, integrations, and "
-                "OTLP environment setup. The current telemetry-constructor workflow observes "
-                "only signature and configuration acceptance, while the observation-selector "
-                "catalog has no span, metric, log-record, provider-state, or exporter-output "
-                "selector. The OpenTelemetry documentation sections and test modules therefore "
-                "remain partial or explicitly excluded pending a target-capable telemetry profile."
+                "OTLP environment setup. The telemetry-server-span workflow maps one direct ASGI "
+                "GET / and projects the completed HTTP SERVER span using the parity-only "
+                "opentelemetry-sdk 1.44.0 profile. This is one root-path slice only. Metrics, "
+                "log records, request-local context, "
+                "provider/exporter state, WebSocket spans, and lifecycle remain unobserved; the "
+                "OpenTelemetry documentation and test mappings therefore remain partial or "
+                "explicitly excluded outside this selected span case."
             ),
         },
         {

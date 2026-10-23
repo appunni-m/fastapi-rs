@@ -1,10 +1,9 @@
 """Source-backed review of FastAPI's 0.157.0 OpenTelemetry tests.
 
 The pinned tests inspect SDK spans, metrics, logs, context state, or exporter
-effects. The current parity outputs do not expose those signals, so the review
-records explicit per-function scope exclusions instead of relabeling HTTP
-assertions as telemetry coverage. The constructor recipe is a separate
-input-only probe and does not claim signal parity.
+effects. A narrow HTTP server-span workflow maps one completed root-path request;
+the remaining output and lifecycle behaviors retain explicit per-function scope
+exclusions. The constructor recipe remains a separate input-only probe.
 """
 
 from __future__ import annotations
@@ -475,21 +474,34 @@ for _test_root in _TELEMETRY_TEST_ROOTS:
             for name, node in sorted(_functions.items())
         }
         TELEMETRY_TEST_FUNCTION_COUNT += len(_reviews)
+        has_http_server_span_sources = _test_path in {
+            "tests/test_telemetry/test_http.py",
+            "tests/test_telemetry/test_semantic_conventions.py",
+        }
         _module_reviews[_test_path] = {
             "rationale": (
-                "Each test function is classified individually below. Telemetry-specific "
-                "assertions observe OpenTelemetry SDK outputs or context fields that have no "
-                "current parity selector; generic transport assertions remain Starlette-owned."
+                (
+                    "Each test function is classified individually below. The independent "
+                    "root GET SERVER-span input uses this module as source evidence only; it "
+                    "does not execute or cover any upstream test function."
+                )
+                if has_http_server_span_sources
+                else (
+                    "Each test function is classified individually below. No telemetry "
+                    "workflow selects any upstream test function from this module."
+                )
             ),
             "functions": _reviews,
-            "workflow_cases": [],
-            "module_observation_selectors": [],
             "supporting_sources": [
                 _whole_source(
                     _test_path,
-                    "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+                    "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
                 ),
-                *_source_refs(("trace spans or trace context",)),
+                *(
+                    _source_refs(("trace spans or trace context",))
+                    if has_http_server_span_sources
+                    else []
+                ),
             ],
         }
 

@@ -83,6 +83,8 @@ const FASTAPI_INNER_ASTACK_SCOPE_KEY: &str = "fastapi_inner_astack";
 const FASTAPI_FUNCTION_ASTACK_SCOPE_KEY: &str = "fastapi_function_astack";
 const SSE_KEEPALIVE_INTERVAL_SECONDS: f64 = 15.0;
 const SSE_KEEPALIVE_COMMENT: &[u8] = b": ping\n\n";
+const FASTAPI_TELEMETRY_VERSION: &str = "0.157.0";
+const FASTAPI_TELEMETRY_SCHEMA_URL: &str = "https://opentelemetry.io/schemas/1.44.0";
 
 fn native_task_coroutine(py: Python<'_>, awaitable: Py<PyAny>) -> PyResult<Py<PyAny>> {
     py.import("fastapi_rs._core")?
@@ -4664,6 +4666,8 @@ pub(crate) struct PyFastApi {
     user_middleware: Py<PyList>,
     middleware_stack: Option<Py<PyAny>>,
     router_view: Option<Py<PyAny>>,
+    telemetry_tracing: bool,
+    telemetry_tracer_provider: Option<Py<PyAny>>,
 }
 
 struct OpenApiRouteSnapshot {
@@ -4992,6 +4996,16 @@ struct PyFastApiCallNext {
     scope: Py<PyAny>,
     receive: Py<PyAny>,
     post_response_error: Rc<RefCell<Option<PyErr>>>,
+}
+
+#[pyclass(
+    name = "_FastAPITelemetrySend",
+    module = "fastapi_rs._core",
+    unsendable
+)]
+struct PyFastApiTelemetrySend {
+    send: Py<PyAny>,
+    span_state: Rc<RefCell<FastApiTelemetrySpanState>>,
 }
 
 #[pymethods]
@@ -5482,7 +5496,7 @@ impl PyFastApi {
     }
 
     #[new]
-    #[pyo3(signature = (*, debug = false, routes = None, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, responses = None, callbacks = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true, deprecated = None, include_in_schema = true, **extra))]
+    #[pyo3(signature = (*, telemetry = None, debug = false, routes = None, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, responses = None, callbacks = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true, deprecated = None, include_in_schema = true, **extra))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -5490,6 +5504,7 @@ impl PyFastApi {
     )]
     fn new(
         py: Python<'_>,
+        telemetry: Option<Py<PyAny>>,
         debug: bool,
         routes: Option<Py<PyAny>>,
         title: &str,
@@ -5529,6 +5544,17 @@ impl PyFastApi {
         include_in_schema: bool,
         extra: Option<&Bound<'_, PyDict>>,
     ) -> PyResult<Self> {
+        let (telemetry_tracing, telemetry_tracer_provider) = match telemetry {
+            Some(telemetry) => {
+                let telemetry = telemetry.bind(py);
+                let tracing = telemetry
+                    .call_method1("get", ("tracing", true))?
+                    .extract::<bool>()?;
+                let provider = telemetry.call_method1("get", ("tracer_provider", py.None()))?;
+                (tracing, (!provider.is_none()).then(|| provider.unbind()))
+            }
+            None => (true, None),
+        };
         if openapi_url.is_some_and(|url| !url.is_empty()) && title.is_empty() {
             return Err(PyAssertionError::new_err(
                 "A title must be provided for OpenAPI, e.g.: 'My API'",
@@ -5786,6 +5812,8 @@ impl PyFastApi {
             user_middleware,
             middleware_stack: None,
             router_view: None,
+            telemetry_tracing,
+            telemetry_tracer_provider,
         };
         register_constructor_websocket_routes(&mut app, py)?;
         Ok(app)
@@ -7386,7 +7414,33 @@ impl PyFastApi {
         scope
             .bind(py)
             .set_item("app", fastapi_public_instance(py, &slf)?)?;
-        Self::middleware_stack_for(slf, py)?
+        let (telemetry_tracing, telemetry_tracer_provider) = {
+            let app = slf.bind(py).borrow();
+            (
+                app.telemetry_tracing,
+                app.telemetry_tracer_provider
+                    .as_ref()
+                    .map(|provider| provider.clone_ref(py)),
+            )
+        };
+        let stack = Self::middleware_stack_for(slf, py)?;
+        if scope.bind(py).get_item("type")?.extract::<String>()? == "http" && telemetry_tracing {
+            if let Some(tracer_provider) = telemetry_tracer_provider {
+                return into_python_awaitable(
+                    py,
+                    FastApiTelemetryCall {
+                        app: stack,
+                        tracer_provider,
+                        scope,
+                        receive,
+                        send,
+                        span_state: None,
+                        pending: false,
+                    },
+                );
+            }
+        }
+        stack
             .bind(py)
             .call1((scope, receive, send))
             .map(Bound::unbind)
@@ -7900,6 +7954,375 @@ impl AwaitableStateMachine for FastApiHttpMiddlewareCall {
             MachineResume::Start => Err(PyRuntimeError::new_err(
                 "HTTP middleware received a duplicate start signal",
             )),
+        }
+    }
+}
+
+struct FastApiTelemetrySpanState {
+    context_manager: Option<Py<PyAny>>,
+    span: Option<Py<PyAny>>,
+    scope: Py<PyAny>,
+    response_status: Option<u16>,
+    expects_trailers: bool,
+    response_terminal: bool,
+    ended: bool,
+}
+
+impl FastApiTelemetrySpanState {
+    fn start(
+        py: Python<'_>,
+        tracer_provider: &Bound<'_, PyAny>,
+        scope: Py<PyAny>,
+    ) -> PyResult<Self> {
+        let scope_bound = scope.bind(py);
+        let method = parse_scope_string(scope_bound, "method", "GET")?;
+        let path = parse_scope_string(scope_bound, "path", "/")?;
+        let attributes = PyDict::new(py);
+        attributes.set_item("http.request.method", &method)?;
+        attributes.set_item(
+            "network.protocol.version",
+            parse_scope_string(scope_bound, "http_version", "1.1")?,
+        )?;
+        attributes.set_item("url.path", &path)?;
+        attributes.set_item(
+            "url.scheme",
+            parse_scope_string(scope_bound, "scheme", "http")?,
+        )?;
+
+        let server = scope_bound.call_method1("get", ("server", py.None()))?;
+        if let Ok(server) = server.cast::<PyTuple>() {
+            if !server.is_empty() {
+                if let Ok(address) = server.get_item(0)?.extract::<String>() {
+                    attributes.set_item("server.address", address)?;
+                }
+            }
+            if server.len() > 1 {
+                if let Ok(port) = server.get_item(1)?.extract::<i64>() {
+                    attributes.set_item("server.port", port)?;
+                }
+            }
+        }
+
+        let trace = py.import("opentelemetry.trace")?;
+        let tracer_kwargs = PyDict::new(py);
+        tracer_kwargs.set_item("schema_url", FASTAPI_TELEMETRY_SCHEMA_URL)?;
+        let tracer = tracer_provider.call_method(
+            "get_tracer",
+            (concat!("fast", "api"), FASTAPI_TELEMETRY_VERSION),
+            Some(&tracer_kwargs),
+        )?;
+        let kwargs = PyDict::new(py);
+        kwargs.set_item("kind", trace.getattr("SpanKind")?.getattr("SERVER")?)?;
+        kwargs.set_item("attributes", attributes)?;
+        kwargs.set_item("record_exception", false)?;
+        kwargs.set_item("set_status_on_exception", false)?;
+        kwargs.set_item("end_on_exit", true)?;
+        let context_manager = tracer
+            .call_method("start_as_current_span", (method,), Some(&kwargs))?
+            .unbind();
+        let span = context_manager.bind(py).call_method0("__enter__")?.unbind();
+
+        Ok(Self {
+            context_manager: Some(context_manager),
+            span: Some(span),
+            scope,
+            response_status: None,
+            expects_trailers: false,
+            response_terminal: false,
+            ended: false,
+        })
+    }
+
+    fn finish(&mut self, py: Python<'_>, error: Option<&PyErr>, incomplete: bool) -> PyResult<()> {
+        if self.ended {
+            return Ok(());
+        }
+        self.ended = true;
+        let Some(context_manager) = self.context_manager.take() else {
+            return Ok(());
+        };
+        let Some(span) = self.span.take() else {
+            return context_manager
+                .bind(py)
+                .call_method1("__exit__", (py.None(), py.None(), py.None()))
+                .map(|_| ());
+        };
+
+        let update_result: PyResult<()> = (|| {
+            if let Some(status) = self.response_status {
+                span.bind(py)
+                    .call_method1("set_attribute", ("http.response.status_code", status))?;
+            }
+            let route = self
+                .scope
+                .bind(py)
+                .call_method1("get", ("route", py.None()))?;
+            if !route.is_none() {
+                let route_path = if route.hasattr("path_format")? {
+                    route.getattr("path_format")?.extract::<String>().ok()
+                } else if route.hasattr("path")? {
+                    route.getattr("path")?.extract::<String>().ok()
+                } else {
+                    None
+                };
+                if let Some(route_path) = route_path {
+                    span.bind(py)
+                        .call_method1("set_attribute", ("http.route", &route_path))?;
+                    let method = parse_scope_string(self.scope.bind(py), "method", "GET")?;
+                    span.bind(py)
+                        .call_method1("update_name", (format!("{method} {route_path}"),))?;
+                }
+            }
+            let failed = error.is_some()
+                || incomplete
+                || self.response_status.is_none_or(|status| status >= 500);
+            if failed {
+                let error_type = match error {
+                    Some(error) => Some(fastapi_telemetry_exception_type(py, error)?),
+                    None => Some(
+                        self.response_status
+                            .map(|status| status.to_string())
+                            .unwrap_or_else(|| {
+                                if incomplete {
+                                    "RuntimeError".to_owned()
+                                } else {
+                                    "incomplete_response".to_owned()
+                                }
+                            }),
+                    ),
+                };
+                if let Some(error_type) = error_type {
+                    span.bind(py)
+                        .call_method1("set_attribute", ("error.type", error_type))?;
+                }
+                let trace = py.import("opentelemetry.trace")?;
+                let status = trace
+                    .getattr("Status")?
+                    .call1((trace.getattr("StatusCode")?.getattr("ERROR")?,))?;
+                span.bind(py).call_method1("set_status", (status,))?;
+            }
+            Ok(())
+        })();
+
+        let exit_result = if let Some(error) = error {
+            let exception_type = error.get_type(py).unbind().into_any();
+            let exception_value = error.value(py).clone().unbind().into_any();
+            let traceback = error
+                .traceback(py)
+                .map(|traceback| traceback.unbind().into_any())
+                .unwrap_or_else(|| py.None());
+            context_manager
+                .bind(py)
+                .call_method1("__exit__", (exception_type, exception_value, traceback))
+                .map(|_| ())
+        } else {
+            context_manager
+                .bind(py)
+                .call_method1("__exit__", (py.None(), py.None(), py.None()))
+                .map(|_| ())
+        };
+
+        update_result.and(exit_result)
+    }
+}
+
+fn fastapi_telemetry_exception_type(py: Python<'_>, error: &PyErr) -> PyResult<String> {
+    let exception_type = error.get_type(py);
+    let module = exception_type.getattr("__module__")?.extract::<String>()?;
+    let qualified_name = exception_type
+        .getattr("__qualname__")?
+        .extract::<String>()?;
+    if module == "builtins" {
+        Ok(qualified_name)
+    } else {
+        Ok(format!("{module}.{qualified_name}"))
+    }
+}
+
+enum FastApiTelemetryMessage {
+    ResponseStart { status: u16, trailers: bool },
+    ResponseBody { more: bool },
+    ResponseTrailers { more: bool },
+    PathSend,
+    Other,
+}
+
+impl FastApiTelemetryMessage {
+    fn parse(message: &Bound<'_, PyAny>) -> PyResult<Self> {
+        let message = message.cast::<PyDict>()?;
+        let message_type = message
+            .get_item("type")?
+            .ok_or_else(|| PyValueError::new_err("ASGI response message has no type"))?
+            .extract::<String>()?;
+        match message_type.as_str() {
+            "http.response.start" => Ok(Self::ResponseStart {
+                status: message
+                    .get_item("status")?
+                    .ok_or_else(|| PyValueError::new_err("ASGI response start has no status"))?
+                    .extract::<u16>()?,
+                trailers: message
+                    .call_method1("get", ("trailers", false))?
+                    .extract::<bool>()?,
+            }),
+            "http.response.body" => Ok(Self::ResponseBody {
+                more: message
+                    .call_method1("get", ("more_body", false))?
+                    .extract::<bool>()?,
+            }),
+            "http.response.trailers" => Ok(Self::ResponseTrailers {
+                more: message
+                    .call_method1("get", ("more_trailers", false))?
+                    .extract::<bool>()?,
+            }),
+            "http.response.pathsend" => Ok(Self::PathSend),
+            _ => Ok(Self::Other),
+        }
+    }
+
+    fn observe(&self, state: &mut FastApiTelemetrySpanState) {
+        match self {
+            Self::ResponseStart { status, trailers } => {
+                state.response_status = Some(*status);
+                state.expects_trailers = *trailers;
+            }
+            Self::ResponseBody { more } => {
+                let terminal = !more && !state.expects_trailers;
+                state.response_terminal |= terminal;
+            }
+            Self::ResponseTrailers { more } => {
+                let terminal = !more;
+                state.response_terminal |= terminal;
+            }
+            Self::PathSend => {
+                state.response_terminal = true;
+            }
+            Self::Other => {}
+        }
+    }
+}
+
+#[pymethods]
+impl PyFastApiTelemetrySend {
+    fn __call__(&self, py: Python<'_>, message: Py<PyAny>) -> PyResult<Py<PyAny>> {
+        into_python_awaitable(
+            py,
+            FastApiTelemetrySendCall {
+                send: self.send.clone_ref(py),
+                span_state: Rc::clone(&self.span_state),
+                message,
+                message_kind: None,
+                pending: false,
+            },
+        )
+    }
+}
+
+struct FastApiTelemetrySendCall {
+    send: Py<PyAny>,
+    span_state: Rc<RefCell<FastApiTelemetrySpanState>>,
+    message: Py<PyAny>,
+    message_kind: Option<FastApiTelemetryMessage>,
+    pending: bool,
+}
+
+impl AwaitableStateMachine for FastApiTelemetrySendCall {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        match input {
+            MachineResume::Start if !self.pending => {
+                self.message_kind = Some(FastApiTelemetryMessage::parse(self.message.bind(py))?);
+                let awaitable = self.send.bind(py).call1((self.message.bind(py),))?.unbind();
+                self.pending = true;
+                Ok(MachineAction::Await(awaitable))
+            }
+            MachineResume::Value(value) if self.pending => {
+                self.pending = false;
+                let terminal = {
+                    let mut span_state = self.span_state.borrow_mut();
+                    self.message_kind
+                        .take()
+                        .ok_or_else(|| PyRuntimeError::new_err("telemetry send message was lost"))?
+                        .observe(&mut span_state);
+                    span_state.response_terminal
+                };
+                if terminal {
+                    self.span_state.borrow_mut().finish(py, None, false)?;
+                }
+                Ok(MachineAction::Complete(value))
+            }
+            MachineResume::Error(error) if self.pending => {
+                self.pending = false;
+                Err(error)
+            }
+            MachineResume::Start | MachineResume::Value(_) | MachineResume::Error(_) => Err(
+                PyRuntimeError::new_err("telemetry send resumed without a pending ASGI send"),
+            ),
+        }
+    }
+}
+
+struct FastApiTelemetryCall {
+    app: Py<PyAny>,
+    tracer_provider: Py<PyAny>,
+    scope: Py<PyAny>,
+    receive: Py<PyAny>,
+    send: Py<PyAny>,
+    span_state: Option<Rc<RefCell<FastApiTelemetrySpanState>>>,
+    pending: bool,
+}
+
+impl FastApiTelemetryCall {
+    fn fail(&mut self, py: Python<'_>, error: PyErr) -> PyResult<MachineAction> {
+        self.pending = false;
+        if let Some(span_state) = self.span_state.take() {
+            let _ = span_state.borrow_mut().finish(py, Some(&error), false);
+        }
+        Err(error)
+    }
+}
+
+impl AwaitableStateMachine for FastApiTelemetryCall {
+    fn resume(&mut self, py: Python<'_>, input: MachineResume) -> PyResult<MachineAction> {
+        match input {
+            MachineResume::Start if !self.pending => {
+                let span_state = Rc::new(RefCell::new(FastApiTelemetrySpanState::start(
+                    py,
+                    self.tracer_provider.bind(py),
+                    self.scope.clone_ref(py),
+                )?));
+                self.span_state = Some(Rc::clone(&span_state));
+                let send = match Py::new(
+                    py,
+                    PyFastApiTelemetrySend {
+                        send: self.send.clone_ref(py),
+                        span_state,
+                    },
+                ) {
+                    Ok(send) => send.into_any(),
+                    Err(error) => return self.fail(py, error),
+                };
+                let awaitable = match self.app.bind(py).call1((
+                    self.scope.bind(py),
+                    self.receive.bind(py),
+                    send,
+                )) {
+                    Ok(awaitable) => awaitable.unbind(),
+                    Err(error) => return self.fail(py, error),
+                };
+                self.pending = true;
+                Ok(MachineAction::Await(awaitable))
+            }
+            MachineResume::Value(value) if self.pending => {
+                self.pending = false;
+                if let Some(span_state) = self.span_state.take() {
+                    let incomplete = !span_state.borrow().response_terminal;
+                    span_state.borrow_mut().finish(py, None, incomplete)?;
+                }
+                Ok(MachineAction::Complete(value))
+            }
+            MachineResume::Error(error) if self.pending => self.fail(py, error),
+            MachineResume::Start | MachineResume::Value(_) | MachineResume::Error(_) => Err(
+                PyRuntimeError::new_err("telemetry request resumed without a pending app call"),
+            ),
         }
     }
 }
@@ -8781,6 +9204,7 @@ impl PyApiRouter {
             py,
             PyFastApi::new(
                 py,
+                None,
                 false,
                 routes,
                 "FastAPI",
@@ -20371,6 +20795,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_class::<PyFastApiCachedReceiveDescriptor>()?;
     module.add_class::<PyFastApiCachedReceive>()?;
     module.add_class::<PyFastApiMessageCapture>()?;
+    module.add_class::<PyFastApiTelemetrySend>()?;
     module.add_class::<PyFastApiHttpExceptionHandler>()?;
     module.add_class::<PyFastApiRequestValidationExceptionHandler>()?;
     let py = module.py();

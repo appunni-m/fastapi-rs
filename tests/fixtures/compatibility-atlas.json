@@ -167627,7 +167627,8 @@
               "http.status",
               "process.exit_code",
               "python.call_outcome",
-              "python.signature"
+              "python.signature",
+              "telemetry.server_spans"
             ],
             "selector_evidence": [
               {
@@ -167676,11 +167677,13 @@
                 "feature_id": null,
                 "schema_extension_required": [
                   "python.call_outcome",
-                  "python.signature"
+                  "python.signature",
+                  "telemetry.server_spans"
                 ],
                 "selectors": [
                   "python.call_outcome",
-                  "python.signature"
+                  "python.signature",
+                  "telemetry.server_spans"
                 ]
               }
             ],
@@ -167750,7 +167753,8 @@
               "http.status",
               "process.exit_code",
               "python.call_outcome",
-              "python.signature"
+              "python.signature",
+              "telemetry.server_spans"
             ],
             "selector_evidence": [
               {
@@ -167799,11 +167803,13 @@
                 "feature_id": null,
                 "schema_extension_required": [
                   "python.call_outcome",
-                  "python.signature"
+                  "python.signature",
+                  "telemetry.server_spans"
                 ],
                 "selectors": [
                   "python.call_outcome",
-                  "python.signature"
+                  "python.signature",
+                  "telemetry.server_spans"
                 ]
               }
             ],
@@ -167873,7 +167879,8 @@
               "http.status",
               "process.exit_code",
               "python.call_outcome",
-              "python.signature"
+              "python.signature",
+              "telemetry.server_spans"
             ],
             "selector_evidence": [
               {
@@ -167922,11 +167929,13 @@
                 "feature_id": null,
                 "schema_extension_required": [
                   "python.call_outcome",
-                  "python.signature"
+                  "python.signature",
+                  "telemetry.server_spans"
                 ],
                 "selectors": [
                   "python.call_outcome",
-                  "python.signature"
+                  "python.signature",
+                  "telemetry.server_spans"
                 ]
               }
             ],
@@ -282334,7 +282343,7 @@
                   "python.signature"
                 ],
                 "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml",
-                "scope_note": "Partial constructor contract only: the independent inputs observe default app construction and acceptance of selected telemetry configuration dictionaries, plus the FastAPI constructor signature. They do not observe HTTP or WebSocket spans, metrics, log records, context data, provider/exporter effects, or the FastAPI Cloud service.",
+                "scope_note": "Partial constructor contract only: the independent inputs observe default app construction and acceptance of selected telemetry configuration dictionaries, plus the FastAPI constructor signature. A separate trace-request-operations mapping observes one root-path HTTP SERVER span. WebSocket spans, metrics, log records, context data, provider/exporter effects, and the FastAPI Cloud service remain outside those selected inputs.",
                 "workflow_id": "telemetry-constructor-contract"
               }
             ],
@@ -282342,7 +282351,7 @@
               "python.call_outcome",
               "python.signature"
             ],
-            "review_rationale": "FastAPI 0.157.0 introduces the telemetry constructor parameter in fastapi/applications.py and defines its TypedDict settings in fastapi/telemetry/_api.py. The pinned OpenTelemetry guide at docs/en/docs/advanced/opentelemetry.md:1-158 describes many runtime signals beyond constructor acceptance. These four independent constructor calls map only the bounded configuration surface; emitted telemetry remains an explicit unresolved contract.",
+            "review_rationale": "FastAPI 0.157.0 introduces the telemetry constructor parameter in fastapi/applications.py and defines its TypedDict settings in fastapi/telemetry/_api.py. The pinned OpenTelemetry guide at docs/en/docs/advanced/opentelemetry.md:1-158 describes many runtime signals beyond constructor acceptance. These four independent constructor calls map only the bounded configuration surface. The separate trace-request-operations input maps one completed root-path HTTP SERVER span; broader emitted telemetry remains unresolved.",
             "review_status": "reviewed_partial",
             "selector_evidence": [
               {
@@ -282471,7 +282480,7 @@
             "candidate_observation_selectors": [],
             "candidate_selector_evidence": [],
             "end_line": 59,
-            "exclusion_reason": "This section describes environment-driven OTLP exporter configuration. Current parity observations do not capture exported telemetry or provider lifecycle, and the fixture profile does not start a collector. Keep these behaviors in the telemetry observation-contract backlog until a deterministic process and export observation is available.",
+            "exclusion_reason": "This section describes environment-driven OTLP exporter configuration. Current parity observations do not capture exporter selection or provider lifecycle; one separate input observes a root-path HTTP SERVER span, and the fixture profile does not start a collector. Keep these behaviors in the telemetry observation-contract backlog until a deterministic process and export observation is available.",
             "feature_evidence": [
               {
                 "feature_id": "dependency-security",
@@ -282490,7 +282499,7 @@
             "heading": "Other monitoring services { #other-monitoring-services }",
             "independent_workflow_mappings": [],
             "observation_selectors": [],
-            "review_rationale": "FastAPI 0.157.0 documents FASTAPI_OTEL_AUTO_CONFIGURE and OTEL_EXPORTER_OTLP_* configuration at docs/en/docs/advanced/opentelemetry.md:44-59; fastapi/telemetry/_runtime.py implements endpoint selection and exporter registration. No current selector reports OTLP spans, metrics, logs, or shutdown effects, so this section is explicitly excluded from the present fixture denominator and remains an implementation backlog item.",
+            "review_rationale": "FastAPI 0.157.0 documents FASTAPI_OTEL_AUTO_CONFIGURE and OTEL_EXPORTER_OTLP_* configuration at docs/en/docs/advanced/opentelemetry.md:44-59; fastapi/telemetry/_runtime.py implements endpoint selection and exporter registration. The selected server-span projection does not report OTLP exporter selection, metrics, logs, or shutdown effects, so this section is excluded from the present fixture denominator and remains an implementation backlog item.",
             "review_status": "excluded",
             "selector_evidence": [],
             "start_line": 44
@@ -282766,7 +282775,7 @@
                   "python.signature"
                 ],
                 "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml",
-                "scope_note": "Partial constructor mapping: inputs cover tracing=False, operation_spans=False, and all signal flags disabled. They do not inspect supplied providers, custom exporters, spans, logs, metrics, or provider shutdown.",
+                "scope_note": "Partial constructor mapping: inputs cover tracing=False, operation_spans=False, and all signal flags disabled. They do not inspect supplied providers, custom exporters, logs, metrics, or provider shutdown. A separate trace section maps one root-path HTTP SERVER span.",
                 "workflow_id": "telemetry-constructor-contract"
               }
             ],
@@ -282774,7 +282783,7 @@
               "python.call_outcome",
               "python.signature"
             ],
-            "review_rationale": "FastAPI 0.157.0 defines tracing, metrics, logs, operation_spans, provider, and auto_configure fields in fastapi/telemetry/_api.py; the pinned guide describes their settings at docs/en/docs/advanced/opentelemetry.md:81-131. The linked constructor recipe selects only the three disabled-configuration calls and therefore establishes input acceptance, not telemetry runtime behavior.",
+            "review_rationale": "FastAPI 0.157.0 defines tracing, metrics, logs, operation_spans, provider, and auto_configure fields in fastapi/telemetry/_api.py; the pinned guide describes their settings at docs/en/docs/advanced/opentelemetry.md:81-131. The linked constructor recipe selects only the three disabled-configuration calls and therefore establishes input acceptance. The separate trace section maps one root-path HTTP SERVER span, not general telemetry runtime behavior.",
             "review_status": "reviewed_partial",
             "selector_evidence": [
               {
@@ -282797,13 +282806,13 @@
             "candidate_observation_selectors": [],
             "candidate_selector_evidence": [],
             "end_line": 106,
-            "exclusion_reason": "The section documents global and injected provider selection, automatic exporter registration, and provider shutdown behavior. Current selectors do not observe provider identity, emitted spans/metrics/logs, exporter setup, or lifecycle effects.",
+            "exclusion_reason": "The section documents global and injected provider selection, automatic exporter registration, and provider shutdown behavior. Current selectors do not observe provider identity, exporter setup, or lifecycle effects; the separate trace case observes only a root-path HTTP SERVER span.",
             "feature_evidence": [],
             "feature_ids": [],
             "heading": "Configure providers and exporters { #configure-providers-and-exporters }",
             "independent_workflow_mappings": [],
             "observation_selectors": [],
-            "review_rationale": "FastAPI 0.157.0's pinned section at docs/en/docs/advanced/opentelemetry.md:83-106 describes provider/exporter configuration and links tutorial002, which injects a TracerProvider configured with BatchSpanProcessor and ConsoleSpanExporter. The current constructor cases do not exercise that provider input, and no telemetry signal or exporter selector exists, so the section remains excluded pending a deterministic telemetry profile.",
+            "review_rationale": "FastAPI 0.157.0's pinned section at docs/en/docs/advanced/opentelemetry.md:83-106 describes provider/exporter configuration and links tutorial002, which injects a TracerProvider configured with BatchSpanProcessor and ConsoleSpanExporter. The current constructor cases do not exercise that provider input, and the span selector does not identify provider or exporter behavior, so the section remains excluded pending a broader deterministic telemetry profile.",
             "review_status": "excluded",
             "selector_evidence": [],
             "start_line": 83
@@ -282931,33 +282940,36 @@
             "heading": "Trace request operations { #trace-request-operations }",
             "independent_workflow_mappings": [
               {
+                "action_ids": [
+                  "root-request"
+                ],
                 "case_ids": [
-                  "fastapi.telemetry.constructor-operation-spans-disabled"
+                  "fastapi.telemetry.http-server-span-root"
                 ],
                 "coverage_status": "partial",
                 "observation_selectors": [
-                  "python.call_outcome"
+                  "telemetry.server_spans"
                 ],
-                "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml",
-                "scope_note": "The selected case observes acceptance of operation_spans=False only. It does not observe dependency, endpoint, serialization, or background-task spans.",
-                "workflow_id": "telemetry-constructor-contract"
+                "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-server-span.yaml",
+                "scope_note": "One direct ASGI GET / input selects completed HTTP SERVER spans, including their name, status, attributes, and events. It does not cover the documented /items/1 route, operation spans, metrics, logs, context, export, or lifespan behavior.",
+                "workflow_id": "telemetry-server-span"
               }
             ],
             "observation_selectors": [
-              "python.call_outcome"
+              "telemetry.server_spans"
             ],
-            "review_rationale": "The pinned section at docs/en/docs/advanced/opentelemetry.md:107-117 describes FastAPI operation spans and the operation_spans setting. The input selects that setting through the public FastAPI constructor; no span selector is currently available, so span emission remains unresolved.",
+            "review_rationale": "The pinned section at docs/en/docs/advanced/opentelemetry.md:107-117 describes FastAPI request and operation spans. The linked input observes one root-path HTTP SERVER span through the parity-only SDK profile. Dependency, endpoint, serialization, and background-task spans remain outside this selected case.",
             "review_status": "reviewed_partial",
             "selector_evidence": [
               {
                 "case_ids": [
-                  "fastapi.telemetry.constructor-operation-spans-disabled"
+                  "fastapi.telemetry.http-server-span-root"
                 ],
-                "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml",
+                "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-server-span.yaml",
                 "selectors": [
-                  "python.call_outcome"
+                  "telemetry.server_spans"
                 ],
-                "workflow_id": "telemetry-constructor-contract"
+                "workflow_id": "telemetry-server-span"
               }
             ],
             "start_line": 107
@@ -283598,6 +283610,18 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-constructor-contract.yaml",
             "workflow_id": "telemetry-constructor-contract"
+          },
+          {
+            "case_ids": [
+              "fastapi.telemetry.http-server-span-root"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes telemetry.server_spans. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "telemetry.server_spans"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-server-span.yaml",
+            "workflow_id": "telemetry-server-span"
           }
         ],
         "linked_example_sources": [
@@ -283718,7 +283742,8 @@
         "http.status",
         "process.exit_code",
         "python.call_outcome",
-        "python.signature"
+        "python.signature",
+        "telemetry.server_spans"
       ],
       "review_reason": null,
       "review_status": "reviewed_partial",
@@ -283769,11 +283794,13 @@
           "feature_id": null,
           "schema_extension_required": [
             "python.call_outcome",
-            "python.signature"
+            "python.signature",
+            "telemetry.server_spans"
           ],
           "selectors": [
             "python.call_outcome",
-            "python.signature"
+            "python.signature",
+            "telemetry.server_spans"
           ]
         }
       ],
@@ -649803,59 +649830,16 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "Each test function is classified individually below. Telemetry-specific assertions observe OpenTelemetry SDK outputs or context fields that have no current parity selector; generic transport assertions remain Starlette-owned.",
+          "rationale": "Each test function is classified individually below. No telemetry workflow selects any upstream test function from this module.",
           "supporting_sources": [
             {
               "end_line": 276,
               "path": "tests/test_telemetry/test_background.py",
-              "role": "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+              "role": "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
               "sha256": "c923dff76c6073599bc8b8c04db78963dcc04e7d2df96e1120dece9f4f2e14ca",
               "start_line": 1
-            },
-            {
-              "end_line": 83,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI constructor declares the telemetry configuration parameter",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 71
-            },
-            {
-              "end_line": 1205,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI ASGI entrypoint enters native telemetry and delegates other paths",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 1175
-            },
-            {
-              "end_line": 17,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide describes native HTTP and WebSocket telemetry and standard-extra setup",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 13
-            },
-            {
-              "end_line": 217,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry selects providers and creates HTTP telemetry instruments",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 157
-            },
-            {
-              "end_line": 387,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry extracts trace context, creates spans, and finalizes signals",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 228
-            },
-            {
-              "end_line": 122,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide specifies operation-span and WebSocket trace behavior",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 107
             }
-          ],
-          "workflow_cases": []
+          ]
         },
         "source_module_path": "tests/test_telemetry/test_background.py",
         "test_function_count": 6,
@@ -650065,59 +650049,16 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "Each test function is classified individually below. Telemetry-specific assertions observe OpenTelemetry SDK outputs or context fields that have no current parity selector; generic transport assertions remain Starlette-owned.",
+          "rationale": "Each test function is classified individually below. No telemetry workflow selects any upstream test function from this module.",
           "supporting_sources": [
             {
               "end_line": 448,
               "path": "tests/test_telemetry/test_data.py",
-              "role": "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+              "role": "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
               "sha256": "3414c7ec9747b3e3d79316ed11665cf3f9c4df5f3c6f228ddfc04ac30a6f133b",
               "start_line": 1
-            },
-            {
-              "end_line": 83,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI constructor declares the telemetry configuration parameter",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 71
-            },
-            {
-              "end_line": 1205,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI ASGI entrypoint enters native telemetry and delegates other paths",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 1175
-            },
-            {
-              "end_line": 17,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide describes native HTTP and WebSocket telemetry and standard-extra setup",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 13
-            },
-            {
-              "end_line": 217,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry selects providers and creates HTTP telemetry instruments",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 157
-            },
-            {
-              "end_line": 387,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry extracts trace context, creates spans, and finalizes signals",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 228
-            },
-            {
-              "end_line": 122,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide specifies operation-span and WebSocket trace behavior",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 107
             }
-          ],
-          "workflow_cases": []
+          ]
         },
         "source_module_path": "tests/test_telemetry/test_data.py",
         "test_function_count": 8,
@@ -650173,59 +650114,16 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "Each test function is classified individually below. Telemetry-specific assertions observe OpenTelemetry SDK outputs or context fields that have no current parity selector; generic transport assertions remain Starlette-owned.",
+          "rationale": "Each test function is classified individually below. No telemetry workflow selects any upstream test function from this module.",
           "supporting_sources": [
             {
               "end_line": 245,
               "path": "tests/test_telemetry/test_environment_integrations.py",
-              "role": "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+              "role": "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
               "sha256": "b703c46300a49d9d9de8ac7156807adda1fd27281f236a8009ae003908bf5deb",
               "start_line": 1
-            },
-            {
-              "end_line": 83,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI constructor declares the telemetry configuration parameter",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 71
-            },
-            {
-              "end_line": 1205,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI ASGI entrypoint enters native telemetry and delegates other paths",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 1175
-            },
-            {
-              "end_line": 17,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide describes native HTTP and WebSocket telemetry and standard-extra setup",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 13
-            },
-            {
-              "end_line": 217,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry selects providers and creates HTTP telemetry instruments",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 157
-            },
-            {
-              "end_line": 387,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry extracts trace context, creates spans, and finalizes signals",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 228
-            },
-            {
-              "end_line": 122,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide specifies operation-span and WebSocket trace behavior",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 107
             }
-          ],
-          "workflow_cases": []
+          ]
         },
         "source_module_path": "tests/test_telemetry/test_environment_integrations.py",
         "test_function_count": 1,
@@ -650435,59 +650333,16 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "Each test function is classified individually below. Telemetry-specific assertions observe OpenTelemetry SDK outputs or context fields that have no current parity selector; generic transport assertions remain Starlette-owned.",
+          "rationale": "Each test function is classified individually below. No telemetry workflow selects any upstream test function from this module.",
           "supporting_sources": [
             {
               "end_line": 249,
               "path": "tests/test_telemetry/test_exceptions.py",
-              "role": "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+              "role": "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
               "sha256": "17704401581dc162e2da95aec575e1d1f77a680966056a7c51fb7dd578ed0c5b",
               "start_line": 1
-            },
-            {
-              "end_line": 83,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI constructor declares the telemetry configuration parameter",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 71
-            },
-            {
-              "end_line": 1205,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI ASGI entrypoint enters native telemetry and delegates other paths",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 1175
-            },
-            {
-              "end_line": 17,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide describes native HTTP and WebSocket telemetry and standard-extra setup",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 13
-            },
-            {
-              "end_line": 217,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry selects providers and creates HTTP telemetry instruments",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 157
-            },
-            {
-              "end_line": 387,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry extracts trace context, creates spans, and finalizes signals",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 228
-            },
-            {
-              "end_line": 122,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide specifies operation-span and WebSocket trace behavior",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 107
             }
-          ],
-          "workflow_cases": []
+          ]
         },
         "source_module_path": "tests/test_telemetry/test_exceptions.py",
         "test_function_count": 8,
@@ -651027,12 +650882,12 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "Each test function is classified individually below. Telemetry-specific assertions observe OpenTelemetry SDK outputs or context fields that have no current parity selector; generic transport assertions remain Starlette-owned.",
+          "rationale": "Each test function is classified individually below. The independent root GET SERVER-span input uses this module as source evidence only; it does not execute or cover any upstream test function.",
           "supporting_sources": [
             {
               "end_line": 697,
               "path": "tests/test_telemetry/test_http.py",
-              "role": "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+              "role": "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
               "sha256": "33be537d75f26a4273341d6e99fee5bfe29dc3f7c5eb130b8c27bcff774de66e",
               "start_line": 1
             },
@@ -651078,8 +650933,7 @@
               "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
               "start_line": 107
             }
-          ],
-          "workflow_cases": []
+          ]
         },
         "source_module_path": "tests/test_telemetry/test_http.py",
         "test_function_count": 23,
@@ -651267,59 +651121,16 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "Each test function is classified individually below. Telemetry-specific assertions observe OpenTelemetry SDK outputs or context fields that have no current parity selector; generic transport assertions remain Starlette-owned.",
+          "rationale": "Each test function is classified individually below. No telemetry workflow selects any upstream test function from this module.",
           "supporting_sources": [
             {
               "end_line": 351,
               "path": "tests/test_telemetry/test_integrations.py",
-              "role": "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+              "role": "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
               "sha256": "44ea5cf1d0667972423f070e74260b622687c6031e6d619a167531b43b75219c",
               "start_line": 1
-            },
-            {
-              "end_line": 83,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI constructor declares the telemetry configuration parameter",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 71
-            },
-            {
-              "end_line": 1205,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI ASGI entrypoint enters native telemetry and delegates other paths",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 1175
-            },
-            {
-              "end_line": 17,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide describes native HTTP and WebSocket telemetry and standard-extra setup",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 13
-            },
-            {
-              "end_line": 217,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry selects providers and creates HTTP telemetry instruments",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 157
-            },
-            {
-              "end_line": 387,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry extracts trace context, creates spans, and finalizes signals",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 228
-            },
-            {
-              "end_line": 122,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide specifies operation-span and WebSocket trace behavior",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 107
             }
-          ],
-          "workflow_cases": []
+          ]
         },
         "source_module_path": "tests/test_telemetry/test_integrations.py",
         "test_function_count": 7,
@@ -651397,59 +651208,16 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "Each test function is classified individually below. Telemetry-specific assertions observe OpenTelemetry SDK outputs or context fields that have no current parity selector; generic transport assertions remain Starlette-owned.",
+          "rationale": "Each test function is classified individually below. No telemetry workflow selects any upstream test function from this module.",
           "supporting_sources": [
             {
               "end_line": 316,
               "path": "tests/test_telemetry/test_native_integrations.py",
-              "role": "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+              "role": "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
               "sha256": "ceb8487e0074c43dea27b1cf64e7df5d7094b1f67db31a40c4546e91646339bd",
               "start_line": 1
-            },
-            {
-              "end_line": 83,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI constructor declares the telemetry configuration parameter",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 71
-            },
-            {
-              "end_line": 1205,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI ASGI entrypoint enters native telemetry and delegates other paths",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 1175
-            },
-            {
-              "end_line": 17,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide describes native HTTP and WebSocket telemetry and standard-extra setup",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 13
-            },
-            {
-              "end_line": 217,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry selects providers and creates HTTP telemetry instruments",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 157
-            },
-            {
-              "end_line": 387,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry extracts trace context, creates spans, and finalizes signals",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 228
-            },
-            {
-              "end_line": 122,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide specifies operation-span and WebSocket trace behavior",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 107
             }
-          ],
-          "workflow_cases": []
+          ]
         },
         "source_module_path": "tests/test_telemetry/test_native_integrations.py",
         "test_function_count": 2,
@@ -651527,59 +651295,16 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "Each test function is classified individually below. Telemetry-specific assertions observe OpenTelemetry SDK outputs or context fields that have no current parity selector; generic transport assertions remain Starlette-owned.",
+          "rationale": "Each test function is classified individually below. No telemetry workflow selects any upstream test function from this module.",
           "supporting_sources": [
             {
               "end_line": 93,
               "path": "tests/test_telemetry/test_operations.py",
-              "role": "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+              "role": "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
               "sha256": "cdef25a0cae9f9f0944587a951095571d52ba9489683df4152c77c4e1900299b",
               "start_line": 1
-            },
-            {
-              "end_line": 83,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI constructor declares the telemetry configuration parameter",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 71
-            },
-            {
-              "end_line": 1205,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI ASGI entrypoint enters native telemetry and delegates other paths",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 1175
-            },
-            {
-              "end_line": 17,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide describes native HTTP and WebSocket telemetry and standard-extra setup",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 13
-            },
-            {
-              "end_line": 217,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry selects providers and creates HTTP telemetry instruments",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 157
-            },
-            {
-              "end_line": 387,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry extracts trace context, creates spans, and finalizes signals",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 228
-            },
-            {
-              "end_line": 122,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide specifies operation-span and WebSocket trace behavior",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 107
             }
-          ],
-          "workflow_cases": []
+          ]
         },
         "source_module_path": "tests/test_telemetry/test_operations.py",
         "test_function_count": 2,
@@ -652009,59 +651734,16 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "Each test function is classified individually below. Telemetry-specific assertions observe OpenTelemetry SDK outputs or context fields that have no current parity selector; generic transport assertions remain Starlette-owned.",
+          "rationale": "Each test function is classified individually below. No telemetry workflow selects any upstream test function from this module.",
           "supporting_sources": [
             {
               "end_line": 685,
               "path": "tests/test_telemetry/test_runtime.py",
-              "role": "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+              "role": "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
               "sha256": "f636dd85a5d9d9c3aff1b53877fbfd077ddd5b25a046e8f866a28965beb1c03e",
               "start_line": 1
-            },
-            {
-              "end_line": 83,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI constructor declares the telemetry configuration parameter",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 71
-            },
-            {
-              "end_line": 1205,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI ASGI entrypoint enters native telemetry and delegates other paths",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 1175
-            },
-            {
-              "end_line": 17,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide describes native HTTP and WebSocket telemetry and standard-extra setup",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 13
-            },
-            {
-              "end_line": 217,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry selects providers and creates HTTP telemetry instruments",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 157
-            },
-            {
-              "end_line": 387,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry extracts trace context, creates spans, and finalizes signals",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 228
-            },
-            {
-              "end_line": 122,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide specifies operation-span and WebSocket trace behavior",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 107
             }
-          ],
-          "workflow_cases": []
+          ]
         },
         "source_module_path": "tests/test_telemetry/test_runtime.py",
         "test_function_count": 18,
@@ -652183,12 +651865,12 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "Each test function is classified individually below. Telemetry-specific assertions observe OpenTelemetry SDK outputs or context fields that have no current parity selector; generic transport assertions remain Starlette-owned.",
+          "rationale": "Each test function is classified individually below. The independent root GET SERVER-span input uses this module as source evidence only; it does not execute or cover any upstream test function.",
           "supporting_sources": [
             {
               "end_line": 163,
               "path": "tests/test_telemetry/test_semantic_conventions.py",
-              "role": "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+              "role": "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
               "sha256": "2b19a0e9a25a029f2470391a253f0b5f2173d3c9b247bfc0c708638ddd890c27",
               "start_line": 1
             },
@@ -652234,8 +651916,7 @@
               "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
               "start_line": 107
             }
-          ],
-          "workflow_cases": []
+          ]
         },
         "source_module_path": "tests/test_telemetry/test_semantic_conventions.py",
         "test_function_count": 4,
@@ -652313,59 +651994,16 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "Each test function is classified individually below. Telemetry-specific assertions observe OpenTelemetry SDK outputs or context fields that have no current parity selector; generic transport assertions remain Starlette-owned.",
+          "rationale": "Each test function is classified individually below. No telemetry workflow selects any upstream test function from this module.",
           "supporting_sources": [
             {
               "end_line": 77,
               "path": "tests/test_telemetry/test_tracer.py",
-              "role": "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+              "role": "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
               "sha256": "c925181d9cd18e8ead145581aaa4ab852b217018622052858b0dbc7bd73e9f09",
               "start_line": 1
-            },
-            {
-              "end_line": 83,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI constructor declares the telemetry configuration parameter",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 71
-            },
-            {
-              "end_line": 1205,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI ASGI entrypoint enters native telemetry and delegates other paths",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 1175
-            },
-            {
-              "end_line": 17,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide describes native HTTP and WebSocket telemetry and standard-extra setup",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 13
-            },
-            {
-              "end_line": 217,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry selects providers and creates HTTP telemetry instruments",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 157
-            },
-            {
-              "end_line": 387,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry extracts trace context, creates spans, and finalizes signals",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 228
-            },
-            {
-              "end_line": 122,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide specifies operation-span and WebSocket trace behavior",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 107
             }
-          ],
-          "workflow_cases": []
+          ]
         },
         "source_module_path": "tests/test_telemetry/test_tracer.py",
         "test_function_count": 2,
@@ -652553,59 +652191,16 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "Each test function is classified individually below. Telemetry-specific assertions observe OpenTelemetry SDK outputs or context fields that have no current parity selector; generic transport assertions remain Starlette-owned.",
+          "rationale": "Each test function is classified individually below. No telemetry workflow selects any upstream test function from this module.",
           "supporting_sources": [
             {
               "end_line": 292,
               "path": "tests/test_telemetry/test_websockets.py",
-              "role": "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+              "role": "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
               "sha256": "9efe825889c5dad033585ce89d11ccba29616f3e4f74cfdea2f329e52b2c9293",
               "start_line": 1
-            },
-            {
-              "end_line": 83,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI constructor declares the telemetry configuration parameter",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 71
-            },
-            {
-              "end_line": 1205,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI ASGI entrypoint enters native telemetry and delegates other paths",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 1175
-            },
-            {
-              "end_line": 17,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide describes native HTTP and WebSocket telemetry and standard-extra setup",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 13
-            },
-            {
-              "end_line": 217,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry selects providers and creates HTTP telemetry instruments",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 157
-            },
-            {
-              "end_line": 387,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry extracts trace context, creates spans, and finalizes signals",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 228
-            },
-            {
-              "end_line": 122,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide specifies operation-span and WebSocket trace behavior",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 107
             }
-          ],
-          "workflow_cases": []
+          ]
         },
         "source_module_path": "tests/test_telemetry/test_websockets.py",
         "test_function_count": 7,
@@ -705852,59 +705447,16 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "Each test function is classified individually below. Telemetry-specific assertions observe OpenTelemetry SDK outputs or context fields that have no current parity selector; generic transport assertions remain Starlette-owned.",
+          "rationale": "Each test function is classified individually below. No telemetry workflow selects any upstream test function from this module.",
           "supporting_sources": [
             {
               "end_line": 8,
               "path": "tests/test_tutorial/test_opentelemetry/test_tutorial001.py",
-              "role": "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+              "role": "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
               "sha256": "608f77c4758de88431a3e0208d94851155d8c76c7ab080bfb3e6849be680df3d",
               "start_line": 1
-            },
-            {
-              "end_line": 83,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI constructor declares the telemetry configuration parameter",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 71
-            },
-            {
-              "end_line": 1205,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI ASGI entrypoint enters native telemetry and delegates other paths",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 1175
-            },
-            {
-              "end_line": 17,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide describes native HTTP and WebSocket telemetry and standard-extra setup",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 13
-            },
-            {
-              "end_line": 217,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry selects providers and creates HTTP telemetry instruments",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 157
-            },
-            {
-              "end_line": 387,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry extracts trace context, creates spans, and finalizes signals",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 228
-            },
-            {
-              "end_line": 122,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide specifies operation-span and WebSocket trace behavior",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 107
             }
-          ],
-          "workflow_cases": []
+          ]
         },
         "source_module_path": "tests/test_tutorial/test_opentelemetry/test_tutorial001.py",
         "test_function_count": 1,
@@ -705960,59 +705512,16 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "Each test function is classified individually below. Telemetry-specific assertions observe OpenTelemetry SDK outputs or context fields that have no current parity selector; generic transport assertions remain Starlette-owned.",
+          "rationale": "Each test function is classified individually below. No telemetry workflow selects any upstream test function from this module.",
           "supporting_sources": [
             {
               "end_line": 28,
               "path": "tests/test_tutorial/test_opentelemetry/test_tutorial002.py",
-              "role": "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+              "role": "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
               "sha256": "fab47836fef895411ee18d3dd9f8df0bce92d153aac8bf1f40ff489f6af71783",
               "start_line": 1
-            },
-            {
-              "end_line": 83,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI constructor declares the telemetry configuration parameter",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 71
-            },
-            {
-              "end_line": 1205,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI ASGI entrypoint enters native telemetry and delegates other paths",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 1175
-            },
-            {
-              "end_line": 17,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide describes native HTTP and WebSocket telemetry and standard-extra setup",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 13
-            },
-            {
-              "end_line": 217,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry selects providers and creates HTTP telemetry instruments",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 157
-            },
-            {
-              "end_line": 387,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry extracts trace context, creates spans, and finalizes signals",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 228
-            },
-            {
-              "end_line": 122,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide specifies operation-span and WebSocket trace behavior",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 107
             }
-          ],
-          "workflow_cases": []
+          ]
         },
         "source_module_path": "tests/test_tutorial/test_opentelemetry/test_tutorial002.py",
         "test_function_count": 1,
@@ -706068,59 +705577,16 @@
         "module_excluded_test_functions": [],
         "module_feature_evidence": [],
         "reviewed_module_mapping": {
-          "rationale": "Each test function is classified individually below. Telemetry-specific assertions observe OpenTelemetry SDK outputs or context fields that have no current parity selector; generic transport assertions remain Starlette-owned.",
+          "rationale": "Each test function is classified individually below. No telemetry workflow selects any upstream test function from this module.",
           "supporting_sources": [
             {
               "end_line": 22,
               "path": "tests/test_tutorial/test_opentelemetry/test_tutorial003.py",
-              "role": "Pinned FastAPI 0.157.0 telemetry test module; function-level exclusions follow",
+              "role": "Pinned FastAPI 0.157.0 source evidence only; function-level test exclusions follow",
               "sha256": "eb46e57489c44754955a6de8ce6790f8b84e787d5aa8de784fd2a6a208012769",
               "start_line": 1
-            },
-            {
-              "end_line": 83,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI constructor declares the telemetry configuration parameter",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 71
-            },
-            {
-              "end_line": 1205,
-              "path": "fastapi/applications.py",
-              "role": "FastAPI ASGI entrypoint enters native telemetry and delegates other paths",
-              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
-              "start_line": 1175
-            },
-            {
-              "end_line": 17,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide describes native HTTP and WebSocket telemetry and standard-extra setup",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 13
-            },
-            {
-              "end_line": 217,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry selects providers and creates HTTP telemetry instruments",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 157
-            },
-            {
-              "end_line": 387,
-              "path": "fastapi/telemetry/_asgi.py",
-              "role": "NativeTelemetry extracts trace context, creates spans, and finalizes signals",
-              "sha256": "e9207b062712f4c0c9fd41e371755756fe5723c114355a70d45b33f033ad8c2a",
-              "start_line": 228
-            },
-            {
-              "end_line": 122,
-              "path": "docs/en/docs/advanced/opentelemetry.md",
-              "role": "User guide specifies operation-span and WebSocket trace behavior",
-              "sha256": "9bb6165753d464cd52e7b33e9cee88a98485531d4e1878e527eeee9f4c04209a",
-              "start_line": 107
             }
-          ],
-          "workflow_cases": []
+          ]
         },
         "source_module_path": "tests/test_tutorial/test_opentelemetry/test_tutorial003.py",
         "test_function_count": 1,
@@ -793287,10 +792753,10 @@
       "status": "crosswalk-generated; support-and-revision-review-pending"
     },
     {
-      "evidence": "FastAPI 0.157.0 exposes native telemetry through FastAPI(telemetry=...), fastapi.telemetry, middleware, and lifespan code; its pinned tests exercise HTTP, WebSocket, validation, errors, background tasks, integrations, and OTLP environment setup. The current telemetry-constructor workflow observes only signature and configuration acceptance, while the observation-selector catalog has no span, metric, log-record, provider-state, or exporter-output selector. The OpenTelemetry documentation sections and test modules therefore remain partial or explicitly excluded pending a target-capable telemetry profile.",
+      "evidence": "FastAPI 0.157.0 exposes native telemetry through FastAPI(telemetry=...), fastapi.telemetry, middleware, and lifespan code; its pinned tests exercise HTTP, WebSocket, validation, errors, background tasks, integrations, and OTLP environment setup. The telemetry-server-span workflow maps one direct ASGI GET / and projects the completed HTTP SERVER span using the parity-only opentelemetry-sdk 1.44.0 profile. This is one root-path slice only. Metrics, log records, request-local context, provider/exporter state, WebSocket spans, and lifecycle remain unobserved; the OpenTelemetry documentation and test mappings therefore remain partial or explicitly excluded outside this selected span case.",
       "id": "fastapi-telemetry-observation-contract",
-      "question": "Which deterministic input and observation contract will compare FastAPI telemetry spans, metrics, logs, request-local context, provider/exporter ownership, and lifecycle without confusing them with HTTP or WebSocket outputs?",
-      "status": "constructor-only; telemetry outputs and lifecycle unobserved"
+      "question": "Which additional deterministic inputs will compare telemetry beyond one root-path HTTP SERVER span, including metrics, logs, request-local context, provider/exporter ownership, WebSocket spans, and lifecycle?",
+      "status": "one-root-http-server-span-case; broader telemetry remains unverified"
     },
     {
       "evidence": "FastAPI AST inventory explicitly excludes Pydantic-generated BaseModel surfaces.",

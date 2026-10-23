@@ -1,5 +1,5 @@
 {
-  "schema": "fastapi-rs/materialized-input-index@11",
+  "schema": "fastapi-rs/materialized-input-index@12",
   "authority": {
     "fastapi": "0.157.0",
     "starlette": "1.6.0"
@@ -43315,6 +43315,28 @@
       ]
     },
     {
+      "id": "telemetry-server-span",
+      "input_path": "tests/fixtures/inputs/parity/telemetry-server-span.json",
+      "input_sha256": "37ef345207809937053fea370a0fb1479c883a17618b5f1564a1eb4fdede563d",
+      "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-server-span.yaml",
+      "recipe_sha256": "1ff2079406fb928d015ad8c5807568ffd3c58918443dcaa1b11d8fe03b5e858e",
+      "case_ids": [
+        "fastapi.telemetry.http-server-span-root"
+      ],
+      "workload_path": "tests/fixtures/workloads/telemetry_server_span.py",
+      "workload_sha256": "042c92ff9b8f9c10c1cce8d38bd14166488d392f30eeed5c28cc5023b5241459",
+      "oracle_profile_extension": "telemetry",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.telemetry.http-server-span-root",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/opentelemetry.md"
+          ]
+        }
+      ]
+    },
+    {
       "id": "testclient-sync-validated-benchmark",
       "input_path": "tests/fixtures/inputs/parity/testclient-sync-validated-benchmark.json",
       "input_sha256": "4f1da8d2de105da9cd039e186f80416600c81abf4895c028296414dce33618c1",
@@ -78584,6 +78606,19 @@
       "observation_selectors": [
         "python.call_outcome",
         "python.signature"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/opentelemetry.md",
+      "fixture_id": "fastapi.docs.advanced-opentelemetry",
+      "workflow_id": "telemetry-server-span",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes telemetry.server_spans. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.telemetry.http-server-span-root"
+      ],
+      "observation_selectors": [
+        "telemetry.server_spans"
       ]
     },
     {

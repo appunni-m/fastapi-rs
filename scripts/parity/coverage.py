@@ -2336,7 +2336,7 @@ def validate_compatibility_artifacts(
         "Pydantic 2.13.5 must remain the selected source-lock baseline",
     )
     _require(
-        selector_catalog.get("schema") == "fastapi-rs/observation-selector-catalog@1",
+        selector_catalog.get("schema") == "fastapi-rs/observation-selector-catalog@2",
         "unsupported observation selector catalog schema",
     )
     _require(

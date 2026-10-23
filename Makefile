@@ -14,6 +14,8 @@ ORACLE_EMAIL_VALIDATION_ENV ?= $(CURDIR)/.venv-oracle-email-validation
 ORACLE_EMAIL_VALIDATION_PYTHON ?= $(ORACLE_EMAIL_VALIDATION_ENV)/bin/python
 ORACLE_TEMPLATES_ENV ?= $(CURDIR)/.venv-oracle-templates
 ORACLE_TEMPLATES_PYTHON ?= $(ORACLE_TEMPLATES_ENV)/bin/python
+ORACLE_TELEMETRY_ENV ?= $(CURDIR)/.venv-oracle-telemetry
+ORACLE_TELEMETRY_PYTHON ?= $(ORACLE_TELEMETRY_ENV)/bin/python
 ORACLE_JSON_SERIALIZERS_ENV ?= $(CURDIR)/.venv-oracle-json-serializers
 ORACLE_JSON_SERIALIZERS_PYTHON ?= $(ORACLE_JSON_SERIALIZERS_ENV)/bin/python
 TARGET_ENV ?= $(CURDIR)/.venv-target
@@ -24,6 +26,8 @@ TARGET_EMAIL_VALIDATION_ENV ?= $(CURDIR)/target/email-validation/venv
 TARGET_EMAIL_VALIDATION_PYTHON ?= $(TARGET_EMAIL_VALIDATION_ENV)/bin/python
 TARGET_TEMPLATES_ENV ?= $(CURDIR)/target/templates/venv
 TARGET_TEMPLATES_PYTHON ?= $(TARGET_TEMPLATES_ENV)/bin/python
+TARGET_TELEMETRY_ENV ?= $(CURDIR)/target/telemetry/venv
+TARGET_TELEMETRY_PYTHON ?= $(TARGET_TELEMETRY_ENV)/bin/python
 TARGET_JSON_SERIALIZERS_ENV ?= $(CURDIR)/target/json-serializers/venv
 TARGET_JSON_SERIALIZERS_PYTHON ?= $(TARGET_JSON_SERIALIZERS_ENV)/bin/python
 TARGET_STANDARD_MULTIPART_ENV ?= $(CURDIR)/target/standard-multipart/venv
@@ -34,6 +38,7 @@ TARGET_RUNTIME_LOCK ?= $(CURDIR)/requirements/target-runtime-cpython-3.12.13.loc
 TARGET_TESTCLIENT_LOCK ?= $(CURDIR)/requirements/target-testclient-cpython-3.12.13.lock
 EMAIL_VALIDATION_LOCK ?= $(CURDIR)/requirements/email-validation-cpython-3.12.13.lock
 TEMPLATES_LOCK ?= $(CURDIR)/requirements/templates-cpython-3.12.13.lock
+TELEMETRY_PARITY_LOCK ?= $(CURDIR)/requirements/telemetry-parity-cpython-3.12.13.lock
 JSON_SERIALIZERS_LOCK ?= $(CURDIR)/requirements/json-serializers-cpython-3.12.13.lock
 ORACLE_JSON_SERIALIZERS_LOCK ?= $(CURDIR)/requirements/oracle-json-serializers-cpython-3.12.13.lock
 TARGET_STANDARD_MULTIPART_LOCK ?= $(CURDIR)/requirements/target-standard-multipart-cpython-3.12.13.lock
@@ -84,7 +89,7 @@ RELEASE_SDIST_DIR ?= target/release-sdist
 RELEASE_SDIST_WHEEL_DIR ?= target/release-sdist-validation-wheels
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare release-sdist developer-tools-prepare developer-tools-inventory-update developer-tools-inventory-check python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-oracle-email-validation parity-prepare-oracle-templates parity-prepare-oracle-json-serializers parity-prepare-target parity-prepare-target-testclient parity-prepare-target-email-validation parity-prepare-target-standard-multipart parity-prepare-target-templates parity-prepare-target-json-serializers fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-campaign parity-oracle parity-oracle-standard parity-oracle-email-validation parity-target parity-target-email-validation parity-target-standard-multipart parity-fault-target parity-compare parity-compare-email-validation signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice parity-workflow benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite benchmark-testclient-input-check verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare release-sdist developer-tools-prepare developer-tools-inventory-update developer-tools-inventory-check python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-oracle-email-validation parity-prepare-oracle-templates parity-prepare-oracle-json-serializers parity-prepare-oracle-telemetry parity-prepare-target parity-prepare-target-testclient parity-prepare-target-email-validation parity-prepare-target-standard-multipart parity-prepare-target-templates parity-prepare-target-json-serializers parity-prepare-target-telemetry fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-campaign parity-oracle parity-oracle-standard parity-oracle-email-validation parity-target parity-target-email-validation parity-target-standard-multipart parity-fault-target parity-compare parity-compare-email-validation signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice parity-workflow benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite benchmark-testclient-input-check verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -123,12 +128,14 @@ help: ## Show common development commands
 	  '  make parity-prepare-oracle-email-validation Prepare the hash-locked EmailStr oracle profile' \
 	  '  make parity-prepare-oracle-templates Prepare the paired Jinja2-only FastAPI oracle profile' \
 	  '  make parity-prepare-oracle-json-serializers Prepare the paired orjson/ujson FastAPI oracle profile' \
+	  '  make parity-prepare-oracle-telemetry Prepare the parity-only OpenTelemetry SDK oracle profile' \
 	  '  make parity-prepare-target Prepare .venv-target with pinned shared deps and release FastAPI-RS / ../starlette-rs' \
 	  '  make parity-prepare-target-testclient Prepare isolated target HTTPX fallback profile' \
 	  '  make parity-prepare-target-email-validation Prepare the hash-locked EmailStr target profile' \
 	  '  make parity-prepare-target-standard-multipart Prepare the hash-locked multipart target profile' \
 	  '  make parity-prepare-target-templates Prepare the paired Jinja2-only target profile' \
 	  '  make parity-prepare-target-json-serializers Prepare the paired orjson/ujson target profile' \
+	  '  make parity-prepare-target-telemetry Prepare the parity-only OpenTelemetry SDK target profile' \
 	  '  make fault-injection-build Build an isolated fault-enabled extension under target/fault-injection/' \
 	  '  make parity-api-runtime Reflect and verify the pinned FastAPI Python API surface' \
 	  '  make parity-validate Validate workflows, source atlas, and fixture mappings' \
@@ -289,6 +296,14 @@ parity-prepare-oracle-json-serializers: ## Prepare the paired, hash-locked optio
 	$(UV) pip install --python "$(ORACLE_JSON_SERIALIZERS_PYTHON)" --no-deps --editable "$(STARLETTE_SOURCE)"
 	$(UV) pip check --python "$(ORACLE_JSON_SERIALIZERS_PYTHON)"
 
+parity-prepare-oracle-telemetry: ## Prepare the parity-only source OpenTelemetry SDK profile
+	test -x "$(ORACLE_TELEMETRY_PYTHON)" || $(UV) venv --python 3.12.13 "$(ORACLE_TELEMETRY_ENV)"
+	$(ORACLE_TELEMETRY_PYTHON) -c 'import platform, sys; (platform.python_implementation() == "CPython" and sys.version_info[:3] == (3, 12, 13)) or sys.exit("telemetry oracle profile requires CPython 3.12.13")'
+	$(UV) pip sync --python "$(ORACLE_TELEMETRY_PYTHON)" --require-hashes "$(TELEMETRY_PARITY_LOCK)"
+	$(UV) pip install --python "$(ORACLE_TELEMETRY_PYTHON)" --no-deps --editable "$(FASTAPI_SOURCE)"
+	$(UV) pip install --python "$(ORACLE_TELEMETRY_PYTHON)" --no-deps --editable "$(STARLETTE_SOURCE)"
+	$(UV) pip check --python "$(ORACLE_TELEMETRY_PYTHON)"
+
 parity-prepare-target: ## Prepare hash-locked CPython 3.12.13 target and sibling Starlette-RS
 	test -x "$(TARGET_PYTHON)" || $(UV) venv --python 3.12.13 "$(TARGET_ENV)"
 	$(TARGET_PYTHON) -c 'import platform, sys; (platform.python_implementation() == "CPython" and sys.version_info[:3] == (3, 12, 13)) or sys.exit("target runtime lock requires CPython 3.12.13")'
@@ -342,6 +357,15 @@ parity-prepare-target-json-serializers: ## Prepare the paired, hash-locked optio
 	$(PYTHON) scripts/build_target_extension.py --python "$(TARGET_JSON_SERIALIZERS_PYTHON)" --uv "$(UV)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 	$(UV) pip check --python "$(TARGET_JSON_SERIALIZERS_PYTHON)"
 	$(TARGET_JSON_SERIALIZERS_PYTHON) scripts/check_target_runtime_boundary.py
+
+parity-prepare-target-telemetry: ## Prepare the parity-only target OpenTelemetry SDK profile
+	test -x "$(TARGET_TELEMETRY_PYTHON)" || $(UV) venv --python 3.12.13 "$(TARGET_TELEMETRY_ENV)"
+	$(TARGET_TELEMETRY_PYTHON) -c 'import platform, sys; (platform.python_implementation() == "CPython" and sys.version_info[:3] == (3, 12, 13)) or sys.exit("telemetry target profile requires CPython 3.12.13")'
+	$(UV) pip sync --python "$(TARGET_TELEMETRY_PYTHON)" --require-hashes "$(TELEMETRY_PARITY_LOCK)"
+	PYO3_PYTHON="$(TARGET_TELEMETRY_PYTHON)" $(UV) pip install --python "$(TARGET_TELEMETRY_PYTHON)" --no-deps --editable "$(STARLETTE_RS_SOURCE)"
+	$(PYTHON) scripts/build_target_extension.py --python "$(TARGET_TELEMETRY_PYTHON)" --uv "$(UV)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
+	$(UV) pip check --python "$(TARGET_TELEMETRY_PYTHON)"
+	$(TARGET_TELEMETRY_PYTHON) scripts/check_target_runtime_boundary.py
 
 fault-injection-build: ## Build a fault-enabled extension without replacing the normal target artifact
 	test -x "$(FAULT_TARGET_PYTHON)" || $(UV) venv --python 3.12.13 "$(FAULT_TARGET_ENV)"
