@@ -86,11 +86,14 @@ remain significant.
 
 FastAPI 0.157.0 also adds a source-defined `fastapi.telemetry` module that
 reexports `TelemetryConfig`, `TelemetryData`, and `get_telemetry_data`;
-`FastAPI` accepts a `telemetry` constructor option. These names are not root
-bindings or reference autodoc targets, and the prior callable inventory does
-not classify them. Review their policy and manifest coverage against the pinned
-source (`fastapi/telemetry/__init__.py:1-3`,
-`fastapi/applications.py:71-82`).
+`FastAPI` accepts a `telemetry` constructor option. The source candidate atlas
+records the module and three names as uncertain: the pinned source explicitly
+reexports them, but the user guide does not name those import paths. Existing
+constructor cases compare the parameter signature and selected configuration
+acceptance only. Request-local data, active traces/metrics/logs, provider and
+exporter ownership, and telemetry-aware lifespan behavior remain unresolved;
+the target has no telemetry runtime implementation. Do not treat the
+constructor cases or import bindings as telemetry parity evidence.
 
 ### Current target facade availability
 
