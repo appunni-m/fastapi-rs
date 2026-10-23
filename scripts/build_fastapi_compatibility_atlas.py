@@ -11214,6 +11214,106 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "observation_selectors": selectors,
         }
 
+    def reviewed_function_workflow_cases(
+        workflow_links: list[dict[str, Any]], source_path: str, function_name: str
+    ) -> list[dict[str, Any]]:
+        if not isinstance(workflow_links, list):
+            raise AtlasError(
+                "reviewed function workflow cases must be a list for "
+                f"{source_path}::{function_name}"
+            )
+        result: list[dict[str, Any]] = []
+        seen_links: set[tuple[Any, ...]] = set()
+        for link_index, link in enumerate(workflow_links):
+            label = f"{source_path}::{function_name} workflow_cases[{link_index}]"
+            if not isinstance(link, dict):
+                raise AtlasError(f"{label} must be an object")
+            recipe_path = link.get("recipe_path")
+            if not isinstance(recipe_path, str) or not recipe_path:
+                raise AtlasError(f"{label} must name an exact recipe path")
+            case_ids = link.get("case_ids", [link.get("case_id")])
+            if (
+                not isinstance(case_ids, list)
+                or not case_ids
+                or not all(isinstance(case_id, str) and case_id for case_id in case_ids)
+                or len(case_ids) != len(set(case_ids))
+            ):
+                raise AtlasError(f"{label} must name unique case IDs")
+            selector_field = (
+                "observation_selectors"
+                if "observation_selectors" in link
+                else "workflow_selectors"
+            )
+            reviewed_selectors = link.get(selector_field)
+            if (
+                not isinstance(reviewed_selectors, list)
+                or not reviewed_selectors
+                or not all(isinstance(selector, str) and selector for selector in reviewed_selectors)
+                or len(reviewed_selectors) != len(set(reviewed_selectors))
+            ):
+                raise AtlasError(f"{label} must retain unique reviewed selector IDs")
+            _, cases_by_id = materialized_workflow_for_recipe(recipe_path)
+            workflow_refs = indexed_workflows_by_recipe[recipe_path]
+            workflow_id = workflow_refs[0]["id"]
+            for case_id in case_ids:
+                materialized_case = cases_by_id.get(case_id)
+                if materialized_case is None:
+                    raise AtlasError(f"{label} references a missing recipe case: {case_id}")
+                actions = materialized_case.get("actions", [])
+                if not isinstance(actions, list) or not all(
+                    isinstance(action, dict) for action in actions
+                ):
+                    raise AtlasError(f"{label} case {case_id} has malformed actions")
+                action_by_id = {
+                    action.get("action_id"): action
+                    for action in actions
+                    if isinstance(action.get("action_id"), str)
+                }
+                if len(action_by_id) != len(actions):
+                    raise AtlasError(f"{label} case {case_id} has duplicate or missing action IDs")
+                raw_action_ids = link.get("action_ids")
+                action_ids = (
+                    [action.get("action_id") for action in actions]
+                    if raw_action_ids is None
+                    else raw_action_ids
+                )
+                if (
+                    not isinstance(action_ids, list)
+                    or not all(isinstance(action_id, str) and action_id for action_id in action_ids)
+                    or len(action_ids) != len(set(action_ids))
+                    or not set(action_ids) <= action_by_id.keys()
+                ):
+                    raise AtlasError(f"{label} case {case_id} references invalid action IDs")
+                observation_selectors = [
+                    selector for selector in reviewed_selectors if selector in selector_ids
+                ]
+                unresolved_selectors = [
+                    selector for selector in reviewed_selectors if selector not in selector_ids
+                ]
+                normalized = {
+                    "workflow_id": workflow_id,
+                    "recipe_path": recipe_path,
+                    "case_id": case_id,
+                    "action_ids": action_ids,
+                    "observation_selectors": observation_selectors,
+                    "reviewed_selectors": list(reviewed_selectors),
+                    "selector_source_field": selector_field,
+                    "unresolved_observation_selectors": unresolved_selectors,
+                }
+                identity = (
+                    normalized["workflow_id"],
+                    normalized["recipe_path"],
+                    normalized["case_id"],
+                    tuple(normalized["action_ids"]),
+                    tuple(normalized["reviewed_selectors"]),
+                    normalized["selector_source_field"],
+                )
+                if identity in seen_links:
+                    raise AtlasError(f"{label} duplicates a reviewed workflow case")
+                seen_links.add(identity)
+                result.append(normalized)
+        return result
+
     coverage_items = []
     fixture_backlog = []
     tests_root = fastapi_root / "tests"
@@ -11326,6 +11426,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 reviewed_record["workflow_case"] = reviewed_direct_workflow_case(
                     function_mapping.get("workflow_cases", []), rel, test["qualified_name"]
                 )
+            if function_mapping.get("workflow_cases"):
+                test["reviewed_workflow_cases"] = reviewed_function_workflow_cases(
+                    function_mapping["workflow_cases"], rel, test["qualified_name"]
+                )
             test["reviewed_mapping"] = reviewed_record
             test["reviewed_observation_selectors"] = function_mapping.get("observation_selectors")
             test["reviewed_stimulus_notes"] = function_mapping.get(
@@ -11435,6 +11539,143 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         "source_evidence": function_source_evidence,
                     }
                 )
+        fixture_helper_workflow_dispositions = []
+        test_function_names = {test["name"] for test in test_functions}
+        source_tree = ast.parse(content)
+        source_function_nodes = {
+            node.name: node
+            for node in source_tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        }
+
+        def decorator_name(node: ast.expr) -> str | None:
+            if isinstance(node, ast.Name):
+                return node.id
+            if isinstance(node, ast.Attribute):
+                owner = decorator_name(node.value)
+                return f"{owner}.{node.attr}" if owner else node.attr
+            return None
+
+        for function_name, function_mapping in sorted(reviewed_function_mappings.items()):
+            raw_workflow_cases = function_mapping.get("workflow_cases")
+            helper_node = source_function_nodes.get(function_name)
+            if (
+                function_name in test_function_names
+                or not raw_workflow_cases
+                or helper_node is None
+            ):
+                continue
+            fixture_decorators = [
+                decorator_name(decorator.func if isinstance(decorator, ast.Call) else decorator)
+                for decorator in helper_node.decorator_list
+            ]
+            if not any(name in {"pytest.fixture", "fixture"} for name in fixture_decorators):
+                continue
+            helper_start_line = min(
+                [helper_node.lineno, *(decorator.lineno for decorator in helper_node.decorator_list)]
+            )
+            helper_source_evidence = reviewed_source_spans(
+                fastapi_root,
+                [
+                    {
+                        "path": rel,
+                        "start_line": helper_start_line,
+                        "end_line": helper_node.end_lineno or helper_node.lineno,
+                        "role": "pytest fixture supplies test inputs; not an independently collected test function",
+                    }
+                ],
+                starlette_root,
+            )
+            helper_source_refs = reviewed_source_spans(
+                fastapi_root,
+                [
+                    {
+                        "path": rel,
+                        "start_line": helper_node.lineno,
+                        "end_line": helper_node.end_lineno or helper_node.lineno,
+                        "role": "exact pytest fixture helper function source span",
+                    }
+                ],
+                starlette_root,
+            )
+            if len(helper_source_refs) != 1:
+                raise AtlasError(
+                    "fixture workflow disposition requires one exact helper source span for "
+                    f"{rel}::{function_name}"
+                )
+            helper_source_ref = helper_source_refs[0]
+            helper_case_dispositions = []
+            covered_test_functions: set[str] = set()
+            for source_link in raw_workflow_cases:
+                recipe_path = source_link.get("recipe_path")
+                case_ids = source_link.get("case_ids", [source_link.get("case_id")])
+                if not isinstance(case_ids, list):
+                    raise AtlasError(
+                        "fixture helper workflow case IDs must be a list for "
+                        f"{rel}::{function_name}"
+                    )
+                cases = []
+                for case_id in case_ids:
+                    matching_tests = sorted(
+                        test["qualified_name"]
+                        for test in test_functions
+                        if any(
+                            linked_case["recipe_path"] == recipe_path
+                            and linked_case["case_id"] == case_id
+                            for linked_case in test.get("reviewed_workflow_cases", [])
+                        )
+                    )
+                    covered_test_functions.update(matching_tests)
+                    cases.append(
+                        {
+                            "case_id": case_id,
+                            "covered_by_test_functions": matching_tests,
+                            "disposition": (
+                                "already_mapped_to_test_function"
+                                if matching_tests
+                                else "fixture_case_not_mapped_to_test_function"
+                            ),
+                            "reason": (
+                                "The same recipe case is independently mapped to the listed "
+                                "test function(s)."
+                                if matching_tests
+                                else (
+                                    "The pinned source marks this function as pytest fixture "
+                                    "infrastructure, and no collected test function maps this "
+                                    "recipe case."
+                                )
+                            ),
+                        }
+                    )
+                helper_case_dispositions.append(
+                    {
+                        "source_mapping": dict(source_link),
+                        "case_dispositions": cases,
+                    }
+                )
+            fixture_helper_workflow_dispositions.append(
+                {
+                    "function_name": function_name,
+                    "disposition": "pytest_fixture_infrastructure_not_independent_test",
+                    "reason": (
+                        "The pinned source marks this helper with pytest.fixture; it supplies "
+                        "the test app, module, or client and is not an independently collected "
+                        "test function. Its reviewed workflow cases are retained here as an "
+                        "explicit fixture-infrastructure disposition, with same-module test "
+                        "function coverage recorded per case."
+                    ),
+                    "source_ref": {
+                        "path": helper_source_ref["path"],
+                        "line": helper_source_ref["start_line"],
+                        "end_line": helper_source_ref["end_line"],
+                        "sha256": helper_source_ref["sha256"],
+                    },
+                    "source_evidence": helper_source_evidence,
+                    "workflow_case_dispositions": helper_case_dispositions,
+                    "covered_by_test_functions": sorted(covered_test_functions),
+                }
+            )
+
         case_designs = []
         used_case_ids: set[str] = set()
         path_function_mappings = (
@@ -11478,7 +11719,8 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     exact_selectors = selectors_with_exact_http_body(exact_selectors)
                 function_source_ref = None
                 workflow_case = (test.get("reviewed_mapping") or {}).get("workflow_case")
-                if workflow_case:
+                workflow_cases = test.get("reviewed_workflow_cases")
+                if workflow_case or workflow_cases:
                     source_refs = [
                         reference
                         for reference in test["reviewed_mapping"].get("source_evidence", [])
@@ -11524,13 +11766,12 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                         "mapping_scope": test.get("mapping_scope"),
                         "reviewed_mapping": test.get("reviewed_mapping"),
                         **(
-                            {
-                                "function_source_ref": function_source_ref,
-                                "workflow_case": workflow_case,
-                            }
-                            if workflow_case
+                            {"function_source_ref": function_source_ref}
+                            if workflow_case or workflow_cases
                             else {}
                         ),
+                        **({"workflow_case": workflow_case} if workflow_case else {}),
+                        **({"workflow_cases": workflow_cases} if workflow_cases else {}),
                         "stimulus_design_notes": test.get("reviewed_stimulus_notes")
                         or (
                             "Exact request input: %s::%s. %s"
@@ -11713,6 +11954,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     "source_module_path": rel,
                     "module_feature_evidence": feature_match_evidence(rel, ""),
                     "test_function_count": len(test_functions),
+                    "fixture_helper_workflow_dispositions": fixture_helper_workflow_dispositions,
                     "matched_test_functions": [
                         {
                             "name": case["source_function"],
@@ -11722,11 +11964,18 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                             "mapping_status": case["mapping_status"],
                             "mapping_scope": case.get("mapping_scope"),
                             **(
-                                {
-                                    "function_source_ref": case["function_source_ref"],
-                                    "workflow_case": case["workflow_case"],
-                                }
+                                {"function_source_ref": case["function_source_ref"]}
+                                if case.get("function_source_ref")
+                                else {}
+                            ),
+                            **(
+                                {"workflow_case": case["workflow_case"]}
                                 if case.get("workflow_case")
+                                else {}
+                            ),
+                            **(
+                                {"workflow_cases": case["workflow_cases"]}
+                                if case.get("workflow_cases")
                                 else {}
                             ),
                         }
@@ -11807,6 +12056,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     "candidate_selector_evidence": candidate_module_selector_evidence,
                     "feature_ids": features,
                     "case_designs": case_designs,
+                    "fixture_helper_workflow_dispositions": fixture_helper_workflow_dispositions,
                     "independent_workflow_mappings": independent_workflow_mappings,
                     "starlette_rs_planning_areas": starlette_areas_for(features),
                     "source_evidence": {"path": rel, "sha256": sha256(path)},
@@ -13679,7 +13929,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
     reviewed_inherited_api_candidates.sort(key=lambda row: row["id"])
 
     atlas = {
-        "schema": "fastapi-rs/compatibility-atlas@11",
+        "schema": "fastapi-rs/compatibility-atlas@12",
         "purpose": "Source-backed FastAPI API classification and merged upstream test/documentation fixture backlog; not parity evidence.",
         "authorities": {
             "fastapi": {
@@ -13783,7 +14033,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         "first_end_to_end_request_response_slice": first_slice_workflow,
         "fixture_backlog_ref": {
             "path": "tests/fixtures/fixture-backlog.json",
-            "schema": "fastapi-rs/fixture-backlog@2",
+            "schema": "fastapi-rs/fixture-backlog@3",
             "item_count": len(fixture_backlog),
         },
         "_fixture_backlog_designs": fixture_backlog,
@@ -13998,6 +14248,23 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "fixture_backlog_items": len(fixture_backlog),
             "test_function_designs": sum(
                 len(item.get("case_designs", [])) for item in fixture_backlog
+            ),
+            "test_function_workflow_case_links": sum(
+                len(case.get("workflow_cases", []))
+                for item in fixture_backlog
+                for case in item.get("case_designs", [])
+            ),
+            "fixture_helper_workflow_case_links_dispositioned": sum(
+                sum(
+                    len(link.get("case_dispositions", []))
+                    for link in disposition.get("workflow_case_dispositions", [])
+                )
+                for item in fixture_backlog
+                for disposition in item.get("fixture_helper_workflow_dispositions", [])
+            ),
+            "fixture_helper_functions_dispositioned": sum(
+                len(item.get("fixture_helper_workflow_dispositions", []))
+                for item in fixture_backlog
             ),
             "first_slice_input_cases": len(first_slice_workflow["case_ids"]),
             "unmatched_documentation_examples": len(unmatched_examples),
@@ -14556,7 +14823,7 @@ def render_markdown(atlas: dict[str, Any]) -> str:
             "",
             "- [`compatibility-atlas.json`](../tests/fixtures/compatibility-atlas.json) is generated by [`build_fastapi_compatibility_atlas.py`](../scripts/build_fastapi_compatibility_atlas.py).",
             "- [`api-inventory.json`](../tests/fixtures/api-inventory.json) remains source inventory input, not support/parity evidence.",
-            "- [`fixture-backlog.json`](../tests/fixtures/fixture-backlog.json) is the merged input-only design queue (`fastapi-rs/fixture-backlog@2`). Reviewed function links retain their source span and exact workflow, recipe, case, action, and observation-selector scope. `make parity-validate` checks these links and the no-output invariant; remaining candidates need concrete independent workloads before they can execute as parity cases.",
+            "- [`fixture-backlog.json`](../tests/fixtures/fixture-backlog.json) is the merged input-only design queue (`fastapi-rs/fixture-backlog@3`). Reviewed function links retain their source span and independent workflow, recipe, case, action, and reviewed-selector scope; unresolved selector aliases remain explicit. `make parity-validate` checks these links and the no-output invariant; remaining candidates need concrete independent workloads before they can execute as parity cases.",
             "- [`observation-selectors.json`](../tests/fixtures/observation-selectors.json) defines exact projection semantics for every selector used by the atlas and backlog; selectors marked `planned` still need runner support.",
             "",
         ]
@@ -14733,6 +15000,23 @@ def _sync_manifest_artifact_metadata(
             "sha256": sha256(backlog_path),
             "designs": len(fixture_designs),
             "test_case_designs": sum(len(row.get("case_designs", [])) for row in fixture_designs),
+            "test_function_workflow_case_links": sum(
+                len(case.get("workflow_cases", []))
+                for row in fixture_designs
+                for case in row.get("case_designs", [])
+            ),
+            "fixture_helper_workflow_case_links_dispositioned": sum(
+                sum(
+                    len(link.get("case_dispositions", []))
+                    for link in disposition.get("workflow_case_dispositions", [])
+                )
+                for row in fixture_designs
+                for disposition in row.get("fixture_helper_workflow_dispositions", [])
+            ),
+            "fixture_helper_functions_dispositioned": sum(
+                len(row.get("fixture_helper_workflow_dispositions", []))
+                for row in fixture_designs
+            ),
         },
     )
     selector_catalog_path = PROJECT / "tests/fixtures/observation-selectors.json"
@@ -14823,7 +15107,7 @@ def write_outputs(atlas: dict[str, Any], output: Path) -> None:
         json.dumps(atlas, indent=2, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8"
     )
     backlog = {
-        "schema": "fastapi-rs/fixture-backlog@2",
+        "schema": "fastapi-rs/fixture-backlog@3",
         "purpose": "Input-only candidate fixture designs derived from the pinned source coverage matrix; not an executable parity input index.",
         "authority": {
             key: atlas["authorities"][key] for key in ("fastapi", "starlette", "python", "pydantic")

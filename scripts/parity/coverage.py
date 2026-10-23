@@ -40,7 +40,7 @@ REVIEWED_CALLABLE_KINDS = {
     "property_getter",
     "protocol_method",
 }
-FIXTURE_BACKLOG_SCHEMA_ID = "fastapi-rs/fixture-backlog@2"
+FIXTURE_BACKLOG_SCHEMA_ID = "fastapi-rs/fixture-backlog@3"
 QUERY_VALIDATION_ALIAS_FUNCTION_CASES = {
     "test_required_list_validation_alias_schema": (
         "fastapi.request-parameters.query.validation-alias-list.validation-only.openapi",
@@ -2044,7 +2044,7 @@ def validate_compatibility_artifacts(
     starlette_source: Path,
 ) -> dict[str, Any]:
     """Check source evidence, complete module/page links, and input-only designs."""
-    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@11", "unsupported atlas schema")
+    _require(atlas.get("schema") == "fastapi-rs/compatibility-atlas@12", "unsupported atlas schema")
     starlette_edges = atlas.get("starlette_integration_edges")
     _require(isinstance(starlette_edges, list), "Starlette integration edges are missing")
     edge_by_id = {
@@ -3249,6 +3249,434 @@ def validate_compatibility_artifacts(
         len(indexed_mappings) == len(indexed_mapping_rows),
         "materialized input index has duplicate source/workflow mappings",
     )
+    reviewed_workflow_document_cache: dict[str, dict[str, Any]] = {}
+
+    def validate_reviewed_function_workflow_cases(
+        workflow_cases: Any,
+        design: dict[str, Any],
+        inventory_row: dict[str, Any],
+        source_row: dict[str, Any],
+    ) -> None:
+        _require(
+            isinstance(workflow_cases, list) and bool(workflow_cases)
+            and inventory_row.get("workflow_cases") == workflow_cases,
+            f"case {design.get('id')} reviewed workflow links differ from the atlas inventory",
+        )
+        function_source_ref = design.get("function_source_ref")
+        _require(
+            isinstance(function_source_ref, dict)
+            and set(function_source_ref) == {"path", "line", "end_line", "sha256"}
+            and function_source_ref.get("path") == source_row.get("source_path")
+            and function_source_ref.get("line") == design.get("source_line")
+            and function_source_ref.get("end_line") == design.get("source_end_line")
+            and function_source_ref.get("sha256") == source_row.get("source_sha256"),
+            f"case {design.get('id')} reviewed workflow links lack an exact function source span",
+        )
+        _verify_source_ref(
+            fastapi_source,
+            function_source_ref,
+            f"case {design.get('id')} reviewed function source",
+            digest_key="sha256",
+        )
+        source_path = _source_path(
+            fastapi_source, function_source_ref.get("path"), f"case {design.get('id')}"
+        )
+        source_tree = ast.parse(source_path.read_text(encoding="utf-8"))
+        source_function = design.get("source_function")
+        source_functions = [
+            node
+            for node in source_tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and node.name == source_function
+        ]
+        _require(
+            len(source_functions) == 1
+            and source_functions[0].lineno == function_source_ref.get("line")
+            and source_functions[0].end_lineno == function_source_ref.get("end_line"),
+            f"case {design.get('id')} reviewed source span does not identify its exact function",
+        )
+
+        seen_links: set[tuple[Any, ...]] = set()
+        for link_index, link in enumerate(workflow_cases):
+            context = f"case {design.get('id')} workflow_cases[{link_index}]"
+            _require(
+                isinstance(link, dict)
+                and set(link)
+                == {
+                    "workflow_id",
+                    "recipe_path",
+                    "case_id",
+                    "action_ids",
+                    "observation_selectors",
+                    "reviewed_selectors",
+                    "selector_source_field",
+                    "unresolved_observation_selectors",
+                },
+                f"{context} has an invalid fixture workflow link shape",
+            )
+            workflow_id = link.get("workflow_id")
+            recipe_path = link.get("recipe_path")
+            linked_case_id = link.get("case_id")
+            action_ids = link.get("action_ids")
+            reviewed_selectors = link.get("reviewed_selectors")
+            selector_source_field = link.get("selector_source_field")
+            _require(
+                isinstance(workflow_id, str)
+                and isinstance(recipe_path, str)
+                and isinstance(linked_case_id, str)
+                and isinstance(action_ids, list)
+                and all(isinstance(value, str) and value for value in action_ids)
+                and len(action_ids) == len(set(action_ids))
+                and isinstance(reviewed_selectors, list)
+                and bool(reviewed_selectors)
+                and all(isinstance(value, str) and value for value in reviewed_selectors)
+                and len(reviewed_selectors) == len(set(reviewed_selectors))
+                and selector_source_field in {"observation_selectors", "workflow_selectors"},
+                f"{context} has malformed workflow identity, actions, or reviewed selectors",
+            )
+            canonical_selectors = [
+                value for value in reviewed_selectors if selector_is_defined(value)
+            ]
+            unresolved_selectors = [
+                value for value in reviewed_selectors if not selector_is_defined(value)
+            ]
+            _require(
+                link.get("observation_selectors") == canonical_selectors
+                and link.get("unresolved_observation_selectors") == unresolved_selectors,
+                f"{context} does not preserve exact selector scope and its unresolved aliases",
+            )
+            for selector in canonical_selectors:
+                _require(
+                    selector_is_defined(selector),
+                    f"{context} uses undefined reviewed selector {selector!r}",
+                )
+                used_selectors.add(selector)
+            identity = (
+                workflow_id,
+                recipe_path,
+                linked_case_id,
+                tuple(action_ids),
+                tuple(reviewed_selectors),
+                selector_source_field,
+            )
+            _require(identity not in seen_links, f"{context} duplicates a reviewed workflow link")
+            seen_links.add(identity)
+            workflow = indexed_workflows.get(workflow_id)
+            _require(
+                isinstance(workflow, dict) and workflow.get("recipe_path") == recipe_path,
+                f"{context} references an unknown workflow or recipe",
+            )
+            workflow_document = reviewed_workflow_document_cache.get(workflow_id)
+            if workflow_document is None:
+                input_path = (ROOT / workflow.get("input_path", "")).resolve()
+                _require(
+                    input_path.is_relative_to(ROOT.resolve()) and input_path.is_file(),
+                    f"{context} linked workflow input is missing or escapes the repo",
+                )
+                workflow_document = read_json(input_path)
+                reviewed_workflow_document_cache[workflow_id] = workflow_document
+            matching_cases = [
+                case
+                for case in workflow_document.get("cases", [])
+                if isinstance(case, dict) and case.get("case_id") == linked_case_id
+            ]
+            _require(
+                len(matching_cases) == 1,
+                f"{context} references a missing or ambiguous recipe case",
+            )
+            actions = matching_cases[0].get("actions", [])
+            _require(
+                isinstance(actions, list) and all(isinstance(action, dict) for action in actions),
+                f"{context} linked recipe actions are malformed",
+            )
+            action_by_id = {
+                action.get("action_id"): action
+                for action in actions
+                if isinstance(action.get("action_id"), str)
+            }
+            _require(
+                len(action_by_id) == len(actions) and set(action_ids) <= action_by_id.keys(),
+                f"{context} references an unknown or duplicate recipe action",
+            )
+
+    def validate_fixture_helper_workflow_dispositions(
+        dispositions: Any,
+        fixture: dict[str, Any],
+        source_row: dict[str, Any],
+        matched_test_functions: Any,
+    ) -> None:
+        module_context = f"test module {source_row.get('id')} fixture helpers"
+        mapping_evidence = source_row.get("mapping_evidence", {})
+        _require(
+            isinstance(dispositions, list)
+            and dispositions == mapping_evidence.get("fixture_helper_workflow_dispositions")
+            and dispositions == fixture.get("fixture_helper_workflow_dispositions"),
+            f"{module_context} dispositions differ between atlas and backlog",
+        )
+        _reject_output_values(dispositions, module_context)
+        _require(
+            isinstance(matched_test_functions, list),
+            f"{module_context} has malformed test-function mappings",
+        )
+
+        mapped_test_functions_by_case: dict[tuple[str, str], set[str]] = {}
+        for test_function in matched_test_functions:
+            test_name = test_function.get("name")
+            _require(
+                isinstance(test_name, str) and bool(test_name),
+                f"{module_context} has a test function without a name",
+            )
+            for link in test_function.get("workflow_cases", []):
+                if not isinstance(link, dict):
+                    continue
+                key = (link.get("recipe_path"), link.get("case_id"))
+                if all(isinstance(value, str) and value for value in key):
+                    mapped_test_functions_by_case.setdefault(key, set()).add(test_name)
+
+        module_source = _source_path(
+            fastapi_source, source_row.get("source_path"), module_context
+        )
+        source_tree = ast.parse(module_source.read_text(encoding="utf-8"))
+        source_functions = {
+            node.name: node
+            for node in source_tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        }
+
+        def source_decorator_name(node: ast.expr) -> str | None:
+            if isinstance(node, ast.Name):
+                return node.id
+            if isinstance(node, ast.Attribute):
+                owner = source_decorator_name(node.value)
+                return f"{owner}.{node.attr}" if owner else node.attr
+            return None
+
+        helper_names: set[str] = set()
+        for helper in dispositions:
+            _require(
+                isinstance(helper, dict)
+                and set(helper)
+                == {
+                    "function_name",
+                    "disposition",
+                    "reason",
+                    "source_ref",
+                    "source_evidence",
+                    "workflow_case_dispositions",
+                    "covered_by_test_functions",
+                },
+                f"{module_context} has an invalid helper disposition shape",
+            )
+            function_name = helper.get("function_name")
+            _require(
+                isinstance(function_name, str)
+                and function_name not in helper_names
+                and function_name not in {
+                    row.get("name") for row in matched_test_functions
+                }
+                and helper.get("disposition")
+                == "pytest_fixture_infrastructure_not_independent_test"
+                and isinstance(helper.get("reason"), str)
+                and "pytest.fixture" in helper["reason"]
+                and "not an independently collected test function" in helper["reason"],
+                f"{module_context} has an invalid or duplicate fixture disposition",
+            )
+            helper_names.add(function_name)
+
+            source_ref = helper.get("source_ref")
+            _require(
+                isinstance(source_ref, dict)
+                and set(source_ref) == {"path", "line", "end_line", "sha256"}
+                and source_ref.get("path") == source_row.get("source_path")
+                and source_ref.get("sha256") == source_row.get("source_sha256"),
+                f"{module_context}::{function_name} has no exact source reference",
+            )
+            _verify_source_ref(
+                fastapi_source,
+                source_ref,
+                f"{module_context}::{function_name}",
+                digest_key="sha256",
+            )
+            source_function = source_functions.get(function_name)
+            _require(
+                source_function is not None
+                and source_function.lineno == source_ref.get("line")
+                and source_function.end_lineno == source_ref.get("end_line"),
+                f"{module_context}::{function_name} source reference is not its exact function",
+            )
+            decorator_names = [
+                source_decorator_name(
+                    decorator.func if isinstance(decorator, ast.Call) else decorator
+                )
+                for decorator in source_function.decorator_list
+            ]
+            _require(
+                any(name in {"pytest.fixture", "fixture"} for name in decorator_names),
+                f"{module_context}::{function_name} is not marked as a pytest fixture",
+            )
+            evidence = helper.get("source_evidence")
+            _require(
+                isinstance(evidence, list) and len(evidence) == 1,
+                f"{module_context}::{function_name} has no exact fixture source evidence",
+            )
+            evidence_row = evidence[0]
+            decorator_start_line = min(
+                [source_function.lineno, *(item.lineno for item in source_function.decorator_list)]
+            )
+            _require(
+                isinstance(evidence_row, dict)
+                and evidence_row.get("path") == source_row.get("source_path")
+                and evidence_row.get("start_line") == decorator_start_line
+                and evidence_row.get("end_line") == source_function.end_lineno
+                and evidence_row.get("sha256") == source_row.get("source_sha256"),
+                f"{module_context}::{function_name} evidence omits its fixture decorator",
+            )
+            _verify_source_ref(
+                fastapi_source,
+                {
+                    "path": evidence_row.get("path"),
+                    "line": evidence_row.get("start_line"),
+                    "end_line": evidence_row.get("end_line"),
+                    "sha256": evidence_row.get("sha256"),
+                },
+                f"{module_context}::{function_name} fixture evidence",
+                digest_key="sha256",
+            )
+
+            workflow_dispositions = helper.get("workflow_case_dispositions")
+            _require(
+                isinstance(workflow_dispositions, list) and bool(workflow_dispositions),
+                f"{module_context}::{function_name} has no reviewed workflow dispositions",
+            )
+            covered_by_helper: set[str] = set()
+            for link_index, link_disposition in enumerate(workflow_dispositions):
+                context = f"{module_context}::{function_name} workflow_case_dispositions[{link_index}]"
+                _require(
+                    isinstance(link_disposition, dict)
+                    and set(link_disposition) == {"source_mapping", "case_dispositions"},
+                    f"{context} has an invalid disposition shape",
+                )
+                source_mapping = link_disposition.get("source_mapping")
+                _require(
+                    isinstance(source_mapping, dict)
+                    and set(source_mapping)
+                    == {"recipe_path", "case_ids", "observation_selectors"}
+                    and isinstance(source_mapping.get("recipe_path"), str)
+                    and isinstance(source_mapping.get("case_ids"), list)
+                    and bool(source_mapping["case_ids"])
+                    and all(isinstance(value, str) and value for value in source_mapping["case_ids"])
+                    and len(source_mapping["case_ids"]) == len(set(source_mapping["case_ids"]))
+                    and isinstance(source_mapping.get("observation_selectors"), list)
+                    and bool(source_mapping["observation_selectors"])
+                    and all(
+                        isinstance(value, str) and value
+                        for value in source_mapping["observation_selectors"]
+                    )
+                    and len(source_mapping["observation_selectors"])
+                    == len(set(source_mapping["observation_selectors"])),
+                    f"{context} does not retain the reviewed source mapping",
+                )
+                _reject_output_values(source_mapping, context)
+                recipe_path = source_mapping["recipe_path"]
+                selector_ids = source_mapping["observation_selectors"]
+                for selector in selector_ids:
+                    _require(
+                        selector_is_defined(selector),
+                        f"{context} uses undefined reviewed selector {selector!r}",
+                    )
+                    used_selectors.add(selector)
+
+                recipe_workflows = [
+                    row
+                    for row in indexed_workflows.values()
+                    if row.get("recipe_path") == recipe_path
+                ]
+                _require(
+                    len(recipe_workflows) == 1,
+                    f"{context} references an unknown or ambiguous recipe",
+                )
+                workflow = recipe_workflows[0]
+                workflow_id = workflow.get("id")
+                workflow_document = reviewed_workflow_document_cache.get(workflow_id)
+                if workflow_document is None:
+                    input_path = (ROOT / workflow.get("input_path", "")).resolve()
+                    _require(
+                        input_path.is_relative_to(ROOT.resolve()) and input_path.is_file(),
+                        f"{context} linked workflow input is missing or escapes the repo",
+                    )
+                    workflow_document = read_json(input_path)
+                    reviewed_workflow_document_cache[workflow_id] = workflow_document
+                case_dispositions = link_disposition.get("case_dispositions")
+                _require(
+                    isinstance(case_dispositions, list)
+                    and len(case_dispositions) == len(source_mapping["case_ids"]),
+                    f"{context} does not disposition every reviewed recipe case",
+                )
+                for case_index, case_id in enumerate(source_mapping["case_ids"]):
+                    recipe_cases = [
+                        row
+                        for row in workflow_document.get("cases", [])
+                        if isinstance(row, dict) and row.get("case_id") == case_id
+                    ]
+                    _require(
+                        len(recipe_cases) == 1,
+                        f"{context} references a missing or ambiguous recipe case",
+                    )
+                    actions = recipe_cases[0].get("actions", [])
+                    _require(
+                        isinstance(actions, list)
+                        and all(isinstance(action, dict) for action in actions),
+                        f"{context} linked recipe actions are malformed",
+                    )
+                    action_ids = {
+                        action.get("action_id")
+                        for action in actions
+                        if isinstance(action.get("action_id"), str)
+                    }
+                    _require(
+                        len(action_ids) == len(actions),
+                        f"{context} contains duplicate or malformed recipe action IDs",
+                    )
+
+                    case_disposition = case_dispositions[case_index]
+                    _require(
+                        isinstance(case_disposition, dict)
+                        and set(case_disposition)
+                        == {"case_id", "covered_by_test_functions", "disposition", "reason"}
+                        and case_disposition.get("case_id") == case_id,
+                        f"{context} does not disposition its exact source case",
+                    )
+                    expected_test_functions = sorted(
+                        mapped_test_functions_by_case.get((recipe_path, case_id), set())
+                    )
+                    _require(
+                        case_disposition.get("covered_by_test_functions")
+                        == expected_test_functions,
+                        f"{context} test-function coverage differs from reviewed case mappings",
+                    )
+                    if expected_test_functions:
+                        expected_disposition = "already_mapped_to_test_function"
+                        expected_reason = (
+                            "The same recipe case is independently mapped to the listed "
+                            "test function(s)."
+                        )
+                    else:
+                        expected_disposition = "fixture_case_not_mapped_to_test_function"
+                        expected_reason = (
+                            "The pinned source marks this function as pytest fixture "
+                            "infrastructure, and no collected test function maps this "
+                            "recipe case."
+                        )
+                    _require(
+                        case_disposition.get("disposition") == expected_disposition
+                        and case_disposition.get("reason") == expected_reason,
+                        f"{context} has no explicit source-backed coverage disposition",
+                    )
+                    covered_by_helper.update(expected_test_functions)
+            _require(
+                helper.get("covered_by_test_functions") == sorted(covered_by_helper),
+                f"{module_context}::{function_name} test coverage summary differs from cases",
+            )
     for source_row in coverage_rows:
         if source_row.get("kind") not in FIXTURE_KINDS:
             continue
@@ -3441,26 +3869,39 @@ def validate_compatibility_artifacts(
                 design_ids == matched_ids,
                 f"test module {fixture_id} case designs disagree with its function map",
             )
+            matched_test_functions = source_row.get("mapping_evidence", {}).get(
+                "matched_test_functions", []
+            )
             matched_by_case = {
-                row.get("case_id"): row
-                for row in source_row.get("mapping_evidence", {}).get("matched_test_functions", [])
+                row.get("case_id"): row for row in matched_test_functions
             }
+            validate_fixture_helper_workflow_dispositions(
+                fixture.get("fixture_helper_workflow_dispositions", []),
+                fixture,
+                source_row,
+                matched_test_functions,
+            )
             linked_functions: dict[str, str] = {}
             for design in designs:
                 function_name = design.get("source_function")
                 workflow_case = design.get("workflow_case")
                 function_source_ref = design.get("function_source_ref")
+                workflow_cases = design.get("workflow_cases")
                 inventory_row = matched_by_case.get(design.get("id"), {})
                 _require(
                     inventory_row.get("workflow_case") == workflow_case
-                    and inventory_row.get("function_source_ref") == function_source_ref,
-                    f"case {design.get('id')} direct function links differ "
-                    "from the atlas inventory",
+                    and inventory_row.get("function_source_ref") == function_source_ref
+                    and inventory_row.get("workflow_cases") == workflow_cases,
+                    f"case {design.get('id')} function links differ from the atlas inventory",
                 )
+                if workflow_cases is not None:
+                    validate_reviewed_function_workflow_cases(
+                        workflow_cases, design, inventory_row, source_row
+                    )
                 if workflow_case is None:
                     _require(
-                        function_source_ref is None,
-                        f"case {design.get('id')} has a source span without a direct workflow link",
+                        function_source_ref is None or bool(workflow_cases),
+                        f"case {design.get('id')} has a source span without a workflow link",
                     )
                     continue
                 _require(
@@ -4183,6 +4624,31 @@ def validate_compatibility_artifacts(
                     "requirement reference",
                 )
 
+    test_function_workflow_case_links = sum(
+        len(design.get("workflow_cases", []))
+        for fixture in fixture_rows
+        for design in fixture.get("case_designs", [])
+    )
+    fixture_helper_workflow_case_links = sum(
+        len(link.get("case_dispositions", []))
+        for fixture in fixture_rows
+        for helper in fixture.get("fixture_helper_workflow_dispositions", [])
+        for link in helper.get("workflow_case_dispositions", [])
+    )
+    fixture_helper_functions = sum(
+        len(fixture.get("fixture_helper_workflow_dispositions", []))
+        for fixture in fixture_rows
+    )
+    _require(
+        atlas.get("counts", {}).get("test_function_workflow_case_links")
+        == test_function_workflow_case_links
+        and atlas.get("counts", {}).get("fixture_helper_workflow_case_links_dispositioned")
+        == fixture_helper_workflow_case_links
+        and atlas.get("counts", {}).get("fixture_helper_functions_dispositioned")
+        == fixture_helper_functions,
+        "workflow case link counts differ from the fixture backlog",
+    )
+
     backlog_ref = atlas.get("fixture_backlog_ref", {})
     _require(
         backlog_ref.get("item_count") == len(fixture_rows),
@@ -4250,6 +4716,9 @@ def validate_compatibility_artifacts(
         ),
         "fixture_designs": len(fixture_rows),
         "test_case_designs": len(case_ids),
+        "test_function_workflow_case_links": test_function_workflow_case_links,
+        "fixture_helper_workflow_case_links_dispositioned": fixture_helper_workflow_case_links,
+        "fixture_helper_functions_dispositioned": fixture_helper_functions,
         "selector_definitions": len(selector_specs),
         "selectors_used": len(used_selectors),
         "reviewed_callable_candidates": len(review_rows),

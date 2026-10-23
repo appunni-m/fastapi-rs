@@ -527,6 +527,7 @@ FRONTEND_TEST_REVIEW_MAPPINGS = {
             "test_websocket_route_wins_over_frontend": _candidate(
                 start=987,
                 end=1003,
+                recipe_path="tests/fixtures/input-recipes/parity/websocket-frontend-route-priority-upstream.yaml",
                 case_id="fastapi.test.test-frontend.test-websocket-route-wins-over-frontend",
                 action_ids=["colliding-websocket-path"],
                 selectors=[
