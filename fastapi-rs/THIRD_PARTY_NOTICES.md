@@ -23,7 +23,7 @@ authorities, not included implementation source trees in this distribution.
 - PyO3 0.29.2 and its Cargo dependency closure declare MIT OR Apache-2.0 or the
   package-specific expressions recorded in
   [`docs/RUST_TARGET_DEPENDENCIES.md`][rust-target-dependencies].
-- `annotated-doc==0.0.4` is a direct MIT-licensed Python runtime dependency.
+- `annotated-doc==0.0.5` is a direct MIT-licensed Python runtime dependency.
   Rust calls `annotated_doc.Doc` through PyO3 to construct `Doc` metadata in
   Python signatures. It is installed as a separate distribution and is not
   bundled by this package; retain its MIT notice if a release later bundles it.
@@ -35,12 +35,18 @@ authorities, not included implementation source trees in this distribution.
   not bundled into the FastAPI-RS package; if a release bundles or redistributes
   them, preserve their notices and review the Core wheel's native-component
   obligations.
+- `opentelemetry-api==1.44.0` is a direct Apache-2.0-licensed Python runtime
+  dependency retained in the FastAPI 0.157.0 baseline. It is installed as a
+  separate distribution and is not bundled by this package; preserve its
+  notice if a release later bundles or redistributes it. Its exact license
+  expression and separate wheel metadata are recorded in the
+  [1.44.0 PyPI metadata](https://pypi.org/pypi/opentelemetry-api/1.44.0/json).
 - `requirements/target-runtime-cpython-3.12.13.lock` hash-locks the external
   runtime wheel closure for CPython 3.12.13, including the direct
-  `annotated-doc==0.0.4` runtime dependency. The lock excludes the local Starlette-RS checkout, which is
-  installed separately from the manifest's selected commit. `starlette-rs-py==0.1.0`
-  remains a separately licensed BSD-3-Clause package and declares AnyIO as an
-  external runtime dependency.
+  `annotated-doc==0.0.5` runtime dependency. The lock excludes the local
+  Starlette-RS checkout, which is installed separately from the manifest's
+  selected commit. `starlette-rs-py==0.1.0` remains a separately licensed
+  BSD-3-Clause package and declares AnyIO as an external runtime dependency.
 
 The locked Cargo inventory includes each resolved crate's license expression,
 version, enabled features, purpose, and dependency edges. The target Python

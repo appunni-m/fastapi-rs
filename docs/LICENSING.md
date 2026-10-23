@@ -36,6 +36,12 @@ FastAPI, Starlette, Pydantic, or third-party material.
   `annotated_doc.Doc` through PyO3 to build Python `Annotated` documentation
   metadata for signatures, parameters, exceptions, and security APIs. The
   package is separately installed and is not bundled in the FastAPI-RS wheel.
+- `opentelemetry-api==1.44.0` is a direct target runtime dependency retained
+  from the FastAPI 0.157.0 dependency baseline. FastAPI-RS's Rust-owned
+  telemetry behavior is not implemented yet. The package is a separately
+  installed pure-Python wheel, not bundled by FastAPI-RS; its PyPI metadata
+  declares Apache-2.0 and lists `typing-extensions>=4.5.0` as its dependency
+  ([1.44.0 metadata](https://pypi.org/pypi/opentelemetry-api/1.44.0/json)).
 - The external target Python runtime closure for CPython 3.12.13 is hash-locked
   in
   [`requirements/target-runtime-cpython-3.12.13.lock`](../requirements/target-runtime-cpython-3.12.13.lock).
@@ -55,8 +61,9 @@ FastAPI, Starlette, Pydantic, or third-party material.
 
 ### Target Python runtime profile
 
-The target package declares annotated-doc, Pydantic, Pydantic Core, and Starlette-RS-Py as
-runtime dependencies in [`pyproject.toml`](../pyproject.toml). The hashed
+The target package declares annotated-doc, OpenTelemetry API, Pydantic,
+Pydantic Core, and Starlette-RS-Py as runtime dependencies in
+[`pyproject.toml`](../pyproject.toml). The hashed
 requirements lock is a **scoped external-wheel lock** for CPython 3.12.13, not
 an all-in-one lock for building and installing the target: Starlette-RS-Py is
 installed separately from the source revision pinned in
@@ -78,6 +85,7 @@ and [lock](../requirements/target-runtime-cpython-3.12.13.lock).
 | `typing-extensions` | `4.16.0`; direct Starlette-RS-Py runtime dependency (`>=4.12.0`), also used by Pydantic, Pydantic Core, and AnyIO | Provides `TypeVar` with a default state type for generic `HTTPConnection`, `Request`, and `WebSocket` annotations in Starlette-RS `starlette/requests.py`; other packages use it for compatible typing APIs. | Python wheel; no native component is identified by the locked wheel metadata. | PSF-2.0, `License-Expression` in the [4.16.0 wheel metadata](https://pypi.org/pypi/typing-extensions/4.16.0/json). |
 | `typing-inspection` | `0.4.4`; Pydantic transitive runtime dependency | Typing-object inspection required by Pydantic's type and field handling. | Python wheel; no native component is identified by the locked wheel metadata. | MIT, `License-Expression` in the [0.4.4 wheel metadata](https://pypi.org/pypi/typing-inspection/0.4.4/json). |
 | `annotated-doc` | `0.0.5`; direct target runtime dependency | Rust imports `annotated_doc.Doc` through PyO3 to construct `Annotated` metadata for public signatures, parameters, exceptions, and security APIs; the lock also keeps the parity profile aligned. | Pure-Python universal wheel; no native component or runtime dependencies are declared in the locked wheel metadata. | MIT, `License-Expression` in the [0.0.5 wheel metadata](https://pypi.org/pypi/annotated-doc/0.0.5/json). |
+| `opentelemetry-api` | `1.44.0`; direct target runtime dependency retained from the FastAPI 0.157.0 baseline | Provides the upstream OpenTelemetry API dependency; FastAPI-RS telemetry behavior is not implemented yet. | Pure-Python universal wheel; declares `typing-extensions>=4.5.0`. | Apache-2.0, `License-Expression` in the [1.44.0 wheel metadata](https://pypi.org/pypi/opentelemetry-api/1.44.0/json). |
 
 The package-level Cargo dependency and license inventory inside the separately
 installed `pydantic-core` wheel is
