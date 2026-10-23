@@ -55,15 +55,16 @@ consumer-surface benchmark results.
 ## Benchmark evidence freshness
 
 The latest FastAPI 0.157.0 first-slice measurement is bound to FastAPI-RS
-commit `ab03a1c` in the [2026-10-23 report](benchmarks/2026-10-23-ab03a1c.md). Its
-15-case parity gate passed 15/15. On one macOS arm64 host, FastAPI-RS was
-1.226x FastAPI median latency and 1.169x p95 latency; sequential request-loop
-throughput was 0.816x FastAPI. This is slower, not a speedup claim, and applies
+commit `b55f901` in the [2026-10-23 report](benchmarks/2026-10-23-b55f901.md).
+Its 15-case parity gate passed 15/15. On one macOS arm64 host, FastAPI-RS was
+1.228x FastAPI median latency and 1.414x p95 latency; sequential request-loop
+throughput was 0.770x FastAPI. This is slower, not a speedup claim, and applies
 only to the declared direct-ASGI workload with no-op OpenTelemetry providers.
 The report records target, oracle, Starlette-RS, manifest, workload, runtime,
 parity, and benchmark receipt identities. Active telemetry behavior is not
 covered by this workload. The earlier [2026-10-23 measurement at
-`1ef5d0f`](benchmarks/2026-10-23-1ef5d0f.md) and [measurement at
+`ab03a1c`](benchmarks/2026-10-23-ab03a1c.md), [measurement at
+`1ef5d0f`](benchmarks/2026-10-23-1ef5d0f.md), and [measurement at
 `39db162`](benchmarks/2026-10-23-39db162.md) remain historical to current main.
 
 The [seven-workload refresh](benchmarks/2026-10-22-f9a345f.md) remains useful
