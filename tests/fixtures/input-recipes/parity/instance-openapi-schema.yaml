@@ -44,6 +44,50 @@ cases:
   source_evidence:
   - path: docs/en/docs/how-to/extending-openapi.md
     kind: upstream_documentation
+- case_id: fastapi.instance-openapi-schema.deleted-then-reassigned
+  verification: parity
+  factory_input:
+    delete_openapi_schema: true
+    reassign_openapi_schema_after_deletion: true
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: read-openapi-schema-after-reassignment
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /openapi.json
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors: [status]
+      comparison: exact
+    - kind: openapi
+      json_pointers: [/info/x-field-observation]
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/how-to/extending-openapi.md
+    kind: upstream_documentation
+  - path: tests/test_application.py
+    kind: upstream_test
 - case_id: fastapi.instance-openapi-schema.deleted-field
   verification: parity
   factory_input:

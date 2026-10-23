@@ -2366,7 +2366,6 @@ impl PyFastApiProxyPropertyDescriptor {
                     ));
                 }
                 cache.schema_is_set = false;
-                cache.routes_version = None;
                 std::mem::replace(&mut cache.schema, instance.py().None())
             };
             drop(retired);

@@ -8884,6 +8884,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.instance-openapi-schema.mutated-field
         - recipe_path: tests/fixtures/input-recipes/parity/instance-openapi-schema.yaml
           case_id: fastapi.instance-openapi-schema.deleted-field
+        - recipe_path: tests/fixtures/input-recipes/parity/instance-openapi-schema.yaml
+          case_id: fastapi.instance-openapi-schema.deleted-then-reassigned
       documentation_contract_refs:
         - source_path: docs/en/docs/how-to/extending-openapi.md
           fixture_id: fastapi.docs.how-to-extending-openapi
@@ -8894,12 +8896,14 @@ reviewed_api_contract_overlay:
         the documented `openapi_schema` cache field, observes that document
         from `/openapi.json`, and deletes the field before observing the public
         error from a subsequent `openapi()` call. Callable replacement and
-        other cache mutations remain outside this slice.
+        reassignment after deletion preserves the prior route-version cache and
+        exposes the replacement document. Other cache mutations remain outside
+        this slice.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Callable replacement and cache mutations beyond direct assignment and deletion remain outside this slice.
+          - Callable replacement and cache mutations beyond the sampled direct assignment, deletion, and reassignment remain outside this slice.
     fastapi.applications.FastAPI.webhooks:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::webhooks
       source_evidence:

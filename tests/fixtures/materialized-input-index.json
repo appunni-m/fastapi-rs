@@ -15042,21 +15042,30 @@
     {
       "id": "instance-openapi-schema",
       "input_path": "tests/fixtures/inputs/parity/instance-openapi-schema.json",
-      "input_sha256": "5a62dff04cfc958dac4a8604d3d68a0e425f4629014f0157c7e6d660a258cb37",
+      "input_sha256": "080bd167506e2c63f4b2ce753841faf4e59a9042d82dd2225418ad4d47cc0837",
       "recipe_path": "tests/fixtures/input-recipes/parity/instance-openapi-schema.yaml",
-      "recipe_sha256": "22fac8a502cd3ac1c7007a7963995723e4cbc4b730e5e274c98f03d1400ecd7a",
+      "recipe_sha256": "5daa25096baec1034867347e4fc7561ae1e1ed5effe33e365f0b1e6c6a70cd7c",
       "case_ids": [
         "fastapi.instance-openapi-schema.mutated-field",
+        "fastapi.instance-openapi-schema.deleted-then-reassigned",
         "fastapi.instance-openapi-schema.deleted-field"
       ],
       "workload_path": "tests/fixtures/workloads/instance_openapi_schema.py",
-      "workload_sha256": "0d697b4a86207736e88de0ba3766d23ca07062baccb05887306c7aafe5be0f72",
+      "workload_sha256": "00d23fea502004404b8c41b89903b6f407a294475fc534e0949491052b530a48",
       "case_contracts": [
         {
           "case_id": "fastapi.instance-openapi-schema.mutated-field",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:how-to/extending-openapi.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.instance-openapi-schema.deleted-then-reassigned",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:how-to/extending-openapi.md",
+            "source:upstream-test:tests/test_application.py"
           ]
         },
         {
@@ -59469,9 +59478,10 @@
       "fixture_id": "fastapi.docs.how-to-extending-openapi",
       "workflow_id": "instance-openapi-schema",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.instance-openapi-schema.deleted-field",
+        "fastapi.instance-openapi-schema.deleted-then-reassigned",
         "fastapi.instance-openapi-schema.mutated-field"
       ],
       "observation_selectors": [
@@ -59482,6 +59492,19 @@
         "http.body.bytes",
         "http.status",
         "openapi.document"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_application.py",
+      "fixture_id": "fastapi.test.test-application",
+      "workflow_id": "instance-openapi-schema",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.instance-openapi-schema.deleted-then-reassigned"
+      ],
+      "observation_selectors": [
+        "http.status"
       ]
     },
     {

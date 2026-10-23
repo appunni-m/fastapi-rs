@@ -33,4 +33,14 @@ def create_app(_factory_input: dict[str, Any], _workload_trace: list[str]) -> Fa
     }
     if _factory_input.get("delete_openapi_schema", False):
         del app.openapi_schema
+    if _factory_input.get("reassign_openapi_schema_after_deletion", False):
+        app.openapi_schema = {
+            "openapi": "3.1.0",
+            "info": {
+                "title": "OpenAPI Schema Field Probe",
+                "version": "1.0",
+                "x-field-observation": "restored-after-deletion",
+            },
+            "paths": {},
+        }
     return app
