@@ -54,15 +54,17 @@ consumer-surface benchmark results.
 
 ## Benchmark evidence freshness
 
-The current FastAPI 0.157.0 baseline has an identity-checked first-slice
-measurement at pushed target `1ef5d0f` in the
-[2026-10-23 report](benchmarks/2026-10-23-1ef5d0f.md). Its 15-case parity gate
-passed 15/15. On one macOS arm64 host, FastAPI-RS was 1.218x FastAPI median
-latency and 2.223x p95 latency. This is slower, not a speedup claim, and applies
-only to the declared direct-ASGI workload. The report records target, oracle,
-Starlette-RS, manifest, workload, runtime, and receipt identities. The earlier
-[2026-10-23 measurement at `39db162`](benchmarks/2026-10-23-39db162.md) remains
-historical to current main.
+The latest FastAPI 0.157.0 first-slice measurement is bound to FastAPI-RS
+commit `ab03a1c` in the [2026-10-23 report](benchmarks/2026-10-23-ab03a1c.md). Its
+15-case parity gate passed 15/15. On one macOS arm64 host, FastAPI-RS was
+1.226x FastAPI median latency and 1.169x p95 latency; sequential request-loop
+throughput was 0.816x FastAPI. This is slower, not a speedup claim, and applies
+only to the declared direct-ASGI workload with no-op OpenTelemetry providers.
+The report records target, oracle, Starlette-RS, manifest, workload, runtime,
+parity, and benchmark receipt identities. Active telemetry behavior is not
+covered by this workload. The earlier [2026-10-23 measurement at
+`1ef5d0f`](benchmarks/2026-10-23-1ef5d0f.md) and [measurement at
+`39db162`](benchmarks/2026-10-23-39db162.md) remain historical to current main.
 
 The [seven-workload refresh](benchmarks/2026-10-22-f9a345f.md) remains useful
 historical evidence for FastAPI 0.141.1. Its 48/48 selected observations
@@ -102,19 +104,21 @@ that its case IDs exactly match the manifest declaration, runs both pinned
 products, and stores the comparison in ignored `parity-results/`; CI runs this
 gate. For local runs, set `STARLETTE_RS_SOURCE` to a checkout at the pinned
 `4139a72449bf5751e8902fb1c7175ee7f191d338` revision if the sibling default is
-on another commit; the target identity gate rejects a mismatch. The current
+on another commit; the target identity gate rejects a mismatch. The latest
 identity-checked comparison passed 15/15 at FastAPI-RS
-`1ef5d0f16e8234dd20e0e4d3058888b5416f34e4` with FastAPI 0.157.0 at
+`ab03a1cb645637a72573846e84ed1beb1f3f4edb` with FastAPI 0.157.0 at
 `386a28af2f87af1a32ac26d88f07b7f58ab2dfb1`, Starlette 1.6.0, and Starlette-RS
 `4139a72449bf5751e8902fb1c7175ee7f191d338`. The comparison receipt is
-`parity-results/comparisons/d2450a19-d59f-42a2-9aa6-2b8f8da06f3c.json`; it
+`parity-results/comparisons/b1011559-bda7-414a-82d5-d9a67f24f79f.json`; it
 binds manifest SHA-256
-`b35e68ebdee0432cc394016d82b56fabccb9fdd5938c1e2f6e787b269494393f` and target
+`c8cb0ed2be085eb4a9a7fc104aeff757140a0536cc61a782b6304ff903092629` and target
 source-tree SHA-256
-`c298323adda9687e4a18d6e538ba3fe1a57befe284d6eade8650a43a4b388cb8`. This
+`b2afcda6fb66ffdc0ed7628e38f5ce202ca00c104ffee0009f88dcffaa983c01`. This
 validates only the fifteen declared cases. It does not establish broader API
 or feature parity. Broader parity remains incomplete; current timing evidence
-is limited to the first-slice workload documented above.
+is limited to the first-slice workload documented above. The default oracle
+environment has no OpenTelemetry SDK/exporter, and this slice does not compare
+telemetry signals or lifecycle.
 
 Direct Python API workflows use isolated source and target workers, a versioned
 result schema, and exact comparison. The 2026-10-14 receipt below contains one
