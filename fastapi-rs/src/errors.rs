@@ -27,7 +27,7 @@ create_exception!(
     fastapi.exceptions,
     FastAPIDeprecationWarning,
     PyUserWarning,
-    "A deprecation warning emitted by FastAPI."
+    "\n    A custom deprecation warning as DeprecationWarning is ignored\n    Ref: https://sethmlarson.dev/deprecations-via-warnings-dont-work-for-python-libraries\n    "
 );
 
 create_exception!(

@@ -1968,19 +1968,18 @@
           "role": "fastapi-source-declaration"
         },
         {
-          "line": 1073,
+          "line": 1450,
           "path": "docs/en/docs/release-notes.md",
           "role": "fastapi-public-documentation"
         }
       ],
       "evidence_basis": [
         "documented",
-        "source-declaration",
-        "member-exposure-unresolved"
+        "source-declaration"
       ],
       "id": "fastapi.exceptions.FastAPIDeprecationWarning",
-      "reason": "FastAPI 0.157.0 defines this custom warning and announces it in the 0.127.1 release notes. Upstream tests import fastapi.exceptions.FastAPIDeprecationWarning and use it in warning filters and pytest.warns (tests/test_regex_deprecated_body.py:5,14; tests/test_deprecated_responses.py:5,46,78), establishing importability and warning behavior. The pinned user-facing API docs do not publish a dedicated consumer contract for the warning class, so retain the source candidate as uncertain. This makes no FastAPI-RS support or parity claim.",
-      "recommendation": "uncertain",
+      "reason": "FastAPI 0.157.0 defines `FastAPIDeprecationWarning` as a `UserWarning` subclass (fastapi/exceptions.py:252-256), and the 0.127.1 release notes announce this exact custom warning type (docs/en/docs/release-notes.md:1450). Pinned FastAPI tests import it from `fastapi.exceptions` and pass it to warning filters, corroborating the named module-level contract. This source disposition makes no FastAPI-RS behavior claim.",
+      "recommendation": "supported",
       "source": {
         "line": 252,
         "path": "fastapi/exceptions.py"
@@ -4201,7 +4200,7 @@
         "source-declaration"
       ],
       "id": "fastapi.routing.RouteContext",
-      "reason": "The pinned release notes announce iter_route_contexts() for advanced consumer use, and fastapi.routing.iter_route_contexts is typed as Iterator[RouteContext] and yields RouteContext instances. This supports RouteContext as that helper\u2019s public result type in fastapi.routing; it does not assert a root-package export or separately promise each member.",
+      "reason": "The pinned release notes announce iter_route_contexts() for advanced consumer use, and fastapi.routing.iter_route_contexts is typed as Iterator[RouteContext] and yields RouteContext instances. This supports RouteContext as that helper’s public result type in fastapi.routing; it does not assert a root-package export or separately promise each member.",
       "recommendation": "supported",
       "source": {
         "line": 1604,
@@ -4795,8 +4794,8 @@
     "candidate_ids_sha256": "c4b313d65077e71d5c8019721b9110a80e9596185c6ff72d740134757b4c6cba",
     "recommendation_counts": {
       "private/internal": 127,
-      "supported": 35,
-      "uncertain": 23
+      "supported": 36,
+      "uncertain": 22
     }
   },
   "source_identity": {

@@ -1,4 +1,5 @@
 from fastapi_rs._core import (
+    _FastAPIDeprecationWarning as FastAPIDeprecationWarning,
     HTTPException,
     RequestValidationError,
     ResponseValidationError,
@@ -8,6 +9,7 @@ from fastapi_rs._core import (
 )
 
 __all__ = [
+    "FastAPIDeprecationWarning",
     "HTTPException",
     "RequestValidationError",
     "ResponseValidationError",

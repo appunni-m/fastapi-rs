@@ -31431,7 +31431,7 @@
       "candidate_kinds": [
         "source_declaration"
       ],
-      "classification": "uncertain",
+      "classification": "supported",
       "classification_evidence_rule": "Reviewed pinned FastAPI source/docs evidence; this source classification makes no FastAPI-RS support or parity claim.",
       "classification_review": {
         "binding": null,
@@ -31443,17 +31443,16 @@
             "role": "fastapi-source-declaration"
           },
           {
-            "line": 1073,
+            "line": 1450,
             "path": "docs/en/docs/release-notes.md",
             "role": "fastapi-public-documentation"
           }
         ],
         "evidence_basis": [
           "documented",
-          "source-declaration",
-          "member-exposure-unresolved"
+          "source-declaration"
         ],
-        "reason": "FastAPI 0.157.0 defines this custom warning and announces it in the 0.127.1 release notes. Upstream tests import fastapi.exceptions.FastAPIDeprecationWarning and use it in warning filters and pytest.warns (tests/test_regex_deprecated_body.py:5,14; tests/test_deprecated_responses.py:5,46,78), establishing importability and warning behavior. The pinned user-facing API docs do not publish a dedicated consumer contract for the warning class, so retain the source candidate as uncertain. This makes no FastAPI-RS support or parity claim.",
+        "reason": "FastAPI 0.157.0 defines `FastAPIDeprecationWarning` as a `UserWarning` subclass (fastapi/exceptions.py:252-256), and the 0.127.1 release notes announce this exact custom warning type (docs/en/docs/release-notes.md:1450). Pinned FastAPI tests import it from `fastapi.exceptions` and pass it to warning filters, corroborating the named module-level contract. This source disposition makes no FastAPI-RS behavior claim.",
         "review_artifact": "api_public_candidate_classification_review",
         "source": {
           "line": 252,
@@ -31462,7 +31461,13 @@
       },
       "id": "fastapi.exceptions.FastAPIDeprecationWarning",
       "kind": "class",
-      "public_evidence": [],
+      "public_evidence": [
+        {
+          "kind": "reviewed_public_candidate_documentation_contract",
+          "line": 1450,
+          "path": "docs/en/docs/release-notes.md"
+        }
+      ],
       "source_evidence": [
         {
           "end_line": 256,
@@ -81650,11 +81655,11 @@
       "candidate_ids_sha256": "c4b313d65077e71d5c8019721b9110a80e9596185c6ff72d740134757b4c6cba",
       "recommendation_counts": {
         "private/internal": 127,
-        "supported": 35,
-        "uncertain": 23
+        "supported": 36,
+        "uncertain": 22
       }
     },
-    "sha256": "0b15ae78e932db5e9a4fedd72bf8989549182db95226e4fa03515c4ccd8c0bb8",
+    "sha256": "1fd0cff90000c1a9d44df8ae43728915d3edee3a4e3dfc797d17f265b27e479c",
     "source_identity": {
       "package": "FastAPI",
       "source_commit": "386a28af2f87af1a32ac26d88f07b7f58ab2dfb1",
@@ -82018,8 +82023,8 @@
     "api_candidates": 1831,
     "api_classifications": {
       "private/internal": 1279,
-      "supported": 493,
-      "uncertain": 59
+      "supported": 494,
+      "uncertain": 58
     },
     "documentation_headings_inheriting_page_exclusion": 460,
     "documentation_headings_without_feature_signal": 0,
@@ -546661,6 +546666,22 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/optional-json-response-serialization.yaml",
             "workflow_id": "optional-json-response-serialization"
+          },
+          {
+            "case_ids": [
+              "fastapi.validation-exceptions.direct-api-contract"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes python.attribute_value, python.call_outcome, python.import_path, python.object_identity, python.signature. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "python.attribute_value",
+              "python.call_outcome",
+              "python.import_path",
+              "python.object_identity",
+              "python.signature"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml",
+            "workflow_id": "validation-exception-api-contract"
           }
         ],
         "mapping_rule": "whole-token source signals plus explicitly reviewed function-to-feature mappings; candidate only",
@@ -546766,6 +546787,11 @@
         "http.body.json",
         "http.headers.ordered",
         "http.status",
+        "python.attribute_value",
+        "python.call_outcome",
+        "python.import_path",
+        "python.object_identity",
+        "python.signature",
         "warnings.category_message"
       ],
       "review_reason": null,
@@ -546785,6 +546811,20 @@
             "warnings.category_message"
           ],
           "workflow_id": "optional-json-response-serialization"
+        },
+        {
+          "case_ids": [
+            "fastapi.validation-exceptions.direct-api-contract"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml",
+          "selectors": [
+            "python.attribute_value",
+            "python.call_outcome",
+            "python.import_path",
+            "python.object_identity",
+            "python.signature"
+          ],
+          "workflow_id": "validation-exception-api-contract"
         }
       ],
       "source_path": "tests/test_deprecated_responses.py",
@@ -802081,56 +802121,6 @@
     {
       "candidate_kind": "warning",
       "classification": "uncertain",
-      "classification_review": {
-        "classification": "uncertain",
-        "evidence": [
-          {
-            "end_line": 256,
-            "kind": "source-definition",
-            "path": "fastapi/exceptions.py",
-            "start_line": 252,
-            "symbol": "FastAPIDeprecationWarning"
-          },
-          {
-            "kind": "upstream-test-import",
-            "line": 5,
-            "path": "tests/test_regex_deprecated_body.py",
-            "statement": "from fastapi.exceptions import FastAPIDeprecationWarning"
-          },
-          {
-            "kind": "upstream-test-use",
-            "line": 14,
-            "path": "tests/test_regex_deprecated_body.py",
-            "statement": "pytest.warns(FastAPIDeprecationWarning)"
-          },
-          {
-            "kind": "upstream-test-import",
-            "line": 5,
-            "path": "tests/test_deprecated_responses.py",
-            "statement": "from fastapi.exceptions import FastAPIDeprecationWarning"
-          },
-          {
-            "kind": "upstream-test-use",
-            "line": 46,
-            "path": "tests/test_deprecated_responses.py",
-            "statement": "pytest.warns(FastAPIDeprecationWarning, match=\"ORJSONResponse is deprecated\")"
-          },
-          {
-            "kind": "upstream-test-use",
-            "line": 78,
-            "path": "tests/test_deprecated_responses.py",
-            "statement": "pytest.warns(FastAPIDeprecationWarning, match=\"UJSONResponse is deprecated\")"
-          },
-          {
-            "kind": "release-note",
-            "line": 1450,
-            "path": "docs/en/docs/release-notes.md",
-            "section": "0.127.1 (2025-12-26)",
-            "statement": "Add a custom FastAPIDeprecationWarning."
-          }
-        ],
-        "rationale": "The pinned source defines a custom UserWarning, the release notes name it, and upstream tests import it from fastapi.exceptions and use it in warning filters and pytest.warns. Those tests establish importability and warning use, but do not replace a user-facing API contract; retain this warning-only candidate as uncertain. The separate fastapi.responses alias remains private/internal."
-      },
       "id": "fastapi.applications.FastAPIDeprecationWarning",
       "observation_selectors": [
         "warnings.category_message"
@@ -802346,62 +802336,18 @@
     },
     {
       "candidate_kind": "warning",
-      "classification": "uncertain",
-      "classification_review": {
-        "classification": "uncertain",
-        "evidence": [
-          {
-            "end_line": 256,
-            "kind": "source-definition",
-            "path": "fastapi/exceptions.py",
-            "start_line": 252,
-            "symbol": "FastAPIDeprecationWarning"
-          },
-          {
-            "kind": "upstream-test-import",
-            "line": 5,
-            "path": "tests/test_regex_deprecated_body.py",
-            "statement": "from fastapi.exceptions import FastAPIDeprecationWarning"
-          },
-          {
-            "kind": "upstream-test-use",
-            "line": 14,
-            "path": "tests/test_regex_deprecated_body.py",
-            "statement": "pytest.warns(FastAPIDeprecationWarning)"
-          },
-          {
-            "kind": "upstream-test-import",
-            "line": 5,
-            "path": "tests/test_deprecated_responses.py",
-            "statement": "from fastapi.exceptions import FastAPIDeprecationWarning"
-          },
-          {
-            "kind": "upstream-test-use",
-            "line": 46,
-            "path": "tests/test_deprecated_responses.py",
-            "statement": "pytest.warns(FastAPIDeprecationWarning, match=\"ORJSONResponse is deprecated\")"
-          },
-          {
-            "kind": "upstream-test-use",
-            "line": 78,
-            "path": "tests/test_deprecated_responses.py",
-            "statement": "pytest.warns(FastAPIDeprecationWarning, match=\"UJSONResponse is deprecated\")"
-          },
-          {
-            "kind": "release-note",
-            "line": 1450,
-            "path": "docs/en/docs/release-notes.md",
-            "section": "0.127.1 (2025-12-26)",
-            "statement": "Add a custom FastAPIDeprecationWarning."
-          }
-        ],
-        "rationale": "The pinned source defines a custom UserWarning, the release notes name it, and upstream tests import it from fastapi.exceptions and use it in warning filters and pytest.warns. Those tests establish importability and warning use, but do not replace a user-facing API contract; retain this warning-only candidate as uncertain. The separate fastapi.responses alias remains private/internal."
-      },
+      "classification": "supported",
       "id": "fastapi.exceptions.FastAPIDeprecationWarning",
       "observation_selectors": [
         "warnings.category_message"
       ],
-      "public_evidence": [],
+      "public_evidence": [
+        {
+          "kind": "reviewed_public_candidate_documentation_contract",
+          "line": 1450,
+          "path": "docs/en/docs/release-notes.md"
+        }
+      ],
       "source_evidence": [
         {
           "end_line": 256,

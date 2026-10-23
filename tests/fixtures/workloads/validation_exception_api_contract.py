@@ -22,6 +22,7 @@ def create_argument_bundles() -> Mapping[str, dict[str, object]]:
     }
     return {
         "unused": {"args": [], "kwargs": {}},
+        "warning-message": {"args": ["sample deprecation warning"], "kwargs": {}},
         "request-populated": {
             "args": [errors],
             "kwargs": {"body": {"name": None}, "endpoint_ctx": endpoint_ctx},

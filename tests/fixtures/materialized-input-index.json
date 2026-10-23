@@ -44797,15 +44797,21 @@
     {
       "id": "validation-exception-api-contract",
       "input_path": "tests/fixtures/inputs/parity/validation-exception-api-contract.json",
-      "input_sha256": "5d88caa2038cdb29b6888e0cbb7d0e5dfd03de43590d6f992dbfe49cdb422284",
+      "input_sha256": "e30709e97ac905953a5992c0dd24d9b037ab1d1929ea9d7400a7255aeffc8570",
       "recipe_path": "tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml",
-      "recipe_sha256": "08c0b2d60ee74a16858c2003168d825735a62bef524f4d481fb0ca4a1b6e9354",
+      "recipe_sha256": "637f50994f06acded646384f5e081de0147d34703788ae9b17be2f17f005b2a0",
       "case_ids": [
         "fastapi.validation-exceptions.direct-api-contract"
       ],
       "workload_path": "tests/fixtures/workloads/validation_exception_api_contract.py",
-      "workload_sha256": "78f9903b5dc3d56970a630a924f6504653e99174a1b205f0440c90794aeecd70",
+      "workload_sha256": "68baf59e10cd0094bdd4973da9736f0a5e88b0c1f747ff1895cac41047c3f330",
       "api_definitions": [
+        {
+          "case_id": "fastapi.validation-exceptions.direct-api-contract",
+          "symbol_id": "fastapi.exceptions.FastAPIDeprecationWarning",
+          "path": "fastapi/exceptions.py",
+          "sha256": "7d434e051748b142d4d139cef1a3418371e825ec89c57a7d515e83f3062ef652"
+        },
         {
           "case_id": "fastapi.validation-exceptions.direct-api-contract",
           "symbol_id": "fastapi.exceptions.RequestValidationError",
@@ -44820,6 +44826,24 @@
         }
       ],
       "api_probes": [
+        {
+          "case_id": "fastapi.validation-exceptions.direct-api-contract",
+          "probe_id": "fastapi-deprecation-warning-class-docstring",
+          "symbol_id": "fastapi.exceptions.FastAPIDeprecationWarning",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        },
+        {
+          "case_id": "fastapi.validation-exceptions.direct-api-contract",
+          "probe_id": "fastapi-deprecation-warning-constructor",
+          "symbol_id": "fastapi.exceptions.FastAPIDeprecationWarning",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
         {
           "case_id": "fastapi.validation-exceptions.direct-api-contract",
           "probe_id": "request-validation-error-class-docstring",
@@ -44854,6 +44878,16 @@
           "probe_kind": "callable",
           "observation_selectors": [
             "python.call_outcome"
+          ]
+        },
+        {
+          "case_id": "fastapi.validation-exceptions.direct-api-contract",
+          "probe_id": "validation-exception-class-identities",
+          "symbol_id": "fastapi.exceptions.FastAPIDeprecationWarning",
+          "probe_kind": "attribute",
+          "observation_selectors": [
+            "python.import_path",
+            "python.object_identity"
           ]
         },
         {
@@ -44909,8 +44943,10 @@
           "case_id": "fastapi.validation-exceptions.direct-api-contract",
           "verification": "parity",
           "requirement_refs": [
+            "api:fastapi.exceptions.FastAPIDeprecationWarning",
             "api:fastapi.exceptions.RequestValidationError",
-            "api:fastapi.exceptions.WebSocketRequestValidationError"
+            "api:fastapi.exceptions.WebSocketRequestValidationError",
+            "source:upstream-test:tests/test_deprecated_responses.py"
           ]
         }
       ]
@@ -79322,6 +79358,23 @@
         "http.body.bytes",
         "http.status",
         "validation.error_class"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_deprecated_responses.py",
+      "fixture_id": "fastapi.test.test-deprecated-responses",
+      "workflow_id": "validation-exception-api-contract",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes python.attribute_value, python.call_outcome, python.import_path, python.object_identity, python.signature. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.validation-exceptions.direct-api-contract"
+      ],
+      "observation_selectors": [
+        "python.attribute_value",
+        "python.call_outcome",
+        "python.import_path",
+        "python.object_identity",
+        "python.signature"
       ]
     },
     {

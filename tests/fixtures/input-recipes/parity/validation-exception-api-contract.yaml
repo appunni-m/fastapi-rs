@@ -1,7 +1,5 @@
-# Direct API import identity and constructor signatures for the two documented
-# FastAPI validation exception classes.
-# v10 reads the class docstring without constructing the reviewed public class.
-schema: fastapi-rs/python-api-workflow@10
+# Direct API import identity and constructor probes for FastAPI exception types.
+schema: fastapi-rs/python-api-workflow@13
 workload:
   file: tests/fixtures/workloads/validation_exception_api_contract.py
   factory: create_argument_bundles
@@ -15,6 +13,7 @@ cases:
           bindings:
             - RequestValidationError
             - WebSocketRequestValidationError
+            - FastAPIDeprecationWarning
         observations:
           - kind: python_import_path
             selector: import_path
@@ -40,6 +39,24 @@ cases:
         observations:
           - kind: python_class_docstring
             selector: value
+            comparison: exact
+      - probe_id: fastapi-deprecation-warning-class-docstring
+        public_callable:
+          module: fastapi.exceptions
+          attribute: FastAPIDeprecationWarning
+        argument_bundle: unused
+        observations:
+          - kind: python_class_docstring
+            selector: value
+            comparison: exact
+      - probe_id: fastapi-deprecation-warning-constructor
+        public_callable:
+          module: fastapi.exceptions
+          attribute: FastAPIDeprecationWarning
+        argument_bundle: warning-message
+        observations:
+          - kind: python_call_outcome
+            selector: outcome
             comparison: exact
       - probe_id: websocket-request-validation-error-constructor-signature
         public_callable:
@@ -95,3 +112,13 @@ cases:
         kind: upstream_api_definition
         symbol_id: fastapi.exceptions.WebSocketRequestValidationError
         sha256: 7d434e051748b142d4d139cef1a3418371e825ec89c57a7d515e83f3062ef652
+      - path: fastapi/exceptions.py
+        kind: upstream_api_definition
+        symbol_id: fastapi.exceptions.FastAPIDeprecationWarning
+        sha256: 7d434e051748b142d4d139cef1a3418371e825ec89c57a7d515e83f3062ef652
+      - path: docs/en/docs/release-notes.md
+        kind: upstream_documentation
+        sha256: c223abcddab71e37475e346ff4d6886eaae80ef7c610a91021b4050eacd97d75
+      - path: tests/test_deprecated_responses.py
+        kind: upstream_test
+        sha256: 7bd523bc2b4185920b6de63e0e01de09c620a30e192992783b76c7aa2b67faaf

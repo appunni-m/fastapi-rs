@@ -813,16 +813,16 @@ source_api_classification_review:
 api_public_candidate_classification_review:
   artifact: tests/fixtures/api-public-candidate-classification-review.json
   schema: fastapi-rs/public-candidate-classification-review@1
-  sha256: 0b15ae78e932db5e9a4fedd72bf8989549182db95226e4fa03515c4ccd8c0bb8
+  sha256: 1fd0cff90000c1a9d44df8ae43728915d3edee3a4e3dfc797d17f265b27e479c
   source_identity:
     package: FastAPI
     version: 0.157.0
     source_commit: 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1
   counts:
     candidates: 185
-    supported: 35
+    supported: 36
     private_or_internal: 127
-    uncertain: 23
+    uncertain: 22
   candidate_ids_sha256: c4b313d65077e71d5c8019721b9110a80e9596185c6ff72d740134757b4c6cba
 
 classification_atlas:
@@ -25056,6 +25056,54 @@ reviewed_api_contract_overlay:
         known_gaps:
           - Configured server values, selected OpenAPI outputs, and caller-list preservation are sampled; empty, malformed, reassignment, deletion, and full precedence behavior remain unverified.
 
+    fastapi.exceptions.FastAPIDeprecationWarning:
+      rust_binding: fastapi-rs/src/errors.rs::FastAPIDeprecationWarning
+      source_evidence:
+        - path: fastapi/exceptions.py
+          kind: source-definition
+          symbol: FastAPIDeprecationWarning
+          start_line: 252
+          end_line: 256
+        - path: docs/en/docs/release-notes.md
+          kind: documentation-text
+          start_line: 1450
+          end_line: 1450
+          required_text:
+            - "Add a custom `FastAPIDeprecationWarning`."
+        - path: tests/test_deprecated_responses.py
+          kind: upstream-test
+          symbol: test_orjson_response_emits_deprecation_warning
+          start_line: 45
+          end_line: 47
+        - path: fastapi/utils.py
+          kind: source-definition
+          symbol: generate_operation_id_for_path
+          start_line: 80
+          end_line: 92
+      fixture_refs:
+        - recipe_path: tests/fixtures/input-recipes/parity/validation-exception-api-contract.yaml
+          case_id: fastapi.validation-exceptions.direct-api-contract
+      feature_ids: [public-api-errors]
+      observation_selectors: [python.import_path, python.object_identity, python.attribute_value, python.call_outcome]
+      supported_slice: >-
+        The direct API workflow checks the `fastapi.exceptions` import path and
+        repeated object identity, the class docstring, and successful construction with
+        input-provided args. FastAPI-RS owns this FastAPI-specific warning identity;
+        Starlette-RS defines the separate `starlette.exceptions.StarletteDeprecationWarning`.
+        This partial type contract does not establish every FastAPI warning call site,
+        alias module, or Python warning-filter interaction.
+      target_binding:
+        implementation_owner: fastapi-rs
+        status: partial-contract
+        rust_binding: fastapi-rs/src/errors.rs::FastAPIDeprecationWarning
+        known_gaps:
+          - >-
+            The focused workflow checks public import identity, class docstring, and
+            warning construction. Identity with every deprecated API's emitted
+            category, dynamic warning filters, other incidental import aliases, and
+            all subclass behavior remain unverified; emitting APIs retain their own
+            operation contracts.
+
   inherited_candidate_reviews:
     fastapi.routing.APIRouter.host:
       kind: inherited_method
@@ -25573,44 +25621,3 @@ reviewed_api_contract_overlay:
         known_gaps:
           - The focused route-tree input now covers stable `app.routes` identity, its shared identity with `app.router.routes`, constructor-list copying, default docs routes, direct and mounted entries, the `_IncludedRouter` marker, and OpenAPI path projection. Docs endpoint identity and invocation, effects of mutating the returned list, WebSocket route-tree observations, custom route classes, and other route options or configurations remain unestablished.
           - The direct and nested route-context cases cover APIRoute identity, path, path_format, name, methods, tags, and endpoint name for one GET route each; broader collection contents and configurations remain outside this partial contract.
-  warning_classification_reviews:
-    fastapi.exceptions.FastAPIDeprecationWarning:
-      classification: uncertain
-      rationale: >-
-        The pinned source defines a custom UserWarning, the release notes name
-        it, and upstream tests import it from fastapi.exceptions and use it in
-        warning filters and pytest.warns. Those tests establish importability
-        and warning use, but do not replace a user-facing API contract; retain
-        this warning-only candidate as uncertain. The separate
-        fastapi.responses alias remains private/internal.
-      evidence:
-        - kind: source-definition
-          path: fastapi/exceptions.py
-          symbol: FastAPIDeprecationWarning
-          start_line: 252
-          end_line: 256
-        - kind: upstream-test-import
-          path: tests/test_regex_deprecated_body.py
-          line: 5
-          statement: from fastapi.exceptions import FastAPIDeprecationWarning
-        - kind: upstream-test-use
-          path: tests/test_regex_deprecated_body.py
-          line: 14
-          statement: pytest.warns(FastAPIDeprecationWarning)
-        - kind: upstream-test-import
-          path: tests/test_deprecated_responses.py
-          line: 5
-          statement: from fastapi.exceptions import FastAPIDeprecationWarning
-        - kind: upstream-test-use
-          path: tests/test_deprecated_responses.py
-          line: 46
-          statement: 'pytest.warns(FastAPIDeprecationWarning, match="ORJSONResponse is deprecated")'
-        - kind: upstream-test-use
-          path: tests/test_deprecated_responses.py
-          line: 78
-          statement: 'pytest.warns(FastAPIDeprecationWarning, match="UJSONResponse is deprecated")'
-        - kind: release-note
-          path: docs/en/docs/release-notes.md
-          line: 1450
-          section: 0.127.1 (2025-12-26)
-          statement: Add a custom FastAPIDeprecationWarning.
