@@ -1,0 +1,58 @@
+schema: fastapi-rs/python-api-benchmark-workload@1
+id: fastapi.openapi.dependency-graph-20x101
+title: Cold OpenAPI generation for 20 routes sharing a 101-level dependency graph
+python_identity:
+  implementation: CPython
+  version: 3.12.13
+input:
+  path: tests/fixtures/inputs/parity/openapi-dependency-graph-20x101.json
+  case_id: fastapi.openapi.dependency-graph-20-routes-101-levels
+  probe_id: cold-openapi-schema
+  argument_bundle: openapi-dependency-graph
+invoke:
+  public_callable:
+    module: fastapi.applications
+    attribute: FastAPI.openapi
+  cache_reset:
+    receiver_argument: 0
+    attribute: openapi_schema
+    value: null
+    included_in_timing: true
+subjects:
+  - id: fastapi-0.157.0
+    kind: fastapi
+    environment: oracle
+  - id: fastapi-rs-release
+    kind: fastapi-rs
+    environment: target
+correctness_gate:
+  required_comparison: all-selected-cases-pass
+  require_exact_untimed_observation: true
+timing:
+  boundary: >-
+    Clear app.openapi_schema then call FastAPI.openapi(); measure the direct
+    public Python API invocation, including cache reset, facade dispatch,
+    PyO3 conversion, native execution, and complete OpenAPI schema generation.
+  includes:
+    - cache reset through app.openapi_schema = None
+    - public FastAPI.openapi call
+    - FastAPI route and dependency graph traversal
+    - schema construction and Pydantic projection
+    - FastAPI-RS Python facade, PyO3 conversion, and Rust execution on the target
+  excludes:
+    - interpreter and module startup
+    - workload import and app construction
+    - route and dependency registration
+    - parity observation projection
+    - HTTP server, ASGI dispatch, network, and HTTP client
+  cache_state: clear app.openapi_schema before each invocation
+  warmups: 5
+  rounds: 5
+  samples_per_round: 20
+  concurrency: 1
+  metrics:
+    - "cold OpenAPI generation nanoseconds: min, median, p95, p99, max, mean"
+  raw_samples: retain all invocation latency samples
+reporting:
+  fastapi_rs_over_fastapi: report median and p95 ratios only
+  starlette_control: omitted because standalone Starlette has no FastAPI dependency injection semantics

@@ -82,6 +82,8 @@ PARITY_WORKFLOW_ID ?=
 PARITY_CASE_IDS ?=
 PARITY_WORKFLOW_PROFILE_EXTENSION ?=
 BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
+API_BENCHMARK_WORKLOAD ?= benchmarks/workloads/api/openapi-dependency-graph-20x101.yaml
+API_BENCHMARK_COMPARISON ?=
 RELEASE_NOTICE_WHEEL ?=
 RELEASE_CRATE_DIR ?= target/package
 RELEASE_VERSION ?= 0.1.0
@@ -89,7 +91,7 @@ RELEASE_SDIST_DIR ?= target/release-sdist
 RELEASE_SDIST_WHEEL_DIR ?= target/release-sdist-validation-wheels
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare release-sdist developer-tools-prepare developer-tools-inventory-update developer-tools-inventory-check python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-oracle-email-validation parity-prepare-oracle-templates parity-prepare-oracle-json-serializers parity-prepare-oracle-telemetry parity-prepare-target parity-prepare-target-testclient parity-prepare-target-email-validation parity-prepare-target-standard-multipart parity-prepare-target-templates parity-prepare-target-json-serializers parity-prepare-target-telemetry fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-campaign parity-oracle parity-oracle-standard parity-oracle-email-validation parity-target parity-target-email-validation parity-target-standard-multipart parity-fault-target parity-compare parity-compare-email-validation signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice parity-workflow benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite benchmark-testclient-input-check verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare release-sdist developer-tools-prepare developer-tools-inventory-update developer-tools-inventory-check python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-oracle-email-validation parity-prepare-oracle-templates parity-prepare-oracle-json-serializers parity-prepare-oracle-telemetry parity-prepare-target parity-prepare-target-testclient parity-prepare-target-email-validation parity-prepare-target-standard-multipart parity-prepare-target-templates parity-prepare-target-json-serializers parity-prepare-target-telemetry fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-campaign parity-oracle parity-oracle-standard parity-oracle-email-validation parity-target parity-target-email-validation parity-target-standard-multipart parity-fault-target parity-compare parity-compare-email-validation signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice parity-workflow benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite benchmark-testclient-input-check benchmark-api-input-check benchmark-api verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -160,6 +162,7 @@ help: ## Show common development commands
 	  '  make benchmark-first-slice Gate and measure the selected direct-ASGI workload' \
 	  '  make benchmark-suite  Gate and measure all seven reviewed direct-ASGI workloads' \
 	  '  make benchmark-testclient Gate and measure the focused reused-TestClient workload' \
+	  '  make benchmark-api  Measure one direct API workload after a selected parity pass' \
 	  '  make verify         Run formatting, lint, static contracts, and wheel build' \
 	  '  make clean          Remove Cargo outputs under target/' '' \
 	  'Builds use the separate hash-locked CPython 3.12.13 Maturin environment; override BUILD_TOOLS_ENV, CARGO, or MATURIN as needed.'
@@ -515,6 +518,20 @@ benchmark-contract-check: parity-inputs ## Validate workload declarations and cu
 
 benchmark-testclient-input-check: parity-inputs ## Validate the focused TestClient benchmark declaration
 	$(PYTHON) -m scripts.benchmarks.testclient_contract --check --workload benchmarks/workloads/testclient/testclient-sync-validated.yaml
+
+benchmark-api-input-check: parity-inputs ## Validate one direct Python API benchmark declaration
+	$(PYTHON) -m scripts.benchmarks.api_contract --check --workload "$(API_BENCHMARK_WORKLOAD)" --fastapi-source "$(FASTAPI_SOURCE)"
+
+benchmark-api: benchmark-api-input-check ## Measure one direct API call using an existing passing parity comparison
+	@test -n "$(API_BENCHMARK_COMPARISON)" || { printf '%s\n' 'set API_BENCHMARK_COMPARISON to the passing parity-results/comparisons/*.json artifact'; exit 2; }
+	$(PYTHON) -m scripts.benchmarks.run_api_workload \
+	  --workload "$(API_BENCHMARK_WORKLOAD)" \
+	  --comparison "$(API_BENCHMARK_COMPARISON)" \
+	  --fastapi-source "$(FASTAPI_SOURCE)" \
+	  --starlette-source "$(STARLETTE_SOURCE)" \
+	  --starlette-rs-source "$(STARLETTE_RS_SOURCE)" \
+	  --oracle-python "$(ORACLE_PYTHON)" \
+	  --target-python "$(TARGET_PYTHON)"
 
 benchmark-first-slice: benchmark-input-check parity-prepare-oracle parity-prepare-target ## Prepare isolated runtimes, gate parity, and measure the selected direct-ASGI workload
 	$(PYTHON) scripts/benchmarks/run_first_slice.py \

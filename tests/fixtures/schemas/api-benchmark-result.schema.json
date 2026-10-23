@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fastapi-rs/python-api-benchmark-result@1",
+  "title": "FastAPI-RS direct public API benchmark result",
+  "type": "object",
+  "required": [
+    "schema",
+    "run_id",
+    "created_at",
+    "workload",
+    "parity_gate",
+    "code",
+    "host",
+    "target_build",
+    "subjects",
+    "ratios",
+    "interpretation"
+  ],
+  "properties": {
+    "schema": {"const": "fastapi-rs/python-api-benchmark-result@1"},
+    "run_id": {"type": "string", "format": "uuid"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "workload": {
+      "type": "object",
+      "required": ["id", "path", "sha256", "input_path", "input_sha256", "case_id", "probe_id", "argument_bundle"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "path": {"type": "string", "pattern": "^benchmarks/workloads/api/.+\\.yaml$"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "input_path": {"type": "string", "pattern": "^tests/fixtures/inputs/parity/.+\\.json$"},
+        "input_sha256": {"$ref": "#/$defs/sha256"},
+        "case_id": {"type": "string", "minLength": 1},
+        "probe_id": {"type": "string", "minLength": 1},
+        "argument_bundle": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "parity_gate": {
+      "type": "object",
+      "required": ["status", "summary", "comparison_artifact", "comparison_sha256", "source_result", "target_result"],
+      "properties": {
+        "status": {"const": "completed"},
+        "summary": {
+          "type": "object",
+          "required": ["selected", "passed", "failed", "not_run"],
+          "properties": {
+            "selected": {"const": 1},
+            "passed": {"const": 1},
+            "failed": {"const": 0},
+            "not_run": {"const": 0}
+          },
+          "additionalProperties": false
+        },
+        "comparison_artifact": {"type": "string", "pattern": "^parity-results/comparisons/.+\\.json$"},
+        "comparison_sha256": {"$ref": "#/$defs/sha256"},
+        "source_result": {"$ref": "#/$defs/resultReference"},
+        "target_result": {"$ref": "#/$defs/resultReference"}
+      },
+      "additionalProperties": false
+    },
+    "code": {
+      "type": "object",
+      "required": ["fastapi_source", "starlette_source", "fastapi_rs_source", "fastapi_rs_tree_sha256", "starlette_rs_source", "target_binary_sha256"],
+      "properties": {
+        "fastapi_source": {"$ref": "#/$defs/gitRevision"},
+        "starlette_source": {"$ref": "#/$defs/gitRevision"},
+        "fastapi_rs_source": {"$ref": "#/$defs/gitRevision"},
+        "fastapi_rs_tree_sha256": {"$ref": "#/$defs/sha256"},
+        "starlette_rs_source": {"$ref": "#/$defs/gitRevision"},
+        "target_binary_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "host": {
+      "type": "object",
+      "required": ["platform", "machine", "processor", "cpu_count"],
+      "properties": {
+        "platform": {"type": "string", "minLength": 1},
+        "machine": {"type": "string", "minLength": 1},
+        "processor": {"type": "string"},
+        "cpu_count": {"type": ["integer", "null"], "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "target_build": {
+      "type": "object",
+      "required": ["cargo_profile", "cargo_features", "rustc", "cargo"],
+      "properties": {
+        "cargo_profile": {"const": "release"},
+        "cargo_features": {"const": ["pyo3/extension-module"]},
+        "rustc": {"type": "string", "minLength": 1},
+        "cargo": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "subjects": {
+      "type": "object",
+      "required": ["fastapi", "fastapi-rs"],
+      "properties": {
+        "fastapi": {"$ref": "#/$defs/subject"},
+        "fastapi-rs": {"$ref": "#/$defs/subject"}
+      },
+      "additionalProperties": false
+    },
+    "ratios": {
+      "type": "object",
+      "required": ["fastapi_rs_over_fastapi_median", "fastapi_rs_over_fastapi_p95"],
+      "properties": {
+        "fastapi_rs_over_fastapi_median": {"type": "number", "exclusiveMinimum": 0},
+        "fastapi_rs_over_fastapi_p95": {"type": "number", "exclusiveMinimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "interpretation": {"const": "Single-machine cold OpenAPI call baseline; not an ASGI or full-suite claim."}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "gitRevision": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "resultReference": {
+      "type": "object",
+      "required": ["path", "sha256", "run_id"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^parity-results/python-api-(?:oracle|target)/.+\\.json$"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "run_id": {"type": "string", "format": "uuid"}
+      },
+      "additionalProperties": false
+    },
+    "python": {
+      "type": "object",
+      "required": ["implementation", "version"],
+      "properties": {
+        "implementation": {"const": "CPython"},
+        "version": {"type": "string", "pattern": "^3\\.12\\.[0-9]+$"}
+      },
+      "additionalProperties": false
+    },
+    "platform": {
+      "type": "object",
+      "required": ["system", "release", "machine"],
+      "properties": {
+        "system": {"type": "string", "minLength": 1},
+        "release": {"type": "string", "minLength": 1},
+        "machine": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "sourceIdentity": {
+      "type": "object",
+      "required": ["distribution", "version", "python", "platform", "fastapi_source", "starlette_source", "packages"],
+      "properties": {
+        "distribution": {"const": "fastapi"},
+        "version": {"type": "string", "minLength": 1},
+        "python": {"$ref": "#/$defs/python"},
+        "platform": {"$ref": "#/$defs/platform"},
+        "fastapi_source": {"$ref": "#/$defs/gitRevision"},
+        "starlette_source": {"$ref": "#/$defs/gitRevision"},
+        "packages": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "string", "minLength": 1}}
+      },
+      "additionalProperties": false
+    },
+    "targetIdentity": {
+      "type": "object",
+      "required": ["distribution", "version", "python", "platform", "target_revision", "source_tree_sha256", "target_binary_sha256", "starlette_rs_source", "packages"],
+      "properties": {
+        "distribution": {"const": "fastapi-rs"},
+        "version": {"type": "string", "minLength": 1},
+        "python": {"$ref": "#/$defs/python"},
+        "platform": {"$ref": "#/$defs/platform"},
+        "target_revision": {"$ref": "#/$defs/gitRevision"},
+        "source_tree_sha256": {"$ref": "#/$defs/sha256"},
+        "target_binary_sha256": {"$ref": "#/$defs/sha256"},
+        "starlette_rs_source": {"$ref": "#/$defs/gitRevision"},
+        "packages": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "string", "minLength": 1}}
+      },
+      "additionalProperties": false
+    },
+    "latency": {
+      "type": "object",
+      "required": ["min", "median", "p95", "p99", "max", "mean"],
+      "properties": {
+        "min": {"type": "integer", "minimum": 1},
+        "median": {"type": "integer", "minimum": 1},
+        "p95": {"type": "integer", "minimum": 1},
+        "p99": {"type": "integer", "minimum": 1},
+        "max": {"type": "integer", "minimum": 1},
+        "mean": {"type": "number", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "subject": {
+      "type": "object",
+      "required": ["identity", "sample_count", "warmup_count", "rounds", "samples_per_round", "latency_ns", "raw_latency_ns", "untimed_observation_sha256"],
+      "properties": {
+        "identity": {"oneOf": [{"$ref": "#/$defs/sourceIdentity"}, {"$ref": "#/$defs/targetIdentity"}]},
+        "sample_count": {"type": "integer", "minimum": 1},
+        "warmup_count": {"type": "integer", "minimum": 1},
+        "rounds": {"type": "integer", "minimum": 1},
+        "samples_per_round": {"type": "integer", "minimum": 1},
+        "latency_ns": {"$ref": "#/$defs/latency"},
+        "raw_latency_ns": {"type": "array", "minItems": 1, "items": {"type": "integer", "minimum": 1}},
+        "untimed_observation_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

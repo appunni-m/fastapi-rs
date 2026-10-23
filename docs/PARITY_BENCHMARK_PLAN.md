@@ -257,6 +257,23 @@ workload/result contract and stays outside the fixed direct-ASGI suite. A plain
 Starlette route cannot execute the FastAPI validation and dependency work in
 this scenario, so results compare FastAPI 0.157.0 with FastAPI-RS only.
 
+### Direct API OpenAPI lane
+
+`benchmarks/workloads/api/openapi-dependency-graph-20x101.yaml` measures cold
+`FastAPI.openapi()` generation for the same 20-route, 101-level dependency
+graph used by the focused parity case. App and route construction stay outside
+the timer; clearing `openapi_schema` and calling the public method are inside.
+The runner performs an untimed observation check, then records five warmups
+and 100 timed calls per subject in isolated source and target processes.
+
+Run `make benchmark-api API_BENCHMARK_COMPARISON=parity-results/comparisons/<passing-receipt>.json`
+after preparing the pinned oracle and target environments. This command
+consumes that existing one-case parity receipt and checks its input, fixture
+workload, manifest, source snapshot, and target binary identities; it does not
+rerun parity. It accepts later tooling-only commits when the parity-tested
+runtime sources and native binary are unchanged. The output is an ignored
+`benchmark-results/api/` receipt and does not claim ASGI or full-suite latency.
+
 The repeated-sequence-query lane is also executable after its three-action
 identity-checked workflow passes. Run
 `make benchmark-first-slice BENCHMARK_WORKLOAD=benchmarks/workloads/repeated-sequence-query-asgi.yaml`
