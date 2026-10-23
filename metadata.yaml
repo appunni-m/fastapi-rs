@@ -9094,6 +9094,22 @@ reviewed_api_contract_overlay:
           case_id: fastapi.router.include-context.openapi-cache-after-nested-live-route
           workload_path: tests/fixtures/workloads/router_openapi_cache_after_include.py
           observation_selectors: [http.status, http.body.bytes, openapi.document, openapi.paths]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-mutation-after-cache
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-reassignment-after-cache
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-deletion-after-cache
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-route-change-refreshes-cache
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json, openapi.document]
       feature_ids: [openapi-docs]
       observation_selectors: [http.status, http.body.json, openapi.document, openapi.paths, openapi.request_schema, warnings.category_message]
       supported_slice: >-
@@ -9149,7 +9165,10 @@ reviewed_api_contract_overlay:
         unchanged. A same-ID path/webhook pair emits the pinned duplicate
         operation warning while retaining each operation in its separate map.
         The separate-schema cases compare the constructor setting for ordinary
-        and computed-field response models.
+        and computed-field response models. Constructor `openapi_tags` mutation
+        and reassignment preserve the cached schema while route version is
+        unchanged; adding a route invalidates the cache and regenerates the
+        document with the current tag list.
     fastapi.routing.APIRouter.include_router:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::include_router
       source_evidence:
@@ -24830,20 +24849,38 @@ reviewed_api_contract_overlay:
           case_id: fastapi.applications.constructor.openapi-tags-invalid-value
           workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-mutation-after-cache
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-reassignment-after-cache
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-deletion-after-cache
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+          case_id: fastapi.applications.constructor.openapi-tags-route-change-refreshes-cache
+          workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json, openapi.document]
       feature_ids: [openapi-docs]
       observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json, openapi.document]
       supported_slice: >-
         The constructor stores the documented `openapi_tags` value on the app.
         Inputs compare an omitted default, explicit None, an empty list, mutation
         of the original list after construction, reassignment after deletion, attribute
-        deletion, OpenAPI access after deletion, invalid non-list metadata, and
-        generated top-level tags including nested external documentation.
+        deletion, OpenAPI access after deletion, mutation/reassignment/deletion
+        after schema caching, route-driven cache refresh, invalid non-list
+        metadata, and generated top-level tags including nested external
+        documentation.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::openapi_tags
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Repeated deletion, malformed individual Tag fields, non-list iterable values, custom mutable containers, and mutation after a cached OpenAPI schema has been generated remain unverified.
+          - Repeated deletion, malformed individual Tag fields, non-list iterable values, and custom mutable containers remain unverified.
 
     fastapi.applications.FastAPI.root_path:
       source_evidence:

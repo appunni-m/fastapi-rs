@@ -168,3 +168,70 @@ cases:
   - {path: tests/test_tutorial/test_metadata/test_tutorial004.py, kind: upstream_test}
   - {path: docs_src/metadata/tutorial004_py310.py, kind: upstream_documentation}
   - {path: docs/en/docs/tutorial/metadata.md, kind: upstream_documentation}
+- case_id: fastapi.applications.constructor.openapi-tags-mutation-after-cache
+  factory_input:
+    tags: [{name: original, description: Original tag}]
+    cache_mutation: {kind: append, tag: {name: appended, description: Added after schema caching}}
+  construction_observation: {kind: construction, selectors: [outcome, exception_class, exception_message], comparison: exact}
+  actions:
+  - action_id: observe-cached-tag-mutation
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /configured-tags, query_string: '', root_path: '', headers: [[host, testserver]], client: [127.0.0.1, 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/metadata.md, kind: upstream_documentation}
+  - {path: docs/en/docs/how-to/extending-openapi.md, kind: upstream_documentation}
+- case_id: fastapi.applications.constructor.openapi-tags-reassignment-after-cache
+  factory_input:
+    tags: [{name: original, description: Original tag}]
+    cache_mutation: {kind: replace, tags: [{name: replacement, description: Replacement tag}]}
+  construction_observation: {kind: construction, selectors: [outcome, exception_class, exception_message], comparison: exact}
+  actions:
+  - action_id: observe-cached-tag-reassignment
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /configured-tags, query_string: '', root_path: '', headers: [[host, testserver]], client: [127.0.0.1, 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/metadata.md, kind: upstream_documentation}
+  - {path: docs/en/docs/how-to/extending-openapi.md, kind: upstream_documentation}
+- case_id: fastapi.applications.constructor.openapi-tags-deletion-after-cache
+  factory_input:
+    tags: [{name: original, description: Original tag}]
+    cache_mutation: {kind: delete}
+  construction_observation: {kind: construction, selectors: [outcome, exception_class, exception_message], comparison: exact}
+  actions:
+  - action_id: observe-cached-tag-deletion
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /configured-tags, query_string: '', root_path: '', headers: [[host, testserver]], client: [127.0.0.1, 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/metadata.md, kind: upstream_documentation}
+  - {path: docs/en/docs/how-to/extending-openapi.md, kind: upstream_documentation}
+- case_id: fastapi.applications.constructor.openapi-tags-route-change-refreshes-cache
+  factory_input:
+    tags: [{name: original, description: Original tag}]
+    cache_mutation: {kind: append-and-add-route, tag: {name: appended, description: Added before route invalidation}}
+  construction_observation: {kind: construction, selectors: [outcome, exception_class, exception_message], comparison: exact}
+  actions:
+  - action_id: observe-cache-invalidation-state
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /configured-tags, query_string: '', root_path: '', headers: [[host, testserver]], client: [127.0.0.1, 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations: [{kind: http_response, selectors: [status, body], comparison: exact}]
+  - action_id: observe-regenerated-openapi-document
+    kind: http_request
+    scope: {type: http, asgi: {version: '3.0', spec_version: '2.4'}, http_version: '1.1', method: GET, scheme: http, path: /openapi.json, query_string: '', root_path: '', headers: [[host, testserver]], client: [127.0.0.1, 123], server: [testserver, 80]}
+    receive_events: [{type: http.request, body: '', more_body: false}]
+    observations:
+    - {kind: http_response, selectors: [status], comparison: exact}
+    - {kind: openapi, json_pointers: [/tags, /paths], comparison: exact}
+  source_evidence:
+  - {path: tests/test_router_include_context.py, kind: upstream_test}
+  - {path: docs/en/docs/tutorial/metadata.md, kind: upstream_documentation}
+  - {path: docs/en/docs/how-to/extending-openapi.md, kind: upstream_documentation}

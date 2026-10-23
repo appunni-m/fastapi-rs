@@ -523,7 +523,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@11
-    sha256: 9a9ae6a55bab69286ba3b0dceef574145c61636a240a6a81e2e9bebb4308faf2
+    sha256: 75861f6e0487fec3a899f9716da2884ed43a8da926775c68f78d0ad6f0659bba
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1831
@@ -563,7 +563,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@2
-    sha256: 684d862531866b4dc90f80928a67457f47e51bfc0e82f882fa10d1b0a19c188b
+    sha256: d1ae1ccba3a4c8a338d8d7d6c8cbe5041be72ae62407aff29676e82189450548
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 913
@@ -600,14 +600,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@11
-    sha256: 791709faa971d7ac7282a4c5da1a226fe18e5c6d2900a56c5e956648bf43ae43
+    sha256: 2651c4e235817c7ac239ba73f57b948301f291eb93ad043e8cdfa7ad63d22caf
     schema_path: tests/fixtures/schemas/materialized-input-index-v11.schema.json
     schema_sha256: 61ec8ca935acdac54c98e148d48e90879bc3d3cfe68315db856332ef55a38bf9
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 739
-      cases: 3115
-      partial_source_mappings: 2018
+      cases: 3119
+      partial_source_mappings: 2020
 
 contract_metadata:
   aliases:
@@ -1476,7 +1476,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 14
     symbols_with_direct_api_input_workflow_refs: 196
     symbols_with_operation_fixture_refs: 490
-    operation_fixture_refs: 3037
+    operation_fixture_refs: 3045
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -12260,11 +12260,11 @@ api_surface_contract:
       - openapi.paths
     - workflow_id: constructor-openapi-tags
       input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
-      input_sha256: 0f350f3e030df6873253b8c91c1357c1e9f5d77e33ae287cdf5ca3a6560e9ff4
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
       recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
-      recipe_sha256: bd29d3759189ac5284a38c6833aa781eeceb841c6a3e24cd6ee0dc7bcf113ea1
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
       workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
-      workload_sha256: 71750e921a34f122394b07d413265322e49a2f47d52f7f3f38a8a2c75ce0a7db
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
       case_id: fastapi.applications.constructor.openapi-tags
       observation_selectors:
       - construction.exception_class
@@ -20917,6 +20917,65 @@ api_surface_contract:
       - http.status
       - openapi.document
       - openapi.paths
+    - workflow_id: constructor-openapi-tags
+      input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
+      recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
+      workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
+      case_id: fastapi.applications.constructor.openapi-tags-mutation-after-cache
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: constructor-openapi-tags
+      input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
+      recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
+      workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
+      case_id: fastapi.applications.constructor.openapi-tags-reassignment-after-cache
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: constructor-openapi-tags
+      input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
+      recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
+      workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
+      case_id: fastapi.applications.constructor.openapi-tags-deletion-after-cache
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: constructor-openapi-tags
+      input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
+      recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
+      workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
+      case_id: fastapi.applications.constructor.openapi-tags-route-change-refreshes-cache
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
     identity_workflow_refs: []
     feature_ids:
     - app-routing
@@ -21111,11 +21170,11 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: constructor-openapi-tags
       input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
-      input_sha256: 0f350f3e030df6873253b8c91c1357c1e9f5d77e33ae287cdf5ca3a6560e9ff4
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
       recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
-      recipe_sha256: bd29d3759189ac5284a38c6833aa781eeceb841c6a3e24cd6ee0dc7bcf113ea1
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
       workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
-      workload_sha256: 71750e921a34f122394b07d413265322e49a2f47d52f7f3f38a8a2c75ce0a7db
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
       case_id: fastapi.applications.constructor.openapi-tags
       observation_selectors:
       - construction.exception_class
@@ -21127,11 +21186,11 @@ api_surface_contract:
       - openapi.document
     - workflow_id: constructor-openapi-tags
       input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
-      input_sha256: 0f350f3e030df6873253b8c91c1357c1e9f5d77e33ae287cdf5ca3a6560e9ff4
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
       recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
-      recipe_sha256: bd29d3759189ac5284a38c6833aa781eeceb841c6a3e24cd6ee0dc7bcf113ea1
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
       workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
-      workload_sha256: 71750e921a34f122394b07d413265322e49a2f47d52f7f3f38a8a2c75ce0a7db
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
       case_id: fastapi.applications.constructor.openapi-tags-default-none
       observation_selectors:
       - construction.exception_class
@@ -21141,11 +21200,11 @@ api_surface_contract:
       - http.status
     - workflow_id: constructor-openapi-tags
       input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
-      input_sha256: 0f350f3e030df6873253b8c91c1357c1e9f5d77e33ae287cdf5ca3a6560e9ff4
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
       recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
-      recipe_sha256: bd29d3759189ac5284a38c6833aa781eeceb841c6a3e24cd6ee0dc7bcf113ea1
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
       workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
-      workload_sha256: 71750e921a34f122394b07d413265322e49a2f47d52f7f3f38a8a2c75ce0a7db
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
       case_id: fastapi.applications.constructor.openapi-tags-default-omitted
       observation_selectors:
       - construction.exception_class
@@ -21155,11 +21214,11 @@ api_surface_contract:
       - http.status
     - workflow_id: constructor-openapi-tags
       input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
-      input_sha256: 0f350f3e030df6873253b8c91c1357c1e9f5d77e33ae287cdf5ca3a6560e9ff4
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
       recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
-      recipe_sha256: bd29d3759189ac5284a38c6833aa781eeceb841c6a3e24cd6ee0dc7bcf113ea1
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
       workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
-      workload_sha256: 71750e921a34f122394b07d413265322e49a2f47d52f7f3f38a8a2c75ce0a7db
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
       case_id: fastapi.applications.constructor.openapi-tags-empty-list
       observation_selectors:
       - construction.exception_class
@@ -21169,11 +21228,11 @@ api_surface_contract:
       - http.status
     - workflow_id: constructor-openapi-tags
       input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
-      input_sha256: 0f350f3e030df6873253b8c91c1357c1e9f5d77e33ae287cdf5ca3a6560e9ff4
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
       recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
-      recipe_sha256: bd29d3759189ac5284a38c6833aa781eeceb841c6a3e24cd6ee0dc7bcf113ea1
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
       workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
-      workload_sha256: 71750e921a34f122394b07d413265322e49a2f47d52f7f3f38a8a2c75ce0a7db
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
       case_id: fastapi.applications.constructor.openapi-tags-mutated-input
       observation_selectors:
       - construction.exception_class
@@ -21183,11 +21242,11 @@ api_surface_contract:
       - http.status
     - workflow_id: constructor-openapi-tags
       input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
-      input_sha256: 0f350f3e030df6873253b8c91c1357c1e9f5d77e33ae287cdf5ca3a6560e9ff4
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
       recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
-      recipe_sha256: bd29d3759189ac5284a38c6833aa781eeceb841c6a3e24cd6ee0dc7bcf113ea1
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
       workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
-      workload_sha256: 71750e921a34f122394b07d413265322e49a2f47d52f7f3f38a8a2c75ce0a7db
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
       case_id: fastapi.applications.constructor.openapi-tags-reassignment-after-deletion
       observation_selectors:
       - construction.exception_class
@@ -21197,11 +21256,11 @@ api_surface_contract:
       - http.status
     - workflow_id: constructor-openapi-tags
       input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
-      input_sha256: 0f350f3e030df6873253b8c91c1357c1e9f5d77e33ae287cdf5ca3a6560e9ff4
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
       recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
-      recipe_sha256: bd29d3759189ac5284a38c6833aa781eeceb841c6a3e24cd6ee0dc7bcf113ea1
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
       workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
-      workload_sha256: 71750e921a34f122394b07d413265322e49a2f47d52f7f3f38a8a2c75ce0a7db
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
       case_id: fastapi.applications.constructor.openapi-tags-deletion-hides-attribute
       observation_selectors:
       - construction.exception_class
@@ -21211,11 +21270,11 @@ api_surface_contract:
       - http.status
     - workflow_id: constructor-openapi-tags
       input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
-      input_sha256: 0f350f3e030df6873253b8c91c1357c1e9f5d77e33ae287cdf5ca3a6560e9ff4
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
       recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
-      recipe_sha256: bd29d3759189ac5284a38c6833aa781eeceb841c6a3e24cd6ee0dc7bcf113ea1
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
       workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
-      workload_sha256: 71750e921a34f122394b07d413265322e49a2f47d52f7f3f38a8a2c75ce0a7db
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
       case_id: fastapi.applications.constructor.openapi-tags-deletion-openapi-error
       observation_selectors:
       - construction.exception_class
@@ -21223,16 +21282,75 @@ api_surface_contract:
       - construction.outcome
     - workflow_id: constructor-openapi-tags
       input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
-      input_sha256: 0f350f3e030df6873253b8c91c1357c1e9f5d77e33ae287cdf5ca3a6560e9ff4
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
       recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
-      recipe_sha256: bd29d3759189ac5284a38c6833aa781eeceb841c6a3e24cd6ee0dc7bcf113ea1
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
       workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
-      workload_sha256: 71750e921a34f122394b07d413265322e49a2f47d52f7f3f38a8a2c75ce0a7db
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
       case_id: fastapi.applications.constructor.openapi-tags-invalid-value
       observation_selectors:
       - construction.exception_class
       - construction.exception_message
       - construction.outcome
+    - workflow_id: constructor-openapi-tags
+      input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
+      recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
+      workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
+      case_id: fastapi.applications.constructor.openapi-tags-mutation-after-cache
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: constructor-openapi-tags
+      input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
+      recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
+      workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
+      case_id: fastapi.applications.constructor.openapi-tags-reassignment-after-cache
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: constructor-openapi-tags
+      input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
+      recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
+      workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
+      case_id: fastapi.applications.constructor.openapi-tags-deletion-after-cache
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+    - workflow_id: constructor-openapi-tags
+      input_path: tests/fixtures/inputs/parity/constructor-openapi-tags.json
+      input_sha256: 3f8cd4d607e96eac0884d76124eb236f22675c99a952b5c51d0436301fcfedcc
+      recipe_path: tests/fixtures/input-recipes/parity/constructor-openapi-tags.yaml
+      recipe_sha256: 98fbc6ac34c64e0a65cf2e67a1308dc48ea52e1a4e2b67587df0225ff4c3314e
+      workload_path: tests/fixtures/workloads/constructor_openapi_tags.py
+      workload_sha256: 22404bd0e516186d89ca58f4a8d7132e07509e4d013a3871fe7099d1f74c3e03
+      case_id: fastapi.applications.constructor.openapi-tags-route-change-refreshes-cache
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - docs.response.status
+      - http.body.bytes
+      - http.status
+      - openapi.document
+      - openapi.paths
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -21262,8 +21380,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::openapi_tags
       known_gaps:
-      - Repeated deletion, malformed individual Tag fields, non-list iterable values, custom mutable containers,
-        and mutation after a cached OpenAPI schema has been generated remain unverified.
+      - Repeated deletion, malformed individual Tag fields, non-list iterable values, and custom mutable
+        containers remain unverified.
   - id: fastapi.applications.FastAPI.openapi_url
     kind: field
     source_candidate_ref: /api_candidates/217

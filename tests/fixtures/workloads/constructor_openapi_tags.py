@@ -29,12 +29,38 @@ def create_app(factory_input: dict[str, Any], _event_trace: list[str]) -> FastAP
 
     @app.get("/configured-tags", include_in_schema=False)
     async def configured_tags():
+        if "cache_mutation" in factory_input:
+            schema = app.openapi()
+            result = {
+                "attribute_exists": hasattr(app, "openapi_tags"),
+                "schema_tags": schema.get("tags"),
+                "schema_paths": sorted(schema.get("paths", {})),
+            }
+            if hasattr(app, "openapi_tags"):
+                result["attribute"] = app.openapi_tags
+            return result
         if "delete_openapi_tags" in factory_input and "replacement_tags" not in factory_input:
             return {"attribute_exists": hasattr(app, "openapi_tags")}
         return {
             "attribute": app.openapi_tags,
             "schema_tags": app.openapi().get("tags"),
         }
+
+    if "cache_mutation" in factory_input:
+        app.openapi()
+        mutation = factory_input["cache_mutation"]
+        if mutation["kind"] == "append":
+            tags.append(mutation["tag"])
+        elif mutation["kind"] == "replace":
+            app.openapi_tags = mutation["tags"]
+        elif mutation["kind"] == "delete":
+            del app.openapi_tags
+        elif mutation["kind"] == "append-and-add-route":
+            tags.append(mutation["tag"])
+
+            @app.get("/late-route", tags=["late"])
+            async def late_route():
+                return {"name": "late"}
 
     if factory_input.get("generate_openapi_at_construction", False):
         app.openapi()
