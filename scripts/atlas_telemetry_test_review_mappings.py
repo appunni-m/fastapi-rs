@@ -28,9 +28,7 @@ SOURCE_IDENTITIES = {
     "pydantic": {"version": "2.13.5", "role": "pinned dependency identity"},
 }
 
-_GLOBAL_PROVIDER_RECIPE = (
-    "tests/fixtures/input-recipes/parity/telemetry-global-provider.yaml"
-)
+_GLOBAL_PROVIDER_RECIPE = "tests/fixtures/input-recipes/parity/telemetry-global-provider.yaml"
 _TRACEPARENT_RECIPE = "tests/fixtures/input-recipes/parity/telemetry-traceparent.yaml"
 
 __all__ = [

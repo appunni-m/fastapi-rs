@@ -510576,6 +510576,12 @@
             "app-routing",
             "telemetry"
           ],
+          "function_source_ref": {
+            "end_line": 121,
+            "line": 94,
+            "path": "tests/test_telemetry/test_http.py",
+            "sha256": "33be537d75f26a4273341d6e99fee5bfe29dc3f7c5eb130b8c27bcff774de66e"
+          },
           "id": "fastapi.test.test-telemetry-test-http.test-propagation-headers",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -510729,7 +510735,25 @@
             "Construct an app or router through the public FastAPI API, register the feature's route configuration, and make the documented request or route inspection.",
             "Configure FastAPI telemetry with an isolated provider, send a direct ASGI request, and inspect completed server spans and the observed incoming parent context."
           ],
-          "stimulus_design_notes": null
+          "stimulus_design_notes": null,
+          "workflow_cases": [
+            {
+              "action_ids": [
+                "root-request"
+              ],
+              "case_id": "fastapi.telemetry.traceparent-parent-context-root",
+              "observation_selectors": [
+                "telemetry.server_span_parent_context"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-traceparent.yaml",
+              "reviewed_selectors": [
+                "telemetry.server_span_parent_context"
+              ],
+              "selector_source_field": "observation_selectors",
+              "unresolved_observation_selectors": [],
+              "workflow_id": "telemetry-traceparent"
+            }
+          ]
         },
         {
           "feature_evidence": [
@@ -510763,6 +510787,12 @@
             "status-codes",
             "telemetry"
           ],
+          "function_source_ref": {
+            "end_line": 672,
+            "line": 642,
+            "path": "tests/test_telemetry/test_http.py",
+            "sha256": "33be537d75f26a4273341d6e99fee5bfe29dc3f7c5eb130b8c27bcff774de66e"
+          },
           "id": "fastapi.test.test-telemetry-test-http.test-late-global-providers-enable-existing-app",
           "mapping_scope": "reviewed_source_mapping",
           "mapping_status": "contract_gated_source_candidate",
@@ -510937,7 +510967,25 @@
             "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status.",
             "Configure FastAPI telemetry with an isolated provider, send a direct ASGI request, and inspect completed server spans and the observed incoming parent context."
           ],
-          "stimulus_design_notes": null
+          "stimulus_design_notes": null,
+          "workflow_cases": [
+            {
+              "action_ids": [
+                "root-request"
+              ],
+              "case_id": "fastapi.telemetry.global-tracer-provider-late-binding",
+              "observation_selectors": [
+                "telemetry.server_spans"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-global-provider.yaml",
+              "reviewed_selectors": [
+                "telemetry.server_spans"
+              ],
+              "selector_source_field": "observation_selectors",
+              "unresolved_observation_selectors": [],
+              "workflow_id": "telemetry-global-provider"
+            }
+          ]
         }
       ],
       "feature_ids": [
@@ -510945,6 +510993,7 @@
         "status-codes",
         "telemetry"
       ],
+      "fixture_helper_workflow_dispositions": [],
       "id": "fastapi.test.test-telemetry-test-http",
       "independent_workflow_mappings": [
         {

@@ -3258,7 +3258,8 @@ def validate_compatibility_artifacts(
         source_row: dict[str, Any],
     ) -> None:
         _require(
-            isinstance(workflow_cases, list) and bool(workflow_cases)
+            isinstance(workflow_cases, list)
+            and bool(workflow_cases)
             and inventory_row.get("workflow_cases") == workflow_cases,
             f"case {design.get('id')} reviewed workflow links differ from the atlas inventory",
         )
@@ -3433,9 +3434,7 @@ def validate_compatibility_artifacts(
                 if all(isinstance(value, str) and value for value in key):
                     mapped_test_functions_by_case.setdefault(key, set()).add(test_name)
 
-        module_source = _source_path(
-            fastapi_source, source_row.get("source_path"), module_context
-        )
+        module_source = _source_path(fastapi_source, source_row.get("source_path"), module_context)
         source_tree = ast.parse(module_source.read_text(encoding="utf-8"))
         source_functions = {
             node.name: node
@@ -3471,9 +3470,7 @@ def validate_compatibility_artifacts(
             _require(
                 isinstance(function_name, str)
                 and function_name not in helper_names
-                and function_name not in {
-                    row.get("name") for row in matched_test_functions
-                }
+                and function_name not in {row.get("name") for row in matched_test_functions}
                 and helper.get("disposition")
                 == "pytest_fixture_infrastructure_not_independent_test"
                 and isinstance(helper.get("reason"), str)
@@ -3550,7 +3547,9 @@ def validate_compatibility_artifacts(
             )
             covered_by_helper: set[str] = set()
             for link_index, link_disposition in enumerate(workflow_dispositions):
-                context = f"{module_context}::{function_name} workflow_case_dispositions[{link_index}]"
+                context = (
+                    f"{module_context}::{function_name} workflow_case_dispositions[{link_index}]"
+                )
                 _require(
                     isinstance(link_disposition, dict)
                     and set(link_disposition) == {"source_mapping", "case_dispositions"},
@@ -3559,12 +3558,13 @@ def validate_compatibility_artifacts(
                 source_mapping = link_disposition.get("source_mapping")
                 _require(
                     isinstance(source_mapping, dict)
-                    and set(source_mapping)
-                    == {"recipe_path", "case_ids", "observation_selectors"}
+                    and set(source_mapping) == {"recipe_path", "case_ids", "observation_selectors"}
                     and isinstance(source_mapping.get("recipe_path"), str)
                     and isinstance(source_mapping.get("case_ids"), list)
                     and bool(source_mapping["case_ids"])
-                    and all(isinstance(value, str) and value for value in source_mapping["case_ids"])
+                    and all(
+                        isinstance(value, str) and value for value in source_mapping["case_ids"]
+                    )
                     and len(source_mapping["case_ids"]) == len(set(source_mapping["case_ids"]))
                     and isinstance(source_mapping.get("observation_selectors"), list)
                     and bool(source_mapping["observation_selectors"])
@@ -3677,6 +3677,7 @@ def validate_compatibility_artifacts(
                 helper.get("covered_by_test_functions") == sorted(covered_by_helper),
                 f"{module_context}::{function_name} test coverage summary differs from cases",
             )
+
     for source_row in coverage_rows:
         if source_row.get("kind") not in FIXTURE_KINDS:
             continue
@@ -3872,9 +3873,7 @@ def validate_compatibility_artifacts(
             matched_test_functions = source_row.get("mapping_evidence", {}).get(
                 "matched_test_functions", []
             )
-            matched_by_case = {
-                row.get("case_id"): row for row in matched_test_functions
-            }
+            matched_by_case = {row.get("case_id"): row for row in matched_test_functions}
             validate_fixture_helper_workflow_dispositions(
                 fixture.get("fixture_helper_workflow_dispositions", []),
                 fixture,
@@ -4636,8 +4635,7 @@ def validate_compatibility_artifacts(
         for link in helper.get("workflow_case_dispositions", [])
     )
     fixture_helper_functions = sum(
-        len(fixture.get("fixture_helper_workflow_dispositions", []))
-        for fixture in fixture_rows
+        len(fixture.get("fixture_helper_workflow_dispositions", [])) for fixture in fixture_rows
     )
     _require(
         atlas.get("counts", {}).get("test_function_workflow_case_links")

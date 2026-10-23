@@ -8038,9 +8038,7 @@ impl FastApiTelemetrySpanState {
             (concat!("fast", "api"), FASTAPI_TELEMETRY_VERSION),
             Some(&tracer_kwargs),
         )?;
-        let headers_type = py
-            .import("starlette.datastructures")?
-            .getattr("Headers")?;
+        let headers_type = py.import("starlette.datastructures")?.getattr("Headers")?;
         let headers_kwargs = PyDict::new(py);
         headers_kwargs.set_item("scope", scope_bound)?;
         let headers = headers_type.call((), Some(&headers_kwargs))?;

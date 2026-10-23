@@ -11250,15 +11250,15 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             ):
                 raise AtlasError(f"{label} must name unique case IDs")
             selector_field = (
-                "observation_selectors"
-                if "observation_selectors" in link
-                else "workflow_selectors"
+                "observation_selectors" if "observation_selectors" in link else "workflow_selectors"
             )
             reviewed_selectors = link.get(selector_field)
             if (
                 not isinstance(reviewed_selectors, list)
                 or not reviewed_selectors
-                or not all(isinstance(selector, str) and selector for selector in reviewed_selectors)
+                or not all(
+                    isinstance(selector, str) and selector for selector in reviewed_selectors
+                )
                 or len(reviewed_selectors) != len(set(reviewed_selectors))
             ):
                 raise AtlasError(f"{label} must retain unique reviewed selector IDs")
@@ -11582,7 +11582,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             if not any(name in {"pytest.fixture", "fixture"} for name in fixture_decorators):
                 continue
             helper_start_line = min(
-                [helper_node.lineno, *(decorator.lineno for decorator in helper_node.decorator_list)]
+                [
+                    helper_node.lineno,
+                    *(decorator.lineno for decorator in helper_node.decorator_list),
+                ]
             )
             helper_source_evidence = reviewed_source_spans(
                 fastapi_root,
@@ -15026,8 +15029,7 @@ def _sync_manifest_artifact_metadata(
                 for disposition in row.get("fixture_helper_workflow_dispositions", [])
             ),
             "fixture_helper_functions_dispositioned": sum(
-                len(row.get("fixture_helper_workflow_dispositions", []))
-                for row in fixture_designs
+                len(row.get("fixture_helper_workflow_dispositions", [])) for row in fixture_designs
             ),
         },
     )

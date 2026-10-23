@@ -1,5 +1,5 @@
 from fastapi_rs._core import (
-    _FastAPIDeprecationWarning as FastAPIDeprecationWarning,
+    FastAPIDeprecationWarning,
     HTTPException,
     RequestValidationError,
     ResponseValidationError,
