@@ -13471,7 +13471,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "priority": 2,
             "id": "complete-starlette-consumption-crosswalk",
             "status": "partial",
-            "acceptance": "Review all 133 direct re-export, subclass, helper, and internal-import edges against pinned Starlette 1.6.0 and Starlette-RS contracts. Resolve private helper paths through exact existing sibling behavior requirements, module paths through digest-backed namespace references, and preserve per-target support states; never add duplicate Starlette API inventory or infer FastAPI-RS parity from ownership links.",
+            "acceptance": "Review every direct re-export, subclass, helper, and internal-import edge against pinned Starlette 1.6.0 and Starlette-RS contracts. Resolve private helper paths through exact existing sibling behavior requirements, module paths through digest-backed namespace references, and preserve per-target support states; never add duplicate Starlette API inventory or infer FastAPI-RS parity from ownership links.",
         },
         {
             "priority": 3,
@@ -13489,7 +13489,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
             "priority": 5,
             "id": "complete-alias-deprecation-error-and-extra-matrix",
             "status": "backlog",
-            "acceptance": "Review alias identity and behavior, exercise source deprecations and warnings, materialize the 42 HTTP/WebSocket/validation error candidates, and verify all three optional-extra profiles across supported Python versions 3.10-3.14.",
+            "acceptance": "Review alias identity and behavior, exercise source deprecations and warnings, classify every in-scope HTTP/WebSocket/validation error and warning candidate with evidence or an explicit exclusion, and verify all three optional-extra profiles across supported Python versions 3.10-3.14.",
         },
         {
             "priority": 6,
