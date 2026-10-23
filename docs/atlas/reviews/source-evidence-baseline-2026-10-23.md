@@ -1,8 +1,8 @@
 # FastAPI 0.157.0 source-evidence and parity snapshot
 
 - Review date: 2026-10-23
-- FastAPI-RS main when this note was refreshed: `dfef39afda7903c2346229842041d7c3afa185e9`
-- FastAPI-RS parity target: `e52fba0708185a312c9dae6b4c6e887fbd39972c`
+- FastAPI-RS main when this note was refreshed: `d032baf2f9e660a7fd15cf11a889d37664671c88`
+- Earlier FastAPI-RS parity target: `e52fba0708185a312c9dae6b4c6e887fbd39972c`
 - Current manifest SHA-256: `4142a1b897968c940574f37b6adbaed346da585437419c710c1e04bcd441fa`
 
 ## Pinned identities
@@ -13,11 +13,13 @@
 - Pydantic 2.13.5, pydantic-core 2.46.5, and CPython 3.12.13.
 
 The identities are declared by the active metadata and source artifacts. The
-current target identity recorded in the focused parity receipts is revision
+retained 13-case receipts below target revision
 `e52fba0708185a312c9dae6b4c6e887fbd39972c`, source-tree SHA-256
 `fe307044aa2938bb7d4bac8b0458fd4deae0813dca3f1948d82f01c52d06d989`, and
 native binary SHA-256
-`40676a3159e985e9564b16ff94204476802a511152082aa3851da4ee855bc274`.
+`40676a3159e985e9564b16ff94204476802a511152082aa3851da4ee855bc274`. The
+later one-case API-contract receipt records the target source digest and binary
+separately.
 
 ## Current atlas and target scope
 
@@ -49,6 +51,20 @@ deprecations include `UJSONResponse` and `ORJSONResponse`. This is source
 evidence, not proof of warning-category or runtime-timing parity.
 
 ## Retained focused parity evidence
+
+The `validation-exception-api-contract` workflow ran only
+`fastapi.validation-exceptions.direct-api-contract` after the private native
+binding change. It matched 1/1 against the current manifest SHA-256
+`4142a1b897968c940574f37b6adbaed346da585437419c710c1e04bcd441fa`; comparison
+receipt `de67ff79-36bc-4d64-9e49-f16eb0eb35aa`, target revision
+`d032baf2f9e660a7fd15cf11a889d37664671c88`, input SHA-256
+`e30709e97ac905953a5992c0dd24d9b037ab1d1929ea9d7400a7255aeffc8570`, target
+source-tree SHA-256
+`0242dc96427a2103c976be7c52dcfa8ce8550c0f00a0967d5e30ead4311e3bee`, and
+native binary SHA-256
+`624582476d957ead9cdee6f0acf17e460cc9d8f2064e63d92f464c5035972638`. The
+workflow used Starlette-RS
+`4139a72449bf5751e8902fb1c7175ee7f191d338`.
 
 The `validation-error-context-exact-review` workflow passed in two selected
 groups against manifest SHA-256
@@ -90,10 +106,9 @@ workload and does not establish broad performance.
 ## Validation boundary
 
 `make compatibility-atlas-update` and `make metadata-check` passed for this
-refresh using the pinned Starlette-RS source commit. These are static atlas,
-fixture-schema, API-contract, and authority checks; they execute no parity
-cases. No behavior or unit tests were rerun because the edit changed only
-backlog wording, generated metadata, and the manifest's atlas digest. The older
-`api-contract-check`, `benchmark-contract-check`, `clippy`, and Rust formatting
-record belongs to the `f84074ce` snapshot and does not replace checks required
-for future relevant changes.
+refresh using the pinned Starlette-RS source commit. `python-facade-check`,
+Rust formatting, and Clippy also passed for the private binding change. The
+single selected API case above ran because that change touched the native
+binding; no other parity cases or unit tests were run. The older
+`benchmark-contract-check` record belongs to the `f84074ce` snapshot and does
+not replace checks required for future relevant changes.

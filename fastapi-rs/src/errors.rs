@@ -740,7 +740,7 @@ pub(crate) fn register(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add("ResponseValidationError", exception_type)?;
     module.add("_FastAPIError", py.get_type::<FastAPIError>())?;
     module.add(
-        "FastAPIDeprecationWarning",
+        "_FastAPIDeprecationWarning",
         py.get_type::<FastAPIDeprecationWarning>(),
     )?;
     module.add(
