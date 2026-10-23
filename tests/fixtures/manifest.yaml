@@ -547,7 +547,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@12
-    sha256: f96b29bf5f95478168ab51c2d6ed18dbdaadd5520a15a9a60240250a8a5d55e6
+    sha256: 650b9aedb259eb6e71deb79ffc7b635eae41a1ecf7543ceb3c1c5d74b05473c1
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1831
@@ -587,7 +587,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@3
-    sha256: d81993499597c90cd8306186e4b6a1652ac7ba83442c56cf52d662f7a96cb827
+    sha256: 081046f67b32fc956ed29d9d770028022deb24ab6750fe58e762d1fc4a7c2d66
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 914
@@ -627,13 +627,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@12
-    sha256: 62a1c0f5d28e60a23d99bb9dd32dcc49c52325a26f33619b8473f7c8af455b3e
+    sha256: ee214b8c701e854c22e061e6417a47219de5cf30439004090236d4af98b674d3
     schema_path: tests/fixtures/schemas/materialized-input-index-v12.schema.json
     schema_sha256: 668c3c0e71c739ab05d23b414f07c4ccfe6227116094891280943a8326e1d77a
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 743
-      cases: 3123
+      cases: 3124
       partial_source_mappings: 2027
 
 contract_metadata:
@@ -1533,7 +1533,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 15
     symbols_with_direct_api_input_workflow_refs: 197
     symbols_with_operation_fixture_refs: 491
-    operation_fixture_refs: 3053
+    operation_fixture_refs: 3054
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -21238,11 +21238,11 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: instance-openapi-schema
       input_path: tests/fixtures/inputs/parity/instance-openapi-schema.json
-      input_sha256: 996a5878cb897ad7a31d62e30689af337c9e2976b66d3a992b225fa225d2bc39
+      input_sha256: 5a62dff04cfc958dac4a8604d3d68a0e425f4629014f0157c7e6d660a258cb37
       recipe_path: tests/fixtures/input-recipes/parity/instance-openapi-schema.yaml
-      recipe_sha256: 9fa815105b30936df279f39fec07b1478e622b68b6e35149e43ae43e3af29a82
+      recipe_sha256: 22fac8a502cd3ac1c7007a7963995723e4cbc4b730e5e274c98f03d1400ecd7a
       workload_path: tests/fixtures/workloads/instance_openapi_schema.py
-      workload_sha256: dbdb89920d5a2aafc44db0445421ed60f7f2161830553dc57a30f810a0690ad6
+      workload_sha256: 0d697b4a86207736e88de0ba3766d23ca07062baccb05887306c7aafe5be0f72
       case_id: fastapi.instance-openapi-schema.mutated-field
       observation_selectors:
       - construction.exception_class
@@ -21251,6 +21251,20 @@ api_surface_contract:
       - docs.response.status
       - http.status
       - openapi.document
+    - workflow_id: instance-openapi-schema
+      input_path: tests/fixtures/inputs/parity/instance-openapi-schema.json
+      input_sha256: 5a62dff04cfc958dac4a8604d3d68a0e425f4629014f0157c7e6d660a258cb37
+      recipe_path: tests/fixtures/input-recipes/parity/instance-openapi-schema.yaml
+      recipe_sha256: 22fac8a502cd3ac1c7007a7963995723e4cbc4b730e5e274c98f03d1400ecd7a
+      workload_path: tests/fixtures/workloads/instance_openapi_schema.py
+      workload_sha256: 0d697b4a86207736e88de0ba3766d23ca07062baccb05887306c7aafe5be0f72
+      case_id: fastapi.instance-openapi-schema.deleted-field
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
     identity_workflow_refs: []
     feature_ids:
     - openapi-docs
@@ -21284,8 +21298,8 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: null
       known_gaps:
-      - The linked input observes one direct cache assignment after generation; callable replacement,
-        other mutations, and error paths remain outside this slice.
+      - Callable replacement and cache mutations beyond direct assignment and deletion remain outside
+        this slice.
   - id: fastapi.applications.FastAPI.openapi_tags
     kind: field
     source_candidate_ref: /api_candidates/216

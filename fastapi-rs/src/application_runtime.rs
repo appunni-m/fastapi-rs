@@ -2353,6 +2353,25 @@ impl PyFastApiProxyPropertyDescriptor {
             state.contact_is_set = false;
             return Ok(());
         }
+        if self.member == "openapi_schema" {
+            let state = state.extract::<PyRefMut<'_, PyFastApi>>()?;
+            let retired = {
+                let mut cache = state
+                    .openapi_cache
+                    .lock()
+                    .map_err(|_| PyRuntimeError::new_err("OpenAPI schema cache is unavailable"))?;
+                if !cache.schema_is_set {
+                    return Err(PyAttributeError::new_err(
+                        "'FastAPI' object has no attribute 'openapi_schema'",
+                    ));
+                }
+                cache.schema_is_set = false;
+                cache.routes_version = None;
+                std::mem::replace(&mut cache.schema, instance.py().None())
+            };
+            drop(retired);
+            return Ok(());
+        }
         if self.member == "openapi_tags" {
             let mut state = state.extract::<PyRefMut<'_, PyFastApi>>()?;
             if !state.openapi_tags_is_set {
@@ -4890,6 +4909,7 @@ fn openapi_request_schema_annotation(
 
 struct OpenApiCache {
     schema: Py<PyAny>,
+    schema_is_set: bool,
     routes_version: Option<u64>,
 }
 
@@ -5804,6 +5824,7 @@ impl PyFastApi {
             routes_version: AtomicU64::new(0),
             openapi_cache: Mutex::new(OpenApiCache {
                 schema: py.None(),
+                schema_is_set: true,
                 routes_version: None,
             }),
             mounted_routes: Vec::new(),
@@ -6094,18 +6115,26 @@ impl PyFastApi {
 
     #[getter]
     fn openapi_schema(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        self.openapi_cache
+        let cache = self
+            .openapi_cache
             .lock()
-            .map(|cache| cache.schema.clone_ref(py))
-            .map_err(|_| PyRuntimeError::new_err("OpenAPI schema cache is unavailable"))
+            .map_err(|_| PyRuntimeError::new_err("OpenAPI schema cache is unavailable"))?;
+        if !cache.schema_is_set {
+            return Err(PyAttributeError::new_err(
+                "'FastAPI' object has no attribute 'openapi_schema'",
+            ));
+        }
+        Ok(cache.schema.clone_ref(py))
     }
 
     #[setter]
     fn set_openapi_schema(&self, schema: Py<PyAny>) -> PyResult<()> {
-        self.openapi_cache
+        let mut cache = self
+            .openapi_cache
             .lock()
-            .map_err(|_| PyRuntimeError::new_err("OpenAPI schema cache is unavailable"))?
-            .schema = schema;
+            .map_err(|_| PyRuntimeError::new_err("OpenAPI schema cache is unavailable"))?;
+        cache.schema = schema;
+        cache.schema_is_set = true;
         Ok(())
     }
 
@@ -7244,6 +7273,11 @@ impl PyFastApi {
                 .openapi_cache
                 .lock()
                 .map_err(|_| PyRuntimeError::new_err("OpenAPI schema cache is unavailable"))?;
+            if !cache.schema_is_set {
+                return Err(PyAttributeError::new_err(
+                    "'FastAPI' object has no attribute 'openapi_schema'",
+                ));
+            }
             (
                 app.routes_version.load(Ordering::Relaxed),
                 cache.schema.clone_ref(py),
@@ -7268,6 +7302,7 @@ impl PyFastApi {
                 .lock()
                 .map_err(|_| PyRuntimeError::new_err("OpenAPI schema cache is unavailable"))?;
             let retired = std::mem::replace(&mut cache.schema, schema.clone_ref(py));
+            cache.schema_is_set = true;
             cache.routes_version = Some(routes_version);
             retired
         };

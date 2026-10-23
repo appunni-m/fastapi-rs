@@ -15042,17 +15042,25 @@
     {
       "id": "instance-openapi-schema",
       "input_path": "tests/fixtures/inputs/parity/instance-openapi-schema.json",
-      "input_sha256": "996a5878cb897ad7a31d62e30689af337c9e2976b66d3a992b225fa225d2bc39",
+      "input_sha256": "5a62dff04cfc958dac4a8604d3d68a0e425f4629014f0157c7e6d660a258cb37",
       "recipe_path": "tests/fixtures/input-recipes/parity/instance-openapi-schema.yaml",
-      "recipe_sha256": "9fa815105b30936df279f39fec07b1478e622b68b6e35149e43ae43e3af29a82",
+      "recipe_sha256": "22fac8a502cd3ac1c7007a7963995723e4cbc4b730e5e274c98f03d1400ecd7a",
       "case_ids": [
-        "fastapi.instance-openapi-schema.mutated-field"
+        "fastapi.instance-openapi-schema.mutated-field",
+        "fastapi.instance-openapi-schema.deleted-field"
       ],
       "workload_path": "tests/fixtures/workloads/instance_openapi_schema.py",
-      "workload_sha256": "dbdb89920d5a2aafc44db0445421ed60f7f2161830553dc57a30f810a0690ad6",
+      "workload_sha256": "0d697b4a86207736e88de0ba3766d23ca07062baccb05887306c7aafe5be0f72",
       "case_contracts": [
         {
           "case_id": "fastapi.instance-openapi-schema.mutated-field",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:how-to/extending-openapi.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.instance-openapi-schema.deleted-field",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:how-to/extending-openapi.md"
@@ -59461,8 +59469,9 @@
       "fixture_id": "fastapi.docs.how-to-extending-openapi",
       "workflow_id": "instance-openapi-schema",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.body.bytes, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.instance-openapi-schema.deleted-field",
         "fastapi.instance-openapi-schema.mutated-field"
       ],
       "observation_selectors": [
@@ -59470,6 +59479,7 @@
         "construction.exception_message",
         "construction.outcome",
         "docs.response.status",
+        "http.body.bytes",
         "http.status",
         "openapi.document"
       ]
