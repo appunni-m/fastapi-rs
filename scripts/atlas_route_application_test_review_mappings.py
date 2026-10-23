@@ -88,11 +88,12 @@ def _mapping(
     contract_gate: str,
     feature_ids: list[str] | None = None,
     supporting_sources: tuple[dict[str, Any], ...] = (),
+    direct_workflow_case: bool = False,
 ) -> dict[str, Any]:
     selectors = sorted(
         {selector for workflow in workflows for selector in workflow["observation_selectors"]}
     )
-    return {
+    mapping = {
         "mapping_status": "reviewed_partial",
         "feature_ids": list(feature_ids or ["app-routing"]),
         "observation_selectors": selectors,
@@ -109,6 +110,9 @@ def _mapping(
             *supporting_sources,
         ],
     }
+    if direct_workflow_case:
+        mapping["direct_workflow_case"] = True
+    return mapping
 
 
 def _exclusion(
@@ -369,6 +373,7 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                         "contract."
                     ),
                     supporting_sources=(_EXTRA_ROUTES_SETUP,),
+                    direct_workflow_case=True,
                 ),
                 "test_get_api_route_not_decorated": _mapping(
                     "tests/test_extra_routes.py",
@@ -390,6 +395,7 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                         "bytes. Generic path matching and Response behavior remain Starlette-owned."
                     ),
                     supporting_sources=(_EXTRA_ROUTES_SETUP,),
+                    direct_workflow_case=True,
                 ),
                 "test_delete": _mapping(
                     "tests/test_extra_routes.py",
@@ -412,6 +418,7 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                         "behaviors. The source parses JSON while the workflow compares raw bytes."
                     ),
                     supporting_sources=(_EXTRA_ROUTES_SETUP,),
+                    direct_workflow_case=True,
                 ),
                 "test_head": _mapping(
                     "tests/test_extra_routes.py",
@@ -434,6 +441,7 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                         "belong to Starlette 1.6.0."
                     ),
                     supporting_sources=(_EXTRA_ROUTES_SETUP,),
+                    direct_workflow_case=True,
                 ),
                 "test_options": _mapping(
                     "tests/test_extra_routes.py",
@@ -456,6 +464,7 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                         "by the Starlette contract."
                     ),
                     supporting_sources=(_EXTRA_ROUTES_SETUP,),
+                    direct_workflow_case=True,
                 ),
                 "test_patch": _mapping(
                     "tests/test_extra_routes.py",
@@ -478,6 +487,7 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                         "behaviors. The source parses JSON while the workflow compares raw bytes."
                     ),
                     supporting_sources=(_EXTRA_ROUTES_SETUP,),
+                    direct_workflow_case=True,
                 ),
                 "test_trace": _mapping(
                     "tests/test_extra_routes.py",
@@ -500,6 +510,7 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                         "Starlette-owned."
                     ),
                     supporting_sources=(_EXTRA_ROUTES_SETUP,),
+                    direct_workflow_case=True,
                 ),
                 "test_openapi_schema": _mapping(
                     "tests/test_extra_routes.py",
@@ -522,6 +533,7 @@ ROUTE_APPLICATION_TEST_SOURCE_REVIEW = {
                     ),
                     feature_ids=["openapi-docs"],
                     supporting_sources=(_EXTRA_ROUTES_SETUP,),
+                    direct_workflow_case=True,
                 ),
             },
             "exclusions": {},

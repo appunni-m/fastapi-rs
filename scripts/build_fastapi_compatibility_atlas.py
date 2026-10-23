@@ -5907,6 +5907,8 @@ def _normalize_source_review_workflow_mappings(
                         "case_ids": [case_id],
                         "observation_selectors": link["observation_selectors"],
                     }
+                    if "action_ids" in link:
+                        normalized_link["action_ids"] = link["action_ids"]
                     function_workflows.append(normalized_link)
 
                     workflow_key = (link["recipe_path"], case_id)
@@ -11136,6 +11138,81 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         materialized_workflow_cache[recipe_path] = cached
         return cached
 
+    def reviewed_direct_workflow_case(
+        workflow_links: list[dict[str, Any]], source_path: str, function_name: str
+    ) -> dict[str, Any]:
+        if len(workflow_links) != 1:
+            raise AtlasError(
+                "a direct function workflow link must select exactly one reviewed case for "
+                f"{source_path}::{function_name}"
+            )
+        link = workflow_links[0]
+        case_ids = link.get("case_ids", [link.get("case_id")])
+        action_ids = link.get("action_ids")
+        recipe_path = link.get("recipe_path")
+        if (
+            not isinstance(recipe_path, str)
+            or not isinstance(case_ids, list)
+            or len(case_ids) != 1
+            or not isinstance(case_ids[0], str)
+            or not isinstance(action_ids, list)
+            or not action_ids
+            or not all(isinstance(action_id, str) and action_id for action_id in action_ids)
+        ):
+            raise AtlasError(
+                "a direct function workflow link must name one recipe case and its actions for "
+                f"{source_path}::{function_name}"
+            )
+        workflow, cases_by_id = materialized_workflow_for_recipe(recipe_path)
+        materialized_case = cases_by_id.get(case_ids[0])
+        if materialized_case is None:
+            raise AtlasError(
+                "direct function workflow case is absent from its materialized recipe: "
+                f"{recipe_path}::{case_ids[0]}"
+            )
+        action_by_id = {
+            action.get("action_id"): action
+            for action in materialized_case.get("actions", [])
+            if isinstance(action, dict) and isinstance(action.get("action_id"), str)
+        }
+        if len(action_by_id) != len(materialized_case.get("actions", [])) or not set(
+            action_ids
+        ) <= action_by_id.keys():
+            raise AtlasError(
+                "direct function workflow link names missing or duplicate actions for "
+                f"{recipe_path}::{case_ids[0]}"
+            )
+        selected_case = dict(materialized_case)
+        if "construction_observation" in selected_case:
+            selected_case["construction_observation"] = {"selectors": []}
+        selected_case["actions"] = [action_by_id[action_id] for action_id in action_ids]
+        if str(PROJECT) not in sys.path:
+            sys.path.insert(0, str(PROJECT))
+        try:
+            from scripts.parity.materialized import _selected_selectors
+
+            selectors = sorted(
+                _selected_selectors(selected_case, workflow_schema=workflow.get("schema"))
+            )
+        except (ImportError, KeyError, TypeError, ValueError) as exc:
+            raise AtlasError(
+                "cannot select direct function workflow observations for "
+                f"{recipe_path}::{case_ids[0]}: {exc}"
+            ) from exc
+        source_selectors = link.get("observation_selectors", [])
+        if not isinstance(source_selectors, list) or not set(source_selectors) <= set(selectors):
+            raise AtlasError(
+                "direct function workflow does not observe all reviewed selectors for "
+                f"{source_path}::{function_name}"
+            )
+        return {
+            "workflow_id": Path(recipe_path).stem.replace("_", "-"),
+            "recipe_path": recipe_path,
+            "case_id": case_ids[0],
+            "action_ids": action_ids,
+            "observation_selectors": selectors,
+        }
+
     coverage_items = []
     fixture_backlog = []
     tests_root = fastapi_root / "tests"
@@ -11244,6 +11321,10 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                     reviewed_record[metadata_key] = metadata
             if "workflow_case" in function_mapping:
                 reviewed_record["workflow_case"] = function_mapping["workflow_case"]
+            if function_mapping.get("direct_workflow_case"):
+                reviewed_record["workflow_case"] = reviewed_direct_workflow_case(
+                    function_mapping.get("workflow_cases", []), rel, test["qualified_name"]
+                )
             test["reviewed_mapping"] = reviewed_record
             test["reviewed_observation_selectors"] = function_mapping.get("observation_selectors")
             test["reviewed_stimulus_notes"] = function_mapping.get(

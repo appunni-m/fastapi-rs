@@ -1326,6 +1326,86 @@ REVIEWED_DIRECT_FUNCTION_WORKFLOW_LINKS = {
         ),
         ("http.status", "http.body.bytes", "openapi.document", "openapi.paths"),
     ),
+    (
+        "tests/test_extra_routes.py",
+        "test_get_api_route",
+    ): _reviewed_direct_link(
+        "routing-upstream",
+        "tests/fixtures/input-recipes/parity/routing-upstream.yaml",
+        "fastapi.test.test-extra-routes.test-get-api-route",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_extra_routes.py",
+        "test_get_api_route_not_decorated",
+    ): _reviewed_direct_link(
+        "routing-upstream",
+        "tests/fixtures/input-recipes/parity/routing-upstream.yaml",
+        "fastapi.test.test-extra-routes.test-get-api-route-not-decorated",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_extra_routes.py",
+        "test_delete",
+    ): _reviewed_direct_link(
+        "routing-upstream",
+        "tests/fixtures/input-recipes/parity/routing-upstream.yaml",
+        "fastapi.test.test-extra-routes.test-delete",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_extra_routes.py",
+        "test_head",
+    ): _reviewed_direct_link(
+        "routing-upstream",
+        "tests/fixtures/input-recipes/parity/routing-upstream.yaml",
+        "fastapi.test.test-extra-routes.test-head",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_extra_routes.py",
+        "test_options",
+    ): _reviewed_direct_link(
+        "routing-upstream",
+        "tests/fixtures/input-recipes/parity/routing-upstream.yaml",
+        "fastapi.test.test-extra-routes.test-options",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_extra_routes.py",
+        "test_patch",
+    ): _reviewed_direct_link(
+        "routing-upstream",
+        "tests/fixtures/input-recipes/parity/routing-upstream.yaml",
+        "fastapi.test.test-extra-routes.test-patch",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_extra_routes.py",
+        "test_trace",
+    ): _reviewed_direct_link(
+        "routing-upstream",
+        "tests/fixtures/input-recipes/parity/routing-upstream.yaml",
+        "fastapi.test.test-extra-routes.test-trace",
+        ("dispatch",),
+        ("http.body.bytes", "http.headers.ordered", "http.status"),
+    ),
+    (
+        "tests/test_extra_routes.py",
+        "test_openapi_schema",
+    ): _reviewed_direct_link(
+        "routing-upstream",
+        "tests/fixtures/input-recipes/parity/routing-upstream.yaml",
+        "fastapi.test.test-extra-routes.test-openapi-schema",
+        ("schema",),
+        ("openapi.document", "openapi.paths"),
+    ),
 }
 
 from scripts.atlas_request_parameter_wave_mappings import (  # noqa: E402
@@ -3583,6 +3663,7 @@ def validate_compatibility_artifacts(
                 "tests/test_dependency_after_yield_raise.py",
                 "tests/test_stream_status_code.py",
                 "tests/test_exception_handlers.py",
+                "tests/test_extra_routes.py",
                 "tests/test_additional_responses_bad.py",
                 "tests/test_additional_responses_custom_model_in_callback.py",
                 "tests/test_additional_responses_custom_validationerror.py",
