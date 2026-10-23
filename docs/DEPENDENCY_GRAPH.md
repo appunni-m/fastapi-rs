@@ -16,11 +16,13 @@ middleware, lifecycle, and protocol control flow belongs in Rust.
 FastAPI 0.157.0's default `opentelemetry-api` edge and optional/test telemetry
 packages are properties of this upstream graph. FastAPI-RS separately pins
 `opentelemetry-api==1.44.0` as a target runtime dependency, matching the
-required upstream API package. The target currently records one HTTP SERVER
-span when an application supplies a tracer provider; this is a partial
-Rust-owned implementation, not complete telemetry parity. Global-provider
-fallback, incoming trace-context extraction, and the other telemetry signals
-remain open. The parity-only target profile pins
+required upstream API package. The Rust target records HTTP SERVER spans with
+an application or global tracer provider and extracts parent IDs from one
+valid incoming `traceparent`. Focused cases cover provider fallback and root
+request parent context; they establish only those cases, not full telemetry
+parity. Duplicate or multi-value baggage/tracestate, metrics, logging,
+exporters, lifecycle, and other telemetry paths remain open. The parity-only
+target profile pins
 `opentelemetry-sdk==1.44.0` and
 `opentelemetry-semantic-conventions==0.65b0` for recording-span comparison;
 neither package is part of the target runtime. The graph faithfully reports

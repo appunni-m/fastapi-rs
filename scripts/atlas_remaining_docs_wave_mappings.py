@@ -5036,32 +5036,35 @@ DOC_PAGE_REVIEW_MAPPINGS = {
 }
 
 DOC_PAGE_REVIEW_MAPPINGS["advanced/opentelemetry.md"] = {
+    "feature_ids": ["telemetry"],
     "observation_selectors": [
         "python.call_outcome",
         "python.signature",
         "process.exit_code",
         "http.status",
         "http.body.bytes",
+        "telemetry.server_spans",
+        "telemetry.server_span_parent_context",
     ],
     "rationale": (
-        "The selected constructor inputs cover FastAPI 0.157.0's public telemetry "
-        "configuration signature and acceptance of tracing, operation-span, and "
-        "signal-disable options. A separate CLI process input follows the guide's "
-        "`fastapi run` and GET /items/1 example. It observes only process and HTTP "
-        "outcomes, not emitted telemetry. The current FastAPI-RS process profile has no "
-        "fastapi console entrypoint, so the target lane remains unresolved."
+        "The selected inputs cover FastAPI 0.157.0's telemetry constructor signature and "
+        "selected disabled settings, one late-bound global TracerProvider request span, and "
+        "the guide's fastapi run plus GET /items/1 process example. The runtime span input "
+        "establishes only late-bound provider selection; other provider, exporter, signal, "
+        "and lifecycle behavior remains unresolved. The CLI target lane is also unresolved."
     ),
     "stimulus_notes": (
         "The linked input-only API workflow probes the FastAPI constructor signature and "
-        "independently disables tracing, operation spans, and telemetry signals. A separate "
-        "isolated CLI process loads the documented main.py route and requests /items/1."
+        "independently disables tracing, operation spans, and telemetry signals. An isolated "
+        "ASGI workflow installs a recording global provider after app construction and sends "
+        "GET /. A separate CLI process loads the documented main.py route and requests /items/1."
     ),
     "contract_gate": (
-        "Partial documentation mapping: constructor configuration and one process/HTTP "
-        "request are observed. HTTP response parity does not establish runtime HTTP or "
-        "WebSocket telemetry, provider selection, exporter setup, logs, metrics, or "
-        "background-task spans. The process case is source-observable only until the target "
-        "exposes the FastAPI console entrypoint."
+        "Partial documentation mapping: constructor configuration, one global-provider HTTP "
+        "SERVER span, and one process/HTTP request are observed. Injected-provider identity, "
+        "exporter setup and shutdown, metrics, logs, WebSocket spans, operation spans, and "
+        "background-task spans remain unresolved. The process case is source-observable only "
+        "until the target exposes the FastAPI console entrypoint."
     ),
     "supporting_sources": [
         {
@@ -5080,6 +5083,23 @@ DOC_PAGE_REVIEW_MAPPINGS["advanced/opentelemetry.md"] = {
                 "fastapi.telemetry.constructor-signals-disabled",
             ],
             "observation_selectors": ["python.call_outcome", "python.signature"],
+        },
+        {
+            "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-global-provider.yaml",
+            "case_ids": ["fastapi.telemetry.global-tracer-provider-late-binding"],
+            "action_ids": ["root-request"],
+            "observation_selectors": ["telemetry.server_spans"],
+        },
+        {
+            "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-traceparent.yaml",
+            "case_ids": ["fastapi.telemetry.traceparent-parent-context-root"],
+            "observation_selectors": [
+                "construction.outcome",
+                "construction.exception_class",
+                "construction.exception_message",
+                "telemetry.server_spans",
+                "telemetry.server_span_parent_context",
+            ],
         },
         {
             "recipe_path": "tests/fixtures/input-recipes/parity/fastapi-cli-documented-process-v2.yaml",

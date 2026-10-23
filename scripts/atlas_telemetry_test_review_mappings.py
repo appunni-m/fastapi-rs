@@ -28,6 +28,11 @@ SOURCE_IDENTITIES = {
     "pydantic": {"version": "2.13.5", "role": "pinned dependency identity"},
 }
 
+_GLOBAL_PROVIDER_RECIPE = (
+    "tests/fixtures/input-recipes/parity/telemetry-global-provider.yaml"
+)
+_TRACEPARENT_RECIPE = "tests/fixtures/input-recipes/parity/telemetry-traceparent.yaml"
+
 __all__ = [
     "SOURCE_IDENTITIES",
     "TELEMETRY_TEST_FUNCTION_COUNT",
@@ -385,6 +390,43 @@ def _source_refs(families: tuple[str, ...]) -> list[dict[str, Any]]:
     return list(unique.values())
 
 
+def _reviewed_partial_function(
+    *,
+    test_path: str,
+    name: str,
+    node: ast.FunctionDef | ast.AsyncFunctionDef,
+    recipe_path: str,
+    case_id: str,
+    selectors: tuple[str, ...],
+    rationale: str,
+    gate: str,
+    families: tuple[str, ...],
+) -> dict[str, Any]:
+    span = _source(
+        test_path,
+        node.lineno,
+        node.end_lineno or node.lineno,
+        f"Pinned FastAPI 0.157.0 test function {name}",
+    )
+    return {
+        "review_status": "reviewed_partial",
+        "source_span": span,
+        "feature_ids": ["telemetry"],
+        "observation_selectors": list(selectors),
+        "rationale": rationale,
+        "contract_gate": gate,
+        "workflow_cases": [
+            {
+                "recipe_path": recipe_path,
+                "case_id": case_id,
+                "action_ids": ["root-request"],
+                "observation_selectors": list(selectors),
+            }
+        ],
+        "supporting_sources": [span, *_source_refs(families)],
+    }
+
+
 def _review_function(test_path: str, name: str, node: ast.AST) -> dict[str, Any]:
     assert isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
     span = _source(
@@ -394,6 +436,51 @@ def _review_function(test_path: str, name: str, node: ast.AST) -> dict[str, Any]
         f"Pinned FastAPI 0.157.0 test function {name}",
     )
     families = _signal_families(test_path, node)
+    if (
+        test_path == "tests/test_telemetry/test_http.py"
+        and name == "test_late_global_providers_enable_existing_app"
+    ):
+        return _reviewed_partial_function(
+            test_path=test_path,
+            name=name,
+            node=node,
+            recipe_path=_GLOBAL_PROVIDER_RECIPE,
+            case_id="fastapi.telemetry.global-tracer-provider-late-binding",
+            selectors=("telemetry.server_spans",),
+            rationale=(
+                "Partial mapping: the independent GET / input constructs FastAPI before "
+                "installing the global TracerProvider and observes the resulting HTTP SERVER "
+                "span. It covers late-bound trace-provider selection only; the upstream test's "
+                "initial request before provider installation, metric-provider fallback, explicit "
+                "ProxyTracerProvider variant, and provider/exporter lifecycle are not covered."
+            ),
+            gate=(
+                "Only the completed HTTP SERVER span is compared. Initial unconfigured request "
+                "behavior, metrics, explicit proxy-provider configuration, and exporter lifecycle "
+                "remain outside this input."
+            ),
+            families=families,
+        )
+    if test_path == "tests/test_telemetry/test_http.py" and name == "test_propagation_headers":
+        return _reviewed_partial_function(
+            test_path=test_path,
+            name=name,
+            node=node,
+            recipe_path=_TRACEPARENT_RECIPE,
+            case_id="fastapi.telemetry.traceparent-parent-context-root",
+            selectors=("telemetry.server_span_parent_context",),
+            rationale=(
+                "Partial mapping: the independent root GET / input checks the parent trace and "
+                "span IDs from one well-formed traceparent header. It does not observe baggage "
+                "or tracestate values, duplicate tracestate/baggage joining, or the upstream "
+                "parameterized split-header cases."
+            ),
+            gate=(
+                "Only parent trace/span IDs from one traceparent value are compared. Duplicate "
+                "baggage and tracestate semantics and baggage context remain unresolved."
+            ),
+            families=families,
+        )
     if (
         test_path == "tests/test_tutorial/test_opentelemetry/test_tutorial001.py"
         and node.name == "test_default_example"
@@ -481,9 +568,10 @@ for _test_root in _TELEMETRY_TEST_ROOTS:
         _module_reviews[_test_path] = {
             "rationale": (
                 (
-                    "Each test function is classified individually below. The independent "
-                    "root GET SERVER-span input uses this module as source evidence only; it "
-                    "does not execute or cover any upstream test function."
+                    "Each telemetry test function is reviewed individually below. Input-only "
+                    "cases partially map late-bound global TracerProvider selection and one "
+                    "traceparent parent-context projection; all other assertions retain their "
+                    "explicit exclusions or gaps."
                 )
                 if has_http_server_span_sources
                 else (

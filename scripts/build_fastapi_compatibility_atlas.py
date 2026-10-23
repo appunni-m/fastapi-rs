@@ -6178,9 +6178,8 @@ for _pending_test_wave in (
 ):
     merge_test_review_mappings(_normalize_source_review_workflow_mappings(_pending_test_wave))
 
-# Telemetry tests assert OpenTelemetry SDK outputs and request context that the
-# current parity observation contract cannot represent. Keep those exact
-# function-level exclusions and supporting source citations in the atlas.
+# Telemetry tests include a few narrowly mapped span/provider behaviors and
+# retain explicit exclusions for the remaining SDK outputs and request context.
 from atlas_telemetry_test_review_mappings import (  # noqa: E402
     TELEMETRY_TEST_MODULE_EXCLUSIONS,
     TELEMETRY_TEST_REVIEW_MAPPINGS,
@@ -6204,8 +6203,9 @@ for _telemetry_test_path, _telemetry_review in TELEMETRY_TEST_REVIEW_MAPPINGS.it
         _telemetry_test_path, {}
     )
     for _function_name, _function_review in _telemetry_review["functions"].items():
-        _function_exclusions[_function_name] = _function_review["exclusion_reason"]
-        _function_exclusion_evidence[_function_name] = [_function_review["source_span"]]
+        if _function_review.get("review_status") == "reviewed_excluded":
+            _function_exclusions[_function_name] = _function_review["exclusion_reason"]
+            _function_exclusion_evidence[_function_name] = [_function_review["source_span"]]
 
 # Explicitly map the FastAPI 0.157.0 source delta to reviewed, input-only
 # workflows. The repository translation test is tooling-only, not runtime API.
@@ -6535,6 +6535,16 @@ FEATURES = [
             "applications-requests-responses-background-concurrency",
         ],
         "stimulus": "Enable the named optional integration or middleware, provide deterministic request/filesystem/configuration inputs, and observe its public effect.",
+    },
+    {
+        "id": "telemetry",
+        "terms": ("opentelemetry", "telemetry configuration", "telemetry provider"),
+        "observations": [
+            "telemetry.server_spans",
+            "telemetry.server_span_parent_context",
+        ],
+        "starlette_areas": [],
+        "stimulus": "Configure FastAPI telemetry with an isolated provider, send a direct ASGI request, and inspect completed server spans and the observed incoming parent context.",
     },
     {
         "id": "static-files",
@@ -13310,19 +13320,21 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
         },
         {
             "id": "fastapi-telemetry-observation-contract",
-            "status": "one-root-http-server-span-case; broader telemetry remains unverified",
-            "question": "Which additional deterministic inputs will compare telemetry beyond one root-path HTTP SERVER span, including metrics, logs, request-local context, provider/exporter ownership, WebSocket spans, and lifecycle?",
+            "status": "two-focused-telemetry-cases-matched; coverage-partial",
+            "question": "Which additional deterministic inputs will compare telemetry beyond late-bound global provider selection and one well-formed traceparent parent context, including metrics, logs, context lifetime, provider/exporter ownership, WebSocket spans, and lifecycle?",
             "evidence": (
                 "FastAPI 0.157.0 exposes native telemetry through FastAPI(telemetry=...), "
                 "fastapi.telemetry, middleware, and lifespan code; its pinned tests exercise "
                 "HTTP, WebSocket, validation, errors, background tasks, integrations, and "
-                "OTLP environment setup. The telemetry-server-span workflow maps one direct ASGI "
-                "GET / and projects the completed HTTP SERVER span using the parity-only "
-                "opentelemetry-sdk 1.44.0 profile. This is one root-path slice only. Metrics, "
-                "log records, request-local context, "
-                "provider/exporter state, WebSocket spans, and lifecycle remain unobserved; the "
-                "OpenTelemetry documentation and test mappings therefore remain partial or "
-                "explicitly excluded outside this selected span case."
+                "OTLP environment setup. Input-only workflows map a direct ASGI GET / with a "
+                "late-bound global TracerProvider and a single well-formed traceparent header; "
+                "the parity-only opentelemetry-sdk 1.44.0 profile projects completed HTTP "
+                "SERVER spans and selected incoming parent IDs. Identity-checked focused runs "
+                "matched both `fastapi.telemetry.global-tracer-provider-late-binding` and "
+                "`fastapi.telemetry.traceparent-parent-context-root`. "
+                "Duplicate baggage/tracestate values, metrics, log records, request-local context, "
+                "provider/exporter state, WebSocket spans, and lifecycle remain unobserved; "
+                "other documentation and test mappings remain partial or explicitly excluded."
             ),
         },
         {

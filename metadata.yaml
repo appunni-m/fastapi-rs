@@ -2383,9 +2383,11 @@ reviewed_api_contract_overlay:
             remain unimplemented or unproven.
           - >-
             The telemetry constructor inputs compare configuration acceptance and the
-            signature only. The separate telemetry input observes one root-path HTTP
-            SERVER span through FastAPI.__call__; metrics, logs, context lifetime,
-            exporter effects, and telemetry-aware lifespan behavior remain unobserved.
+            signature only. Separate inputs observe a root-path HTTP SERVER span from a
+            late-bound global provider and parent IDs from one well-formed traceparent
+            header. Duplicate or multi-value propagation headers, baggage joining, metrics,
+            logs, context lifetime, exporter effects, and telemetry-aware lifespan behavior
+            remain unobserved.
           - &response_field_traversal_gap >-
             Visited included branches must prepare all own effective fields before
             publishing the vector, retry the whole unpublished branch after a later
@@ -6964,8 +6966,12 @@ reviewed_api_contract_overlay:
         compares the exact constructor signature, debug=True construction, rejection of the removed
         `openapi_prefix` keyword and arbitrary extra keywords, and empty-version validation with
         OpenAPI enabled and disabled. Separate inputs check acceptance of selected disabled
-        telemetry configurations and observe one root-path HTTP SERVER span from an ASGI GET /
-        request; this does not establish broader telemetry runtime parity. The linked ASGI workflow
+        telemetry configurations and map root-path HTTP SERVER span observations, including
+        late-bound global-provider selection and W3C parent IDs from one well-formed traceparent
+        header on an ASGI GET / request. Duplicate or multi-value propagation header behavior is
+        not covered. Identity-checked focused runs matched both selected telemetry cases; claims
+        remain limited to the observations above.
+        The linked ASGI workflow
         compares selected route defaults, metadata, and OpenAPI exclusion. Other constructor
         options and application behavior are outside this bounded slice.
       source_evidence:
@@ -7073,6 +7079,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.telemetry.http-server-span-root
           workload_path: tests/fixtures/workloads/telemetry_server_span.py
           observation_selectors: [telemetry.server_spans]
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-global-provider.yaml
+          case_id: fastapi.telemetry.global-tracer-provider-late-binding
+          workload_path: tests/fixtures/workloads/telemetry_global_provider.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, telemetry.server_spans]
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-traceparent.yaml
+          case_id: fastapi.telemetry.traceparent-parent-context-root
+          workload_path: tests/fixtures/workloads/telemetry_traceparent.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, telemetry.server_spans, telemetry.server_span_parent_context]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-extra-deep-merge-full-document-review.yaml
           case_id: fastapi.openapi-extra.full-document-merge-add-override
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-raw-yaml-body-full-document-review.yaml
@@ -7192,6 +7206,14 @@ reviewed_api_contract_overlay:
           case_id: fastapi.telemetry.http-server-span-root
           workload_path: tests/fixtures/workloads/telemetry_server_span.py
           observation_selectors: [telemetry.server_spans]
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-global-provider.yaml
+          case_id: fastapi.telemetry.global-tracer-provider-late-binding
+          workload_path: tests/fixtures/workloads/telemetry_global_provider.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, telemetry.server_spans]
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-traceparent.yaml
+          case_id: fastapi.telemetry.traceparent-parent-context-root
+          workload_path: tests/fixtures/workloads/telemetry_traceparent.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, telemetry.server_spans, telemetry.server_span_parent_context]
         - recipe_path: tests/fixtures/input-recipes/parity/application-callable-signatures.yaml
           case_id: fastapi.application-callable-signatures.surface
           workload_path: tests/fixtures/workloads/direct_api_reference_wave.py
@@ -7335,6 +7357,7 @@ reviewed_api_contract_overlay:
       observation_selectors:
         - python.signature
         - telemetry.server_spans
+        - telemetry.server_span_parent_context
         - http.status
         - http.headers.ordered
         - http.body.bytes

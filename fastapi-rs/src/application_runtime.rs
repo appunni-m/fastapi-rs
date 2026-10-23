@@ -7414,7 +7414,7 @@ impl PyFastApi {
         scope
             .bind(py)
             .set_item("app", fastapi_public_instance(py, &slf)?)?;
-        let (telemetry_tracing, telemetry_tracer_provider) = {
+        let (telemetry_tracing, configured_tracer_provider) = {
             let app = slf.bind(py).borrow();
             (
                 app.telemetry_tracing,
@@ -7425,7 +7425,9 @@ impl PyFastApi {
         };
         let stack = Self::middleware_stack_for(slf, py)?;
         if scope.bind(py).get_item("type")?.extract::<String>()? == "http" && telemetry_tracing {
-            if let Some(tracer_provider) = telemetry_tracer_provider {
+            if let Some(tracer_provider) =
+                fastapi_telemetry_tracer_provider(py, configured_tracer_provider)?
+            {
                 return into_python_awaitable(
                     py,
                     FastApiTelemetryCall {
@@ -7445,6 +7447,31 @@ impl PyFastApi {
             .call1((scope, receive, send))
             .map(Bound::unbind)
     }
+}
+
+fn fastapi_telemetry_tracer_provider(
+    py: Python<'_>,
+    configured: Option<Py<PyAny>>,
+) -> PyResult<Option<Py<PyAny>>> {
+    let trace = py.import("opentelemetry.trace")?;
+    let configured_is_none = configured.is_none();
+    let provider = match configured {
+        Some(provider) if provider.bind(py).is_truthy()? => provider,
+        Some(_) | None => trace.call_method0("get_tracer_provider")?.unbind(),
+    };
+    let provider_bound = provider.bind(py);
+    if provider_bound.is_instance(&trace.getattr("NoOpTracerProvider")?)? {
+        return Ok(None);
+    }
+    if configured_is_none {
+        let provider_type = provider_bound.get_type();
+        let provider_module = provider_type.getattr("__module__")?.extract::<String>()?;
+        let provider_name = provider_type.getattr("__name__")?.extract::<String>()?;
+        if provider_module == "opentelemetry.trace" && provider_name == "ProxyTracerProvider" {
+            return Ok(None);
+        }
+    }
+    Ok(Some(provider))
 }
 
 #[pymethods]
@@ -8011,7 +8038,17 @@ impl FastApiTelemetrySpanState {
             (concat!("fast", "api"), FASTAPI_TELEMETRY_VERSION),
             Some(&tracer_kwargs),
         )?;
+        let headers_type = py
+            .import("starlette.datastructures")?
+            .getattr("Headers")?;
+        let headers_kwargs = PyDict::new(py);
+        headers_kwargs.set_item("scope", scope_bound)?;
+        let headers = headers_type.call((), Some(&headers_kwargs))?;
+        let parent_context = py
+            .import("opentelemetry.propagate")?
+            .call_method1("extract", (headers,))?;
         let kwargs = PyDict::new(py);
+        kwargs.set_item("context", parent_context)?;
         kwargs.set_item("kind", trace.getattr("SpanKind")?.getattr("SERVER")?)?;
         kwargs.set_item("attributes", attributes)?;
         kwargs.set_item("record_exception", false)?;

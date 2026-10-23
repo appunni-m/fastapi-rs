@@ -44,6 +44,7 @@ WORKFLOW_SCHEMA_V15_ID = "fastapi-rs/python-asgi-workflow@15"
 WORKFLOW_SCHEMA_V16_ID = "fastapi-rs/python-asgi-workflow@16"
 WORKFLOW_SCHEMA_V17_ID = "fastapi-rs/python-asgi-workflow@17"
 WORKFLOW_SCHEMA_V18_ID = "fastapi-rs/python-asgi-workflow@18"
+WORKFLOW_SCHEMA_V19_ID = "fastapi-rs/python-asgi-workflow@19"
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
@@ -61,6 +62,7 @@ RESULT_SCHEMA_V15_ID = "fastapi-rs/python-asgi-workflow-result@15"
 RESULT_SCHEMA_V16_ID = "fastapi-rs/python-asgi-workflow-result@16"
 RESULT_SCHEMA_V17_ID = "fastapi-rs/python-asgi-workflow-result@17"
 RESULT_SCHEMA_V18_ID = "fastapi-rs/python-asgi-workflow-result@18"
+RESULT_SCHEMA_V19_ID = "fastapi-rs/python-asgi-workflow-result@19"
 ORACLE_PROFILE_ID = "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13"
 ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
     "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
@@ -538,6 +540,30 @@ def _telemetry_server_spans(app: Any) -> list[dict[str, Any]]:
     return projected
 
 
+def _telemetry_server_span_parent_contexts(app: Any) -> list[dict[str, Any]]:
+    """Project parent IDs for completed SERVER spans without exposing child IDs."""
+    capture = getattr(app, "get_parity_finished_spans", None)
+    if not callable(capture):
+        raise WorkerError(
+            "telemetry.server_span_parent_context requires the workload capture protocol"
+        )
+    projected = []
+    for span in capture():
+        kind = getattr(getattr(span, "kind", None), "name", None)
+        if kind != "SERVER":
+            continue
+        parent = getattr(span, "parent", None)
+        parent_valid = parent is not None and bool(getattr(parent, "is_valid", False))
+        projected.append(
+            {
+                "name": span.name,
+                "trace_id": f"{int(parent.trace_id):032x}" if parent_valid else None,
+                "span_id": f"{int(parent.span_id):016x}" if parent_valid else None,
+            }
+        )
+    return projected
+
+
 def _pointer_get(document: Any, pointer: str) -> tuple[bool, Any]:
     value = document
     for escaped_segment in pointer.split("/")[1:]:
@@ -592,10 +618,22 @@ def _observe(
     )
     message_types = [message.get("type") for message in messages]
     telemetry_spans = None
+    telemetry_parent_contexts = None
     if any(observation["kind"] == "telemetry" for observation in observations):
         if app is None:
             raise WorkerError("telemetry observations require the ASGI application")
-        telemetry_spans = _telemetry_server_spans(app)
+        if any(
+            observation.get("selector") == "server_spans"
+            for observation in observations
+            if observation["kind"] == "telemetry"
+        ):
+            telemetry_spans = _telemetry_server_spans(app)
+        if any(
+            observation.get("selector") == "server_span_parent_context"
+            for observation in observations
+            if observation["kind"] == "telemetry"
+        ):
+            telemetry_parent_contexts = _telemetry_server_span_parent_contexts(app)
     result: list[dict[str, Any]] = []
     for index, observation in enumerate(observations):
         kind = observation["kind"]
@@ -615,14 +653,18 @@ def _observe(
             result.append({"index": index, "kind": kind, "values": values})
         elif kind == "telemetry":
             selector = observation["selector"]
-            if selector != "server_spans" or telemetry_spans is None:
+            if selector == "server_spans" and telemetry_spans is not None:
+                values = {"spans": copy.deepcopy(telemetry_spans)}
+            elif selector == "server_span_parent_context" and telemetry_parent_contexts is not None:
+                values = {"spans": copy.deepcopy(telemetry_parent_contexts)}
+            else:
                 raise WorkerError(f"worker does not support telemetry selector: {selector}")
             result.append(
                 {
                     "index": index,
                     "kind": kind,
                     "selector": selector,
-                    "values": {"spans": copy.deepcopy(telemetry_spans)},
+                    "values": values,
                 }
             )
         elif kind == "openapi":
@@ -1760,6 +1802,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V16_ID,
         WORKFLOW_SCHEMA_V17_ID,
         WORKFLOW_SCHEMA_V18_ID,
+        WORKFLOW_SCHEMA_V19_ID,
     }:
         raise WorkerError("workflow schema identity changed after host-side validation")
     fastapi_root = fastapi_root.resolve()
@@ -1786,6 +1829,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V16_ID,
         WORKFLOW_SCHEMA_V17_ID,
         WORKFLOW_SCHEMA_V18_ID,
+        WORKFLOW_SCHEMA_V19_ID,
     }:
         identity["fault_injection_compiled"] = None
     factory = _load_workload(workload_path, input_sha256, workflow["workload"]["factory"])
@@ -1806,6 +1850,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V16_ID,
         WORKFLOW_SCHEMA_V17_ID,
         WORKFLOW_SCHEMA_V18_ID,
+        WORKFLOW_SCHEMA_V19_ID,
     }:
         warning_package_roots = (
             [("fastapi", fastapi_root / "fastapi"), ("starlette", starlette_root / "starlette")]
@@ -1826,6 +1871,7 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V16_ID,
                 WORKFLOW_SCHEMA_V17_ID,
                 WORKFLOW_SCHEMA_V18_ID,
+                WORKFLOW_SCHEMA_V19_ID,
             }
             else []
         )
@@ -1845,11 +1891,14 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V16_ID,
                 WORKFLOW_SCHEMA_V17_ID,
                 WORKFLOW_SCHEMA_V18_ID,
+                WORKFLOW_SCHEMA_V19_ID,
             }
             else _run_cases_v3(workflow, factory, warning_package_roots)
         )
         result_schema_id = (
-            RESULT_SCHEMA_V18_ID
+            RESULT_SCHEMA_V19_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V19_ID
+            else RESULT_SCHEMA_V18_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V18_ID
             else RESULT_SCHEMA_V17_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V17_ID

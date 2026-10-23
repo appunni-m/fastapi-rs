@@ -166,30 +166,33 @@ DOC_SECTION_CASE_MAPPINGS_OPENTELEMETRY_20261022 = {
         ),
     },
     (_PAGE, "configure-providers-and-exporters"): {
-        "status": "excluded",
         "heading": "Configure providers and exporters { #configure-providers-and-exporters }",
         "start_line": 83,
         "end_line": 106,
-        "exclusion_reason": (
-            "The section documents global and injected provider selection, automatic exporter "
-            "registration, and provider shutdown behavior. Current selectors do not observe "
-            "provider identity, exporter setup, or lifecycle effects; the separate trace case "
-            "observes only a root-path HTTP SERVER span."
+        "feature_ids": ["telemetry"],
+        "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-global-provider.yaml",
+        "case_ids": ["fastapi.telemetry.global-tracer-provider-late-binding"],
+        "action_ids": ["root-request"],
+        "observation_selectors": ["telemetry.server_spans"],
+        "scope_note": (
+            "One input installs the global TracerProvider after FastAPI construction and "
+            "observes the resulting HTTP SERVER span. It establishes late-bound global "
+            "provider selection only; injected-provider identity, OTLP setup, exporter "
+            "registration, and shutdown effects remain unresolved."
         ),
         "rationale": (
             "FastAPI 0.157.0's pinned section at "
-            "docs/en/docs/advanced/opentelemetry.md:83-106 describes provider/exporter "
-            "configuration and links tutorial002, which injects a TracerProvider configured "
-            "with BatchSpanProcessor and ConsoleSpanExporter. The current constructor cases do "
-            "not exercise that provider input, and the span selector does not identify provider "
-            "or exporter behavior, so the section remains excluded pending a broader deterministic "
-            "telemetry profile."
+            "docs/en/docs/advanced/opentelemetry.md:83-106 documents global and injected "
+            "providers, OTLP exporter setup, and application-managed shutdown. The linked "
+            "input installs a recording global TracerProvider after app construction and "
+            "observes one HTTP SERVER span, covering only late-bound global selection."
         ),
     },
     (_PAGE, "trace-request-operations"): {
         "heading": "Trace request operations { #trace-request-operations }",
         "start_line": 107,
         "end_line": 117,
+        "feature_ids": ["telemetry"],
         "recipe_path": _SERVER_SPAN_RECIPE,
         "case_ids": [_HTTP_SERVER_SPAN_ROOT],
         "action_ids": ["root-request"],
