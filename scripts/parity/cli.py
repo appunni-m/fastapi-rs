@@ -288,6 +288,50 @@ def _validate_indexed_api_workflow(
     return summary
 
 
+def _select_api_workflow_cases(
+    workflow: dict[str, Any], requested_case_ids: list[str]
+) -> dict[str, Any]:
+    cases = workflow["cases"]
+    available = [case["case_id"] for case in cases]
+    if not requested_case_ids:
+        return workflow
+    if len(requested_case_ids) != len(set(requested_case_ids)):
+        raise ContractError("case selection repeats a case ID")
+    requested = set(requested_case_ids)
+    unknown = requested - set(available)
+    if unknown:
+        raise ContractError(
+            "case selection contains IDs outside the indexed workflow: "
+            + ", ".join(sorted(unknown))
+        )
+    selected = [case for case in cases if case["case_id"] in requested]
+    if not selected:
+        raise ContractError("case selection must contain at least one indexed case")
+    return {**workflow, "cases": selected}
+
+
+def _validate_api_workflow_selection(
+    manifest: dict[str, Any],
+    workflow: dict[str, Any],
+    workflow_path: Path,
+    input_digest: str,
+    *,
+    requested_case_ids: list[str],
+    fastapi_source: Path,
+    starlette_source: Path,
+) -> tuple[dict[str, Any], dict[str, Any], str]:
+    materialized = _validate_indexed_api_workflow(
+        manifest,
+        workflow,
+        workflow_path,
+        input_digest,
+        fastapi_source=fastapi_source,
+        starlette_source=starlette_source,
+    )
+    selected_workflow = _select_api_workflow_cases(workflow, requested_case_ids)
+    return selected_workflow, materialized, _relative_path(workflow_path)
+
+
 def oracle_command(args: argparse.Namespace) -> dict[str, Any]:
     workflow, workflow_path, input_digest, _ = load_workflow(
         args.input,
@@ -659,11 +703,12 @@ def api_oracle_command(args: argparse.Namespace) -> dict[str, Any]:
         raise ContractError(f"oracle Python interpreter does not exist: {python}")
     manifest_path = ROOT / "tests/fixtures/manifest.yaml"
     manifest = read_manifest()
-    materialized_inputs = _validate_indexed_api_workflow(
+    workflow, materialized_inputs, public_surface_input_path = _validate_api_workflow_selection(
         manifest,
         workflow,
         workflow_path,
         input_digest,
+        requested_case_ids=args.case_id,
         fastapi_source=args.fastapi_source.resolve(),
         starlette_source=args.starlette_source.resolve(),
     )
@@ -671,7 +716,7 @@ def api_oracle_command(args: argparse.Namespace) -> dict[str, Any]:
         workflow,
         manifest.get("api_surface_contract", {}),
         _manifest_api_inventory(manifest),
-        input_path=_relative_path(workflow_path),
+        input_path=public_surface_input_path,
     )
     oracle_profile = select_oracle_profile(manifest, args.profile_extension or None)
     command = [
@@ -693,6 +738,8 @@ def api_oracle_command(args: argparse.Namespace) -> dict[str, Any]:
         "--oracle-profile",
         json.dumps(oracle_profile, separators=(",", ":")),
     ]
+    for case_id in args.case_id:
+        command.extend(["--case-id", case_id])
     environment = os.environ.copy()
     for variable in ("PYTHONPATH", "PYTHONHOME", "VIRTUAL_ENV"):
         environment.pop(variable, None)
@@ -754,11 +801,12 @@ def api_target_command(args: argparse.Namespace) -> dict[str, Any]:
     manifest = read_manifest()
     manifest_digest = sha256_file(manifest_path)
     workload_digest = sha256_file(workload_path)
-    materialized_inputs = _validate_indexed_api_workflow(
+    workflow, materialized_inputs, public_surface_input_path = _validate_api_workflow_selection(
         manifest,
         workflow,
         workflow_path,
         input_digest,
+        requested_case_ids=args.case_id,
         fastapi_source=args.fastapi_source.resolve(),
         starlette_source=args.starlette_source.resolve(),
     )
@@ -766,7 +814,7 @@ def api_target_command(args: argparse.Namespace) -> dict[str, Any]:
         workflow,
         manifest.get("api_surface_contract", {}),
         _manifest_api_inventory(manifest),
-        input_path=_relative_path(workflow_path),
+        input_path=public_surface_input_path,
     )
     target_definition = dict(manifest["target"])
     if args.profile_extension:
@@ -804,6 +852,8 @@ def api_target_command(args: argparse.Namespace) -> dict[str, Any]:
         "--manifest-sha256",
         manifest_digest,
     ]
+    for case_id in args.case_id:
+        command.extend(["--case-id", case_id])
     environment = os.environ.copy()
     for variable in ("PYTHONPATH", "PYTHONHOME", "VIRTUAL_ENV"):
         environment.pop(variable, None)
@@ -867,6 +917,7 @@ def api_compare_command(args: argparse.Namespace) -> dict[str, Any]:
     )
     if workflow["schema"] not in API_WORKFLOW_SCHEMA_IDS:
         raise ContractError("api-compare requires a supported direct Python API workflow")
+    workflow = _select_api_workflow_cases(workflow, args.case_id)
     result_schema_id = API_RESULT_SCHEMA_IDS_BY_WORKFLOW[workflow["schema"]]
     if source.get("schema") != result_schema_id or target.get("schema") != result_schema_id:
         raise ContractError("direct API source and target result schemas differ from the workflow")
@@ -896,6 +947,8 @@ def api_compare_command(args: argparse.Namespace) -> dict[str, Any]:
     ]
     if args.profile_extension:
         command.extend(["--profile-extension", args.profile_extension])
+    for case_id in args.case_id:
+        command.extend(["--case-id", case_id])
     comparison = compare_api_workflow_results(
         workflow=workflow,
         source=source,
@@ -1053,6 +1106,7 @@ def build_parser() -> argparse.ArgumentParser:
     api_oracle.add_argument("--python", type=Path, default=ROOT / ".venv-oracle/bin/python")
     api_oracle.add_argument("--fastapi-source", type=Path, default=DEFAULT_FASTAPI_SOURCE)
     api_oracle.add_argument("--starlette-source", type=Path, default=DEFAULT_STARLETTE_SOURCE)
+    api_oracle.add_argument("--case-id", action="append", default=[])
     api_oracle.add_argument("--profile-extension")
     api_oracle.add_argument("--timeout-seconds", type=int, default=180)
     api_oracle.add_argument(
@@ -1069,6 +1123,7 @@ def build_parser() -> argparse.ArgumentParser:
     api_target.add_argument("--starlette-source", type=Path, default=DEFAULT_STARLETTE_SOURCE)
     api_target.add_argument("--target-source", type=Path, default=ROOT)
     api_target.add_argument("--starlette-rs-source", type=Path, default=DEFAULT_STARLETTE_RS_SOURCE)
+    api_target.add_argument("--case-id", action="append", default=[])
     api_target.add_argument("--profile-extension")
     api_target.add_argument("--timeout-seconds", type=int, default=180)
     api_target.add_argument(
@@ -1083,6 +1138,7 @@ def build_parser() -> argparse.ArgumentParser:
     api_compare.add_argument("--fastapi-source", type=Path, default=DEFAULT_FASTAPI_SOURCE)
     api_compare.add_argument("--source-result", required=True, type=Path)
     api_compare.add_argument("--target-result", required=True, type=Path)
+    api_compare.add_argument("--case-id", action="append", default=[])
     api_compare.add_argument("--profile-extension")
     api_compare.set_defaults(handler=api_compare_command)
 

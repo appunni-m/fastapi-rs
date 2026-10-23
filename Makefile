@@ -74,6 +74,7 @@ PARITY_PROCESS_ORACLE_RESULT ?= parity-results/process/oracle/fastapi-cli-proces
 PARITY_PROCESS_TARGET_RESULT ?= parity-results/process/target/fastapi-cli-process-workflow-$(PARITY_PROCESS_RUN_ID).json
 PARITY_PROCESS_COMPARISON_RESULT ?= parity-results/process/comparison/fastapi-cli-process-workflow-$(PARITY_PROCESS_RUN_ID).json
 PARITY_WORKFLOW_ID ?=
+PARITY_CASE_IDS ?=
 PARITY_WORKFLOW_PROFILE_EXTENSION ?=
 BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
 RELEASE_NOTICE_WHEEL ?=
@@ -146,7 +147,7 @@ help: ## Show common development commands
 	  '  make parity-api-*    Validate, run, and compare direct Python API probes' \
 	  '  make parity-process-* Run CLI processes; pass the same PARITY_PROCESS_RUN_ID to pair separate runs' \
 	  '  make parity-first-slice Run and compare the pinned first HTTP slice end to end' \
-	  '  make parity-workflow Run one materialized workflow by PARITY_WORKFLOW_ID' \
+	  '  make parity-workflow Run one indexed workflow; optional PARITY_CASE_IDS selects cases' \
 	  '  make benchmark-input-check Validate workload declarations and their parity inputs' \
 	  '  make benchmark-contract-check Validate benchmark workloads against parity inputs and runner policy' \
 	  '  make benchmark-first-slice Gate and measure the selected direct-ASGI workload' \
@@ -479,7 +480,7 @@ parity-workflow: ## Run one indexed workflow (PARITY_WORKFLOW_ID=<id>; API profi
 	  --starlette-rs-source "$(STARLETTE_RS_SOURCE)" \
 	  --target-source "$(CURDIR)" \
 	  $(if $(PARITY_WORKFLOW_PROFILE_EXTENSION),--profile-extension "$(PARITY_WORKFLOW_PROFILE_EXTENSION)") \
-	  --prepare
+	  --prepare $(foreach case,$(PARITY_CASE_IDS),--case-id "$(case)")
 
 benchmark-input-check: parity-inputs ## Validate benchmark workload declarations and parity-input references
 	$(PYTHON) -m scripts.benchmarks.contract --check

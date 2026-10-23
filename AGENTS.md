@@ -20,7 +20,8 @@
   `make fmt clippy` and static contract checks. Keep zero unit tests; never run
   pytest, unittest, or Cargo test. Run only checks required for the changed
   contract; require focused identity-checked parity for behavior changes and
-  don't repeat broad suites for unrelated edits.
+  don't repeat broad suites for unrelated edits. Select cases with
+  `PARITY_CASE_IDS`; reuse receipts only with matching source/input identities.
 - Map recursive dependencies by feature, purpose, version, native/language
   parts, license, and runtime/optional/build/dev role. Author parity recipes as
   YAML under `tests/fixtures/input-recipes/`; include no expected outputs.

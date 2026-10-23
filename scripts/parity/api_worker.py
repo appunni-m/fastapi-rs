@@ -1996,6 +1996,28 @@ def _validate_result_consistency(cases: list[dict[str, Any]]) -> None:
             raise WorkerError("completed API case must not expose an error")
 
 
+def _select_workflow_cases(
+    workflow: dict[str, Any], requested_case_ids: list[str]
+) -> dict[str, Any]:
+    cases = workflow["cases"]
+    available = [case["case_id"] for case in cases]
+    if not requested_case_ids:
+        return workflow
+    if len(requested_case_ids) != len(set(requested_case_ids)):
+        raise WorkerError("case selection repeats a case ID")
+    requested = set(requested_case_ids)
+    unknown = requested - set(available)
+    if unknown:
+        raise WorkerError(
+            "case selection contains IDs outside the indexed workflow: "
+            + ", ".join(sorted(unknown))
+        )
+    selected = [case for case in cases if case["case_id"] in requested]
+    if not selected:
+        raise WorkerError("case selection must contain at least one indexed case")
+    return {**workflow, "cases": selected}
+
+
 def run_oracle(
     input_path: Path,
     fastapi_root: Path,
@@ -2005,6 +2027,7 @@ def run_oracle(
     workload_sha256: str,
     manifest_sha256: str,
     profile: dict[str, Any],
+    case_ids: list[str],
 ) -> dict[str, Any]:
     if Path.cwd().resolve() != ROOT:
         raise WorkerError(f"worker must run from the repository root: {ROOT}")
@@ -2040,6 +2063,7 @@ def run_oracle(
         workload_sha256,
         fastapi_root,
     )
+    workflow = _select_workflow_cases(workflow, case_ids)
     identity = _oracle_identity(fastapi_root, starlette_root, profile)
     factory = _load_workload(workload_path, input_sha256, workflow["workload"]["factory"])
     cases = asyncio.run(
@@ -2126,6 +2150,7 @@ def main() -> int:
     parser.add_argument("--workload-sha256", required=True)
     parser.add_argument("--manifest-sha256", required=True)
     parser.add_argument("--oracle-profile", required=True)
+    parser.add_argument("--case-id", action="append", default=[])
     args = parser.parse_args()
     try:
         profile = json.loads(args.oracle_profile)
@@ -2142,6 +2167,7 @@ def main() -> int:
             workload_sha256=args.workload_sha256,
             manifest_sha256=args.manifest_sha256,
             profile=profile,
+            case_ids=args.case_id,
         )
     except (WorkerError, OSError, ValueError) as exc:
         print(json.dumps({"error": str(exc)}, ensure_ascii=False, allow_nan=False))

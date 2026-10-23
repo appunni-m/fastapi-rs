@@ -74,6 +74,7 @@ def run_target(
     input_sha256: str,
     workload_sha256: str,
     manifest_sha256: str,
+    case_ids: list[str],
 ) -> dict[str, Any]:
     """Execute the indexed direct-API workflow using only the installed target facade."""
     if Path.cwd().resolve() != ROOT:
@@ -124,6 +125,7 @@ def run_target(
         workload_sha256,
         fastapi_source,
     )
+    workflow = api_worker._select_workflow_cases(workflow, case_ids)
 
     started = dt.datetime.now(dt.UTC)
     factory = _load_workload(workload_path, input_sha256, factory_name)
@@ -213,6 +215,7 @@ def main() -> int:
     parser.add_argument("--input-sha256", required=True)
     parser.add_argument("--workload-sha256", required=True)
     parser.add_argument("--manifest-sha256", required=True)
+    parser.add_argument("--case-id", action="append", default=[])
     args = parser.parse_args()
     try:
         target_profile = json.loads(args.target_profile)
@@ -227,6 +230,7 @@ def main() -> int:
             input_sha256=args.input_sha256,
             workload_sha256=args.workload_sha256,
             manifest_sha256=args.manifest_sha256,
+            case_ids=args.case_id,
         )
     except Exception as exc:
         print(

@@ -222,6 +222,60 @@ def _profile_extension(
     return requested
 
 
+def _select_cases(
+    workflow: dict[str, Any], requested_case_ids: list[str]
+) -> tuple[list[dict[str, Any]], list[str]]:
+    cases = workflow["cases"]
+    available_case_ids = [case["case_id"] for case in cases]
+    if not requested_case_ids:
+        return cases, available_case_ids
+    if len(requested_case_ids) != len(set(requested_case_ids)):
+        raise ContractError("case selection repeats a case ID")
+    requested = set(requested_case_ids)
+    unknown_case_ids = requested - set(available_case_ids)
+    if unknown_case_ids:
+        raise ContractError(
+            "case selection contains IDs outside the indexed workflow: "
+            + ", ".join(sorted(unknown_case_ids))
+        )
+    selected_cases = [case for case in cases if case["case_id"] in requested]
+    return selected_cases, [case["case_id"] for case in selected_cases]
+
+
+def _materialize_case_selection(
+    *,
+    workflow_id: str,
+    indexed_input_path: Path,
+    selected_case_ids: list[str],
+    is_process: bool,
+) -> Path:
+    input_data = read_json(indexed_input_path)
+    if not isinstance(input_data, dict) or not isinstance(input_data.get("cases"), list):
+        raise ContractError("indexed workflow input has no case list")
+    selected_case_id_set = set(selected_case_ids)
+    input_data["cases"] = [
+        case for case in input_data["cases"] if case.get("case_id") in selected_case_id_set
+    ]
+    if [case.get("case_id") for case in input_data["cases"]] != selected_case_ids:
+        raise ContractError("selected input cases differ from the validated indexed workflow")
+
+    run_id = uuid.uuid4().hex
+    if is_process:
+        selected_input_path = (
+            ROOT / "tests/fixtures/inputs/parity" / f"case-selection-{run_id}.json"
+        )
+    else:
+        selected_input_path = PROCESS_RESULT_DIR / workflow_id / run_id / "input.json"
+        selected_input_path.parent.mkdir(parents=True, exist_ok=False)
+    serialized = json.dumps(input_data, indent=2, ensure_ascii=False) + "\n"
+    try:
+        with selected_input_path.open("x", encoding="utf-8", newline="\n") as stream:
+            stream.write(serialized)
+    except OSError as exc:
+        raise ContractError(f"cannot materialize selected workflow input: {exc}") from exc
+    return selected_input_path
+
+
 def _check_target_identity(
     result: dict[str, Any],
     *,
@@ -286,6 +340,12 @@ def _parser() -> argparse.ArgumentParser:
         help="required when a direct API workflow uses a non-core package profile",
     )
     parser.add_argument(
+        "--case-id",
+        action="append",
+        default=[],
+        help="run one indexed case; repeat to select a small case subset",
+    )
+    parser.add_argument(
         "--check-only", action="store_true", help="validate one indexed workflow without running it"
     )
     parser.add_argument(
@@ -303,7 +363,13 @@ def main() -> int:
     manifest, selected = _select_workflow(args.id, fastapi_source=fastapi_source)
     workflow = selected["workflow"]
     row = selected["row"]
-    workflow_path = selected["input"]
+    indexed_workflow_path = selected["input"]
+    indexed_case_ids = [case["case_id"] for case in workflow["cases"]]
+    selected_cases, selected_case_ids = _select_cases(workflow, args.case_id)
+    case_filter_applied = len(selected_case_ids) != len(indexed_case_ids)
+    if case_filter_applied:
+        workflow = {**workflow, "cases": selected_cases}
+    workflow_path = indexed_workflow_path
     schema = workflow["schema"]
     is_process = schema in PROCESS_WORKFLOW_SCHEMA_IDS
     is_api = schema in API_WORKFLOW_SCHEMA_IDS
@@ -317,7 +383,9 @@ def main() -> int:
                     "status": "valid",
                     "workflow_id": args.id,
                     "schema": schema,
-                    "case_count": len(workflow["cases"]),
+                    "indexed_case_count": len(indexed_case_ids),
+                    "case_count": len(selected_case_ids),
+                    "selected_case_ids": selected_case_ids,
                     "profile_extension": extension,
                 },
                 indent=2,
@@ -342,6 +410,13 @@ def main() -> int:
 
     oracle_python = ROOT / PROFILE_PATHS[oracle_extension][0]
     target_python = ROOT / PROFILE_PATHS[target_extension][1]
+    if case_filter_applied and not is_api:
+        workflow_path = _materialize_case_selection(
+            workflow_id=args.id,
+            indexed_input_path=indexed_workflow_path,
+            selected_case_ids=selected_case_ids,
+            is_process=is_process,
+        )
     fault_selected = not is_process and any(
         verification_mode(case) == "fault-contract" for case in workflow["cases"]
     )
@@ -366,6 +441,7 @@ def main() -> int:
     target_revision = _git_revision(target_source, "FastAPI-RS")
     starlette_rs_revision = _git_revision(starlette_rs_source, "Starlette-RS")
     target_source_digest = fastapi_rs_source_tree_sha256(target_source, starlette_rs_source)
+    indexed_input_sha256 = sha256_file(indexed_workflow_path)
     input_sha256 = sha256_file(workflow_path)
     recipe_path = ROOT / row["recipe_path"]
     recipe_sha256 = sha256_file(recipe_path)
@@ -511,6 +587,9 @@ def main() -> int:
                     str(starlette_source),
                 ]
             )
+            for command in (source_args, target_args, compare_args):
+                for case_id in args.case_id:
+                    command.extend(["--case-id", case_id])
         source_run = _run_json("oracle run", source_args)
         target_run = _run_json("target run", target_args)
         target_identity = _check_target_identity(
@@ -543,9 +622,11 @@ def main() -> int:
     freshness_checks = [
         (MANIFEST_PATH, manifest_sha256, "manifest"),
         (index_path, index_sha256, "materialized index"),
-        (workflow_path, input_sha256, "workflow input"),
+        (indexed_workflow_path, indexed_input_sha256, "indexed workflow input"),
         (recipe_path, recipe_sha256, "workflow recipe"),
     ]
+    if case_filter_applied and not is_api:
+        freshness_checks.append((workflow_path, input_sha256, "selected workflow input"))
     if workload_path is not None and workload_sha256 is not None:
         freshness_checks.append((workload_path, workload_sha256, "workflow workload"))
     for path, digest, label in freshness_checks:
@@ -561,7 +642,9 @@ def main() -> int:
                 "workflow_id": args.id,
                 "schema": schema,
                 "profile_extension": extension if not is_process else None,
-                "case_count": len(workflow["cases"]),
+                "indexed_case_count": len(indexed_case_ids),
+                "case_count": len(selected_case_ids),
+                "selected_case_ids": selected_case_ids,
                 "summary": summary,
                 "oracle_result": _artifact(source_run, "oracle run"),
                 "target_result": _artifact(target_run, "target run"),
@@ -569,6 +652,8 @@ def main() -> int:
                 "target_identity": target_identity,
                 "manifest_sha256": manifest_sha256,
                 "input_sha256": input_sha256,
+                "indexed_input_sha256": indexed_input_sha256,
+                "selected_input": workflow_path.relative_to(ROOT).as_posix(),
             },
             indent=2,
             sort_keys=True,
