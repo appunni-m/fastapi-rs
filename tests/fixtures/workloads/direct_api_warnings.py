@@ -1,7 +1,7 @@
-"""Argument bundles for FastAPI's deprecated parameter keyword observations.
+"""Argument bundles for FastAPI's deprecated API observations.
 
-Warning filename and line are part of the parity contract. Root File's source
-warning intentionally resolves to the pinned FastAPI wrapper at line 2249.
+Warning filename and line are part of the parity contract. FastAPI 0.157.0
+attributes the root File warning to `param_functions.py:2355`.
 """
 
 from __future__ import annotations
@@ -117,5 +117,31 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
         "operation-id-for-path-invalid-method": {
             "args": [],
             "kwargs": {"name": "read-item", "path": "/v1/items", "method": 42},
+        },
+        "operation-id-explicit-numeric": {
+            "args": [],
+            "kwargs": {
+                "route": SimpleNamespace(
+                    operation_id=17,
+                    name=None,
+                    path_format=None,
+                ),
+                "method": "GET",
+            },
+        },
+        "operation-id-fallback-non-string-values": {
+            "args": [],
+            "kwargs": {
+                "route": SimpleNamespace(
+                    operation_id=0,
+                    name=17,
+                    path_format=None,
+                ),
+                "method": "GET",
+            },
+        },
+        "operation-id-for-path-non-string-values": {
+            "args": [],
+            "kwargs": {"name": 17, "path": None, "method": "GET"},
         },
     }

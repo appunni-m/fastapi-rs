@@ -6701,14 +6701,19 @@ reviewed_api_contract_overlay:
           case_id: fastapi.deprecation.generate-operation-id-missing-name
         - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
           case_id: fastapi.deprecation.generate-operation-id-invalid-method
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+          case_id: fastapi.deprecation.generate-operation-id-explicit-numeric
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+          case_id: fastapi.deprecation.generate-operation-id-fallback-non-string-values
       feature_ids: [openapi-docs]
       observation_selectors: [python.attribute_value, python.call_outcome, python.warnings]
       supported_slice: >-
         The deprecated direct helper's truthy explicit-operation-ID return, None fallback,
         empty-string fallback, and missing operation_id/path_format/name errors are compared,
-        including the non-string method.lower() error and captured warning sidecars; the helper
-        is not used internally. Other route attribute types and non-string operation_id, name,
-        and path_format errors remain unreviewed.
+        including the non-string method.lower() error, truthy numeric operation_id passthrough,
+        falsey numeric fallback, non-string name/path_format conversion, and captured warning
+        sidecars; the helper is not used internally. Custom route attribute descriptors,
+        truthiness/str behavior, and their exceptions remain unreviewed.
       rust_binding: fastapi-rs/src/deprecated_api.rs::generate_operation_id
       source_evidence:
         - {path: fastapi/openapi/utils.py, symbol: generate_operation_id}
@@ -6716,7 +6721,7 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Non-string operation_id, name, and path_format values and their error behavior remain unreviewed.
+          - Custom route attribute descriptors and custom truthiness/str behavior remain unreviewed.
     fastapi.openapi.utils.get_openapi:
       rust_binding: fastapi-rs/src/openapi.rs::get_openapi
       source_evidence:
@@ -6887,23 +6892,26 @@ reviewed_api_contract_overlay:
           case_id: fastapi.deprecation.generate-operation-id-for-path
         - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
           case_id: fastapi.deprecation.generate-operation-id-for-path-invalid-method
+        - recipe_path: tests/fixtures/input-recipes/parity/direct-api-warnings.yaml
+          case_id: fastapi.deprecation.generate-operation-id-for-path-non-string-values
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
           - >-
             Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
-            branches, mutation of mutable arguments, non-string name/path inputs, and error paths
-            remain unproven.
+            branches, mutable argument objects, custom __str__ behavior and exceptions, and
+            uncommon method objects remain unproven.
         rust_binding: "fastapi-rs/src/deprecated_api.rs::generate_operation_id_for_path"
       supported_slice: >-
         Deprecated direct helper that returns the documented name+path slug with lowercase
-        method suffix and emits `FastAPIDeprecationWarning`.
+        method suffix and emits `FastAPIDeprecationWarning`; integer name and None path inputs
+        exercise Python string coercion.
       rust_binding: fastapi-rs/src/deprecated_api.rs::generate_operation_id_for_path
       source_evidence:
         - {path: fastapi/utils.py, symbol: generate_operation_id_for_path}
       feature_ids: [openapi-docs]
-      observation_selectors: [python.call_outcome, python.warnings]
+      observation_selectors: [python.attribute_value, python.call_outcome, python.warnings]
     fastapi.FastAPI:
       target_binding:
         implementation_owner: fastapi-rs
