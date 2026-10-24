@@ -179,6 +179,8 @@ def _profile_identity(
     environment = os.environ.copy()
     for variable in ("PYTHONPATH", "PYTHONHOME", "VIRTUAL_ENV"):
         environment.pop(variable, None)
+    environment["RUSTC_WRAPPER"] = ""
+    environment["CARGO_BUILD_RUSTC_WRAPPER"] = ""
     environment["PYTHONNOUSERSITE"] = "1"
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
     completed = subprocess.run(
