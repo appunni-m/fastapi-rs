@@ -2404,13 +2404,6 @@ reviewed_api_contract_overlay:
             header. Duplicate or multi-value propagation headers, baggage joining, metrics,
             logs, context lifetime, exporter effects, and telemetry-aware lifespan behavior
             remain unobserved.
-          - &response_field_traversal_gap >-
-            Visited included branches must prepare all own effective fields before
-            publishing the vector, retry the whole unpublished branch after a later
-            own constructor fails, descend into child branches only when matching
-            reaches them, and retain successful fields across miss/redirect/handle
-            paths. The seven response-field-traversal inputs are a required fresh
-            parity gate; static admission is not execution evidence.
           - &response_field_traversal_history_gap >-
             Route-version refresh/live additions, raw included-route proxies,
             URL/OpenAPI/WebSocket field traversal, empty-prefix validation traversal,
@@ -3199,10 +3192,11 @@ reviewed_api_contract_overlay:
         before child traversal, earlier full versus partial matches, misses, slash
         search and returned-Response field setup. They retain actual construction,
         callbacks, warnings/errors, exact status/ordered headers/body and full prior
-        non-state send fields through an early public state route. Source-derived
-        branch publication and traversal contracts require fresh identity-checked
-        source/target receipts; these mappings do not establish complete target
-        support, mutable router-version history or generic sibling behavior.
+        non-state send fields through an early public state route. The current
+        identity-checked seven-case gate matches FastAPI 0.157.0, Starlette
+        1.6.0, and Starlette-RS 4139a724. This establishes only these fixed
+        route trees; mutable router-version history and generic sibling behavior
+        remain unproven.
 
         The included-lifespan startup-suppression case compares startup outcome,
         response type, exact application exception, cleanup trace and final ASGI
@@ -3375,7 +3369,6 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - *response_field_traversal_gap
           - *response_field_traversal_history_gap
     fastapi.applications.FastAPI.frontend:
       target_binding:
@@ -7440,10 +7433,11 @@ reviewed_api_contract_overlay:
         before child traversal, earlier full versus partial matches, misses, slash
         search and returned-Response field setup. They retain actual construction,
         callbacks, warnings/errors, exact status/ordered headers/body and full prior
-        non-state send fields through an early public state route. Source-derived
-        branch publication and traversal contracts require fresh identity-checked
-        source/target receipts; these mappings do not establish complete target
-        support, mutable router-version history or generic sibling behavior.
+        non-state send fields through an early public state route. The current
+        identity-checked seven-case gate matches FastAPI 0.157.0, Starlette
+        1.6.0, and Starlette-RS 4139a724. This establishes only these fixed
+        route trees; mutable router-version history and generic sibling behavior
+        remain unproven.
         FastAPI(root_path=...) also writes its configured prefix into an empty ASGI
         scope before route execution; the proxy-root-path-without-auto-server input
         observes that scope value in the endpoint response and the associated
@@ -7490,7 +7484,6 @@ reviewed_api_contract_overlay:
             classification-cache history, descriptor hooks, arbitrary awaitable
             concurrency, or exact traceback parity. Static admission is not
             live source/target execution evidence.
-          - *response_field_traversal_gap
           - *response_field_traversal_history_gap
           - >-
             FastAPI's telemetry middleware and lifespan wrapper are source-backed
@@ -7669,10 +7662,11 @@ reviewed_api_contract_overlay:
         before child traversal, earlier full versus partial matches, misses, slash
         search and returned-Response field setup. They retain actual construction,
         callbacks, warnings/errors, exact status/ordered headers/body and full prior
-        non-state send fields through an early public state route. Source-derived
-        branch publication and traversal contracts require fresh identity-checked
-        source/target receipts; these mappings do not establish complete target
-        support, mutable router-version history or generic sibling behavior.
+        non-state send fields through an early public state route. The current
+        identity-checked seven-case gate matches FastAPI 0.157.0, Starlette
+        1.6.0, and Starlette-RS 4139a724. This establishes only these fixed
+        route trees; mutable router-version history and generic sibling behavior
+        remain unproven.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
@@ -7681,7 +7675,6 @@ reviewed_api_contract_overlay:
           - *response_class_provenance_gap
           - *response_field_serialization_gap
           - *response_field_history_gap
-          - *response_field_traversal_gap
           - *response_field_traversal_history_gap
           - "The included-lifespan startup-contract selector compares exact failure outcome/type and underlying exception class/message while excluding Starlette-RS-owned traceback frames; final ASGI scope state and cleanup are compared."
     fastapi.applications.FastAPI.include_router:
@@ -8035,10 +8028,11 @@ reviewed_api_contract_overlay:
         before child traversal, earlier full versus partial matches, misses, slash
         search and returned-Response field setup. They retain actual construction,
         callbacks, warnings/errors, exact status/ordered headers/body and full prior
-        non-state send fields through an early public state route. Source-derived
-        branch publication and traversal contracts require fresh identity-checked
-        source/target receipts; these mappings do not establish complete target
-        support, mutable router-version history or generic sibling behavior.
+        non-state send fields through an early public state route. The current
+        identity-checked seven-case gate matches FastAPI 0.157.0, Starlette
+        1.6.0, and Starlette-RS 4139a724. This establishes only these fixed
+        route trees; mutable router-version history and generic sibling behavior
+        remain unproven.
 
         An explicit include callback supplies the fallback for an included router whose callback retains its default, sampled by `generate-unique-id-function-precedence`. Nested callback error timing and non-string results remain unproven.
 
@@ -8065,7 +8059,6 @@ reviewed_api_contract_overlay:
           - *response_class_provenance_gap
           - *response_field_serialization_gap
           - *response_field_history_gap
-          - *response_field_traversal_gap
           - *response_field_traversal_history_gap
           - "The included-lifespan startup-contract selector compares exact failure outcome/type and underlying exception class/message while excluding Starlette-RS-owned traceback frames; final ASGI scope state and cleanup are compared."
     fastapi.applications.FastAPI.on_event:
@@ -9520,7 +9513,6 @@ reviewed_api_contract_overlay:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - *response_field_traversal_gap
           - *response_field_traversal_history_gap
           - "The included-lifespan startup-contract selector compares exact failure outcome/type and underlying exception class/message while excluding Starlette-RS-owned traceback frames; final ASGI scope state and cleanup are compared."
     fastapi.routing.APIRouter.frontend:
@@ -9797,10 +9789,11 @@ reviewed_api_contract_overlay:
         before child traversal, earlier full versus partial matches, misses, slash
         search and returned-Response field setup. They retain actual construction,
         callbacks, warnings/errors, exact status/ordered headers/body and full prior
-        non-state send fields through an early public state route. Source-derived
-        branch publication and traversal contracts require fresh identity-checked
-        source/target receipts; these mappings do not establish complete target
-        support, mutable router-version history or generic sibling behavior.
+        non-state send fields through an early public state route. The current
+        identity-checked seven-case gate matches FastAPI 0.157.0, Starlette
+        1.6.0, and Starlette-RS 4139a724. This establishes only these fixed
+        route trees; mutable router-version history and generic sibling behavior
+        remain unproven.
 
         A router-level callback is used for its own routes and retained as an inclusion candidate in the nested-tree sample `generate-unique-id-function-precedence`. Callback errors and non-string results remain unproven.
 
@@ -9819,7 +9812,6 @@ reviewed_api_contract_overlay:
           - *response_class_provenance_gap
           - *response_field_serialization_gap
           - *response_field_history_gap
-          - *response_field_traversal_gap
           - *response_field_traversal_history_gap
     fastapi.routing.APIRouter.add_event_handler:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyApiRouter::add_event_handler
@@ -10041,10 +10033,11 @@ reviewed_api_contract_overlay:
         before child traversal, earlier full versus partial matches, misses, slash
         search and returned-Response field setup. They retain actual construction,
         callbacks, warnings/errors, exact status/ordered headers/body and full prior
-        non-state send fields through an early public state route. Source-derived
-        branch publication and traversal contracts require fresh identity-checked
-        source/target receipts; these mappings do not establish complete target
-        support, mutable router-version history or generic sibling behavior.
+        non-state send fields through an early public state route. The current
+        identity-checked seven-case gate matches FastAPI 0.157.0, Starlette
+        1.6.0, and Starlette-RS 4139a724. This establishes only these fixed
+        route trees; mutable router-version history and generic sibling behavior
+        remain unproven.
 
         The GET decorator accepts a route-level callback that overrides router and include callbacks, sampled by `generate-unique-id-function-precedence`. Other verbs, callback errors or non-string results, and duplicate or empty operation IDs remain unproven.
 
@@ -10058,7 +10051,6 @@ reviewed_api_contract_overlay:
           - *response_class_provenance_gap
           - *response_field_serialization_gap
           - *response_field_history_gap
-          - *response_field_traversal_gap
           - *response_field_traversal_history_gap
     fastapi.routing.APIRouter.post:
       target_binding:
@@ -10749,10 +10741,11 @@ reviewed_api_contract_overlay:
         before child traversal, earlier full versus partial matches, misses, slash
         search and returned-Response field setup. They retain actual construction,
         callbacks, warnings/errors, exact status/ordered headers/body and full prior
-        non-state send fields through an early public state route. Source-derived
-        branch publication and traversal contracts require fresh identity-checked
-        source/target receipts; these mappings do not establish complete target
-        support, mutable router-version history or generic sibling behavior.
+        non-state send fields through an early public state route. The current
+        identity-checked seven-case gate matches FastAPI 0.157.0, Starlette
+        1.6.0, and Starlette-RS 4139a724. This establishes only these fixed
+        route trees; mutable router-version history and generic sibling behavior
+        remain unproven.
         The response-model serialization input applies a Pydantic `Field(exclude_if=...)`
         predicate during GET response encoding: the matching value is omitted and a
         non-matching value is retained in exact HTTP bodies. Other predicates and
@@ -10774,7 +10767,6 @@ reviewed_api_contract_overlay:
           - *response_class_provenance_gap
           - *response_field_serialization_gap
           - *response_field_history_gap
-          - *response_field_traversal_gap
           - *response_field_traversal_history_gap
     fastapi.applications.FastAPI.post:
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::post
@@ -10915,14 +10907,13 @@ reviewed_api_contract_overlay:
         earlier-partial-direct-match-reaches-later-full-include input registers an
         earlier direct POST with a fixed traced response model and a later included
         GET at the same URL. GET and POST requests observe actual selection, field
-        construction/reuse and exact response/state/send records. This source-derived
-        partial-versus-full boundary requires fresh identity-checked receipts; pure
-        terminal405 and broader method/route mutation remain outside this input.
+        construction/reuse and exact response/state/send records. The current
+        identity-checked seven-case gate matches this partial-versus-full boundary;
+        pure terminal405 and broader method/route mutation remain outside this input.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - *response_field_traversal_gap
           - *response_field_traversal_history_gap
     fastapi.applications.FastAPI.put:
       target_binding:
