@@ -563,7 +563,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@12
-    sha256: 4a9f5d0b88f0cbcb89cc40289a23ee57ecd8456f7ebd545dc1cf57df207f4427
+    sha256: b3e2115337e8bca47557d0380f8cd1fa306e45bdf0c1ddd1a1fed372a665f21f
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1831
@@ -87000,9 +87000,11 @@ api_surface_contract:
     sibling_contract_gap: &id047
       contract_id: starlette-1.6.0-full
       expected_operation_id: starlette.applications.Starlette.host
-      reason: The pinned Starlette-RS review classifies Starlette.host as supported, but the API source
-        catalog and manifest do not define a canonical registration-operation contract for it. Its supported
-        API-catalog candidate does not provide a method signature or registration behavior contract.
+      reason: The pinned Starlette-RS API catalog records the public method signature and its API review
+        classifies it as supported. The pinned sibling coverage matrix and input fixture also describe
+        and exercise host-route registration. However, the canonical API-source model and manifest do
+        not define a corresponding registration operation. Keep this inherited FastAPI member linked to
+        the sibling evidence while retaining its FastAPI-RS partial parity status.
       operation_absent_from_api_sources: true
       operation_absent_from_manifest: true
       api_source_surface_ref:
