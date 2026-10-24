@@ -609,12 +609,22 @@ def _observe(
     include_selectors: bool = False,
     app: Any | None = None,
 ) -> list[dict[str, Any]]:
-    starts = [message for message in messages if message.get("type") == "http.response.start"]
-    start = starts[0] if starts else None
+    response_start_types = {
+        "http.response.start": "http.response",
+        "websocket.http.response.start": "websocket.http.response",
+    }
+    response_start = next(
+        (message for message in messages if message.get("type") in response_start_types),
+        None,
+    )
+    response_prefix = (
+        response_start_types[response_start["type"]] if response_start is not None else None
+    )
+    start = response_start
     body = b"".join(
         message.get("body", b"")
         for message in messages
-        if message.get("type") == "http.response.body"
+        if response_prefix is not None and message.get("type") == f"{response_prefix}.body"
     )
     message_types = [message.get("type") for message in messages]
     telemetry_spans = None

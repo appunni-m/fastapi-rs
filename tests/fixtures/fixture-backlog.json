@@ -486401,6 +486401,10 @@
     },
     {
       "candidate_observation_selectors": [
+        "asgi.send.message_types",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "dependency.call_order",
         "dependency.cleanup_order",
         "error.class",
@@ -486471,6 +486475,21 @@
             "websocket.close_code",
             "websocket.event_order",
             "websocket.messages"
+          ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "asgi.send.message_types",
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
+          ],
+          "selectors": [
+            "asgi.send.message_types",
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
           ]
         }
       ],
@@ -486547,6 +486566,13 @@
           "mapping_scope": "test_function_source",
           "mapping_status": "candidate",
           "observation_selectors": [
+            "asgi.send.message_types",
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome",
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
             "websocket.close_code",
             "websocket.event_order",
             "websocket.messages"
@@ -486554,11 +486580,49 @@
           "reviewed_mapping": null,
           "selector_evidence": [
             {
+              "feature_id": "request-validation",
+              "selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ]
+            },
+            {
+              "feature_id": "dependency-security",
+              "selectors": [
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status"
+              ]
+            },
+            {
+              "feature_id": "status-codes",
+              "selectors": [
+                "http.body.bytes",
+                "http.status"
+              ]
+            },
+            {
               "feature_id": "websocket-lifecycle",
               "selectors": [
                 "websocket.close_code",
                 "websocket.event_order",
                 "websocket.messages"
+              ]
+            },
+            {
+              "feature_id": null,
+              "schema_extension_required": [
+                "asgi.send.message_types",
+                "construction.exception_class",
+                "construction.exception_message",
+                "construction.outcome"
+              ],
+              "selectors": [
+                "asgi.send.message_types",
+                "construction.exception_class",
+                "construction.exception_message",
+                "construction.outcome"
               ]
             }
           ],
@@ -486598,10 +486662,39 @@
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/parameter-alias-choices-0157.yaml",
           "workflow_id": "parameter-alias-choices-0157"
+        },
+        {
+          "case_ids": [
+            "fastapi.security-websockets.optional-missing-credentials",
+            "fastapi.security-websockets.required-missing-credentials-denial"
+          ],
+          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status, websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_status": "partial",
+          "observation_selectors": [
+            "asgi.send.message_types",
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome",
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "websocket.close_code",
+            "websocket.event_order",
+            "websocket.messages"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/security-websocket-auth.yaml",
+          "workflow_id": "security-websocket-auth"
         }
       ],
       "input_only": true,
       "observation_selectors": [
+        "asgi.send.message_types",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
         "websocket.close_code",
         "websocket.event_order",
         "websocket.messages"
@@ -486618,6 +486711,26 @@
             "websocket.messages"
           ],
           "workflow_id": "parameter-alias-choices-0157"
+        },
+        {
+          "case_ids": [
+            "fastapi.security-websockets.optional-missing-credentials",
+            "fastapi.security-websockets.required-missing-credentials-denial"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/security-websocket-auth.yaml",
+          "selectors": [
+            "asgi.send.message_types",
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome",
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "websocket.close_code",
+            "websocket.event_order",
+            "websocket.messages"
+          ],
+          "workflow_id": "security-websocket-auth"
         }
       ],
       "source_evidence": {

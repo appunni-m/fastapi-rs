@@ -649658,6 +649658,10 @@
     {
       "benchmark_workload_id": null,
       "candidate_observation_selectors": [
+        "asgi.send.message_types",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "dependency.call_order",
         "dependency.cleanup_order",
         "error.class",
@@ -649729,6 +649733,21 @@
             "websocket.event_order",
             "websocket.messages"
           ]
+        },
+        {
+          "feature_id": null,
+          "schema_extension_required": [
+            "asgi.send.message_types",
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
+          ],
+          "selectors": [
+            "asgi.send.message_types",
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome"
+          ]
         }
       ],
       "exclusion_reason": null,
@@ -649759,6 +649778,28 @@
             ],
             "recipe_path": "tests/fixtures/input-recipes/parity/parameter-alias-choices-0157.yaml",
             "workflow_id": "parameter-alias-choices-0157"
+          },
+          {
+            "case_ids": [
+              "fastapi.security-websockets.optional-missing-credentials",
+              "fastapi.security-websockets.required-missing-credentials-denial"
+            ],
+            "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status, websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "asgi.send.message_types",
+              "construction.exception_class",
+              "construction.exception_message",
+              "construction.outcome",
+              "http.body.bytes",
+              "http.headers.ordered",
+              "http.status",
+              "websocket.close_code",
+              "websocket.event_order",
+              "websocket.messages"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/security-websocket-auth.yaml",
+            "workflow_id": "security-websocket-auth"
           }
         ],
         "mapping_rule": "whole-token source signals plus explicitly reviewed function-to-feature mappings; candidate only",
@@ -649786,7 +649827,7 @@
         ],
         "reviewed_module_mapping": {
           "contract_gate": "Partial coverage only. The selectors describe observations available in the linked independent workflow and do not claim complete upstream test or branch parity.",
-          "rationale": "The independent WebSocket workflow supplies HTTP Bearer credentials through FastAPI Security and observes accepted messages and close order. Other security schemes and denial responses are outside this partial sample.",
+          "rationale": "Independent HTTP Bearer WebSocket cases cover accepted credentials, required-credential denial through the Starlette 1.6.0 denial-response extension, and optional missing credentials. The broader security-scheme parameter matrix remains outside this partial sample.",
           "stimulus_notes": "Partial source-backed mapping to independently authored YAML recipes. The linked workloads use new inputs and record no expected outputs; unlinked source branches and edge cases remain outside this mapping.",
           "supporting_sources": [
             {
@@ -649808,6 +649849,25 @@
                 "websocket.messages"
               ],
               "recipe_path": "tests/fixtures/input-recipes/parity/parameter-alias-choices-0157.yaml"
+            },
+            {
+              "case_ids": [
+                "fastapi.security-websockets.required-missing-credentials-denial",
+                "fastapi.security-websockets.optional-missing-credentials"
+              ],
+              "observation_selectors": [
+                "asgi.send.message_types",
+                "construction.exception_class",
+                "construction.exception_message",
+                "construction.outcome",
+                "http.body.bytes",
+                "http.headers.ordered",
+                "http.status",
+                "websocket.close_code",
+                "websocket.event_order",
+                "websocket.messages"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/security-websocket-auth.yaml"
             }
           ]
         },
@@ -649817,6 +649877,13 @@
       },
       "mapping_status": "partially_mapped",
       "observation_selectors": [
+        "asgi.send.message_types",
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.headers.ordered",
+        "http.status",
         "websocket.close_code",
         "websocket.event_order",
         "websocket.messages"
@@ -649835,6 +649902,26 @@
             "websocket.messages"
           ],
           "workflow_id": "parameter-alias-choices-0157"
+        },
+        {
+          "case_ids": [
+            "fastapi.security-websockets.optional-missing-credentials",
+            "fastapi.security-websockets.required-missing-credentials-denial"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/security-websocket-auth.yaml",
+          "selectors": [
+            "asgi.send.message_types",
+            "construction.exception_class",
+            "construction.exception_message",
+            "construction.outcome",
+            "http.body.bytes",
+            "http.headers.ordered",
+            "http.status",
+            "websocket.close_code",
+            "websocket.event_order",
+            "websocket.messages"
+          ],
+          "workflow_id": "security-websocket-auth"
         }
       ],
       "source_path": "tests/test_security_websockets.py",

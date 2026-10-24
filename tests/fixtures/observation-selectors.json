@@ -136,7 +136,7 @@
     },
     {
       "id": "http.body.bytes",
-      "projection": "Concatenated raw ASGI HTTP response body bytes.",
+      "projection": "Concatenated raw ASGI HTTP response body bytes, including extension-backed WebSocket denial responses.",
       "comparison": "exact-bytes",
       "encoding": "base64",
       "workflow_support": "supported"
@@ -162,14 +162,14 @@
     },
     {
       "id": "http.headers.ordered",
-      "projection": "Ordered ASGI response header byte pairs, retaining duplicate names and values.",
+      "projection": "Ordered ASGI response header byte pairs, retaining duplicate names and values, including extension-backed WebSocket denial responses.",
       "comparison": "ordered-exact",
       "encoding": "base64-pairs",
       "workflow_support": "supported"
     },
     {
       "id": "http.status",
-      "projection": "ASGI HTTP response status code.",
+      "projection": "ASGI HTTP response status code, including extension-backed WebSocket denial responses.",
       "comparison": "exact",
       "workflow_support": "supported"
     },

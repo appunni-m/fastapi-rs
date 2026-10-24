@@ -1909,7 +1909,7 @@ fn dependency_annotations(py: Python<'_>) -> PyResult<Py<PyAny>> {
     let annotations = PyDict::new(py);
     annotations.set_item(
         "request",
-        py.import("starlette.requests")?.getattr("Request")?,
+        py.import("starlette.requests")?.getattr("HTTPConnection")?,
     )?;
     Ok(annotations.unbind().into_any())
 }
@@ -1921,7 +1921,7 @@ fn dependency_signature(py: Python<'_>) -> PyResult<Py<PyAny>> {
     let parameter_kwargs = PyDict::new(py);
     parameter_kwargs.set_item(
         "annotation",
-        py.import("starlette.requests")?.getattr("Request")?,
+        py.import("starlette.requests")?.getattr("HTTPConnection")?,
     )?;
     let request = parameter_type.call(("request", kind), Some(&parameter_kwargs))?;
     let parameters = PyList::new(py, [request])?;
@@ -2724,7 +2724,7 @@ fn api_key_dependency_annotations(py: Python<'_>) -> PyResult<Py<PyAny>> {
     let annotations = PyDict::new(py);
     annotations.set_item(
         "request",
-        py.import("starlette.requests")?.getattr("Request")?,
+        py.import("starlette.requests")?.getattr("HTTPConnection")?,
     )?;
     annotations.set_item("return", api_key_return_annotation(py)?)?;
     Ok(annotations.unbind().into_any())
@@ -2737,7 +2737,7 @@ fn api_key_dependency_signature(py: Python<'_>) -> PyResult<Py<PyAny>> {
     let parameter_kwargs = PyDict::new(py);
     parameter_kwargs.set_item(
         "annotation",
-        py.import("starlette.requests")?.getattr("Request")?,
+        py.import("starlette.requests")?.getattr("HTTPConnection")?,
     )?;
     let request = parameter_type.call(("request", kind), Some(&parameter_kwargs))?;
     let parameters = PyList::new(py, [request])?;

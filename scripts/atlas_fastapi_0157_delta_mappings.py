@@ -121,6 +121,7 @@ def _module(rationale: str, links: tuple[tuple[str, tuple[str, ...]], ...]):
 
 
 _ALIASES = "tests/fixtures/input-recipes/parity/parameter-alias-choices-0157.yaml"
+_WS_AUTH = "tests/fixtures/input-recipes/parity/security-websocket-auth.yaml"
 _COMBINED = "tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml"
 _MODULES: dict[str, dict[str, Any]] = {
     "tests/test_body_alias_choices.py": _module(
@@ -213,8 +214,17 @@ _MODULES: dict[str, dict[str, Any]] = {
         ),
     ),
     "tests/test_security_websockets.py": _module(
-        "The independent WebSocket workflow supplies HTTP Bearer credentials through FastAPI Security and observes accepted messages and close order. Other security schemes and denial responses are outside this partial sample.",
-        ((_ALIASES, ("fastapi.parameter-alias-choices-0157.websocket-security",)),),
+        "Independent HTTP Bearer WebSocket cases cover accepted credentials, required-credential denial through the Starlette 1.6.0 denial-response extension, and optional missing credentials. The broader security-scheme parameter matrix remains outside this partial sample.",
+        (
+            (_ALIASES, ("fastapi.parameter-alias-choices-0157.websocket-security",)),
+            (
+                _WS_AUTH,
+                (
+                    "fastapi.security-websockets.required-missing-credentials-denial",
+                    "fastapi.security-websockets.optional-missing-credentials",
+                ),
+            ),
+        ),
     ),
     "tests/test_stream_non_finite_floats.py": _module(
         "An independent SSE request streams non-finite float values and observes response headers and bytes. Model serialization modes, nested values, JSONL, and raw event variants remain outside this partial sample.",
