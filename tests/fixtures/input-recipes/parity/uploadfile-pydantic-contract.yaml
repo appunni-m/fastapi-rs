@@ -94,6 +94,55 @@ cases:
     kind: upstream_api_definition
     symbol_id: fastapi.datastructures.UploadFile
     sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
+- case_id: fastapi.uploadfile.pydantic-contract.class-inheritance-identity
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: inspect-uploadfile-class-inheritance-and-identity
+    kind: http_request
+    scope:
+      type: http
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      method: GET
+      scheme: http
+      path: /uploadfile-pydantic-contract/class-inheritance-identity
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+    receive_events:
+    - type: http.request
+      body: ''
+      more_body: false
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - body
+      comparison: exact
+  source_evidence:
+  - path: fastapi/__init__.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.UploadFile
+    sha256: 21a36edd0767852e0c4e02d1fbcb0a0a993ef3423fbf02b77882f152bb12d068
+  - path: fastapi/datastructures.py
+    kind: upstream_api_definition
+    symbol_id: fastapi.datastructures.UploadFile
+    sha256: 5cfba09e88c7738374ede1795e9d534e774fda032fd5f1b893ed0be1576beca7
 - case_id: fastapi.uploadfile.pydantic-contract.accept-starlette-base
   verification: parity
   factory_input: {}
