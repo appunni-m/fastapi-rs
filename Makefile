@@ -81,6 +81,8 @@ PARITY_PROCESS_COMPARISON_RESULT ?= parity-results/process/comparison/fastapi-cl
 PARITY_WORKFLOW_ID ?=
 PARITY_CASE_IDS ?=
 PARITY_WORKFLOW_PROFILE_EXTENSION ?=
+PARITY_REUSE ?= 1
+PARITY_FORCE_PREPARE ?= 0
 BENCHMARK_WORKLOAD ?= benchmarks/workloads/first-slice-valid-asgi.yaml
 API_BENCHMARK_WORKLOAD ?= benchmarks/workloads/api/openapi-dependency-graph-20x101.yaml
 API_BENCHMARK_COMPARISON ?=
@@ -156,7 +158,7 @@ help: ## Show common development commands
 	  '  make parity-api-*    Validate, run, and compare direct Python API probes' \
 	  '  make parity-process-* Run CLI processes; pass the same PARITY_PROCESS_RUN_ID to pair separate runs' \
 	  '  make parity-first-slice Run and compare the pinned first HTTP slice end to end' \
-	  '  make parity-workflow Run one indexed workflow; optional PARITY_CASE_IDS selects cases' \
+	  '  make parity-workflow Select cases; ASGI/API receipts reused; PARITY_REUSE=0 forces rerun' \
 	  '  make benchmark-input-check Validate workload declarations and their parity inputs' \
 	  '  make benchmark-contract-check Validate benchmark workloads against parity inputs and runner policy' \
 	  '  make benchmark-first-slice Gate and measure the selected direct-ASGI workload' \
@@ -498,7 +500,7 @@ parity-first-slice: parity-inputs parity-prepare-target ## Rebuild and exactly c
 	  --oracle-python "$(ORACLE_PYTHON)" \
 	  --target-python "$(TARGET_PYTHON)"
 
-parity-workflow: ## Run one indexed workflow (PARITY_WORKFLOW_ID=<id>; API profile may be explicit)
+parity-workflow: ## Run selected cases (ASGI/API receipts reused by default; process workflows rerun)
 	@test -n "$(PARITY_WORKFLOW_ID)" || (printf '%s\n' 'Set PARITY_WORKFLOW_ID to one materialized index ID.' >&2; exit 2)
 	$(PYTHON) -m scripts.parity.run_indexed_workflow \
 	  --id "$(PARITY_WORKFLOW_ID)" \
@@ -507,7 +509,9 @@ parity-workflow: ## Run one indexed workflow (PARITY_WORKFLOW_ID=<id>; API profi
 	  --starlette-rs-source "$(STARLETTE_RS_SOURCE)" \
 	  --target-source "$(CURDIR)" \
 	  $(if $(PARITY_WORKFLOW_PROFILE_EXTENSION),--profile-extension "$(PARITY_WORKFLOW_PROFILE_EXTENSION)") \
-	  --prepare $(foreach case,$(PARITY_CASE_IDS),--case-id "$(case)")
+	  $(if $(filter 1 true yes,$(PARITY_FORCE_PREPARE)),--prepare,--prepare-if-needed) \
+	  $(if $(filter 0 false no,$(PARITY_REUSE)),--no-reuse) \
+	  $(foreach case,$(PARITY_CASE_IDS),--case-id "$(case)")
 
 benchmark-input-check: parity-inputs ## Validate benchmark workload declarations and parity-input references
 	$(PYTHON) -m scripts.benchmarks.contract --check

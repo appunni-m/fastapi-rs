@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -13,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from scripts.build_parity_inputs import read_recipe
+from scripts.parity.comparator import SHARED_ORACLE_PACKAGES
 from scripts.parity.contract import (
     API_WORKFLOW_SCHEMA_IDS,
     ROOT,
@@ -20,6 +23,8 @@ from scripts.parity.contract import (
     load_workflow,
     read_json,
     read_manifest,
+    select_oracle_profile,
+    select_target_profile,
     sha256_file,
 )
 from scripts.parity.fault_contracts import verification_mode
@@ -36,6 +41,11 @@ from scripts.parity.source_identity import fastapi_rs_source_tree_sha256
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 INDEXED_INDEX_SCHEMA = "fastapi-rs/materialized-input-index@12"
 PROCESS_RESULT_DIR = ROOT / "parity-results/indexed"
+PROFILE_RECEIPT_DIR = ROOT / "parity-results/indexed-profiles"
+CASE_RECEIPT_DIR = ROOT / "parity-results/indexed-receipts"
+PROFILE_RECEIPT_SCHEMA = "fastapi-rs/indexed-profile-receipt@1"
+CASE_RECEIPT_SCHEMA = "fastapi-rs/indexed-parity-reuse-receipt@1"
+PARITY_RESULTS_ROOT = (ROOT / "parity-results").resolve()
 
 PROFILE_PATHS: dict[str | None, tuple[str, str]] = {
     None: (".venv-oracle/bin/python", ".venv-target/bin/python"),
@@ -120,6 +130,276 @@ def _run_json(step: str, arguments: list[str], *, timeout: int = 1800) -> dict[s
     if not isinstance(result, dict):
         raise ContractError(f"{step} returned a non-object result")
     return result
+
+
+def _canonical_sha256(value: Any) -> str:
+    canonical = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def _profile_identity(
+    *,
+    python: Path,
+    lane: str,
+    profile: dict[str, Any],
+    fastapi_source: Path,
+    starlette_source: Path,
+    target_source: Path,
+    starlette_rs_source: Path,
+    fault_injection_required: bool | None = None,
+) -> dict[str, Any]:
+    command = [
+        str(python),
+        "-m",
+        "scripts.parity.profile_identity",
+        lane,
+        "--profile-json",
+        json.dumps(profile, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
+    ]
+    if lane == "oracle":
+        command.extend(
+            ["--fastapi-source", str(fastapi_source), "--starlette-source", str(starlette_source)]
+        )
+    else:
+        command.extend(
+            [
+                "--target-source",
+                str(target_source),
+                "--starlette-rs-source",
+                str(starlette_rs_source),
+            ]
+        )
+        if fault_injection_required is not None:
+            command.extend(
+                [
+                    "--fault-injection-required",
+                    "true" if fault_injection_required else "false",
+                ]
+            )
+    environment = os.environ.copy()
+    for variable in ("PYTHONPATH", "PYTHONHOME", "VIRTUAL_ENV"):
+        environment.pop(variable, None)
+    environment["PYTHONNOUSERSITE"] = "1"
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
+    completed = subprocess.run(
+        command,
+        cwd=ROOT,
+        env=environment,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=180,
+    )
+    if completed.returncode != 0:
+        raise ContractError(
+            f"{lane} profile identity probe failed with exit code {completed.returncode}:\n"
+            f"{completed.stdout}{completed.stderr}"
+        )
+    try:
+        identity = json.loads(completed.stdout)
+    except json.JSONDecodeError as exc:
+        raise ContractError(f"{lane} profile identity probe returned invalid JSON: {exc}") from exc
+    if not isinstance(identity, dict) or "identity_error" in identity:
+        raise ContractError(
+            f"{lane} profile identity probe returned an invalid identity: {identity}"
+        )
+    return identity
+
+
+def _probe_profile_pair(
+    *,
+    oracle_python: Path,
+    target_python: Path,
+    oracle_profile: dict[str, Any],
+    target_profile: dict[str, Any],
+    fastapi_source: Path,
+    starlette_source: Path,
+    target_source: Path,
+    starlette_rs_source: Path,
+    fault_injection_required: bool | None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    oracle_identity = _profile_identity(
+        python=oracle_python,
+        lane="oracle",
+        profile=oracle_profile,
+        fastapi_source=fastapi_source,
+        starlette_source=starlette_source,
+        target_source=target_source,
+        starlette_rs_source=starlette_rs_source,
+    )
+    target_identity = _profile_identity(
+        python=target_python,
+        lane="target",
+        profile=target_profile,
+        fastapi_source=fastapi_source,
+        starlette_source=starlette_source,
+        target_source=target_source,
+        starlette_rs_source=starlette_rs_source,
+        fault_injection_required=fault_injection_required,
+    )
+    return oracle_identity, target_identity
+
+
+def _write_receipt(path: Path, receipt: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")
+    try:
+        temporary.write_text(
+            json.dumps(receipt, ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False)
+            + "\n",
+            encoding="utf-8",
+        )
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def _read_artifact_ref(reference: Any, *, product: str) -> tuple[dict[str, Any], str] | None:
+    if not isinstance(reference, dict):
+        return None
+    expected_keys = (
+        {"path", "sha256", "run_id", "product"}
+        if product != "comparison"
+        else {
+            "path",
+            "sha256",
+            "run_id",
+        }
+    )
+    if set(reference) != expected_keys:
+        return None
+    relative_path = reference.get("path")
+    if not isinstance(relative_path, str):
+        return None
+    artifact_path = (ROOT / relative_path).resolve()
+    try:
+        artifact_path.relative_to(PARITY_RESULTS_ROOT)
+    except ValueError:
+        return None
+    if not artifact_path.is_file() or sha256_file(artifact_path) != reference.get("sha256"):
+        return None
+    try:
+        artifact = read_json(artifact_path)
+    except (OSError, ValueError, ContractError):
+        return None
+    if not isinstance(artifact, dict) or artifact.get("run_id") != reference.get("run_id"):
+        return None
+    if product != "comparison" and artifact.get("product") != product:
+        return None
+    return artifact, relative_path
+
+
+def _case_result_matches(result: dict[str, Any], *, product: str, context: dict[str, Any]) -> bool:
+    if (
+        result.get("product") != product
+        or result.get("status") != "completed"
+        or not isinstance(result.get("schema"), str)
+    ):
+        return False
+    if result.get("identity") != context[f"{product}_identity"]:
+        return False
+    input_identity = result.get("input")
+    manifest_identity = result.get("manifest")
+    if (
+        not isinstance(input_identity, dict)
+        or input_identity.get("sha256") != context["input_sha256"]
+        or input_identity.get("schema") != context["workflow_schema"]
+    ):
+        return False
+    if (
+        not isinstance(manifest_identity, dict)
+        or manifest_identity.get("path") != "tests/fixtures/manifest.yaml"
+        or manifest_identity.get("sha256") != context["manifest_sha256"]
+    ):
+        return False
+    workload = result.get("workload")
+    if (
+        not isinstance(workload, dict)
+        or workload.get("path") != context["workload_path"]
+        or workload.get("sha256") != context["workload_sha256"]
+        or workload.get("factory") != context["workload_factory"]
+    ):
+        return False
+    if result.get("infrastructure_errors"):
+        return False
+    cases = result.get("cases")
+    return (
+        isinstance(cases, list)
+        and all(isinstance(case, dict) and isinstance(case.get("case_id"), str) for case in cases)
+        and [case["case_id"] for case in cases] == context["selected_case_ids"]
+    )
+
+
+def _load_cached_case(
+    receipt_path: Path,
+    *,
+    context: dict[str, Any],
+    profile_context_sha256: str,
+) -> dict[str, Any] | None:
+    if not receipt_path.is_file():
+        return None
+    try:
+        receipt = read_json(receipt_path)
+    except (OSError, ValueError, ContractError):
+        return None
+    context_sha256 = _canonical_sha256(context)
+    if (
+        not isinstance(receipt, dict)
+        or receipt.get("schema") != CASE_RECEIPT_SCHEMA
+        or receipt.get("status") != "passed"
+        or receipt.get("context") != context
+        or receipt.get("context_sha256") != context_sha256
+        or receipt.get("profile_context_sha256") != profile_context_sha256
+    ):
+        return None
+
+    oracle_ref = receipt.get("oracle_result")
+    target_ref = receipt.get("target_result")
+    comparison_ref = receipt.get("comparison_result")
+    oracle_entry = _read_artifact_ref(oracle_ref, product="oracle")
+    target_entry = _read_artifact_ref(target_ref, product="target")
+    comparison_entry = _read_artifact_ref(comparison_ref, product="comparison")
+    if oracle_entry is None or target_entry is None or comparison_entry is None:
+        return None
+    oracle_result, _ = oracle_entry
+    target_result, _ = target_entry
+    comparison_result, comparison_relative_path = comparison_entry
+    if not _case_result_matches(oracle_result, product="oracle", context=context):
+        return None
+    if not _case_result_matches(target_result, product="target", context=context):
+        return None
+    if oracle_result.get("schema") != target_result.get("schema"):
+        return None
+    comparison_input = comparison_result.get("input")
+    comparison_manifest = comparison_result.get("manifest")
+    if (
+        comparison_result.get("status") != "completed"
+        or not isinstance(comparison_input, dict)
+        or comparison_input.get("sha256") != context["input_sha256"]
+        or comparison_input.get("schema") != context["workflow_schema"]
+        or not isinstance(comparison_manifest, dict)
+        or comparison_manifest.get("path") != "tests/fixtures/manifest.yaml"
+        or comparison_manifest.get("sha256") != context["manifest_sha256"]
+        or comparison_result.get("infrastructure_errors")
+        or comparison_result.get("source_result") != oracle_ref
+        or comparison_result.get("target_result") != target_ref
+        or not _comparison_passed(comparison_result, len(context["selected_case_ids"]))
+    ):
+        return None
+    comparison_cases = comparison_result.get("cases")
+    if (
+        not isinstance(comparison_cases, list)
+        or not all(isinstance(case, dict) for case in comparison_cases)
+        or [case["case_id"] for case in comparison_cases] != context["selected_case_ids"]
+        or any(case.get("outcome") != "pass" for case in comparison_cases)
+    ):
+        return None
+    return {
+        "oracle_result": oracle_ref,
+        "target_result": target_ref,
+        "comparison_result": comparison_relative_path,
+        "summary": comparison_result["summary"],
+    }
 
 
 def _run_prepare(
@@ -331,6 +611,83 @@ def _comparison_passed(result: dict[str, Any], count: int) -> bool:
     )
 
 
+def _profile_context(
+    *,
+    profile_extension: str | None,
+    target_revision: str,
+    starlette_rs_revision: str,
+    target_source_digest: str,
+    oracle_profile: dict[str, Any],
+    target_profile: dict[str, Any],
+    oracle_identity: dict[str, Any],
+    target_identity: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        "profile_extension": profile_extension,
+        "target_revision": target_revision,
+        "starlette_rs_revision": starlette_rs_revision,
+        "target_source_digest": target_source_digest,
+        "oracle_profile": oracle_profile,
+        "target_profile": target_profile,
+        "oracle_identity": oracle_identity,
+        "target_identity": target_identity,
+    }
+
+
+def _profile_receipt_matches(path: Path, context: dict[str, Any]) -> bool:
+    if not path.is_file():
+        return False
+    try:
+        receipt = read_json(path)
+    except (OSError, ValueError, ContractError):
+        return False
+    context_sha256 = _canonical_sha256(context)
+    return (
+        isinstance(receipt, dict)
+        and receipt.get("schema") == PROFILE_RECEIPT_SCHEMA
+        and receipt.get("status") == "prepared"
+        and receipt.get("context") == context
+        and receipt.get("context_sha256") == context_sha256
+    )
+
+
+def _write_profile_receipt(path: Path, context: dict[str, Any]) -> None:
+    _write_receipt(
+        path,
+        {
+            "schema": PROFILE_RECEIPT_SCHEMA,
+            "status": "prepared",
+            "context": context,
+            "context_sha256": _canonical_sha256(context),
+        },
+    )
+
+
+def _artifact_reference(path: str, *, product: str | None) -> dict[str, str]:
+    artifact_path = (ROOT / path).resolve()
+    try:
+        artifact_path.relative_to(PARITY_RESULTS_ROOT)
+        relative_path = artifact_path.relative_to(ROOT).as_posix()
+    except ValueError as exc:
+        raise ContractError("parity artifact reference is outside parity-results/") from exc
+    artifact = read_json(artifact_path)
+    if not isinstance(artifact, dict):
+        raise ContractError("parity artifact must contain a JSON object")
+    run_id = artifact.get("run_id")
+    if not isinstance(run_id, str) or not run_id:
+        raise ContractError("parity artifact has no immutable run ID")
+    reference = {
+        "path": relative_path,
+        "sha256": sha256_file(artifact_path),
+        "run_id": run_id,
+    }
+    if product is not None:
+        if artifact.get("product") != product:
+            raise ContractError(f"parity artifact is not a {product} result")
+        reference["product"] = product
+    return reference
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -354,8 +711,19 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--check-only", action="store_true", help="validate one indexed workflow without running it"
     )
+    prepare = parser.add_mutually_exclusive_group()
+    prepare.add_argument(
+        "--prepare",
+        action="store_true",
+        help="force preparation of this workflow's oracle and target profiles",
+    )
+    prepare.add_argument(
+        "--prepare-if-needed",
+        action="store_true",
+        help="reuse only a profile receipt matching the full source and runtime identities",
+    )
     parser.add_argument(
-        "--prepare", action="store_true", help="prepare only this workflow's oracle/target profiles"
+        "--no-reuse", action="store_true", help="execute selected cases even when receipts match"
     )
     return parser
 
@@ -431,7 +799,9 @@ def main() -> int:
     )
     if fault_selected:
         target_python = ROOT / "target/fault-injection/venv/bin/python"
-    if args.prepare:
+    profiles_present = oracle_python.is_file() and target_python.is_file()
+    profiles_prepared_this_run = False
+    if args.prepare or (args.prepare_if_needed and not profiles_present):
         _run_prepare(
             oracle_target=ORACLE_PREP_TARGETS[oracle_extension],
             target_target=target_prepare,
@@ -439,6 +809,7 @@ def main() -> int:
             starlette_source=starlette_source,
             starlette_rs_source=starlette_rs_source,
         )
+        profiles_prepared_this_run = True
     for label, python in (("oracle", oracle_python), ("target", target_python)):
         if not python.is_file():
             prepare = ORACLE_PREP_TARGETS[oracle_extension] if label == "oracle" else target_prepare
@@ -456,6 +827,218 @@ def main() -> int:
     index_sha256 = sha256_file(index_path)
     workload_path = None if is_process else ROOT / row["workload_path"]
     workload_sha256 = None if workload_path is None else sha256_file(workload_path)
+
+    profile_context = None
+    profile_context_sha256 = None
+    profile_receipt_path = None
+    case_context = None
+    case_receipt_path = None
+    oracle_profile_identity = None
+    target_profile_identity = None
+    profile_receipt_trusted = False
+    if not is_process:
+        oracle_profile = select_oracle_profile(manifest, oracle_extension)
+        target_profile = {
+            "python": manifest["oracle_profile"]["python"],
+            "shared_runtime_packages": {
+                name: version
+                for name, version in manifest["oracle_profile"]["packages"].items()
+                if name in SHARED_ORACLE_PACKAGES
+            },
+            "target": select_target_profile(manifest, target_extension),
+        }
+        fault_identity_required = None
+        if schema.startswith("fastapi-rs/python-asgi-workflow@"):
+            schema_version = int(schema.rsplit("@", 1)[1])
+            if schema_version >= 7:
+                fault_identity_required = fault_selected
+
+        def probe_pair() -> tuple[dict[str, Any], dict[str, Any]]:
+            return _probe_profile_pair(
+                oracle_python=oracle_python,
+                target_python=target_python,
+                oracle_profile=oracle_profile,
+                target_profile=target_profile,
+                fastapi_source=fastapi_source,
+                starlette_source=starlette_source,
+                target_source=target_source,
+                starlette_rs_source=starlette_rs_source,
+                fault_injection_required=fault_identity_required,
+            )
+
+        try:
+            oracle_profile_identity, target_profile_identity = probe_pair()
+        except ContractError:
+            if not args.prepare_if_needed or profiles_prepared_this_run:
+                raise
+            _run_prepare(
+                oracle_target=ORACLE_PREP_TARGETS[oracle_extension],
+                target_target=target_prepare,
+                fastapi_source=fastapi_source,
+                starlette_source=starlette_source,
+                starlette_rs_source=starlette_rs_source,
+            )
+            profiles_prepared_this_run = True
+            oracle_profile_identity, target_profile_identity = probe_pair()
+
+        target_repositories = target_profile_identity.get("repositories")
+        if (
+            target_profile_identity.get("target_revision") != target_revision
+            or target_profile_identity.get("source_tree_sha256") != target_source_digest
+            or not isinstance(target_repositories, dict)
+            or target_repositories.get("starlette_rs") != starlette_rs_revision
+        ):
+            raise ContractError("profile identity probe differs from the current source identities")
+
+        profile_context = _profile_context(
+            profile_extension=extension,
+            target_revision=target_revision,
+            starlette_rs_revision=starlette_rs_revision,
+            target_source_digest=target_source_digest,
+            oracle_profile=oracle_profile,
+            target_profile=target_profile,
+            oracle_identity=oracle_profile_identity,
+            target_identity=target_profile_identity,
+        )
+        profile_context_sha256 = _canonical_sha256(profile_context)
+        profile_receipt_path = PROFILE_RECEIPT_DIR / f"{profile_context_sha256}.json"
+        if args.prepare_if_needed and not profiles_prepared_this_run:
+            if not _profile_receipt_matches(profile_receipt_path, profile_context):
+                _run_prepare(
+                    oracle_target=ORACLE_PREP_TARGETS[oracle_extension],
+                    target_target=target_prepare,
+                    fastapi_source=fastapi_source,
+                    starlette_source=starlette_source,
+                    starlette_rs_source=starlette_rs_source,
+                )
+                profiles_prepared_this_run = True
+                oracle_profile_identity, target_profile_identity = probe_pair()
+                target_repositories = target_profile_identity.get("repositories")
+                if (
+                    target_profile_identity.get("target_revision") != target_revision
+                    or target_profile_identity.get("source_tree_sha256") != target_source_digest
+                    or not isinstance(target_repositories, dict)
+                    or target_repositories.get("starlette_rs") != starlette_rs_revision
+                ):
+                    raise ContractError(
+                        "prepared profile identity differs from current source identities"
+                    )
+                profile_context = _profile_context(
+                    profile_extension=extension,
+                    target_revision=target_revision,
+                    starlette_rs_revision=starlette_rs_revision,
+                    target_source_digest=target_source_digest,
+                    oracle_profile=oracle_profile,
+                    target_profile=target_profile,
+                    oracle_identity=oracle_profile_identity,
+                    target_identity=target_profile_identity,
+                )
+                profile_context_sha256 = _canonical_sha256(profile_context)
+                profile_receipt_path = PROFILE_RECEIPT_DIR / f"{profile_context_sha256}.json"
+
+        profile_receipt_trusted = _profile_receipt_matches(profile_receipt_path, profile_context)
+        if profiles_prepared_this_run:
+            _write_profile_receipt(profile_receipt_path, profile_context)
+
+        case_context = {
+            "workflow_id": args.id,
+            "workflow_schema": schema,
+            "selected_case_ids": selected_case_ids,
+            "profile_extension": extension,
+            "profile_context_sha256": profile_context_sha256,
+            "target_revision": target_revision,
+            "starlette_rs_revision": starlette_rs_revision,
+            "target_source_digest": target_source_digest,
+            "manifest_sha256": manifest_sha256,
+            "index_sha256": index_sha256,
+            "indexed_input_sha256": indexed_input_sha256,
+            "input_sha256": input_sha256,
+            "recipe_sha256": recipe_sha256,
+            "workload_sha256": workload_sha256,
+            "oracle_identity": oracle_profile_identity,
+            "target_identity": target_profile_identity,
+            "workload_path": row["workload_path"],
+            "workload_factory": workflow["workload"]["factory"],
+        }
+        case_context_sha256 = _canonical_sha256(case_context)
+        case_receipt_path = CASE_RECEIPT_DIR / f"{case_context_sha256}.json"
+
+        if not args.no_reuse and not args.prepare and profile_receipt_trusted:
+            cached_case = _load_cached_case(
+                case_receipt_path,
+                context=case_context,
+                profile_context_sha256=profile_context_sha256,
+            )
+            if cached_case is not None:
+                cached_freshness_checks = [
+                    (MANIFEST_PATH, manifest_sha256, "manifest"),
+                    (index_path, index_sha256, "materialized index"),
+                    (indexed_workflow_path, indexed_input_sha256, "indexed workflow input"),
+                    (recipe_path, recipe_sha256, "workflow recipe"),
+                ]
+                if case_filter_applied and not is_api:
+                    cached_freshness_checks.append(
+                        (workflow_path, input_sha256, "selected workflow input")
+                    )
+                if workload_path is not None and workload_sha256 is not None:
+                    cached_freshness_checks.append(
+                        (workload_path, workload_sha256, "workflow workload")
+                    )
+                for path, digest, label in cached_freshness_checks:
+                    if sha256_file(path) != digest:
+                        raise ContractError(f"{label} changed while checking cached parity")
+                if (
+                    _git_revision(target_source, "FastAPI-RS") != target_revision
+                    or _git_revision(starlette_rs_source, "Starlette-RS") != starlette_rs_revision
+                    or fastapi_rs_source_tree_sha256(target_source, starlette_rs_source)
+                    != target_source_digest
+                ):
+                    raise ContractError("source identity changed while checking cached parity")
+                print(
+                    json.dumps(
+                        {
+                            "status": "matched",
+                            "workflow_id": args.id,
+                            "schema": schema,
+                            "profile_extension": extension,
+                            "indexed_case_count": len(indexed_case_ids),
+                            "case_count": len(selected_case_ids),
+                            "selected_case_ids": selected_case_ids,
+                            "summary": cached_case["summary"],
+                            "oracle_result": cached_case["oracle_result"]["path"],
+                            "target_result": cached_case["target_result"]["path"],
+                            "comparison_result": cached_case["comparison_result"],
+                            "target_identity": {
+                                "target_revision": target_revision,
+                                "starlette_rs_revision": starlette_rs_revision,
+                                "source_tree_sha256": target_source_digest,
+                                "target_binary_sha256": target_profile_identity[
+                                    "target_binary_sha256"
+                                ],
+                            },
+                            "manifest_sha256": manifest_sha256,
+                            "input_sha256": input_sha256,
+                            "indexed_input_sha256": indexed_input_sha256,
+                            "selected_input": workflow_path.relative_to(ROOT).as_posix(),
+                            "reused": True,
+                            "reuse_receipt": case_receipt_path.relative_to(ROOT).as_posix(),
+                        },
+                        indent=2,
+                        sort_keys=True,
+                    )
+                )
+                return 0
+
+        _write_receipt(
+            case_receipt_path,
+            {
+                "schema": CASE_RECEIPT_SCHEMA,
+                "status": "running",
+                "context": case_context,
+                "context_sha256": case_context_sha256,
+                "profile_context_sha256": profile_context_sha256,
+            },
+        )
 
     if is_process:
         run_id = uuid.uuid4().hex
@@ -542,6 +1125,9 @@ def main() -> int:
             and summary.get("matched") == len(workflow["cases"])
             and summary.get("mismatched") == 0
         )
+        oracle_reference = None
+        target_reference = None
+        comparison_reference = None
     else:
         oracle_command = "api-oracle" if is_api else "oracle"
         target_command = "api-target" if is_api else "target"
@@ -616,6 +1202,30 @@ def main() -> int:
         comparison_artifact = _artifact(comparison, "comparison")
         summary = comparison.get("summary")
         passed = _comparison_passed(comparison, len(workflow["cases"]))
+        oracle_artifact = _artifact(source_run, "oracle run")
+        target_artifact = _artifact(target_run, "target run")
+        oracle_reference = _artifact_reference(oracle_artifact, product="oracle")
+        target_reference = _artifact_reference(target_artifact, product="target")
+        comparison_reference = _artifact_reference(comparison_artifact, product=None)
+        oracle_result = read_json(ROOT / oracle_artifact)
+        target_result = read_json(ROOT / target_artifact)
+        if (
+            not isinstance(oracle_result, dict)
+            or oracle_result.get("identity") != oracle_profile_identity
+        ):
+            raise ContractError("oracle result identity changed after profile probing")
+        if (
+            not isinstance(target_result, dict)
+            or target_result.get("identity") != target_profile_identity
+        ):
+            raise ContractError("target result identity changed after profile probing")
+        comparison_result = read_json(ROOT / comparison_artifact)
+        if (
+            not isinstance(comparison_result, dict)
+            or comparison_result.get("source_result") != oracle_reference
+            or comparison_result.get("target_result") != target_reference
+        ):
+            raise ContractError("comparison result does not bind to the selected lane artifacts")
 
     if (
         _git_revision(target_source, "FastAPI-RS") != target_revision
@@ -639,6 +1249,27 @@ def main() -> int:
         if sha256_file(path) != digest:
             raise ContractError(f"{label} changed during the selected parity run")
 
+    if not is_process:
+        assert case_receipt_path is not None
+        assert case_context is not None
+        assert profile_context_sha256 is not None
+        assert oracle_reference is not None
+        assert target_reference is not None
+        assert comparison_reference is not None
+        _write_receipt(
+            case_receipt_path,
+            {
+                "schema": CASE_RECEIPT_SCHEMA,
+                "status": "passed" if passed else "not_passed",
+                "context": case_context,
+                "context_sha256": _canonical_sha256(case_context),
+                "profile_context_sha256": profile_context_sha256,
+                "oracle_result": oracle_reference,
+                "target_result": target_reference,
+                "comparison_result": comparison_reference,
+            },
+        )
+
     if not passed:
         raise ContractError(f"selected workflow parity did not pass every case: {summary}")
     print(
@@ -660,6 +1291,12 @@ def main() -> int:
                 "input_sha256": input_sha256,
                 "indexed_input_sha256": indexed_input_sha256,
                 "selected_input": workflow_path.relative_to(ROOT).as_posix(),
+                "reused": False,
+                "reuse_receipt": (
+                    case_receipt_path.relative_to(ROOT).as_posix()
+                    if case_receipt_path is not None
+                    else None
+                ),
             },
             indent=2,
             sort_keys=True,
