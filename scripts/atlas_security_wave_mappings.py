@@ -47,6 +47,7 @@ def _case(
     rationale: str,
     *,
     contract_gate: str | None = None,
+    observe_challenge_header: bool = False,
     stimulus_detail: str = "",
 ) -> dict[str, object]:
     ids = ", ".join(f"`{case_id}`" for case_id in case_ids)
@@ -64,6 +65,11 @@ def _case(
         "stimulus_notes": stimulus_notes,
         "supporting_sources": [_test_function_span(test_path, function_name)],
     }
+    if observe_challenge_header:
+        selectors = result["observation_selectors"]
+        assert isinstance(selectors, list)
+        if "http.headers.ordered" not in selectors:
+            selectors.insert(1, "http.headers.ordered")
     if contract_gate:
         result["contract_gate"] = contract_gate
     return result
@@ -109,15 +115,6 @@ def _openapi_gate() -> str:
         "The upstream function compares a complete OpenAPI JSON snapshot. The "
         "independent workflow selects the cited security-scheme, operation-security, "
         "or request-schema JSON pointers only; unrelated OpenAPI fields are not claimed."
-    )
-
-
-def _challenge_gate() -> str:
-    return (
-        "The upstream function asserts the value of WWW-Authenticate by header name. "
-        "The fixed workflow can select the complete ordered header list but cannot "
-        "project one named header; this mapping covers status and JSON body, while "
-        "the challenge assertion remains a visible observation-schema gap."
     )
 
 
@@ -415,9 +412,9 @@ def _api_key_module(
             "test_security_api_key_no_key",
             [missing],
             missing_feature,
-            ["http.status", "http.body.json"] if optional else ["http.status", "http.body.json"],
+            ["http.status", "http.body.json"],
             missing_reason,
-            contract_gate=None if optional else _challenge_gate(),
+            observe_challenge_header=not optional,
         ),
         "test_openapi_schema": _case(
             test_path,
@@ -564,7 +561,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "Required HTTPBase raises its FastAPI authentication exception when authorization or credentials are absent.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_openapi_schema": _case(
                 "test_security_http_base.py",
@@ -599,7 +596,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "A missing credential is rejected even when the HTTPBase OpenAPI model has a description.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_openapi_schema": _case(
                 "test_security_http_base_description.py",
@@ -674,7 +671,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "Malformed Base64 remains an authentication failure even with auto_error=False after a Basic scheme is present.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_security_http_basic_non_basic_credentials": _case(
                 "test_security_http_basic_optional.py",
@@ -685,7 +682,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "A decoded Basic value without the username/password separator raises the FastAPI authentication exception.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_openapi_schema": _case(
                 "test_security_http_basic_optional.py",
@@ -720,7 +717,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "The configured realm is included in HTTPBasic's required-credential challenge.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_security_http_basic_invalid_credentials": _case(
                 "test_security_http_basic_realm.py",
@@ -731,7 +728,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "Invalid Base64 raises the HTTPBasic authentication error with the configured realm challenge.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_security_http_basic_non_basic_credentials": _case(
                 "test_security_http_basic_realm.py",
@@ -742,7 +739,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "A Basic payload without a colon is rejected with the configured realm challenge.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_openapi_schema": _case(
                 "test_security_http_basic_realm.py",
@@ -777,7 +774,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "Missing credentials return the FastAPI authentication error with the configured realm challenge.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_security_http_basic_invalid_credentials": _case(
                 "test_security_http_basic_realm_description.py",
@@ -788,7 +785,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "Invalid Base64 credentials are rejected; the description does not change runtime decoding.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_security_http_basic_non_basic_credentials": _case(
                 "test_security_http_basic_realm_description.py",
@@ -799,7 +796,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "A decoded Basic payload without a separator is rejected; the description does not change runtime validation.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_openapi_schema": _case(
                 "test_security_http_basic_realm_description.py",
@@ -832,7 +829,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "A required HTTPBearer dependency rejects an absent authorization header.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_security_http_bearer_incorrect_scheme_credentials": _case(
                 "test_security_http_bearer.py",
@@ -843,7 +840,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "HTTPBearer rejects a present authorization value whose scheme is not Bearer.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_openapi_schema": _case(
                 "test_security_http_bearer.py",
@@ -878,7 +875,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "The described HTTPBearer dependency rejects a missing authorization header.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_security_http_bearer_incorrect_scheme_credentials": _case(
                 "test_security_http_bearer_description.py",
@@ -889,7 +886,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "The described HTTPBearer dependency rejects a non-Bearer authorization scheme.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_openapi_schema": _case(
                 "test_security_http_bearer_description.py",
@@ -964,7 +961,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "Required HTTPDigest rejects missing credentials and constructs the FastAPI challenge response.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_security_http_digest_incorrect_scheme_credentials": _case(
                 "test_security_http_digest.py",
@@ -975,7 +972,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "Required HTTPDigest rejects an authorization header using another scheme.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_openapi_schema": _case(
                 "test_security_http_digest.py",
@@ -1008,7 +1005,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "The described HTTPDigest dependency still rejects missing credentials.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_security_http_digest_incorrect_scheme_credentials": _case(
                 "test_security_http_digest_description.py",
@@ -1019,7 +1016,7 @@ SECURITY_TEST_REVIEW_MAPPINGS: dict[str, dict[str, object]] = {
                 _SECURITY_ERROR,
                 ["http.status", "http.body.json"],
                 "The described HTTPDigest dependency still rejects non-Digest schemes.",
-                contract_gate=_challenge_gate(),
+                observe_challenge_header=True,
             ),
             "test_openapi_schema": _case(
                 "test_security_http_digest_description.py",
