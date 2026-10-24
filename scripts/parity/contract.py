@@ -632,6 +632,18 @@ def read_manifest() -> dict[str, Any]:
             "fastapi_extra": "standard",
             "prepare_target": "parity-prepare-oracle-email-validation",
         },
+        "pydantic-extra-types": {
+            "id": "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-pydantic-extra-types-2.11.0",
+            "base_profile": profile["id"],
+            "lock": {
+                "path": "requirements/pydantic-extra-types-cpython-3.12.13.lock",
+                "sha256": "1608f1a543545aaf8fbf135c6cf51cf8a5b1ee55c714d560cfa973646ba000ea",
+                "profile": "CPython 3.12.13 with pydantic-extra-types 2.11.0",
+            },
+            "added_packages": {"pydantic-extra-types": "2.11.0"},
+            "fastapi_extra": "standard",
+            "prepare_target": "parity-prepare-oracle-pydantic-extra-types",
+        },
         "templates": {
             "id": (
                 "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-templates-"
@@ -751,6 +763,18 @@ def read_manifest() -> dict[str, Any]:
             "added_packages": {"dnspython": "2.8.0", "email-validator": "2.3.0"},
             "fastapi_extra": "standard",
             "prepare_target": "parity-prepare-target-email-validation",
+        },
+        "pydantic-extra-types": {
+            "id": "fastapi-rs-pydantic-extra-types-cpython-3.12.13-2.11.0",
+            "base_profile": target["id"],
+            "lock": {
+                "path": "requirements/pydantic-extra-types-cpython-3.12.13.lock",
+                "sha256": "1608f1a543545aaf8fbf135c6cf51cf8a5b1ee55c714d560cfa973646ba000ea",
+                "profile": "CPython 3.12.13 with pydantic-extra-types 2.11.0",
+            },
+            "added_packages": {"pydantic-extra-types": "2.11.0"},
+            "fastapi_extra": "standard",
+            "prepare_target": "parity-prepare-target-pydantic-extra-types",
         },
         "templates": {
             "id": "fastapi-rs-templates-cpython-3.12.13-jinja2-3.1.6-markupsafe-3.0.3",

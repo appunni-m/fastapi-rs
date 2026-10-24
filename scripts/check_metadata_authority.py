@@ -451,14 +451,15 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
     if not isinstance(optional_profiles, dict) or set(optional_profiles) != {
         "testclient",
         "email-validation",
+        "pydantic-extra-types",
         "standard-multipart",
         "templates",
         "json-serializers",
         "telemetry",
     }:
         raise MetadataError(
-            "target runtime optional profiles must declare TestClient, EmailStr, multipart, "
-            "templates, JSON serializers, and telemetry parity"
+            "target runtime optional profiles must declare TestClient, EmailStr, Pydantic Extra "
+            "Types, multipart, templates, JSON serializers, and telemetry parity"
         )
     if not isinstance(manifest_profiles, dict) or set(manifest_profiles) != set(optional_profiles):
         raise MetadataError("manifest target profiles differ from metadata.yaml")
@@ -511,6 +512,19 @@ def validate_target_runtime_lock(metadata: dict[str, Any], manifest: dict[str, A
     manifest_oracle_profile = manifest.get("oracle_profile_extensions", {}).get("email-validation")
     if not isinstance(oracle_profile, dict) or manifest_oracle_profile != oracle_profile:
         raise MetadataError("EmailStr oracle profile differs from metadata.yaml authority")
+    pydantic_extra_types_oracle_profile = metadata.get("oracle_profile_extensions", {}).get(
+        "pydantic-extra-types"
+    )
+    manifest_pydantic_extra_types_oracle_profile = manifest.get(
+        "oracle_profile_extensions", {}
+    ).get("pydantic-extra-types")
+    if (
+        not isinstance(pydantic_extra_types_oracle_profile, dict)
+        or manifest_pydantic_extra_types_oracle_profile != pydantic_extra_types_oracle_profile
+    ):
+        raise MetadataError(
+            "Pydantic Extra Types oracle profile differs from metadata.yaml authority"
+        )
     templates_oracle_profile = metadata.get("oracle_profile_extensions", {}).get("templates")
     manifest_templates_profile = manifest.get("oracle_profile_extensions", {}).get("templates")
     if (

@@ -1,0 +1,23 @@
+# FastAPI's standard extra installs pydantic-extra-types for this optional type.
+schema: fastapi-rs/python-api-workflow@15
+workload:
+  file: tests/fixtures/workloads/jsonable_encoder_extra_color.py
+  factory: create_argument_bundles
+  instantiate_per_case: true
+cases:
+- case_id: fastapi.jsonable-encoder.extra-color
+  probes:
+  - probe_id: encode-nested-extra-color
+    public_callable:
+      module: fastapi.encoders
+      attribute: jsonable_encoder
+    argument_bundle: extra-color.nested
+    observations:
+    - kind: python_return_value
+      selector: value
+      comparison: exact
+  source_evidence:
+  - path: fastapi/encoders.py
+    kind: upstream_api_definition
+    sha256: 4cc09230eca6435892f6bc25a2185e214dbedfe994d5103feb63ad269137caad
+    symbol_id: fastapi.encoders.jsonable_encoder

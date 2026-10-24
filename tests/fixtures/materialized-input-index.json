@@ -16119,6 +16119,46 @@
       ]
     },
     {
+      "id": "jsonable-encoder-extra-color",
+      "input_path": "tests/fixtures/inputs/parity/jsonable-encoder-extra-color.json",
+      "input_sha256": "846c651d6f9005a621a371ef3ae7eca34396f588f92dda9f230e0df863314383",
+      "recipe_path": "tests/fixtures/input-recipes/parity/jsonable-encoder-extra-color.yaml",
+      "recipe_sha256": "f92c43993302c6113c9a5e0053088f20d1ef8ee87bb77746404b6fd643829338",
+      "case_ids": [
+        "fastapi.jsonable-encoder.extra-color"
+      ],
+      "workload_path": "tests/fixtures/workloads/jsonable_encoder_extra_color.py",
+      "workload_sha256": "b6001daf718f2b8eae58ca2da1bd6587a2b0c26738f55858bceea9c404a66607",
+      "api_definitions": [
+        {
+          "case_id": "fastapi.jsonable-encoder.extra-color",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "path": "fastapi/encoders.py",
+          "sha256": "4cc09230eca6435892f6bc25a2185e214dbedfe994d5103feb63ad269137caad"
+        }
+      ],
+      "api_probes": [
+        {
+          "case_id": "fastapi.jsonable-encoder.extra-color",
+          "probe_id": "encode-nested-extra-color",
+          "symbol_id": "fastapi.encoders.jsonable_encoder",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.attribute_value"
+          ]
+        }
+      ],
+      "case_contracts": [
+        {
+          "case_id": "fastapi.jsonable-encoder.extra-color",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.encoders.jsonable_encoder"
+          ]
+        }
+      ]
+    },
+    {
       "id": "jsonable-encoder-nameemail",
       "input_path": "tests/fixtures/inputs/parity/jsonable-encoder-nameemail.json",
       "input_sha256": "449d94fb7a5507def465ea75114e64a5a7c5ae10f6d888c38fbf16d5bf545959",

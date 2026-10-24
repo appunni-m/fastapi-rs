@@ -12,6 +12,8 @@ ORACLE_TESTCLIENT_ENV ?= $(CURDIR)/.venv-oracle-testclient
 ORACLE_TESTCLIENT_PYTHON ?= $(ORACLE_TESTCLIENT_ENV)/bin/python
 ORACLE_EMAIL_VALIDATION_ENV ?= $(CURDIR)/.venv-oracle-email-validation
 ORACLE_EMAIL_VALIDATION_PYTHON ?= $(ORACLE_EMAIL_VALIDATION_ENV)/bin/python
+ORACLE_PYDANTIC_EXTRA_TYPES_ENV ?= $(CURDIR)/.venv-oracle-pydantic-extra-types
+ORACLE_PYDANTIC_EXTRA_TYPES_PYTHON ?= $(ORACLE_PYDANTIC_EXTRA_TYPES_ENV)/bin/python
 ORACLE_TEMPLATES_ENV ?= $(CURDIR)/.venv-oracle-templates
 ORACLE_TEMPLATES_PYTHON ?= $(ORACLE_TEMPLATES_ENV)/bin/python
 ORACLE_TELEMETRY_ENV ?= $(CURDIR)/.venv-oracle-telemetry
@@ -24,6 +26,8 @@ TARGET_TESTCLIENT_ENV ?= $(CURDIR)/target/testclient/venv
 TARGET_TESTCLIENT_PYTHON ?= $(TARGET_TESTCLIENT_ENV)/bin/python
 TARGET_EMAIL_VALIDATION_ENV ?= $(CURDIR)/target/email-validation/venv
 TARGET_EMAIL_VALIDATION_PYTHON ?= $(TARGET_EMAIL_VALIDATION_ENV)/bin/python
+TARGET_PYDANTIC_EXTRA_TYPES_ENV ?= $(CURDIR)/target/pydantic-extra-types/venv
+TARGET_PYDANTIC_EXTRA_TYPES_PYTHON ?= $(TARGET_PYDANTIC_EXTRA_TYPES_ENV)/bin/python
 TARGET_TEMPLATES_ENV ?= $(CURDIR)/target/templates/venv
 TARGET_TEMPLATES_PYTHON ?= $(TARGET_TEMPLATES_ENV)/bin/python
 TARGET_TELEMETRY_ENV ?= $(CURDIR)/target/telemetry/venv
@@ -37,6 +41,7 @@ FAULT_TARGET_PYTHON ?= $(FAULT_TARGET_ENV)/bin/python
 TARGET_RUNTIME_LOCK ?= $(CURDIR)/requirements/target-runtime-cpython-3.12.13.lock
 TARGET_TESTCLIENT_LOCK ?= $(CURDIR)/requirements/target-testclient-cpython-3.12.13.lock
 EMAIL_VALIDATION_LOCK ?= $(CURDIR)/requirements/email-validation-cpython-3.12.13.lock
+PYDANTIC_EXTRA_TYPES_LOCK ?= $(CURDIR)/requirements/pydantic-extra-types-cpython-3.12.13.lock
 TEMPLATES_LOCK ?= $(CURDIR)/requirements/templates-cpython-3.12.13.lock
 TELEMETRY_PARITY_LOCK ?= $(CURDIR)/requirements/telemetry-parity-cpython-3.12.13.lock
 JSON_SERIALIZERS_LOCK ?= $(CURDIR)/requirements/json-serializers-cpython-3.12.13.lock
@@ -93,7 +98,7 @@ RELEASE_SDIST_DIR ?= target/release-sdist
 RELEASE_SDIST_WHEEL_DIR ?= target/release-sdist-validation-wheels
 
 .DEFAULT_GOAL := help
-.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare release-sdist developer-tools-prepare developer-tools-inventory-update developer-tools-inventory-check python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-oracle-email-validation parity-prepare-oracle-templates parity-prepare-oracle-json-serializers parity-prepare-oracle-telemetry parity-prepare-target parity-prepare-target-testclient parity-prepare-target-email-validation parity-prepare-target-standard-multipart parity-prepare-target-templates parity-prepare-target-json-serializers parity-prepare-target-telemetry fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-campaign parity-oracle parity-oracle-standard parity-oracle-email-validation parity-target parity-target-email-validation parity-target-standard-multipart parity-fault-target parity-compare parity-compare-email-validation signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice parity-workflow benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite benchmark-testclient-input-check benchmark-api-input-check benchmark-api verify clean
+.PHONY: help fmt format clippy build build-rust build-python build-tools-prepare release-sdist developer-tools-prepare developer-tools-inventory-update developer-tools-inventory-check python-facade-check rust-policy-check license-notices-update license-notices-check license-artifact-check compatibility-atlas-update api-contract-update api-contract-check metadata-check dependency-inventory-update dependency-inventory-check pydantic-core-inventory-update pydantic-core-inventory-check dependency-graph-update dependency-graph-check parity-inputs parity-workload-check parity-prepare-oracle parity-prepare-oracle-standard parity-prepare-oracle-testclient parity-prepare-oracle-email-validation parity-prepare-oracle-pydantic-extra-types parity-prepare-oracle-templates parity-prepare-oracle-json-serializers parity-prepare-oracle-telemetry parity-prepare-target parity-prepare-target-testclient parity-prepare-target-email-validation parity-prepare-target-pydantic-extra-types parity-prepare-target-standard-multipart parity-prepare-target-templates parity-prepare-target-json-serializers parity-prepare-target-telemetry fault-injection-build parity-api-runtime parity-validate parity-index-update parity-index-check parity-campaign parity-oracle parity-oracle-standard parity-oracle-email-validation parity-target parity-target-email-validation parity-target-standard-multipart parity-fault-target parity-compare parity-compare-email-validation signature-workflow-migration-check parity-api-validate parity-api-oracle parity-api-target parity-api-compare parity-process-validate parity-process-oracle parity-process-target parity-process-compare parity-first-slice parity-workflow benchmark-input-check benchmark-contract-check benchmark-first-slice benchmark-suite benchmark-testclient-input-check benchmark-api-input-check benchmark-api verify clean
 
 help: ## Show common development commands
 	@printf '%s\n' \
@@ -130,12 +135,14 @@ help: ## Show common development commands
 	  '  make parity-prepare-oracle-standard Prepare the locked optional-feature reflection profile' \
 	  '  make parity-prepare-oracle-testclient Prepare FastAPI standard extra with HTTPX fallback' \
 	  '  make parity-prepare-oracle-email-validation Prepare the hash-locked EmailStr oracle profile' \
+	  '  make parity-prepare-oracle-pydantic-extra-types Prepare the isolated optional Color oracle profile' \
 	  '  make parity-prepare-oracle-templates Prepare the paired Jinja2-only FastAPI oracle profile' \
 	  '  make parity-prepare-oracle-json-serializers Prepare the paired orjson/ujson FastAPI oracle profile' \
 	  '  make parity-prepare-oracle-telemetry Prepare the parity-only OpenTelemetry SDK oracle profile' \
 	  '  make parity-prepare-target Prepare .venv-target with pinned shared deps and release FastAPI-RS / ../starlette-rs' \
 	  '  make parity-prepare-target-testclient Prepare isolated target HTTPX fallback profile' \
 	  '  make parity-prepare-target-email-validation Prepare the hash-locked EmailStr target profile' \
+	  '  make parity-prepare-target-pydantic-extra-types Prepare the isolated optional Color target profile' \
 	  '  make parity-prepare-target-standard-multipart Prepare the hash-locked multipart target profile' \
 	  '  make parity-prepare-target-templates Prepare the paired Jinja2-only target profile' \
 	  '  make parity-prepare-target-json-serializers Prepare the paired orjson/ujson target profile' \
@@ -285,6 +292,14 @@ parity-prepare-oracle-email-validation: ## Prepare the paired, hash-locked sourc
 	$(UV) pip install --python "$(ORACLE_EMAIL_VALIDATION_PYTHON)" --no-deps --editable "$(STARLETTE_SOURCE)"
 	$(UV) pip check --python "$(ORACLE_EMAIL_VALIDATION_PYTHON)"
 
+parity-prepare-oracle-pydantic-extra-types: ## Prepare the paired, hash-locked source Pydantic Extra Types profile
+	test -x "$(ORACLE_PYDANTIC_EXTRA_TYPES_PYTHON)" || $(UV) venv --python 3.12.13 "$(ORACLE_PYDANTIC_EXTRA_TYPES_ENV)"
+	$(ORACLE_PYDANTIC_EXTRA_TYPES_PYTHON) -c 'import platform, sys; (platform.python_implementation() == "CPython" and sys.version_info[:3] == (3, 12, 13)) or sys.exit("Pydantic Extra Types oracle profile requires CPython 3.12.13")'
+	$(UV) pip sync --python "$(ORACLE_PYDANTIC_EXTRA_TYPES_PYTHON)" --require-hashes "$(PYDANTIC_EXTRA_TYPES_LOCK)"
+	$(UV) pip install --python "$(ORACLE_PYDANTIC_EXTRA_TYPES_PYTHON)" --no-deps --editable "$(FASTAPI_SOURCE)"
+	$(UV) pip install --python "$(ORACLE_PYDANTIC_EXTRA_TYPES_PYTHON)" --no-deps --editable "$(STARLETTE_SOURCE)"
+	$(UV) pip check --python "$(ORACLE_PYDANTIC_EXTRA_TYPES_PYTHON)"
+
 parity-prepare-oracle-templates: ## Prepare the paired, hash-locked source templates profile without FastAPI standard extras
 	test -x "$(ORACLE_TEMPLATES_PYTHON)" || $(UV) venv --python 3.12.13 "$(ORACLE_TEMPLATES_ENV)"
 	$(ORACLE_TEMPLATES_PYTHON) -c 'import platform, sys; (platform.python_implementation() == "CPython" and sys.version_info[:3] == (3, 12, 13)) or sys.exit("templates oracle profile requires CPython 3.12.13")'
@@ -335,6 +350,15 @@ parity-prepare-target-email-validation: ## Prepare the paired, hash-locked targe
 	$(PYTHON) scripts/build_target_extension.py --python "$(TARGET_EMAIL_VALIDATION_PYTHON)" --uv "$(UV)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
 	$(UV) pip check --python "$(TARGET_EMAIL_VALIDATION_PYTHON)"
 	$(TARGET_EMAIL_VALIDATION_PYTHON) scripts/check_target_runtime_boundary.py
+
+parity-prepare-target-pydantic-extra-types: ## Prepare the paired, hash-locked target Pydantic Extra Types profile
+	test -x "$(TARGET_PYDANTIC_EXTRA_TYPES_PYTHON)" || $(UV) venv --python 3.12.13 "$(TARGET_PYDANTIC_EXTRA_TYPES_ENV)"
+	$(TARGET_PYDANTIC_EXTRA_TYPES_PYTHON) -c 'import platform, sys; (platform.python_implementation() == "CPython" and sys.version_info[:3] == (3, 12, 13)) or sys.exit("Pydantic Extra Types target profile requires CPython 3.12.13")'
+	$(UV) pip sync --python "$(TARGET_PYDANTIC_EXTRA_TYPES_PYTHON)" --require-hashes "$(PYDANTIC_EXTRA_TYPES_LOCK)"
+	PYO3_PYTHON="$(TARGET_PYDANTIC_EXTRA_TYPES_PYTHON)" $(UV) pip install --python "$(TARGET_PYDANTIC_EXTRA_TYPES_PYTHON)" --no-deps --editable "$(STARLETTE_RS_SOURCE)"
+	$(PYTHON) scripts/build_target_extension.py --python "$(TARGET_PYDANTIC_EXTRA_TYPES_PYTHON)" --uv "$(UV)" --starlette-rs-source "$(STARLETTE_RS_SOURCE)"
+	$(UV) pip check --python "$(TARGET_PYDANTIC_EXTRA_TYPES_PYTHON)"
+	$(TARGET_PYDANTIC_EXTRA_TYPES_PYTHON) scripts/check_target_runtime_boundary.py
 
 parity-prepare-target-standard-multipart: ## Prepare the paired, hash-locked target multipart profile
 	test -x "$(TARGET_STANDARD_MULTIPART_PYTHON)" || $(UV) venv --python 3.12.13 "$(TARGET_STANDARD_MULTIPART_ENV)"

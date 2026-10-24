@@ -65,6 +65,10 @@ PROFILE_PATHS: dict[str | None, tuple[str, str]] = {
         ".venv-oracle-email-validation/bin/python",
         "target/email-validation/venv/bin/python",
     ),
+    "pydantic-extra-types": (
+        ".venv-oracle-pydantic-extra-types/bin/python",
+        "target/pydantic-extra-types/venv/bin/python",
+    ),
     "templates": (
         ".venv-oracle-templates/bin/python",
         "target/templates/venv/bin/python",
@@ -83,6 +87,7 @@ ORACLE_PREP_TARGETS = {
     "standard-multipart": "parity-prepare-oracle-standard",
     "testclient": "parity-prepare-oracle-testclient",
     "email-validation": "parity-prepare-oracle-email-validation",
+    "pydantic-extra-types": "parity-prepare-oracle-pydantic-extra-types",
     "templates": "parity-prepare-oracle-templates",
     "telemetry": "parity-prepare-oracle-telemetry",
     "json-serializers": "parity-prepare-oracle-json-serializers",
@@ -92,6 +97,7 @@ TARGET_PREP_TARGETS = {
     "standard-multipart": "parity-prepare-target-standard-multipart",
     "testclient": "parity-prepare-target-testclient",
     "email-validation": "parity-prepare-target-email-validation",
+    "pydantic-extra-types": "parity-prepare-target-pydantic-extra-types",
     "templates": "parity-prepare-target-templates",
     "telemetry": "parity-prepare-target-telemetry",
     "json-serializers": "parity-prepare-target-json-serializers",

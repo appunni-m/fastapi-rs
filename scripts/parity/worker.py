@@ -78,6 +78,9 @@ ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
         "email-validator": "2.3.0",
         "dnspython": "2.8.0",
     },
+    "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-pydantic-extra-types-2.11.0": {
+        "pydantic-extra-types": "2.11.0",
+    },
     "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3": {
         "jinja2": "3.1.6",
         "markupsafe": "3.0.3",
@@ -94,6 +97,7 @@ ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
 ORACLE_EXACT_PACKAGE_SET_PROFILE_IDS = frozenset(
     {
         "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-email-validation-2.3.0",
+        "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-pydantic-extra-types-2.11.0",
         "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3",
         "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-json-serializers-orjson-3.13.0-ujson-6.0.0",
         "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-telemetry-sdk-1.44.0",

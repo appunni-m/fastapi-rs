@@ -95,6 +95,19 @@ target_runtime:
       prepare_target: parity-prepare-target-email-validation
       source_profile: FastAPI 0.157.0 EmailStr validation dependency closure
       starlette_rs_profile: 1.6.0 core runtime
+    pydantic-extra-types:
+      id: fastapi-rs-pydantic-extra-types-cpython-3.12.13-2.11.0
+      base_profile: fastapi-rs-python-consumer
+      lock:
+        path: requirements/pydantic-extra-types-cpython-3.12.13.lock
+        sha256: 1608f1a543545aaf8fbf135c6cf51cf8a5b1ee55c714d560cfa973646ba000ea
+        profile: CPython 3.12.13 with pydantic-extra-types 2.11.0
+      added_packages:
+        pydantic-extra-types: 2.11.0
+      fastapi_extra: standard
+      prepare_target: parity-prepare-target-pydantic-extra-types
+      source_profile: FastAPI 0.157.0 with the optional Color type installed
+      starlette_rs_profile: 1.6.0 core runtime
     templates:
       id: fastapi-rs-templates-cpython-3.12.13-jinja2-3.1.6-markupsafe-3.0.3
       base_profile: fastapi-rs-python-consumer
@@ -152,6 +165,17 @@ oracle_profile_extensions:
       email-validator: 2.3.0
     fastapi_extra: standard
     prepare_target: parity-prepare-oracle-email-validation
+  pydantic-extra-types:
+    id: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-pydantic-extra-types-2.11.0
+    base_profile: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13
+    lock:
+      path: requirements/pydantic-extra-types-cpython-3.12.13.lock
+      sha256: 1608f1a543545aaf8fbf135c6cf51cf8a5b1ee55c714d560cfa973646ba000ea
+      profile: CPython 3.12.13 with pydantic-extra-types 2.11.0
+    added_packages:
+      pydantic-extra-types: 2.11.0
+    fastapi_extra: standard
+    prepare_target: parity-prepare-oracle-pydantic-extra-types
   templates:
     id: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3
     base_profile: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13
@@ -218,6 +242,17 @@ source_optional_dependencies:
       runtime_dependencies: []
       license: BSD-3-Clause AND TCL
       parity_profile: json-serializers
+    pydantic-extra-types:
+      version: 2.11.0
+      role: optional-runtime-user-installed
+      fastapi_extra: standard
+      import_site: fastapi/encoders.py:43-49
+      used_by: fastapi.encoders.ENCODERS_BY_TYPE
+      purpose: Convert Pydantic Extra Types Color values to strings in jsonable_encoder
+      implementation: Python package using Pydantic's public Python model API
+      runtime_dependencies: [pydantic==2.13.5, typing-extensions==4.16.0]
+      license: MIT
+      parity_profile: pydantic-extra-types
 
 fastapi_cli_policy:
   command: fastapi
@@ -6607,8 +6642,8 @@ reviewed_api_contract_overlay:
         known_gaps:
           - >-
             Registry inputs cover the standard entries, Pydantic Core Url/AnyUrl and Color,
-            and one validated NameEmail value under the email-validation profile; optional
-            pydantic_extra_types.Color remains unprobed.
+            one validated NameEmail value under the email-validation profile, and one nested
+            pydantic_extra_types.Color value under the pydantic-extra-types profile.
             Recursive/cyclic graphs, every arbitrary-object conversion path, all validation
             failures, and third-party serialization protocols also remain uncovered.
         rust_binding: "fastapi-rs-py/src/lib.rs::PyJsonableEncoder::__call__"
@@ -6617,8 +6652,9 @@ reviewed_api_contract_overlay:
         JSON-compatible output for their dataclass/Pydantic/mapping/container inputs, covered
         built-in type conversions, alias and exclusion options, exact/base custom encoders,
         Pydantic Core Url/AnyUrl conversion, the validated NameEmail conversion under the
-        email-validation profile, and the selected unsupported-value/Pydantic-v1 errors;
-        optional extra Color and unselected third-party object protocols remain outside scope.
+        email-validation profile, and nested pydantic_extra_types.Color conversion under its
+        isolated optional profile, plus selected unsupported-value/Pydantic-v1 errors;
+        recursive/cyclic graphs and unselected third-party object protocols remain outside scope.
       rust_binding: fastapi-rs-py/src/lib.rs::PyJsonableEncoder::__call__
       source_evidence:
         - {path: fastapi/encoders.py, symbol: jsonable_encoder}
@@ -6653,6 +6689,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.jsonable-encoder.pydantic-undefined
         - recipe_path: tests/fixtures/input-recipes/parity/pydantic-core-encoder-compatibility.yaml
           case_id: fastapi.jsonable-encoder.pydantic-core-urls
+        - recipe_path: tests/fixtures/input-recipes/parity/jsonable-encoder-extra-color.yaml
+          case_id: fastapi.jsonable-encoder.extra-color
       feature_ids: [python-data-encoding]
       observation_selectors: [python.attribute_value, python.signature, python.call_outcome]
     fastapi.openapi.docs.get_swagger_ui_html:

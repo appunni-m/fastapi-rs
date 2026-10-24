@@ -107,6 +107,17 @@ oracle_profile_extensions:
       email-validator: 2.3.0
     fastapi_extra: standard
     prepare_target: parity-prepare-oracle-email-validation
+  pydantic-extra-types:
+    id: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-pydantic-extra-types-2.11.0
+    base_profile: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13
+    lock:
+      path: requirements/pydantic-extra-types-cpython-3.12.13.lock
+      sha256: 1608f1a543545aaf8fbf135c6cf51cf8a5b1ee55c714d560cfa973646ba000ea
+      profile: CPython 3.12.13 with pydantic-extra-types 2.11.0
+    added_packages:
+      pydantic-extra-types: 2.11.0
+    fastapi_extra: standard
+    prepare_target: parity-prepare-oracle-pydantic-extra-types
   templates:
     id: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-templates-jinja2-3.1.6-markupsafe-3.0.3
     base_profile: fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13
@@ -182,6 +193,17 @@ target_profile_extensions:
       email-validator: 2.3.0
     fastapi_extra: standard
     prepare_target: parity-prepare-target-email-validation
+  pydantic-extra-types:
+    id: fastapi-rs-pydantic-extra-types-cpython-3.12.13-2.11.0
+    base_profile: fastapi-rs-python-consumer
+    lock:
+      path: requirements/pydantic-extra-types-cpython-3.12.13.lock
+      sha256: 1608f1a543545aaf8fbf135c6cf51cf8a5b1ee55c714d560cfa973646ba000ea
+      profile: CPython 3.12.13 with pydantic-extra-types 2.11.0
+    added_packages:
+      pydantic-extra-types: 2.11.0
+    fastapi_extra: standard
+    prepare_target: parity-prepare-target-pydantic-extra-types
   templates:
     id: fastapi-rs-templates-cpython-3.12.13-jinja2-3.1.6-markupsafe-3.0.3
     base_profile: fastapi-rs-python-consumer
@@ -643,13 +665,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@12
-    sha256: b9eabaf0f47b1f48c38c9510d24384f0f7f21ada60f2ce4e206d71f57b411d1c
+    sha256: 3cc3fa4ff6dd6e44f11329d308d21ca1196fbf83bd118c7068ac2e1a20451f48
     schema_path: tests/fixtures/schemas/materialized-input-index-v12.schema.json
     schema_sha256: 668c3c0e71c739ab05d23b414f07c4ccfe6227116094891280943a8326e1d77a
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 746
-      cases: 3172
+      workflows: 747
+      cases: 3173
       partial_source_mappings: 2030
 
 contract_metadata:
@@ -1549,7 +1571,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 15
     symbols_with_direct_api_input_workflow_refs: 197
     symbols_with_operation_fixture_refs: 491
-    operation_fixture_refs: 3073
+    operation_fixture_refs: 3074
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -29436,6 +29458,18 @@ api_surface_contract:
       probe_kind: callable
       observation_selectors:
       - python.call_outcome
+    - workflow_id: jsonable-encoder-extra-color
+      input_path: tests/fixtures/inputs/parity/jsonable-encoder-extra-color.json
+      input_sha256: 846c651d6f9005a621a371ef3ae7eca34396f588f92dda9f230e0df863314383
+      recipe_path: tests/fixtures/input-recipes/parity/jsonable-encoder-extra-color.yaml
+      recipe_sha256: f92c43993302c6113c9a5e0053088f20d1ef8ee87bb77746404b6fd643829338
+      workload_path: tests/fixtures/workloads/jsonable_encoder_extra_color.py
+      workload_sha256: b6001daf718f2b8eae58ca2da1bd6587a2b0c26738f55858bceea9c404a66607
+      case_id: fastapi.jsonable-encoder.extra-color
+      probe_id: encode-nested-extra-color
+      probe_kind: callable
+      observation_selectors:
+      - python.attribute_value
     - workflow_id: jsonable-encoder-nameemail
       input_path: tests/fixtures/inputs/parity/jsonable-encoder-nameemail.json
       input_sha256: 449d94fb7a5507def465ea75114e64a5a7c5ae10f6d888c38fbf16d5bf545959
@@ -29644,6 +29678,16 @@ api_surface_contract:
       case_id: fastapi.jsonable-encoder.pydantic-core-urls
       observation_selectors:
       - python.attribute_value
+    - workflow_id: jsonable-encoder-extra-color
+      input_path: tests/fixtures/inputs/parity/jsonable-encoder-extra-color.json
+      input_sha256: 846c651d6f9005a621a371ef3ae7eca34396f588f92dda9f230e0df863314383
+      recipe_path: tests/fixtures/input-recipes/parity/jsonable-encoder-extra-color.yaml
+      recipe_sha256: f92c43993302c6113c9a5e0053088f20d1ef8ee87bb77746404b6fd643829338
+      workload_path: tests/fixtures/workloads/jsonable_encoder_extra_color.py
+      workload_sha256: b6001daf718f2b8eae58ca2da1bd6587a2b0c26738f55858bceea9c404a66607
+      case_id: fastapi.jsonable-encoder.extra-color
+      observation_selectors:
+      - python.attribute_value
     identity_workflow_refs: []
     feature_ids:
     - python-data-encoding
@@ -29667,10 +29711,11 @@ api_surface_contract:
       disposition: unresolved
       rust_binding: fastapi-rs-py/src/lib.rs::PyJsonableEncoder::__call__
       known_gaps:
-      - Registry inputs cover the standard entries, Pydantic Core Url/AnyUrl and Color, and one validated
-        NameEmail value under the email-validation profile; optional pydantic_extra_types.Color remains
-        unprobed. Recursive/cyclic graphs, every arbitrary-object conversion path, all validation failures,
-        and third-party serialization protocols also remain uncovered.
+      - Registry inputs cover the standard entries, Pydantic Core Url/AnyUrl and Color, one validated
+        NameEmail value under the email-validation profile, and one nested pydantic_extra_types.Color
+        value under the pydantic-extra-types profile. Recursive/cyclic graphs, every arbitrary-object
+        conversion path, all validation failures, and third-party serialization protocols also remain
+        uncovered.
   - id: fastapi.exception_handlers.http_exception_handler
     kind: async_function
     source_candidate_ref: /api_candidates/567
