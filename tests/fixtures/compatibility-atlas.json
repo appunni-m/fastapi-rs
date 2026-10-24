@@ -649781,10 +649781,41 @@
           },
           {
             "case_ids": [
-              "fastapi.security-websockets.optional-missing-credentials",
-              "fastapi.security-websockets.required-missing-credentials-denial"
+              "fastapi.security-websockets.api-key-cookie.optional-missing-credentials",
+              "fastapi.security-websockets.api-key-cookie.required-missing-credentials",
+              "fastapi.security-websockets.api-key-cookie.valid-credentials",
+              "fastapi.security-websockets.api-key-header.optional-missing-credentials",
+              "fastapi.security-websockets.api-key-header.required-missing-credentials",
+              "fastapi.security-websockets.api-key-header.valid-credentials",
+              "fastapi.security-websockets.api-key-query.optional-missing-credentials",
+              "fastapi.security-websockets.api-key-query.required-missing-credentials",
+              "fastapi.security-websockets.api-key-query.valid-credentials",
+              "fastapi.security-websockets.http-base.optional-missing-credentials",
+              "fastapi.security-websockets.http-base.required-missing-credentials",
+              "fastapi.security-websockets.http-base.valid-credentials",
+              "fastapi.security-websockets.http-basic.optional-missing-credentials",
+              "fastapi.security-websockets.http-basic.required-missing-credentials",
+              "fastapi.security-websockets.http-basic.valid-credentials",
+              "fastapi.security-websockets.http-bearer.optional-missing-credentials",
+              "fastapi.security-websockets.http-bearer.required-missing-credentials",
+              "fastapi.security-websockets.http-bearer.valid-credentials",
+              "fastapi.security-websockets.http-digest.optional-missing-credentials",
+              "fastapi.security-websockets.http-digest.required-missing-credentials",
+              "fastapi.security-websockets.http-digest.valid-credentials",
+              "fastapi.security-websockets.oauth2-authorization-code-bearer.optional-missing-credentials",
+              "fastapi.security-websockets.oauth2-authorization-code-bearer.required-missing-credentials",
+              "fastapi.security-websockets.oauth2-authorization-code-bearer.valid-credentials",
+              "fastapi.security-websockets.oauth2-password-bearer.optional-missing-credentials",
+              "fastapi.security-websockets.oauth2-password-bearer.required-missing-credentials",
+              "fastapi.security-websockets.oauth2-password-bearer.valid-credentials",
+              "fastapi.security-websockets.oauth2.optional-missing-credentials",
+              "fastapi.security-websockets.oauth2.required-missing-credentials",
+              "fastapi.security-websockets.oauth2.valid-credentials",
+              "fastapi.security-websockets.openid-connect.optional-missing-credentials",
+              "fastapi.security-websockets.openid-connect.required-missing-credentials",
+              "fastapi.security-websockets.openid-connect.valid-credentials"
             ],
-            "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status, websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 33 case(s); observes asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status, websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "asgi.send.message_types",
@@ -649826,9 +649857,8 @@
           }
         ],
         "reviewed_module_mapping": {
-          "contract_gate": "Partial coverage only. The selectors describe observations available in the linked independent workflow and do not claim complete upstream test or branch parity.",
-          "rationale": "Independent HTTP Bearer WebSocket cases cover accepted credentials, required-credential denial through the Starlette 1.6.0 denial-response extension, and optional missing credentials. The broader security-scheme parameter matrix remains outside this partial sample.",
-          "stimulus_notes": "Partial source-backed mapping to independently authored YAML recipes. The linked workloads use new inputs and record no expected outputs; unlinked source branches and edge cases remain outside this mapping.",
+          "rationale": "Independent input cases cover the source function's full 11-factory by three-credential-state matrix, plus a separate WebSocket alias-choice sample. Required missing credentials exercise FastAPI's security denial through the pinned Starlette 1.6.0 WebSocket HTTP denial-response extension.",
+          "stimulus_notes": "Input-only cases in the linked recipes cover every source factory crossed with valid, required-missing, and optional-missing credentials. The workload is independently authored and stores no expected outputs.",
           "supporting_sources": [
             {
               "end_line": 161,
@@ -649836,6 +649866,18 @@
               "role": "FastAPI 0.157.0 source test test_security_websocket; independent module mapping is partial",
               "sha256": "0d1fee80655f9c8c68d939ed5a2d1380fb53d6deac4f47bffcd9695bec23e4fe",
               "start_line": 23
+            }
+          ],
+          "wave_scope_review_exclusions": [
+            {
+              "reason": "The mapped source matrix does not exercise malformed or alternate-format credentials, duplicate credential sources, scheme-specific OpenAPI output, or WebSocket denial behavior without the Starlette HTTP denial extension.",
+              "scope": "wave_only",
+              "test_functions": {
+                "test_security_websocket": [
+                  128,
+                  161
+                ]
+              }
             }
           ],
           "workflow_cases": [
@@ -649852,8 +649894,39 @@
             },
             {
               "case_ids": [
-                "fastapi.security-websockets.required-missing-credentials-denial",
-                "fastapi.security-websockets.optional-missing-credentials"
+                "fastapi.security-websockets.http-base.valid-credentials",
+                "fastapi.security-websockets.http-base.required-missing-credentials",
+                "fastapi.security-websockets.http-base.optional-missing-credentials",
+                "fastapi.security-websockets.http-basic.valid-credentials",
+                "fastapi.security-websockets.http-basic.required-missing-credentials",
+                "fastapi.security-websockets.http-basic.optional-missing-credentials",
+                "fastapi.security-websockets.http-bearer.valid-credentials",
+                "fastapi.security-websockets.http-bearer.required-missing-credentials",
+                "fastapi.security-websockets.http-bearer.optional-missing-credentials",
+                "fastapi.security-websockets.http-digest.valid-credentials",
+                "fastapi.security-websockets.http-digest.required-missing-credentials",
+                "fastapi.security-websockets.http-digest.optional-missing-credentials",
+                "fastapi.security-websockets.api-key-query.valid-credentials",
+                "fastapi.security-websockets.api-key-query.required-missing-credentials",
+                "fastapi.security-websockets.api-key-query.optional-missing-credentials",
+                "fastapi.security-websockets.api-key-header.valid-credentials",
+                "fastapi.security-websockets.api-key-header.required-missing-credentials",
+                "fastapi.security-websockets.api-key-header.optional-missing-credentials",
+                "fastapi.security-websockets.api-key-cookie.valid-credentials",
+                "fastapi.security-websockets.api-key-cookie.required-missing-credentials",
+                "fastapi.security-websockets.api-key-cookie.optional-missing-credentials",
+                "fastapi.security-websockets.oauth2.valid-credentials",
+                "fastapi.security-websockets.oauth2.required-missing-credentials",
+                "fastapi.security-websockets.oauth2.optional-missing-credentials",
+                "fastapi.security-websockets.oauth2-password-bearer.valid-credentials",
+                "fastapi.security-websockets.oauth2-password-bearer.required-missing-credentials",
+                "fastapi.security-websockets.oauth2-password-bearer.optional-missing-credentials",
+                "fastapi.security-websockets.oauth2-authorization-code-bearer.valid-credentials",
+                "fastapi.security-websockets.oauth2-authorization-code-bearer.required-missing-credentials",
+                "fastapi.security-websockets.oauth2-authorization-code-bearer.optional-missing-credentials",
+                "fastapi.security-websockets.openid-connect.valid-credentials",
+                "fastapi.security-websockets.openid-connect.required-missing-credentials",
+                "fastapi.security-websockets.openid-connect.optional-missing-credentials"
               ],
               "observation_selectors": [
                 "asgi.send.message_types",
@@ -649875,7 +649948,7 @@
         "test_function_count": 1,
         "unmatched_test_functions": []
       },
-      "mapping_status": "partially_mapped",
+      "mapping_status": "candidate",
       "observation_selectors": [
         "asgi.send.message_types",
         "construction.exception_class",
@@ -649888,7 +649961,7 @@
         "websocket.event_order",
         "websocket.messages"
       ],
-      "review_reason": "At least one behavior mapping is contract-gated and is not represented by a complete independent workflow.",
+      "review_reason": null,
       "review_status": "reviewed_partial",
       "selector_evidence": [
         {
@@ -649905,8 +649978,39 @@
         },
         {
           "case_ids": [
-            "fastapi.security-websockets.optional-missing-credentials",
-            "fastapi.security-websockets.required-missing-credentials-denial"
+            "fastapi.security-websockets.api-key-cookie.optional-missing-credentials",
+            "fastapi.security-websockets.api-key-cookie.required-missing-credentials",
+            "fastapi.security-websockets.api-key-cookie.valid-credentials",
+            "fastapi.security-websockets.api-key-header.optional-missing-credentials",
+            "fastapi.security-websockets.api-key-header.required-missing-credentials",
+            "fastapi.security-websockets.api-key-header.valid-credentials",
+            "fastapi.security-websockets.api-key-query.optional-missing-credentials",
+            "fastapi.security-websockets.api-key-query.required-missing-credentials",
+            "fastapi.security-websockets.api-key-query.valid-credentials",
+            "fastapi.security-websockets.http-base.optional-missing-credentials",
+            "fastapi.security-websockets.http-base.required-missing-credentials",
+            "fastapi.security-websockets.http-base.valid-credentials",
+            "fastapi.security-websockets.http-basic.optional-missing-credentials",
+            "fastapi.security-websockets.http-basic.required-missing-credentials",
+            "fastapi.security-websockets.http-basic.valid-credentials",
+            "fastapi.security-websockets.http-bearer.optional-missing-credentials",
+            "fastapi.security-websockets.http-bearer.required-missing-credentials",
+            "fastapi.security-websockets.http-bearer.valid-credentials",
+            "fastapi.security-websockets.http-digest.optional-missing-credentials",
+            "fastapi.security-websockets.http-digest.required-missing-credentials",
+            "fastapi.security-websockets.http-digest.valid-credentials",
+            "fastapi.security-websockets.oauth2-authorization-code-bearer.optional-missing-credentials",
+            "fastapi.security-websockets.oauth2-authorization-code-bearer.required-missing-credentials",
+            "fastapi.security-websockets.oauth2-authorization-code-bearer.valid-credentials",
+            "fastapi.security-websockets.oauth2-password-bearer.optional-missing-credentials",
+            "fastapi.security-websockets.oauth2-password-bearer.required-missing-credentials",
+            "fastapi.security-websockets.oauth2-password-bearer.valid-credentials",
+            "fastapi.security-websockets.oauth2.optional-missing-credentials",
+            "fastapi.security-websockets.oauth2.required-missing-credentials",
+            "fastapi.security-websockets.oauth2.valid-credentials",
+            "fastapi.security-websockets.openid-connect.optional-missing-credentials",
+            "fastapi.security-websockets.openid-connect.required-missing-credentials",
+            "fastapi.security-websockets.openid-connect.valid-credentials"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/security-websocket-auth.yaml",
           "selectors": [

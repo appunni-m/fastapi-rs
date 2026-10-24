@@ -182,6 +182,11 @@ separately in [`PYDANTIC_CORE_DEPENDENCIES.md`](PYDANTIC_CORE_DEPENDENCIES.md),
 not in this workspace's Cargo graph. Maturin 1.14.1 belongs to the isolated
 build-tool profile below, not to the target runtime closure.
 
+Feature-specific Python closures are recorded in
+[`DEPENDENCIES.md`](DEPENDENCIES.md): it distinguishes target optional runtime
+profiles from parity-only and build-only packages, with resolved versions,
+dependency paths, purpose, language/native components, and license evidence.
+
 ### Isolated Python build-tool closure
 
 `requirements/build-tools-cpython-3.12.13.in` and its hash-locked output

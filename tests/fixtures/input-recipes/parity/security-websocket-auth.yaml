@@ -1,72 +1,1841 @@
-# Input-only coverage for required denial and optional missing WebSocket auth.
 schema: fastapi-rs/python-asgi-workflow@19
 workload:
   file: tests/fixtures/workloads/security_websocket_auth.py
   factory: create_app
   instantiate_per_case: true
 cases:
-  - case_id: fastapi.security-websockets.required-missing-credentials-denial
-    verification: parity
-    factory_input: {}
-    construction_observation:
-      kind: construction
-      selectors: [outcome, exception_class, exception_message]
+- case_id: fastapi.security-websockets.http-base.valid-credentials
+  verification: parity
+  factory_input:
+    security_factory: http-base
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: http-base-valid-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Other secret
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
       comparison: exact
-    actions:
-      - action_id: required-missing-credentials
-        kind: websocket_session
-        scope:
-          type: websocket
-          asgi: {version: '3.0', spec_version: '2.4'}
-          http_version: '1.1'
-          scheme: ws
-          path: /ws-required
-          query_string: ''
-          root_path: ''
-          headers: [[host, testserver]]
-          client: [127.0.0.1, 123]
-          server: [testserver, 80]
-          subprotocols: []
-          extensions:
-            websocket.http.response: {}
-        receive_events:
-          - {type: websocket.connect}
-          - {type: websocket.disconnect, code: 1000, reason: client complete}
-        observations:
-          - {kind: http_response, selectors: [status, headers, body], comparison: exact}
-          - {kind: asgi_send, selector: message_types, comparison: ordered}
-    source_evidence:
-      - {path: tests/test_security_websockets.py, kind: upstream_test}
-  - case_id: fastapi.security-websockets.optional-missing-credentials
-    verification: parity
-    factory_input: {}
-    construction_observation:
-      kind: construction
-      selectors: [outcome, exception_class, exception_message]
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.http-base.required-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: http-base
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: http-base-required-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
       comparison: exact
-    actions:
-      - action_id: optional-missing-credentials
-        kind: websocket_session
-        scope:
-          type: websocket
-          asgi: {version: '3.0', spec_version: '2.4'}
-          http_version: '1.1'
-          scheme: ws
-          path: /ws-optional
-          query_string: ''
-          root_path: ''
-          headers: [[host, testserver]]
-          client: [127.0.0.1, 123]
-          server: [testserver, 80]
-          subprotocols: []
-          extensions:
-            websocket.http.response: {}
-        receive_events:
-          - {type: websocket.connect}
-          - {type: websocket.disconnect, code: 1000, reason: client complete}
-        observations:
-          - {kind: websocket, selector: event_order, comparison: ordered}
-          - {kind: websocket, selector: messages, comparison: ordered}
-          - {kind: websocket, selector: close_code, comparison: exact}
-    source_evidence:
-      - {path: tests/test_security_websockets.py, kind: upstream_test}
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.http-base.optional-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: http-base
+    auto_error: false
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: http-base-optional-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.http-basic.valid-credentials
+  verification: parity
+  factory_input:
+    security_factory: http-basic
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: http-basic-valid-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Basic am9objpzZWNyZXQ=
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.http-basic.required-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: http-basic
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: http-basic-required-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.http-basic.optional-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: http-basic
+    auto_error: false
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: http-basic-optional-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.http-bearer.valid-credentials
+  verification: parity
+  factory_input:
+    security_factory: http-bearer
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: http-bearer-valid-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer secret
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.http-bearer.required-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: http-bearer
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: http-bearer-required-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.http-bearer.optional-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: http-bearer
+    auto_error: false
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: http-bearer-optional-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.http-digest.valid-credentials
+  verification: parity
+  factory_input:
+    security_factory: http-digest
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: http-digest-valid-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Digest secret
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.http-digest.required-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: http-digest
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: http-digest-required-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.http-digest.optional-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: http-digest
+    auto_error: false
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: http-digest-optional-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.api-key-query.valid-credentials
+  verification: parity
+  factory_input:
+    security_factory: api-key-query
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: api-key-query-valid-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: key=secret
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.api-key-query.required-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: api-key-query
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: api-key-query-required-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.api-key-query.optional-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: api-key-query
+    auto_error: false
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: api-key-query-optional-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.api-key-header.valid-credentials
+  verification: parity
+  factory_input:
+    security_factory: api-key-header
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: api-key-header-valid-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - key
+        - secret
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.api-key-header.required-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: api-key-header
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: api-key-header-required-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.api-key-header.optional-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: api-key-header
+    auto_error: false
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: api-key-header-optional-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.api-key-cookie.valid-credentials
+  verification: parity
+  factory_input:
+    security_factory: api-key-cookie
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: api-key-cookie-valid-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - cookie
+        - key=secret
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.api-key-cookie.required-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: api-key-cookie
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: api-key-cookie-required-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.api-key-cookie.optional-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: api-key-cookie
+    auto_error: false
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: api-key-cookie-optional-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.oauth2.valid-credentials
+  verification: parity
+  factory_input:
+    security_factory: oauth2
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: oauth2-valid-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer secret
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.oauth2.required-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: oauth2
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: oauth2-required-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.oauth2.optional-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: oauth2
+    auto_error: false
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: oauth2-optional-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.oauth2-password-bearer.valid-credentials
+  verification: parity
+  factory_input:
+    security_factory: oauth2-password-bearer
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: oauth2-password-bearer-valid-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer secret
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.oauth2-password-bearer.required-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: oauth2-password-bearer
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: oauth2-password-bearer-required-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.oauth2-password-bearer.optional-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: oauth2-password-bearer
+    auto_error: false
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: oauth2-password-bearer-optional-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.oauth2-authorization-code-bearer.valid-credentials
+  verification: parity
+  factory_input:
+    security_factory: oauth2-authorization-code-bearer
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: oauth2-authorization-code-bearer-valid-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer secret
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.oauth2-authorization-code-bearer.required-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: oauth2-authorization-code-bearer
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: oauth2-authorization-code-bearer-required-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.oauth2-authorization-code-bearer.optional-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: oauth2-authorization-code-bearer
+    auto_error: false
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: oauth2-authorization-code-bearer-optional-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.openid-connect.valid-credentials
+  verification: parity
+  factory_input:
+    security_factory: openid-connect
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: openid-connect-valid-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      - - authorization
+        - Bearer secret
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.openid-connect.required-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: openid-connect
+    auto_error: true
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: openid-connect-required-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: http_response
+      selectors:
+      - status
+      - headers
+      - body
+      comparison: exact
+    - kind: asgi_send
+      selector: message_types
+      comparison: ordered
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test
+- case_id: fastapi.security-websockets.openid-connect.optional-missing-credentials
+  verification: parity
+  factory_input:
+    security_factory: openid-connect
+    auto_error: false
+  construction_observation:
+    kind: construction
+    selectors:
+    - outcome
+    - exception_class
+    - exception_message
+    comparison: exact
+  actions:
+  - action_id: openid-connect-optional-missing-credentials
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi:
+        version: '3.0'
+        spec_version: '2.4'
+      http_version: '1.1'
+      scheme: ws
+      path: /
+      query_string: ''
+      root_path: ''
+      headers:
+      - - host
+        - testserver
+      client:
+      - 127.0.0.1
+      - 123
+      server:
+      - testserver
+      - 80
+      subprotocols: []
+      extensions:
+        websocket.http.response: {}
+    receive_events:
+    - type: websocket.connect
+    - type: websocket.disconnect
+      code: 1000
+      reason: client complete
+    observations:
+    - kind: websocket
+      selector: event_order
+      comparison: ordered
+    - kind: websocket
+      selector: messages
+      comparison: ordered
+    - kind: websocket
+      selector: close_code
+      comparison: exact
+  source_evidence:
+  - path: tests/test_security_websockets.py
+    kind: upstream_test

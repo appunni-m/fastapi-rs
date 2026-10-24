@@ -486636,7 +486636,7 @@
             "Call the documented FastAPI encoder with representative Python/Pydantic values and options, then observe its public return value and callable signature.",
             "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
           ],
-          "stimulus_design_notes": "Partial source-backed mapping to independently authored YAML recipes. The linked workloads use new inputs and record no expected outputs; unlinked source branches and edge cases remain outside this mapping."
+          "stimulus_design_notes": "Input-only cases in the linked recipes cover every source factory crossed with valid, required-missing, and optional-missing credentials. The workload is independently authored and stores no expected outputs."
         }
       ],
       "feature_ids": [
@@ -486665,10 +486665,41 @@
         },
         {
           "case_ids": [
-            "fastapi.security-websockets.optional-missing-credentials",
-            "fastapi.security-websockets.required-missing-credentials-denial"
+            "fastapi.security-websockets.api-key-cookie.optional-missing-credentials",
+            "fastapi.security-websockets.api-key-cookie.required-missing-credentials",
+            "fastapi.security-websockets.api-key-cookie.valid-credentials",
+            "fastapi.security-websockets.api-key-header.optional-missing-credentials",
+            "fastapi.security-websockets.api-key-header.required-missing-credentials",
+            "fastapi.security-websockets.api-key-header.valid-credentials",
+            "fastapi.security-websockets.api-key-query.optional-missing-credentials",
+            "fastapi.security-websockets.api-key-query.required-missing-credentials",
+            "fastapi.security-websockets.api-key-query.valid-credentials",
+            "fastapi.security-websockets.http-base.optional-missing-credentials",
+            "fastapi.security-websockets.http-base.required-missing-credentials",
+            "fastapi.security-websockets.http-base.valid-credentials",
+            "fastapi.security-websockets.http-basic.optional-missing-credentials",
+            "fastapi.security-websockets.http-basic.required-missing-credentials",
+            "fastapi.security-websockets.http-basic.valid-credentials",
+            "fastapi.security-websockets.http-bearer.optional-missing-credentials",
+            "fastapi.security-websockets.http-bearer.required-missing-credentials",
+            "fastapi.security-websockets.http-bearer.valid-credentials",
+            "fastapi.security-websockets.http-digest.optional-missing-credentials",
+            "fastapi.security-websockets.http-digest.required-missing-credentials",
+            "fastapi.security-websockets.http-digest.valid-credentials",
+            "fastapi.security-websockets.oauth2-authorization-code-bearer.optional-missing-credentials",
+            "fastapi.security-websockets.oauth2-authorization-code-bearer.required-missing-credentials",
+            "fastapi.security-websockets.oauth2-authorization-code-bearer.valid-credentials",
+            "fastapi.security-websockets.oauth2-password-bearer.optional-missing-credentials",
+            "fastapi.security-websockets.oauth2-password-bearer.required-missing-credentials",
+            "fastapi.security-websockets.oauth2-password-bearer.valid-credentials",
+            "fastapi.security-websockets.oauth2.optional-missing-credentials",
+            "fastapi.security-websockets.oauth2.required-missing-credentials",
+            "fastapi.security-websockets.oauth2.valid-credentials",
+            "fastapi.security-websockets.openid-connect.optional-missing-credentials",
+            "fastapi.security-websockets.openid-connect.required-missing-credentials",
+            "fastapi.security-websockets.openid-connect.valid-credentials"
           ],
-          "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status, websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+          "coverage_scope": "Partial independent sample across 33 case(s); observes asgi.send.message_types, construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status, websocket.close_code, websocket.event_order, websocket.messages. Unlisted functions, branches, configurations, and edge cases are not claimed.",
           "coverage_status": "partial",
           "observation_selectors": [
             "asgi.send.message_types",
@@ -486714,8 +486745,39 @@
         },
         {
           "case_ids": [
-            "fastapi.security-websockets.optional-missing-credentials",
-            "fastapi.security-websockets.required-missing-credentials-denial"
+            "fastapi.security-websockets.api-key-cookie.optional-missing-credentials",
+            "fastapi.security-websockets.api-key-cookie.required-missing-credentials",
+            "fastapi.security-websockets.api-key-cookie.valid-credentials",
+            "fastapi.security-websockets.api-key-header.optional-missing-credentials",
+            "fastapi.security-websockets.api-key-header.required-missing-credentials",
+            "fastapi.security-websockets.api-key-header.valid-credentials",
+            "fastapi.security-websockets.api-key-query.optional-missing-credentials",
+            "fastapi.security-websockets.api-key-query.required-missing-credentials",
+            "fastapi.security-websockets.api-key-query.valid-credentials",
+            "fastapi.security-websockets.http-base.optional-missing-credentials",
+            "fastapi.security-websockets.http-base.required-missing-credentials",
+            "fastapi.security-websockets.http-base.valid-credentials",
+            "fastapi.security-websockets.http-basic.optional-missing-credentials",
+            "fastapi.security-websockets.http-basic.required-missing-credentials",
+            "fastapi.security-websockets.http-basic.valid-credentials",
+            "fastapi.security-websockets.http-bearer.optional-missing-credentials",
+            "fastapi.security-websockets.http-bearer.required-missing-credentials",
+            "fastapi.security-websockets.http-bearer.valid-credentials",
+            "fastapi.security-websockets.http-digest.optional-missing-credentials",
+            "fastapi.security-websockets.http-digest.required-missing-credentials",
+            "fastapi.security-websockets.http-digest.valid-credentials",
+            "fastapi.security-websockets.oauth2-authorization-code-bearer.optional-missing-credentials",
+            "fastapi.security-websockets.oauth2-authorization-code-bearer.required-missing-credentials",
+            "fastapi.security-websockets.oauth2-authorization-code-bearer.valid-credentials",
+            "fastapi.security-websockets.oauth2-password-bearer.optional-missing-credentials",
+            "fastapi.security-websockets.oauth2-password-bearer.required-missing-credentials",
+            "fastapi.security-websockets.oauth2-password-bearer.valid-credentials",
+            "fastapi.security-websockets.oauth2.optional-missing-credentials",
+            "fastapi.security-websockets.oauth2.required-missing-credentials",
+            "fastapi.security-websockets.oauth2.valid-credentials",
+            "fastapi.security-websockets.openid-connect.optional-missing-credentials",
+            "fastapi.security-websockets.openid-connect.required-missing-credentials",
+            "fastapi.security-websockets.openid-connect.valid-credentials"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/security-websocket-auth.yaml",
           "selectors": [
@@ -486752,7 +486814,7 @@
         "Set a route's configured status and exercise it with an independent request while observing the response and documented operation status.",
         "Create a WebSocket or lifespan workflow with ordered public actions and observe messages, close/error state, startup, shutdown, and cleanup."
       ],
-      "stimulus_design_notes": "Partial source-backed mapping to independently authored YAML recipes. The linked workloads use new inputs and record no expected outputs; unlinked source branches and edge cases remain outside this mapping."
+      "stimulus_design_notes": "Input-only cases in the linked recipes cover every source factory crossed with valid, required-missing, and optional-missing credentials. The workload is independently authored and stores no expected outputs."
     },
     {
       "candidate_observation_selectors": [

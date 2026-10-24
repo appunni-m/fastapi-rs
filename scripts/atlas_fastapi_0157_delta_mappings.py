@@ -98,31 +98,70 @@ def _link(recipe_path: str, case_ids: tuple[str, ...]) -> dict[str, Any]:
     }
 
 
-def _module(rationale: str, links: tuple[tuple[str, tuple[str, ...]], ...]):
+def _module(
+    rationale: str,
+    links: tuple[tuple[str, tuple[str, ...]], ...],
+    *,
+    complete_source_matrix: bool = False,
+    source_review_scope_exclusions: tuple[dict[str, Any], ...] = (),
+):
     workflow_cases = [_link(recipe_path, case_ids) for recipe_path, case_ids in links]
     selectors = sorted(
         {selector for workflow in workflow_cases for selector in workflow["observation_selectors"]}
     )
-    return {
+    module = {
         "rationale": rationale,
         "supporting_sources": [],
         "module_observation_selectors": selectors,
         "workflow_cases": workflow_cases,
-        "stimulus_notes": (
+    }
+    if complete_source_matrix:
+        module["stimulus_notes"] = (
+            "Input-only cases in the linked recipes cover every source factory crossed with "
+            "valid, required-missing, and optional-missing credentials. The workload is "
+            "independently authored and stores no expected outputs."
+        )
+    else:
+        module["stimulus_notes"] = (
             "Partial source-backed mapping to independently authored YAML recipes. The linked "
             "workloads use new inputs and record no expected outputs; unlinked source branches "
             "and edge cases remain outside this mapping."
-        ),
-        "contract_gate": (
+        )
+        module["contract_gate"] = (
             "Partial coverage only. The selectors describe observations available in the linked "
             "independent workflow and do not claim complete upstream test or branch parity."
-        ),
-    }
+        )
+    if source_review_scope_exclusions:
+        module["source_review_scope_exclusions"] = list(source_review_scope_exclusions)
+    return module
 
 
 _ALIASES = "tests/fixtures/input-recipes/parity/parameter-alias-choices-0157.yaml"
 _WS_AUTH = "tests/fixtures/input-recipes/parity/security-websocket-auth.yaml"
 _COMBINED = "tests/fixtures/input-recipes/parity/parameter-models-combined-locations-0157.yaml"
+_WS_AUTH_FACTORIES = (
+    "http-base",
+    "http-basic",
+    "http-bearer",
+    "http-digest",
+    "api-key-query",
+    "api-key-header",
+    "api-key-cookie",
+    "oauth2",
+    "oauth2-password-bearer",
+    "oauth2-authorization-code-bearer",
+    "openid-connect",
+)
+_WS_AUTH_STATES = (
+    "valid-credentials",
+    "required-missing-credentials",
+    "optional-missing-credentials",
+)
+_WS_AUTH_CASES = tuple(
+    f"fastapi.security-websockets.{factory}.{state}"
+    for factory in _WS_AUTH_FACTORIES
+    for state in _WS_AUTH_STATES
+)
 _MODULES: dict[str, dict[str, Any]] = {
     "tests/test_body_alias_choices.py": _module(
         "Body AliasChoices input, selected alias, and OpenAPI projection have independent requests; nested-error and default branches are not claimed.",
@@ -214,16 +253,21 @@ _MODULES: dict[str, dict[str, Any]] = {
         ),
     ),
     "tests/test_security_websockets.py": _module(
-        "Independent HTTP Bearer WebSocket cases cover accepted credentials, required-credential denial through the Starlette 1.6.0 denial-response extension, and optional missing credentials. The broader security-scheme parameter matrix remains outside this partial sample.",
+        "Independent input cases cover the source function's full 11-factory by three-credential-state matrix, plus a separate WebSocket alias-choice sample. Required missing credentials exercise FastAPI's security denial through the pinned Starlette 1.6.0 WebSocket HTTP denial-response extension.",
         (
             (_ALIASES, ("fastapi.parameter-alias-choices-0157.websocket-security",)),
-            (
-                _WS_AUTH,
-                (
-                    "fastapi.security-websockets.required-missing-credentials-denial",
-                    "fastapi.security-websockets.optional-missing-credentials",
+            (_WS_AUTH, _WS_AUTH_CASES),
+        ),
+        complete_source_matrix=True,
+        source_review_scope_exclusions=(
+            {
+                "test_functions": {"test_security_websocket": [128, 161]},
+                "reason": (
+                    "The mapped source matrix does not exercise malformed or alternate-format "
+                    "credentials, duplicate credential sources, scheme-specific OpenAPI output, "
+                    "or WebSocket denial behavior without the Starlette HTTP denial extension."
                 ),
-            ),
+            },
         ),
     ),
     "tests/test_stream_non_finite_floats.py": _module(
