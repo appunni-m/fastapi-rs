@@ -8,6 +8,7 @@ import importlib
 import importlib.machinery
 import importlib.metadata
 import json
+import os
 import platform
 import re
 import shutil
@@ -243,6 +244,9 @@ def _cargo_starlette_rs_source(target_source: Path, starlette_rs_source: Path) -
             link_path = overlay_root / member_path
             link_path.parent.mkdir(parents=True, exist_ok=True)
             link_path.symlink_to(source_member, target_is_directory=source_member.is_dir())
+        cargo_environment = os.environ.copy()
+        cargo_environment["RUSTC_WRAPPER"] = ""
+        cargo_environment["CARGO_BUILD_RUSTC_WRAPPER"] = ""
         completed = subprocess.run(
             command,
             cwd=overlay_root,
@@ -250,6 +254,7 @@ def _cargo_starlette_rs_source(target_source: Path, starlette_rs_source: Path) -
             capture_output=True,
             text=True,
             timeout=120,
+            env=cargo_environment,
         )
         if completed.returncode != 0:
             raise WorkerError(
