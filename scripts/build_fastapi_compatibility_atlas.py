@@ -2220,6 +2220,38 @@ merge_test_review_mappings(
         "tests/test_swagger_ui_init_oauth.py": {
             "replace_module_features": True,
             "module_feature_ids": ["openapi-docs", "response-serialization"],
+            "rationale": (
+                "The primary case requests the public `/docs` endpoint after configuring the "
+                "documented Swagger OAuth constructor option; the JSON endpoint is a control. "
+                "This maps rendered documentation behavior without asserting that the separate "
+                "FastAPI.swagger_ui_init_oauth instance attribute is public."
+            ),
+            "supporting_sources": [
+                {
+                    "path": "tests/test_swagger_ui_init_oauth.py",
+                    "start_line": 4,
+                    "end_line": 14,
+                    "role": "documented app configuration and public routes exercised by the module",
+                },
+                {
+                    "path": "fastapi/applications.py",
+                    "start_line": 482,
+                    "end_line": 492,
+                    "role": "documented Swagger UI OAuth constructor parameter",
+                },
+                {
+                    "path": "fastapi/applications.py",
+                    "start_line": 1138,
+                    "end_line": 1152,
+                    "role": "public docs route passes the configured OAuth values to the renderer",
+                },
+                {
+                    "path": "fastapi/openapi/docs.py",
+                    "start_line": 184,
+                    "end_line": 187,
+                    "role": "Swagger HTML renderer emits the OAuth initialization call",
+                },
+            ],
             "functions": {
                 "test_swagger_ui": reviewed_case(
                     ["openapi-docs"],

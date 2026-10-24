@@ -660928,8 +660928,37 @@
           }
         ],
         "reviewed_module_mapping": {
-          "rationale": null,
-          "supporting_sources": []
+          "rationale": "The primary case requests the public `/docs` endpoint after configuring the documented Swagger OAuth constructor option; the JSON endpoint is a control. This maps rendered documentation behavior without asserting that the separate FastAPI.swagger_ui_init_oauth instance attribute is public.",
+          "supporting_sources": [
+            {
+              "end_line": 14,
+              "path": "tests/test_swagger_ui_init_oauth.py",
+              "role": "documented app configuration and public routes exercised by the module",
+              "sha256": "d2cebd8ee5a918525eedcd6af5ee36060f3e403a19e903c722ccaae877bb290a",
+              "start_line": 4
+            },
+            {
+              "end_line": 492,
+              "path": "fastapi/applications.py",
+              "role": "documented Swagger UI OAuth constructor parameter",
+              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
+              "start_line": 482
+            },
+            {
+              "end_line": 1152,
+              "path": "fastapi/applications.py",
+              "role": "public docs route passes the configured OAuth values to the renderer",
+              "sha256": "a87379cc9eee7164b450471278060a9a9745ac52d08e54844069afe7f94d0cca",
+              "start_line": 1138
+            },
+            {
+              "end_line": 187,
+              "path": "fastapi/openapi/docs.py",
+              "role": "Swagger HTML renderer emits the OAuth initialization call",
+              "sha256": "3dc8c7d129feca9f7b3b47b15e29dc1bc7a9b18ec04f2242e7aeb66cad4345aa",
+              "start_line": 184
+            }
+          ]
         },
         "source_module_path": "tests/test_swagger_ui_init_oauth.py",
         "test_function_count": 2,
