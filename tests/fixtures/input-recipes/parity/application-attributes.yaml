@@ -122,6 +122,87 @@ cases:
   - path: docs/en/docs/tutorial/metadata.md
     kind: upstream_documentation
 
+- case_id: fastapi.application.attributes.non-string-constructor-version
+  verification: parity
+  factory_input:
+    version: 17
+    _observe_version_only: true
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-non-string-constructor-version
+    kind: http_request
+    scope: *attributes-observer-scope
+    receive_events: *attributes-empty-request
+    observations: *attributes-json-response
+  source_evidence:
+  - path: docs/en/docs/tutorial/metadata.md
+    kind: upstream_documentation
+
+- case_id: fastapi.application.attributes.non-string-runtime-version
+  verification: parity
+  factory_input:
+    version: 2.4.1
+    _version_after_init: 17
+    _observe_version_only: true
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: observe-non-string-runtime-version
+    kind: http_request
+    scope: *attributes-observer-scope
+    receive_events: *attributes-empty-request
+    observations: *attributes-json-response
+  source_evidence:
+  - path: docs/en/docs/tutorial/metadata.md
+    kind: upstream_documentation
+
+- case_id: fastapi.application.attributes.non-string-constructor-version-openapi-validation
+  verification: parity
+  factory_input:
+    version: 17
+    _openapi_after_init: true
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: docs/en/docs/how-to/extending-openapi.md
+    kind: upstream_documentation
+
+- case_id: fastapi.application.attributes.non-string-runtime-version-openapi-validation
+  verification: parity
+  factory_input:
+    version: 2.4.1
+    _version_after_init: 17
+    _openapi_after_init: true
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: docs/en/docs/how-to/extending-openapi.md
+    kind: upstream_documentation
+
+- case_id: fastapi.application.attributes.falsy-non-string-version
+  verification: parity
+  factory_input:
+    version: 0
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions: []
+  source_evidence:
+  - path: docs/en/docs/tutorial/metadata.md
+    kind: upstream_documentation
+
 - case_id: fastapi.application.attributes.contact-reassignment-before-openapi
   verification: parity
   factory_input:

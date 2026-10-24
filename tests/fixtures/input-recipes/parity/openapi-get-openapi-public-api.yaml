@@ -45,6 +45,25 @@ cases:
     kind: upstream_api_definition
     sha256: 42ebf7155b0200c45457ada34fd78ec001df937c137b2a6e0da6922829457483
     symbol_id: fastapi.openapi.utils.get_openapi
+- case_id: fastapi.openapi.get-openapi.non-string-version
+  probes:
+  - probe_id: invalid-version
+    public_callable:
+      module: fastapi.openapi.utils
+      attribute: get_openapi
+    argument_bundle: non-string-version
+    observations:
+    - kind: python_call_outcome
+      selector: outcome
+      comparison: exact
+  source_evidence:
+  - path: docs/en/docs/how-to/extending-openapi.md
+    kind: upstream_documentation
+    sha256: 5c685bf0627b38937f38dce0a8365f1070559465868c1fa7ca8f7c27c037e798
+  - path: fastapi/openapi/utils.py
+    kind: upstream_api_definition
+    sha256: 42ebf7155b0200c45457ada34fd78ec001df937c137b2a6e0da6922829457483
+    symbol_id: fastapi.openapi.utils.get_openapi
 - case_id: fastapi.openapi.get-openapi.response-model-schemas-split
   probes:
   - probe_id: response-model-split

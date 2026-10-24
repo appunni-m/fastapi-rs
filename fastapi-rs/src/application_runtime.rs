@@ -4647,7 +4647,7 @@ pub(crate) struct PyFastApi {
     title: String,
     summary: Option<String>,
     description: String,
-    version: String,
+    version: Py<PyAny>,
     version_is_set: bool,
     openapi_version: String,
     openapi_url: Option<String>,
@@ -4824,12 +4824,12 @@ struct OpenApiAppSnapshot {
     license_info: Option<Py<PyAny>>,
     openapi_external_docs: Option<Py<PyAny>>,
     servers: Py<PyAny>,
-    version: String,
+    version: Py<PyAny>,
     separate_input_output_schemas: bool,
     operations: Vec<OpenApiRouteSnapshot>,
 }
 
-fn fastapi_version_value(app: &PyFastApi) -> PyResult<&str> {
+fn fastapi_version_value(app: &PyFastApi) -> PyResult<&Py<PyAny>> {
     if !app.version_is_set {
         return Err(PyAttributeError::new_err(
             "'FastAPI' object has no attribute 'version'",
@@ -4891,7 +4891,7 @@ impl OpenApiAppSnapshot {
                 .as_ref()
                 .map(|value| value.clone_ref(py)),
             servers: app.servers.clone_ref(py),
-            version: fastapi_version_value(app)?.to_owned(),
+            version: fastapi_version_value(app)?.clone_ref(py),
             separate_input_output_schemas: app.separate_input_output_schemas,
             operations,
         })
@@ -5516,6 +5516,10 @@ fn generate_unique_id(route: &Bound<'_, PyAny>) -> PyResult<String> {
     Ok(operation_id(&name, &path, &method))
 }
 
+fn default_fastapi_version() -> Py<PyAny> {
+    Python::attach(|py| PyString::new(py, "0.1.0").into_any().unbind())
+}
+
 #[pymethods]
 impl PyFastApi {
     // Native ASGI calls return Python awaitables, but their PyO3 call slot is
@@ -5535,7 +5539,7 @@ impl PyFastApi {
     }
 
     #[new]
-    #[pyo3(signature = (*, telemetry = None, debug = false, routes = None, title = "FastAPI", summary = None, description = "", version = "0.1.0", openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, responses = None, callbacks = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true, deprecated = None, include_in_schema = true, **extra))]
+    #[pyo3(signature = (*, telemetry = None, debug = false, routes = None, title = "FastAPI", summary = None, description = "", version = default_fastapi_version(), openapi_url = "/openapi.json", openapi_tags = None, servers = None, docs_url = "/docs", redoc_url = "/redoc", swagger_ui_oauth2_redirect_url = "/docs/oauth2-redirect", swagger_ui_init_oauth = None, swagger_ui_parameters = None, generate_unique_id_function = GenerateUniqueIdArgument::Omitted, separate_input_output_schemas = true, terms_of_service = None, contact = None, license_info = None, openapi_prefix = "", root_path = "", root_path_in_servers = true, responses = None, callbacks = None, openapi_external_docs = None, webhooks = None, dependencies = None, default_response_class = ResponseClassArgument::Omitted, redirect_slashes = true, middleware = None, exception_handlers = None, on_startup = None, on_shutdown = None, lifespan = None, strict_content_type = true, deprecated = None, include_in_schema = true, **extra))]
     // lint-exception: PyO3 needs one Rust argument per Python constructor keyword.
     #[allow(
         clippy::too_many_arguments,
@@ -5549,7 +5553,7 @@ impl PyFastApi {
         title: &str,
         summary: Option<String>,
         description: &str,
-        version: &str,
+        version: Py<PyAny>,
         openapi_url: Option<&str>,
         openapi_tags: Option<Py<PyAny>>,
         servers: Option<Py<PyAny>>,
@@ -5599,7 +5603,7 @@ impl PyFastApi {
                 "A title must be provided for OpenAPI, e.g.: 'My API'",
             ));
         }
-        if openapi_url.is_some_and(|url| !url.is_empty()) && version.is_empty() {
+        if openapi_url.is_some_and(|url| !url.is_empty()) && !version.bind(py).is_truthy()? {
             return Err(PyAssertionError::new_err(
                 "A version must be provided for OpenAPI, e.g.: '2.1.0'",
             ));
@@ -5801,7 +5805,7 @@ impl PyFastApi {
             title: title.to_owned(),
             summary,
             description: description.to_owned(),
-            version: version.to_owned(),
+            version,
             version_is_set: true,
             openapi_version: "3.1.0".to_owned(),
             openapi_url: openapi_url.map(str::to_owned),
@@ -5931,12 +5935,12 @@ impl PyFastApi {
     }
 
     #[getter]
-    fn version(&self) -> PyResult<&str> {
-        fastapi_version_value(self)
+    fn version(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        Ok(fastapi_version_value(self)?.clone_ref(py))
     }
 
     #[setter]
-    fn set_version(&mut self, version: String) {
+    fn set_version(&mut self, version: Py<PyAny>) {
         self.version = version;
         self.version_is_set = true;
     }
@@ -9150,6 +9154,7 @@ fn openapi_callbacks(
         }
         let (operations, callback_definitions) =
             openapi_operations_from_snapshots(py, &mut snapshots, separate_input_output_schemas)?;
+        let callback_version = PyString::new(py, "0.1.0").into_any().unbind();
         let callback_document = openapi_document(
             py,
             OpenApiInfo {
@@ -9163,7 +9168,7 @@ fn openapi_callbacks(
                 license_info: None,
                 openapi_external_docs: None,
                 servers: None,
-                version: "0.1.0",
+                version: &callback_version,
             },
             &operations,
             None,
@@ -9301,7 +9306,7 @@ impl PyApiRouter {
                 "FastAPI",
                 None,
                 "",
-                "0.1.0",
+                PyString::new(py, "0.1.0").into_any().unbind(),
                 Some("/openapi.json"),
                 None,
                 None,

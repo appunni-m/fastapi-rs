@@ -82,7 +82,7 @@ pub(crate) struct OpenApiInfo<'a> {
     pub(crate) license_info: Option<&'a Py<PyAny>>,
     pub(crate) openapi_external_docs: Option<&'a Py<PyAny>>,
     pub(crate) servers: Option<&'a Py<PyAny>>,
-    pub(crate) version: &'a str,
+    pub(crate) version: &'a Py<PyAny>,
 }
 
 fn deduplicate_operation_parameters<'py>(
@@ -623,7 +623,7 @@ pub(crate) fn openapi_document(
             info.set_item("license", license_info)?;
         }
     }
-    info.set_item("version", app_info.version)?;
+    info.set_item("version", app_info.version.bind(py))?;
     document.set_item("info", info)?;
     let configured_servers = match app_info.servers.map(|servers| servers.bind(py)) {
         Some(servers) if servers.is_truthy()? => Some(servers),
@@ -705,7 +705,7 @@ impl GetOpenApiCallable {
         &self,
         py: Python<'_>,
         title: &str,
-        version: &str,
+        version: Py<PyAny>,
         openapi_version: &str,
         summary: Option<&str>,
         description: Option<&str>,
@@ -745,7 +745,7 @@ impl GetOpenApiCallable {
                 license_info: license_info.as_ref(),
                 openapi_external_docs: external_docs.as_ref(),
                 servers: servers.as_ref(),
-                version,
+                version: &version,
             },
             &operations,
             None,

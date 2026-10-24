@@ -6795,6 +6795,10 @@ reviewed_api_contract_overlay:
           workload_path: tests/fixtures/workloads/openapi_get_openapi_public_api.py
           observation_selectors: [python.attribute_value]
         - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-public-api.yaml
+          case_id: fastapi.openapi.get-openapi.non-string-version
+          workload_path: tests/fixtures/workloads/openapi_get_openapi_public_api.py
+          observation_selectors: [python.call_outcome]
+        - recipe_path: tests/fixtures/input-recipes/parity/openapi-get-openapi-public-api.yaml
           case_id: fastapi.openapi.get-openapi.response-model-schemas-split
           workload_path: tests/fixtures/workloads/openapi_get_openapi_public_api.py
           observation_selectors: [python.attribute_value]
@@ -6911,13 +6915,15 @@ reviewed_api_contract_overlay:
         establish parity for all combinations of route options. Webhooks are emitted
         under a separate top-level `webhooks` map while ordinary routes remain
         under `paths`.
+        The direct callable also forwards a non-string `version` to OpenAPI model
+        validation and reports the source validation exception.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
           - Generic Starlette routes are skipped as in FastAPI. Full traversal of arbitrary included route trees and custom route classes remains outside the direct-call fixtures; the compared included-router case passes prefiltered RouteContext values.
           - Callbacks, custom route operation IDs, duplicate-ID warning parity, custom response metadata, and broad combinations of route options remain outside the direct-call fixtures.
-          - The linked fixtures cover empty routes, metadata options, simple static GET routes, primary response-model schemas in both modes, RouteContext security and request schemas, a simple webhook registered for GET, and mutations to methods and additional responses; other method/webhook combinations, invalid arguments, metadata validation errors, and remaining route shapes/options are not compared.
+          - The linked fixtures cover empty routes, metadata options, simple static GET routes, primary response-model schemas in both modes, RouteContext security and request schemas, a simple webhook registered for GET, and mutations to methods and additional responses; other method/webhook combinations, invalid arguments, other metadata validation errors, and remaining route shapes/options are not compared.
           - Native OpenAPI generation for the FastAPI application's /openapi.json route does not establish parity for this separately exported callable.
     fastapi.utils.generate_operation_id_for_path:
       fixture_refs:
@@ -8548,6 +8554,21 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
           case_id: fastapi.application.attributes.version-deletion
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.non-string-constructor-version
+          observation_selectors: [construction.outcome, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.non-string-runtime-version
+          observation_selectors: [construction.outcome, http.status, http.body.json]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.non-string-constructor-version-openapi-validation
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.non-string-runtime-version-openapi-validation
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message]
+        - recipe_path: tests/fixtures/input-recipes/parity/application-attributes.yaml
+          case_id: fastapi.application.attributes.falsy-non-string-version
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message]
         - recipe_path: tests/fixtures/input-recipes/parity/docs-reference-openapi.yaml
           case_id: fastapi.docs.reference-wave.openapi.fastapi-application-settings
           observation_selectors: [openapi.document]
@@ -8561,13 +8582,16 @@ reviewed_api_contract_overlay:
         version raises the pinned constructor assertion. They also compare
         reassignment after OpenAPI generation, where the live attribute changes
         while the cached schema retains its original version, and deletion,
-        where subsequent lookup reports the missing public attribute.
+        where subsequent lookup reports the missing public attribute. Additional
+        cases retain an integer runtime value after construction and assignment,
+        compare the constructor assertion for a falsy non-string, and compare
+        OpenAPI validation failures after generation.
       rust_binding: fastapi-rs/src/application_runtime.rs::PyFastApi::version
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract
         known_gaps:
-          - Non-string constructor or runtime assignment, including its later OpenAPI validation and serialization behavior, remains unverified.
+          - Other arbitrary Python objects, including identity-sensitive values and their OpenAPI serialization behavior, remain outside the focused cases.
     fastapi.applications.FastAPI.terms_of_service:
       source_evidence:
         - path: fastapi/applications.py

@@ -1242,15 +1242,20 @@
     {
       "id": "application-attributes",
       "input_path": "tests/fixtures/inputs/parity/application-attributes.json",
-      "input_sha256": "bf9d5fc1c40767a8513eac814de06d956a5e604ccb621105a050ea94b54cc88b",
+      "input_sha256": "26d249df13729ad7cac588559bcfef40eb300de48daa6de9f6b2019e5e410779",
       "recipe_path": "tests/fixtures/input-recipes/parity/application-attributes.yaml",
-      "recipe_sha256": "2f6c10d52dd700648710bbcf6a07601d6497d10b37eaefd084aac17d2e626060",
+      "recipe_sha256": "19ab105828450e29928ccb197b44bc8185d332bba0145f4ab75fa564aa82ad3b",
       "case_ids": [
         "fastapi.application.attributes.defaults",
         "fastapi.application.attributes.configured",
         "fastapi.application.attributes.version-reassignment-after-openapi-cache",
         "fastapi.application.attributes.empty-version",
         "fastapi.application.attributes.version-deletion",
+        "fastapi.application.attributes.non-string-constructor-version",
+        "fastapi.application.attributes.non-string-runtime-version",
+        "fastapi.application.attributes.non-string-constructor-version-openapi-validation",
+        "fastapi.application.attributes.non-string-runtime-version-openapi-validation",
+        "fastapi.application.attributes.falsy-non-string-version",
         "fastapi.application.attributes.contact-reassignment-before-openapi",
         "fastapi.application.attributes.contact-reassignment-after-openapi-cache",
         "fastapi.application.attributes.contact-deletion-after-openapi-cache",
@@ -1263,7 +1268,7 @@
         "fastapi.application.attributes.swagger-ui-parameters-reassignment-after-construction"
       ],
       "workload_path": "tests/fixtures/workloads/application_attributes.py",
-      "workload_sha256": "7a34d9d6804341703c680060639ede47e2362af0eceae5f412f2834047cb8ef8",
+      "workload_sha256": "fd9b47a3a5d78d6dc98e55099d1144f010e9492a7fc050e7f6f9b83be48cd0c7",
       "case_contracts": [
         {
           "case_id": "fastapi.application.attributes.defaults",
@@ -1296,6 +1301,41 @@
         },
         {
           "case_id": "fastapi.application.attributes.version-deletion",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.attributes.non-string-constructor-version",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.attributes.non-string-runtime-version",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:tutorial/metadata.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.attributes.non-string-constructor-version-openapi-validation",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:how-to/extending-openapi.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.attributes.non-string-runtime-version-openapi-validation",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:how-to/extending-openapi.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.application.attributes.falsy-non-string-version",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:tutorial/metadata.md"
@@ -18746,17 +18786,18 @@
     {
       "id": "openapi-get-openapi-public-api",
       "input_path": "tests/fixtures/inputs/parity/openapi-get-openapi-public-api.json",
-      "input_sha256": "3e60e5a2aa4b02592377e0a83552a85cba6dca7003cf90c1e90e7a2d4d9e40e8",
+      "input_sha256": "3f6edbbf2036abc1d6aaa03e2730a1f10093e17af4999b56cf2ff64623acc739",
       "recipe_path": "tests/fixtures/input-recipes/parity/openapi-get-openapi-public-api.yaml",
-      "recipe_sha256": "80437919478dbdc891fa1c8c5cd22878a8f1f09a569bd4ede34030648f132dcc",
+      "recipe_sha256": "c6194628dd836a7a92fabbbdd437f2a673f8191171f8becc347dfb670383b6e9",
       "case_ids": [
         "fastapi.openapi.get-openapi.empty-routes",
         "fastapi.openapi.get-openapi.document-metadata",
+        "fastapi.openapi.get-openapi.non-string-version",
         "fastapi.openapi.get-openapi.response-model-schemas-split",
         "fastapi.openapi.get-openapi.response-model-schemas-shared"
       ],
       "workload_path": "tests/fixtures/workloads/openapi_get_openapi_public_api.py",
-      "workload_sha256": "34dbe488f9d41413df2fd932b461bc69e5737a7d2acbfc9a851f818c2a85aab3",
+      "workload_sha256": "ec71fcc25282557ebd70778b6d2676c3336f0a63b8f576bc79d4f089dab07d5f",
       "api_definitions": [
         {
           "case_id": "fastapi.openapi.get-openapi.document-metadata",
@@ -18766,6 +18807,12 @@
         },
         {
           "case_id": "fastapi.openapi.get-openapi.empty-routes",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "path": "fastapi/openapi/utils.py",
+          "sha256": "42ebf7155b0200c45457ada34fd78ec001df937c137b2a6e0da6922829457483"
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.non-string-version",
           "symbol_id": "fastapi.openapi.utils.get_openapi",
           "path": "fastapi/openapi/utils.py",
           "sha256": "42ebf7155b0200c45457ada34fd78ec001df937c137b2a6e0da6922829457483"
@@ -18804,6 +18851,15 @@
           ]
         },
         {
+          "case_id": "fastapi.openapi.get-openapi.non-string-version",
+          "probe_id": "invalid-version",
+          "symbol_id": "fastapi.openapi.utils.get_openapi",
+          "probe_kind": "callable",
+          "observation_selectors": [
+            "python.call_outcome"
+          ]
+        },
+        {
           "case_id": "fastapi.openapi.get-openapi.response-model-schemas-shared",
           "probe_id": "response-model-shared",
           "symbol_id": "fastapi.openapi.utils.get_openapi",
@@ -18832,6 +18888,13 @@
         },
         {
           "case_id": "fastapi.openapi.get-openapi.document-metadata",
+          "verification": "parity",
+          "requirement_refs": [
+            "api:fastapi.openapi.utils.get_openapi"
+          ]
+        },
+        {
+          "case_id": "fastapi.openapi.get-openapi.non-string-version",
           "verification": "parity",
           "requirement_refs": [
             "api:fastapi.openapi.utils.get_openapi"
@@ -47020,8 +47083,10 @@
       "fixture_id": "fastapi.docs.how-to-extending-openapi",
       "workflow_id": "application-attributes",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 4 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.application.attributes.non-string-constructor-version-openapi-validation",
+        "fastapi.application.attributes.non-string-runtime-version-openapi-validation",
         "fastapi.application.attributes.summary-mutation-after-openapi-cache",
         "fastapi.application.attributes.version-reassignment-after-openapi-cache"
       ],
@@ -47038,7 +47103,7 @@
       "fixture_id": "fastapi.docs.tutorial-metadata",
       "workflow_id": "application-attributes",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 14 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 17 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.application.attributes.configured",
         "fastapi.application.attributes.contact-deletion-after-openapi-cache",
@@ -47050,6 +47115,9 @@
         "fastapi.application.attributes.empty-redoc-url",
         "fastapi.application.attributes.empty-summary",
         "fastapi.application.attributes.empty-version",
+        "fastapi.application.attributes.falsy-non-string-version",
+        "fastapi.application.attributes.non-string-constructor-version",
+        "fastapi.application.attributes.non-string-runtime-version",
         "fastapi.application.attributes.summary-mutation-after-openapi-cache",
         "fastapi.application.attributes.summary-mutation-before-openapi",
         "fastapi.application.attributes.version-deletion",

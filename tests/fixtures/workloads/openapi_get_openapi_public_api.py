@@ -53,6 +53,14 @@ def create_argument_bundles() -> dict[str, dict[str, object]]:
                 },
             },
         },
+        "non-string-version": {
+            "args": [],
+            "kwargs": {
+                "title": "Non-String Version Probe",
+                "version": 17,
+                "routes": [],
+            },
+        },
         "schema-split": {
             "args": [],
             "kwargs": {
