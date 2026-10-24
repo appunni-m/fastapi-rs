@@ -13917,8 +13917,14 @@ reviewed_api_contract_overlay:
         status: partial-contract
         known_gaps:
           - >-
-            No checked-in source/target execution receipt identifies this FastAPI-RS build; input
-            recipes and identity mappings are not pass results.
+            The current-HEAD receipt for this entry covers only
+            fastapi.validation-exceptions.direct-api-contract: comparison
+            805dbf0d-e424-4091-8131-1af90c9e4af6 passed 1/1 against FastAPI
+            0.157.0 and Starlette 1.6.0 on target 9ea6aed99f7b6e534d6ad02c9c4b45c4a8e43c14
+            with manifest SHA
+            cf3040859e6ef6087b8a2807b8d99356525077d99df2b71706a4c37d993b78ad.
+            The other linked ASGI and worker workflows do not have a receipt for
+            this target revision.
           - >-
             Behavior outside the exact bounded_slice is not claimed; unlisted overloads, inputs,
             branches, mutations, and error paths remain unproven.
@@ -13971,7 +13977,10 @@ reviewed_api_contract_overlay:
         and other ValidationException subclasses remain outside this slice.
         The direct API workflow separately observes this class's import path,
         exact identity, signature, docstring value, and selected constructor
-        outcomes; its mapping is not a parity result.
+        outcomes; comparison 805dbf0d-e424-4091-8131-1af90c9e4af6 passed those
+        probes 1/1 on target 9ea6aed99f7b6e534d6ad02c9c4b45c4a8e43c14. That
+        receipt does not establish parity for the other linked ASGI and worker
+        workflows.
     fastapi.exceptions.ValidationException.errors:
       target_binding:
         implementation_owner: fastapi-rs
