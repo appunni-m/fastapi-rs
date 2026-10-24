@@ -24,7 +24,11 @@ from urllib.parse import unquote, urlsplit
 import tomllib
 
 from scripts.parity.fault_contracts import verification_mode
-from scripts.parity.source_identity import SourceIdentityError, combine_digests, source_tree_sha256
+from scripts.parity.source_identity import (
+    SourceIdentityError,
+    combine_digests,
+    source_tree_sha256,
+)
 from scripts.parity.worker import (
     RESULT_SCHEMA_ID,
     RESULT_SCHEMA_V3_ID,

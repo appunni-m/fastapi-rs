@@ -2085,6 +2085,58 @@ pydantic_core_dependency_inventory:
     defaults and activated optional features; this is not a per-platform wheel
     feature guarantee.
 
+parity_receipt_source_scope:
+  schema: fastapi-rs/parity-receipt-source-scope@1
+  compatibility_rule: >-
+    Reuse a passing indexed workflow only when the selected input, recipe,
+    workload, manifest, index, oracle identity, target runtime packages,
+    Python/platform profile, compiled FastAPI-RS and Starlette-RS extensions,
+    runtime source scopes, and indexed parity harness all match. Repository
+    revisions and files outside these declared scopes remain provenance, not
+    behavioral invalidators. Any missing or malformed scoped identity is stale.
+  workflow_application:
+    workflow_id_is_part_of_receipt: true
+    workflow_schema_is_part_of_receipt: true
+    process_workflows_are_cached: false
+    unknown_runtime_scope: stale
+  fastapi_rs_runtime:
+    scope_id: fastapi-rs-runtime-v1
+    files:
+      - Cargo.toml
+      - Cargo.lock
+      - rust-toolchain.toml
+      - pyproject.toml
+      - fastapi-rs/Cargo.toml
+      - fastapi-rs/build.rs
+      - fastapi-rs-py/Cargo.toml
+      - fastapi-rs-py/build.rs
+      - requirements/target-runtime-cpython-3.12.13.lock
+    prefixes:
+      - fastapi-rs/src/
+      - fastapi-rs-py/src/
+      - fastapi-rs-py/python/
+  starlette_rs_runtime:
+    scope_id: starlette-rs-runtime-v1
+    files:
+      - Cargo.toml
+      - Cargo.lock
+      - rust-toolchain.toml
+      - pyproject.toml
+      - starlette-rs/Cargo.toml
+      - starlette-rs/build.rs
+      - starlette-rs-py/Cargo.toml
+      - starlette-rs-py/build.rs
+    prefixes:
+      - starlette-rs/src/
+      - starlette-rs-py/src/
+      - starlette-rs-py/python/
+  indexed_parity_harness:
+    scope_id: indexed-parity-harness-v1
+    files:
+      - scripts/build_parity_inputs.py
+    prefixes:
+      - scripts/parity/
+
 reviewed_api_contract_overlay:
   schema: fastapi-rs/reviewed-api-contract-overlay@11
   purpose: >-

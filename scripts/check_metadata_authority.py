@@ -17,6 +17,17 @@ from typing import Any
 
 import tomllib
 import yaml
+from parity.source_identity import (
+    FASTAPI_RS_RUNTIME_FILES,
+    FASTAPI_RS_RUNTIME_PREFIXES,
+    FASTAPI_RS_RUNTIME_SCOPE_ID,
+    INDEXED_PARITY_HARNESS_FILES,
+    INDEXED_PARITY_HARNESS_PREFIXES,
+    INDEXED_PARITY_HARNESS_SCOPE_ID,
+    STARLETTE_RS_RUNTIME_FILES,
+    STARLETTE_RS_RUNTIME_PREFIXES,
+    STARLETTE_RS_RUNTIME_SCOPE_ID,
+)
 from public_candidate_review_schema import (
     PublicCandidateReviewSchemaError,
     validate_public_candidate_review_schema,
@@ -124,6 +135,60 @@ def artifact_path(path_text: str) -> Path:
 def require_equal(label: str, actual: Any, expected: Any) -> None:
     if actual != expected:
         raise MetadataError(f"{label}: expected {expected!r}, found {actual!r}")
+
+
+def validate_parity_receipt_source_scope(metadata: dict[str, Any]) -> None:
+    policy = metadata.get("parity_receipt_source_scope")
+    if not isinstance(policy, dict):
+        raise MetadataError("metadata.yaml is missing the parity receipt source scope")
+    require_equal(
+        "parity receipt source-scope schema",
+        policy.get("schema"),
+        "fastapi-rs/parity-receipt-source-scope@1",
+    )
+    required_fields = {
+        "schema",
+        "compatibility_rule",
+        "workflow_application",
+        "fastapi_rs_runtime",
+        "starlette_rs_runtime",
+        "indexed_parity_harness",
+    }
+    require_equal("parity receipt source-scope fields", set(policy), required_fields)
+    if (
+        not isinstance(policy.get("compatibility_rule"), str)
+        or not policy["compatibility_rule"].strip()
+    ):
+        raise MetadataError("parity receipt compatibility rule must be explicit")
+    require_equal(
+        "parity receipt workflow application",
+        policy.get("workflow_application"),
+        {
+            "workflow_id_is_part_of_receipt": True,
+            "workflow_schema_is_part_of_receipt": True,
+            "process_workflows_are_cached": False,
+            "unknown_runtime_scope": "stale",
+        },
+    )
+    expected_scopes = {
+        "fastapi_rs_runtime": {
+            "scope_id": FASTAPI_RS_RUNTIME_SCOPE_ID,
+            "files": list(FASTAPI_RS_RUNTIME_FILES),
+            "prefixes": list(FASTAPI_RS_RUNTIME_PREFIXES),
+        },
+        "starlette_rs_runtime": {
+            "scope_id": STARLETTE_RS_RUNTIME_SCOPE_ID,
+            "files": list(STARLETTE_RS_RUNTIME_FILES),
+            "prefixes": list(STARLETTE_RS_RUNTIME_PREFIXES),
+        },
+        "indexed_parity_harness": {
+            "scope_id": INDEXED_PARITY_HARNESS_SCOPE_ID,
+            "files": list(INDEXED_PARITY_HARNESS_FILES),
+            "prefixes": list(INDEXED_PARITY_HARNESS_PREFIXES),
+        },
+    }
+    for name, expected in expected_scopes.items():
+        require_equal(f"parity receipt {name} source scope", policy.get(name), expected)
 
 
 def validate_digest(path: Path, manifest_entry: dict[str, Any], label: str) -> None:
@@ -858,6 +923,7 @@ def validate_runtime_root_namespace_review(
 def validate() -> None:
     metadata = load_yaml(METADATA_PATH)
     require_equal("metadata schema", metadata.get("schema"), "fastapi-rs/api-source-authority@1")
+    validate_parity_receipt_source_scope(metadata)
 
     manifest_meta = metadata["manifest"]
     manifest_path = artifact_path(manifest_meta["path"])

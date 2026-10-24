@@ -36,15 +36,19 @@ from scripts.parity.process_contract import (
     TARGET_PROCESS_PROFILE_ID,
     load_process_workflow,
 )
-from scripts.parity.source_identity import fastapi_rs_source_tree_sha256
+from scripts.parity.source_identity import (
+    fastapi_rs_runtime_source_scope_sha256,
+    fastapi_rs_source_tree_sha256,
+    indexed_parity_harness_source_scope_sha256,
+)
 
 MANIFEST_PATH = ROOT / "tests/fixtures/manifest.yaml"
 INDEXED_INDEX_SCHEMA = "fastapi-rs/materialized-input-index@12"
 PROCESS_RESULT_DIR = ROOT / "parity-results/indexed"
 PROFILE_RECEIPT_DIR = ROOT / "parity-results/indexed-profiles"
 CASE_RECEIPT_DIR = ROOT / "parity-results/indexed-receipts"
-PROFILE_RECEIPT_SCHEMA = "fastapi-rs/indexed-profile-receipt@1"
-CASE_RECEIPT_SCHEMA = "fastapi-rs/indexed-parity-reuse-receipt@1"
+PROFILE_RECEIPT_SCHEMA = "fastapi-rs/indexed-profile-receipt@2"
+CASE_RECEIPT_SCHEMA = "fastapi-rs/indexed-parity-reuse-receipt@2"
 PARITY_RESULTS_ROOT = (ROOT / "parity-results").resolve()
 
 PROFILE_PATHS: dict[str | None, tuple[str, str]] = {
@@ -291,14 +295,76 @@ def _read_artifact_ref(reference: Any, *, product: str) -> tuple[dict[str, Any],
     return artifact, relative_path
 
 
+def _target_execution_identity(
+    identity: Any, *, runtime_source_scope_sha256: str
+) -> dict[str, Any] | None:
+    """Project a target identity onto the runtime sources and artifacts in scope."""
+    if not isinstance(identity, dict):
+        return None
+    repositories = identity.get("repositories")
+    packages = identity.get("packages")
+    python = identity.get("python")
+    platform = identity.get("platform")
+    target_binary_sha256 = identity.get("target_binary_sha256")
+    starlette_rs_revision = (
+        repositories.get("starlette_rs") if isinstance(repositories, dict) else None
+    )
+    if (
+        not isinstance(identity.get("distribution"), str)
+        or not isinstance(identity.get("version"), str)
+        or not isinstance(python, dict)
+        or not isinstance(platform, dict)
+        or not isinstance(packages, dict)
+        or not all(
+            isinstance(name, str) and isinstance(version, str) for name, version in packages.items()
+        )
+        or not isinstance(starlette_rs_revision, str)
+        or not isinstance(runtime_source_scope_sha256, str)
+        or re.fullmatch(r"[a-f0-9]{64}", runtime_source_scope_sha256) is None
+        or not isinstance(target_binary_sha256, str)
+        or re.fullmatch(r"[a-f0-9]{64}", target_binary_sha256) is None
+    ):
+        return None
+    result = {
+        "distribution": identity["distribution"],
+        "version": identity["version"],
+        "python": python,
+        "platform": platform,
+        "packages": packages,
+        "starlette_rs_revision": starlette_rs_revision,
+        "runtime_source_scope_sha256": runtime_source_scope_sha256,
+        "target_binary_sha256": target_binary_sha256,
+    }
+    if "fault_injection_compiled" in identity:
+        fault_injection_compiled = identity["fault_injection_compiled"]
+        if type(fault_injection_compiled) is not bool:
+            return None
+        result["fault_injection_compiled"] = fault_injection_compiled
+    return result
+
+
 def _case_result_matches(result: dict[str, Any], *, product: str, context: dict[str, Any]) -> bool:
+    result_identity = result.get("identity")
+    expected_identity = (
+        context.get("target_execution_identity")
+        if product == "target"
+        else context.get("oracle_identity")
+    )
+    actual_identity = (
+        _target_execution_identity(
+            result_identity,
+            runtime_source_scope_sha256=context.get("runtime_source_scope_sha256"),
+        )
+        if product == "target"
+        else result_identity
+    )
     if (
         result.get("product") != product
         or result.get("status") != "completed"
         or not isinstance(result.get("schema"), str)
     ):
         return False
-    if result.get("identity") != context[f"{product}_identity"]:
+    if actual_identity != expected_identity:
         return False
     input_identity = result.get("input")
     manifest_identity = result.get("manifest")
@@ -401,6 +467,7 @@ def _load_cached_case(
         "target_result": target_ref,
         "comparison_result": comparison_relative_path,
         "summary": comparison_result["summary"],
+        "target_identity": target_result["identity"],
     }
 
 
@@ -570,6 +637,7 @@ def _check_target_identity(
     fastapi_revision: str,
     source_digest: str,
     starlette_rs_revision: str,
+    runtime_source_scope_sha256: str,
 ) -> dict[str, str]:
     identity = result.get("identity")
     repositories = identity.get("repositories") if isinstance(identity, dict) else None
@@ -590,6 +658,7 @@ def _check_target_identity(
         "target_revision": fastapi_revision,
         "starlette_rs_revision": starlette_rs_revision,
         "source_tree_sha256": source_digest,
+        "runtime_source_scope_sha256": runtime_source_scope_sha256,
         "target_binary_sha256": binary_digest,
     }
 
@@ -616,23 +685,26 @@ def _comparison_passed(result: dict[str, Any], count: int) -> bool:
 def _profile_context(
     *,
     profile_extension: str | None,
-    target_revision: str,
     starlette_rs_revision: str,
-    target_source_digest: str,
+    runtime_source_scope_sha256: str,
     oracle_profile: dict[str, Any],
     target_profile: dict[str, Any],
     oracle_identity: dict[str, Any],
     target_identity: dict[str, Any],
 ) -> dict[str, Any]:
+    target_execution_identity = _target_execution_identity(
+        target_identity, runtime_source_scope_sha256=runtime_source_scope_sha256
+    )
+    if target_execution_identity is None:
+        raise ContractError("target profile has no valid scoped execution identity")
     return {
         "profile_extension": profile_extension,
-        "target_revision": target_revision,
         "starlette_rs_revision": starlette_rs_revision,
-        "target_source_digest": target_source_digest,
+        "runtime_source_scope_sha256": runtime_source_scope_sha256,
         "oracle_profile": oracle_profile,
         "target_profile": target_profile,
         "oracle_identity": oracle_identity,
-        "target_identity": target_identity,
+        "target_execution_identity": target_execution_identity,
     }
 
 
@@ -722,7 +794,7 @@ def _parser() -> argparse.ArgumentParser:
     prepare.add_argument(
         "--prepare-if-needed",
         action="store_true",
-        help="reuse only a profile receipt matching the full source and runtime identities",
+        help="reuse a profile receipt when the scoped runtime and oracle identities match",
     )
     parser.add_argument(
         "--no-reuse", action="store_true", help="execute selected cases even when receipts match"
@@ -820,6 +892,10 @@ def main() -> int:
     target_revision = _git_revision(target_source, "FastAPI-RS")
     starlette_rs_revision = _git_revision(starlette_rs_source, "Starlette-RS")
     target_source_digest = fastapi_rs_source_tree_sha256(target_source, starlette_rs_source)
+    runtime_source_scope_sha256 = fastapi_rs_runtime_source_scope_sha256(
+        target_source, starlette_rs_source
+    )
+    harness_source_scope_sha256 = indexed_parity_harness_source_scope_sha256(ROOT)
     indexed_input_sha256 = sha256_file(indexed_workflow_path)
     input_sha256 = sha256_file(workflow_path)
     recipe_path = ROOT / row["recipe_path"]
@@ -894,9 +970,8 @@ def main() -> int:
 
         profile_context = _profile_context(
             profile_extension=extension,
-            target_revision=target_revision,
             starlette_rs_revision=starlette_rs_revision,
-            target_source_digest=target_source_digest,
+            runtime_source_scope_sha256=runtime_source_scope_sha256,
             oracle_profile=oracle_profile,
             target_profile=target_profile,
             oracle_identity=oracle_profile_identity,
@@ -927,9 +1002,8 @@ def main() -> int:
                     )
                 profile_context = _profile_context(
                     profile_extension=extension,
-                    target_revision=target_revision,
                     starlette_rs_revision=starlette_rs_revision,
-                    target_source_digest=target_source_digest,
+                    runtime_source_scope_sha256=runtime_source_scope_sha256,
                     oracle_profile=oracle_profile,
                     target_profile=target_profile,
                     oracle_identity=oracle_profile_identity,
@@ -948,9 +1022,9 @@ def main() -> int:
             "selected_case_ids": selected_case_ids,
             "profile_extension": extension,
             "profile_context_sha256": profile_context_sha256,
-            "target_revision": target_revision,
             "starlette_rs_revision": starlette_rs_revision,
-            "target_source_digest": target_source_digest,
+            "runtime_source_scope_sha256": runtime_source_scope_sha256,
+            "harness_source_scope_sha256": harness_source_scope_sha256,
             "manifest_sha256": manifest_sha256,
             "index_sha256": index_sha256,
             "indexed_input_sha256": indexed_input_sha256,
@@ -958,10 +1032,14 @@ def main() -> int:
             "recipe_sha256": recipe_sha256,
             "workload_sha256": workload_sha256,
             "oracle_identity": oracle_profile_identity,
-            "target_identity": target_profile_identity,
+            "target_execution_identity": _target_execution_identity(
+                target_profile_identity, runtime_source_scope_sha256=runtime_source_scope_sha256
+            ),
             "workload_path": row["workload_path"],
             "workload_factory": workflow["workload"]["factory"],
         }
+        if case_context["target_execution_identity"] is None:
+            raise ContractError("target profile has no valid scoped execution identity")
         case_context_sha256 = _canonical_sha256(case_context)
         case_receipt_path = CASE_RECEIPT_DIR / f"{case_context_sha256}.json"
 
@@ -1014,10 +1092,12 @@ def main() -> int:
                                 "target_revision": target_revision,
                                 "starlette_rs_revision": starlette_rs_revision,
                                 "source_tree_sha256": target_source_digest,
+                                "runtime_source_scope_sha256": runtime_source_scope_sha256,
                                 "target_binary_sha256": target_profile_identity[
                                     "target_binary_sha256"
                                 ],
                             },
+                            "receipt_target_identity": cached_case["target_identity"],
                             "manifest_sha256": manifest_sha256,
                             "input_sha256": input_sha256,
                             "indexed_input_sha256": indexed_input_sha256,
@@ -1098,6 +1178,7 @@ def main() -> int:
             fastapi_revision=target_revision,
             source_digest=target_source_digest,
             starlette_rs_revision=starlette_rs_revision,
+            runtime_source_scope_sha256=runtime_source_scope_sha256,
         )
         comparison = _run_json(
             "process comparison",
@@ -1191,6 +1272,7 @@ def main() -> int:
             fastapi_revision=target_revision,
             source_digest=target_source_digest,
             starlette_rs_revision=starlette_rs_revision,
+            runtime_source_scope_sha256=runtime_source_scope_sha256,
         )
         compare_args.extend(
             [
