@@ -585,7 +585,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@12
-    sha256: 1bc95d779406ebc766670c5e09bb10b02d43ac2b9967fb80d84fb4b7083ddaa5
+    sha256: 313c1491e7c278ac372c76b22c150977a22016c3a8ac0185aba7141845df2305
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1831
@@ -625,7 +625,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@3
-    sha256: 8a92ca4bfea39019de517111b6769be1a069f267d6cc3df0de859382f4960f77
+    sha256: 037887305ee42d9babb872ab3d0cc7405f3d2a5555f277b41f7afb93b32f6bcc
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 914
@@ -665,14 +665,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@12
-    sha256: d62d86c015468b571d1e977785ae5a0bb328e3f5a18b499b91a01d7348d05867
+    sha256: 7e4f13fc580e84bf373036fffe80ab8cd11a9c5dab01b96ee8bc0124dfd968d1
     schema_path: tests/fixtures/schemas/materialized-input-index-v12.schema.json
     schema_sha256: 668c3c0e71c739ab05d23b414f07c4ccfe6227116094891280943a8326e1d77a
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 748
-      cases: 3175
-      partial_source_mappings: 2032
+      workflows: 749
+      cases: 3176
+      partial_source_mappings: 2033
 
 contract_metadata:
   aliases:
@@ -1058,6 +1058,21 @@ unresolved:
       Adds an exact input-driven projection for the parent trace/span IDs on one
       HTTP SERVER span created from a valid incoming traceparent header; it does
       not imply multi-value header or broader telemetry coverage.
+  python_asgi_workflow_v20:
+    state: websocket-telemetry-observation; v2-v20-remain-supported
+    schema_id: fastapi-rs/python-asgi-workflow@20
+    schema_path: tests/fixtures/schemas/python-asgi-workflow-v20.schema.json
+    schema_sha256: cb8f388fd28f2b147641ab3282de311b9cd1a7f0396050f48bebe0551390f19a
+    result_schema_id: fastapi-rs/python-asgi-workflow-result@20
+    result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v20.schema.json
+    result_schema_sha256: 717c0302ce95c014cdee49ac1a32122202f291df5ebd82edb28aa30feee5ce7a
+    comparison_schema_id: fastapi-rs/python-asgi-comparison@21
+    comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v21.schema.json
+    comparison_schema_sha256: 7352f40fb0fe5cb0ac11eb4f94380a25705d299512d150c60f1d6a1efc016e43
+    coverage: >-
+      Adds exact telemetry.server_spans observations to WebSocket ASGI actions.
+      The selected input covers one normally completed /ws connection; it does
+      not imply WebSocket error, disconnect, context, or lifecycle parity.
   python_api_workflow:
     state: historical-input-schema-retained; active-signature-recipes-use-version-5
     schema_id: fastapi-rs/python-api-workflow@1
@@ -1571,7 +1586,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 15
     symbols_with_direct_api_input_workflow_refs: 197
     symbols_with_operation_fixture_refs: 491
-    operation_fixture_refs: 3076
+    operation_fixture_refs: 3077
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -10234,6 +10249,19 @@ api_surface_contract:
       - construction.exception_message
       - construction.outcome
       - telemetry.server_spans
+    - workflow_id: telemetry-websocket-span
+      input_path: tests/fixtures/inputs/parity/telemetry-websocket-span.json
+      input_sha256: a3f7dcdd907c48c2194afeba8fc0ad1dcc652fa5081edc44b74206b01884c8e8
+      recipe_path: tests/fixtures/input-recipes/parity/telemetry-websocket-span.yaml
+      recipe_sha256: a1aa3e9f413f32c9a532d7319ee8f1c54c733483b808ef8d9042d235492ec7e4
+      workload_path: tests/fixtures/workloads/telemetry_websocket_span.py
+      workload_sha256: cce2ba71ae7203e02a5f42237829985694b6a9c41105aa23c433a6af7464a8b4
+      case_id: fastapi.telemetry.websocket-server-span-root
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - telemetry.server_spans
     - workflow_id: telemetry-global-provider
       input_path: tests/fixtures/inputs/parity/telemetry-global-provider.json
       input_sha256: 495ba9d25de0e78efc353534479db3c9dd0e80ea1da2d7a413c89f6491879e19
@@ -12242,9 +12270,10 @@ api_surface_contract:
         outside traversal7. The one-use user hook is not a native fault injection or proof of resource
         finalizer timing, yield cleanup or private cache identity. Internal DefaultPlaceholder and ModelField
         remain source evidence with private/internal classification.
-      - FastAPI's telemetry middleware and lifespan wrapper are source-backed but the linked telemetry
-        workflow observes only one root-path HTTP SERVER span. Metrics, logs, request-local context, exporter
-        effects, WebSocket spans, and telemetry lifecycle behavior remain unobserved.
+      - FastAPI's telemetry middleware and lifespan wrapper are source-backed. Linked telemetry inputs
+        observe one root-path HTTP SERVER span and one normally completed WebSocket SERVER span only.
+        Metrics, logs, request-local context, exporter effects, other WebSocket outcomes, and telemetry
+        lifecycle behavior remain unobserved.
   - id: fastapi.applications.FastAPI.__init__
     kind: protocol_method
     source_candidate_ref: /api_candidates/189
@@ -14880,11 +14909,11 @@ api_surface_contract:
         scheduling are outside this response-field gate.
       - Other FastAPI.__init__ options beyond the reviewed constructor slices remain unimplemented or
         unproven.
-      - The telemetry constructor inputs compare configuration acceptance and the signature only. Separate
-        inputs observe a root-path HTTP SERVER span from a late-bound global provider and parent IDs from
-        one well-formed traceparent header. Duplicate or multi-value propagation headers, baggage joining,
-        metrics, logs, context lifetime, exporter effects, and telemetry-aware lifespan behavior remain
-        unobserved.
+      - The telemetry constructor inputs compare configuration acceptance and the signature only. Selected
+        ASGI inputs observe a root-path HTTP SERVER span, including late-bound provider and one well-formed
+        traceparent behavior, and one normally completed WebSocket SERVER span. Duplicate or multi-value
+        propagation headers, baggage joining, metrics, logs, context lifetime, exporter effects, and telemetry-aware
+        lifespan behavior remain unobserved.
       - Route-version refresh/live additions, raw included-route proxies, URL/OpenAPI/WebSocket field
         traversal, empty-prefix validation traversal, reentrancy/concurrency, mutable model/default/metadata
         history, arbitrary schemas, terminal405, cancellation, streaming and worker scheduling remain

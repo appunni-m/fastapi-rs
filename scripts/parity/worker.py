@@ -45,6 +45,7 @@ WORKFLOW_SCHEMA_V16_ID = "fastapi-rs/python-asgi-workflow@16"
 WORKFLOW_SCHEMA_V17_ID = "fastapi-rs/python-asgi-workflow@17"
 WORKFLOW_SCHEMA_V18_ID = "fastapi-rs/python-asgi-workflow@18"
 WORKFLOW_SCHEMA_V19_ID = "fastapi-rs/python-asgi-workflow@19"
+WORKFLOW_SCHEMA_V20_ID = "fastapi-rs/python-asgi-workflow@20"
 RESULT_SCHEMA_ID = "fastapi-rs/python-asgi-workflow-result@2"
 RESULT_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow-result@3"
 RESULT_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow-result@4"
@@ -63,6 +64,7 @@ RESULT_SCHEMA_V16_ID = "fastapi-rs/python-asgi-workflow-result@16"
 RESULT_SCHEMA_V17_ID = "fastapi-rs/python-asgi-workflow-result@17"
 RESULT_SCHEMA_V18_ID = "fastapi-rs/python-asgi-workflow-result@18"
 RESULT_SCHEMA_V19_ID = "fastapi-rs/python-asgi-workflow-result@19"
+RESULT_SCHEMA_V20_ID = "fastapi-rs/python-asgi-workflow-result@20"
 ORACLE_PROFILE_ID = "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13"
 ORACLE_PROFILE_PACKAGE_EXTENSIONS = {
     "fastapi-0.157.0-starlette-1.6.0-cpython-3.12.13-standard-multipart-0.0.32": {
@@ -510,7 +512,7 @@ def _header_pairs(headers: Any) -> list[list[str]]:
 
 
 def _telemetry_server_spans(app: Any) -> list[dict[str, Any]]:
-    """Project only completed HTTP server spans exposed by the parity workload."""
+    """Project completed HTTP or WebSocket SERVER spans exposed by the workload."""
     capture = getattr(app, "get_parity_finished_spans", None)
     if not callable(capture):
         raise WorkerError("telemetry.server_spans requires the workload capture protocol")
@@ -1817,6 +1819,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V17_ID,
         WORKFLOW_SCHEMA_V18_ID,
         WORKFLOW_SCHEMA_V19_ID,
+        WORKFLOW_SCHEMA_V20_ID,
     }:
         raise WorkerError("workflow schema identity changed after host-side validation")
     fastapi_root = fastapi_root.resolve()
@@ -1844,6 +1847,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V17_ID,
         WORKFLOW_SCHEMA_V18_ID,
         WORKFLOW_SCHEMA_V19_ID,
+        WORKFLOW_SCHEMA_V20_ID,
     }:
         identity["fault_injection_compiled"] = None
     factory = _load_workload(workload_path, input_sha256, workflow["workload"]["factory"])
@@ -1865,6 +1869,7 @@ def run_oracle(
         WORKFLOW_SCHEMA_V17_ID,
         WORKFLOW_SCHEMA_V18_ID,
         WORKFLOW_SCHEMA_V19_ID,
+        WORKFLOW_SCHEMA_V20_ID,
     }:
         warning_package_roots = (
             [("fastapi", fastapi_root / "fastapi"), ("starlette", starlette_root / "starlette")]
@@ -1886,6 +1891,7 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V17_ID,
                 WORKFLOW_SCHEMA_V18_ID,
                 WORKFLOW_SCHEMA_V19_ID,
+                WORKFLOW_SCHEMA_V20_ID,
             }
             else []
         )
@@ -1906,11 +1912,14 @@ def run_oracle(
                 WORKFLOW_SCHEMA_V17_ID,
                 WORKFLOW_SCHEMA_V18_ID,
                 WORKFLOW_SCHEMA_V19_ID,
+                WORKFLOW_SCHEMA_V20_ID,
             }
             else _run_cases_v3(workflow, factory, warning_package_roots)
         )
         result_schema_id = (
-            RESULT_SCHEMA_V19_ID
+            RESULT_SCHEMA_V20_ID
+            if workflow["schema"] == WORKFLOW_SCHEMA_V20_ID
+            else RESULT_SCHEMA_V19_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V19_ID
             else RESULT_SCHEMA_V18_ID
             if workflow["schema"] == WORKFLOW_SCHEMA_V18_ID

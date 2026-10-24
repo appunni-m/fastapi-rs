@@ -43947,6 +43947,28 @@
       ]
     },
     {
+      "id": "telemetry-websocket-span",
+      "input_path": "tests/fixtures/inputs/parity/telemetry-websocket-span.json",
+      "input_sha256": "a3f7dcdd907c48c2194afeba8fc0ad1dcc652fa5081edc44b74206b01884c8e8",
+      "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-websocket-span.yaml",
+      "recipe_sha256": "a1aa3e9f413f32c9a532d7319ee8f1c54c733483b808ef8d9042d235492ec7e4",
+      "case_ids": [
+        "fastapi.telemetry.websocket-server-span-root"
+      ],
+      "workload_path": "tests/fixtures/workloads/telemetry_websocket_span.py",
+      "workload_sha256": "cce2ba71ae7203e02a5f42237829985694b6a9c41105aa23c433a6af7464a8b4",
+      "oracle_profile_extension": "telemetry",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.telemetry.websocket-server-span-root",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/opentelemetry.md"
+          ]
+        }
+      ]
+    },
+    {
       "id": "testclient-sync-validated-benchmark",
       "input_path": "tests/fixtures/inputs/parity/testclient-sync-validated-benchmark.json",
       "input_sha256": "4f1da8d2de105da9cd039e186f80416600c81abf4895c028296414dce33618c1",
@@ -79512,6 +79534,22 @@
       ],
       "observation_selectors": [
         "telemetry.server_span_parent_context",
+        "telemetry.server_spans"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/opentelemetry.md",
+      "fixture_id": "fastapi.docs.advanced-opentelemetry",
+      "workflow_id": "telemetry-websocket-span",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, telemetry.server_spans. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.telemetry.websocket-server-span-root"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
         "telemetry.server_spans"
       ]
     },

@@ -44,6 +44,7 @@ WORKFLOW_SCHEMA_V16 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v16.sc
 WORKFLOW_SCHEMA_V17 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v17.schema.json"
 WORKFLOW_SCHEMA_V18 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v18.schema.json"
 WORKFLOW_SCHEMA_V19 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v19.schema.json"
+WORKFLOW_SCHEMA_V20 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-v20.schema.json"
 PROCESS_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-process-workflow.schema.json"
 PROCESS_WORKFLOW_SCHEMA_V2 = ROOT / "tests/fixtures/schemas/python-process-workflow-v2.schema.json"
 API_WORKFLOW_SCHEMA = ROOT / "tests/fixtures/schemas/python-api-workflow.schema.json"
@@ -111,6 +112,7 @@ RESULT_SCHEMA_V16 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v
 RESULT_SCHEMA_V17 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v17.schema.json"
 RESULT_SCHEMA_V18 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v18.schema.json"
 RESULT_SCHEMA_V19 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v19.schema.json"
+RESULT_SCHEMA_V20 = ROOT / "tests/fixtures/schemas/python-asgi-workflow-result-v20.schema.json"
 COMPARISON_SCHEMA = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v2.schema.json"
 COMPARISON_SCHEMA_V3 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v3.schema.json"
 COMPARISON_SCHEMA_V4 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v4.schema.json"
@@ -130,6 +132,7 @@ COMPARISON_SCHEMA_V17 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v1
 COMPARISON_SCHEMA_V18 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v18.schema.json"
 COMPARISON_SCHEMA_V19 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v19.schema.json"
 COMPARISON_SCHEMA_V20 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v20.schema.json"
+COMPARISON_SCHEMA_V21 = ROOT / "tests/fixtures/schemas/python-asgi-comparison-v21.schema.json"
 WORKFLOW_SCHEMA_ID = "fastapi-rs/python-asgi-workflow@2"
 WORKFLOW_SCHEMA_V3_ID = "fastapi-rs/python-asgi-workflow@3"
 WORKFLOW_SCHEMA_V4_ID = "fastapi-rs/python-asgi-workflow@4"
@@ -148,6 +151,7 @@ WORKFLOW_SCHEMA_V16_ID = "fastapi-rs/python-asgi-workflow@16"
 WORKFLOW_SCHEMA_V17_ID = "fastapi-rs/python-asgi-workflow@17"
 WORKFLOW_SCHEMA_V18_ID = "fastapi-rs/python-asgi-workflow@18"
 WORKFLOW_SCHEMA_V19_ID = "fastapi-rs/python-asgi-workflow@19"
+WORKFLOW_SCHEMA_V20_ID = "fastapi-rs/python-asgi-workflow@20"
 PROCESS_WORKFLOW_SCHEMA_ID = "fastapi-rs/python-process-workflow@1"
 PROCESS_WORKFLOW_SCHEMA_V2_ID = "fastapi-rs/python-process-workflow@2"
 PROCESS_WORKFLOW_SCHEMA_IDS = frozenset({PROCESS_WORKFLOW_SCHEMA_ID, PROCESS_WORKFLOW_SCHEMA_V2_ID})
@@ -310,6 +314,7 @@ RESULT_SCHEMA_V16_ID = "fastapi-rs/python-asgi-workflow-result@16"
 RESULT_SCHEMA_V17_ID = "fastapi-rs/python-asgi-workflow-result@17"
 RESULT_SCHEMA_V18_ID = "fastapi-rs/python-asgi-workflow-result@18"
 RESULT_SCHEMA_V19_ID = "fastapi-rs/python-asgi-workflow-result@19"
+RESULT_SCHEMA_V20_ID = "fastapi-rs/python-asgi-workflow-result@20"
 COMPARISON_SCHEMA_ID = "fastapi-rs/python-asgi-comparison@2"
 COMPARISON_SCHEMA_V3_ID = "fastapi-rs/python-asgi-comparison@3"
 COMPARISON_SCHEMA_V4_ID = "fastapi-rs/python-asgi-comparison@4"
@@ -329,6 +334,7 @@ COMPARISON_SCHEMA_V17_ID = "fastapi-rs/python-asgi-comparison@17"
 COMPARISON_SCHEMA_V18_ID = "fastapi-rs/python-asgi-comparison@18"
 COMPARISON_SCHEMA_V19_ID = "fastapi-rs/python-asgi-comparison@19"
 COMPARISON_SCHEMA_V20_ID = "fastapi-rs/python-asgi-comparison@20"
+COMPARISON_SCHEMA_V21_ID = "fastapi-rs/python-asgi-comparison@21"
 
 WORKFLOW_SCHEMAS = {
     WORKFLOW_SCHEMA_ID: WORKFLOW_SCHEMA,
@@ -349,6 +355,7 @@ WORKFLOW_SCHEMAS = {
     WORKFLOW_SCHEMA_V17_ID: WORKFLOW_SCHEMA_V17,
     WORKFLOW_SCHEMA_V18_ID: WORKFLOW_SCHEMA_V18,
     WORKFLOW_SCHEMA_V19_ID: WORKFLOW_SCHEMA_V19,
+    WORKFLOW_SCHEMA_V20_ID: WORKFLOW_SCHEMA_V20,
     API_WORKFLOW_SCHEMA_ID: API_WORKFLOW_SCHEMA,
     API_WORKFLOW_SCHEMA_V2_ID: API_WORKFLOW_SCHEMA_V2,
     API_WORKFLOW_SCHEMA_V3_ID: API_WORKFLOW_SCHEMA_V3,
@@ -389,6 +396,7 @@ RESULT_SCHEMAS = {
     RESULT_SCHEMA_V17_ID: RESULT_SCHEMA_V17,
     RESULT_SCHEMA_V18_ID: RESULT_SCHEMA_V18,
     RESULT_SCHEMA_V19_ID: RESULT_SCHEMA_V19,
+    RESULT_SCHEMA_V20_ID: RESULT_SCHEMA_V20,
     API_RESULT_SCHEMA_ID: API_RESULT_SCHEMA,
     API_RESULT_SCHEMA_V3_ID: API_RESULT_SCHEMA_V3,
     API_RESULT_SCHEMA_V4_ID: API_RESULT_SCHEMA_V4,
@@ -427,6 +435,7 @@ COMPARISON_SCHEMAS = {
     COMPARISON_SCHEMA_V18_ID: COMPARISON_SCHEMA_V18,
     COMPARISON_SCHEMA_V19_ID: COMPARISON_SCHEMA_V19,
     COMPARISON_SCHEMA_V20_ID: COMPARISON_SCHEMA_V20,
+    COMPARISON_SCHEMA_V21_ID: COMPARISON_SCHEMA_V21,
     API_COMPARISON_SCHEMA_ID: API_COMPARISON_SCHEMA,
     API_COMPARISON_SCHEMA_V2_ID: API_COMPARISON_SCHEMA_V2,
     API_COMPARISON_SCHEMA_V3_ID: API_COMPARISON_SCHEMA_V3,
@@ -461,6 +470,7 @@ RESULT_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V17_ID: RESULT_SCHEMA_V17_ID,
     WORKFLOW_SCHEMA_V18_ID: RESULT_SCHEMA_V18_ID,
     WORKFLOW_SCHEMA_V19_ID: RESULT_SCHEMA_V19_ID,
+    WORKFLOW_SCHEMA_V20_ID: RESULT_SCHEMA_V20_ID,
     **API_RESULT_SCHEMA_IDS_BY_WORKFLOW,
 }
 COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
@@ -482,6 +492,7 @@ COMPARISON_SCHEMA_IDS_BY_WORKFLOW = {
     WORKFLOW_SCHEMA_V17_ID: COMPARISON_SCHEMA_V18_ID,
     WORKFLOW_SCHEMA_V18_ID: COMPARISON_SCHEMA_V19_ID,
     WORKFLOW_SCHEMA_V19_ID: COMPARISON_SCHEMA_V20_ID,
+    WORKFLOW_SCHEMA_V20_ID: COMPARISON_SCHEMA_V21_ID,
     **API_COMPARISON_SCHEMA_IDS_BY_WORKFLOW,
 }
 
@@ -1341,6 +1352,26 @@ def read_manifest() -> dict[str, Any]:
             workflow_v19_contract.get(digest_key),
             label,
         )
+    workflow_v20_contract = unresolved.get("python_asgi_workflow_v20")
+    if not isinstance(workflow_v20_contract, dict):
+        raise ContractError("manifest Python/ASGI v20 workflow contract is missing")
+    if (
+        workflow_v20_contract.get("schema_id") != WORKFLOW_SCHEMA_V20_ID
+        or workflow_v20_contract.get("result_schema_id") != RESULT_SCHEMA_V20_ID
+        or workflow_v20_contract.get("comparison_schema_id") != COMPARISON_SCHEMA_V21_ID
+    ):
+        raise ContractError("manifest Python/ASGI v20 schema identities are unsupported")
+    workflow_v20_schema_refs = (
+        ("schema_path", "schema_sha256", "python-asgi-workflow v20 schema"),
+        ("result_schema_path", "result_schema_sha256", "workflow result v20 schema"),
+        ("comparison_schema_path", "comparison_schema_sha256", "comparison v21 schema"),
+    )
+    for path_key, digest_key, label in workflow_v20_schema_refs:
+        _verify_digest_ref(
+            workflow_v20_contract.get(path_key),
+            workflow_v20_contract.get(digest_key),
+            label,
+        )
     api_workflow_contract = (
         unresolved.get("python_api_workflow") if isinstance(unresolved, dict) else None
     )
@@ -1868,6 +1899,7 @@ def load_workflow(
             WORKFLOW_SCHEMA_V17_ID,
             WORKFLOW_SCHEMA_V18_ID,
             WORKFLOW_SCHEMA_V19_ID,
+            WORKFLOW_SCHEMA_V20_ID,
         }:
             try:
                 mode = verification_mode(case)
@@ -2004,6 +2036,7 @@ def load_workflow(
             WORKFLOW_SCHEMA_V17_ID,
             WORKFLOW_SCHEMA_V18_ID,
             WORKFLOW_SCHEMA_V19_ID,
+            WORKFLOW_SCHEMA_V20_ID,
         }:
             _validate_unique_ids(case["actions"], "action_id", f"actions in {case['case_id']}")
             if workflow_schema_id in {
@@ -2015,6 +2048,7 @@ def load_workflow(
                 WORKFLOW_SCHEMA_V17_ID,
                 WORKFLOW_SCHEMA_V18_ID,
                 WORKFLOW_SCHEMA_V19_ID,
+                WORKFLOW_SCHEMA_V20_ID,
             } and any(action["kind"] == "testclient_request" for action in case["actions"]):
                 if workflow.get("oracle_profile_extension") != "testclient":
                     raise ContractError(
@@ -2043,6 +2077,7 @@ def load_workflow(
                 WORKFLOW_SCHEMA_V17_ID,
                 WORKFLOW_SCHEMA_V18_ID,
                 WORKFLOW_SCHEMA_V19_ID,
+                WORKFLOW_SCHEMA_V20_ID,
             }:
                 lifespan_positions = [
                     index
@@ -2115,6 +2150,7 @@ def load_workflow(
                         WORKFLOW_SCHEMA_V17_ID,
                         WORKFLOW_SCHEMA_V18_ID,
                         WORKFLOW_SCHEMA_V19_ID,
+                        WORKFLOW_SCHEMA_V20_ID,
                     }
                     and action["kind"] == "websocket_conversation"
                 ):

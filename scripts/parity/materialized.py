@@ -43,6 +43,7 @@ from scripts.parity.contract import (
     WORKFLOW_SCHEMA_V17_ID,
     WORKFLOW_SCHEMA_V18_ID,
     WORKFLOW_SCHEMA_V19_ID,
+    WORKFLOW_SCHEMA_V20_ID,
     ContractError,
     load_workflow,
     read_json,
@@ -181,6 +182,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
         WORKFLOW_SCHEMA_V17_ID,
         WORKFLOW_SCHEMA_V18_ID,
         WORKFLOW_SCHEMA_V19_ID,
+        WORKFLOW_SCHEMA_V20_ID,
     }:
         selectors.update(
             f"construction.{selector}" for selector in case["construction_observation"]["selectors"]
@@ -204,6 +206,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
             WORKFLOW_SCHEMA_V17_ID,
             WORKFLOW_SCHEMA_V18_ID,
             WORKFLOW_SCHEMA_V19_ID,
+            WORKFLOW_SCHEMA_V20_ID,
         }
         and case.get("construction_observation", {}).get("capture_warnings") is True
     ):
@@ -228,6 +231,7 @@ def _selected_selectors(case: dict[str, Any], *, workflow_schema: str | None = N
                 WORKFLOW_SCHEMA_V17_ID,
                 WORKFLOW_SCHEMA_V18_ID,
                 WORKFLOW_SCHEMA_V19_ID,
+                WORKFLOW_SCHEMA_V20_ID,
             }
             and action.get("capture_warnings") is True
         ):
@@ -485,6 +489,7 @@ def validate_materialized_input_index(
                             WORKFLOW_SCHEMA_V17_ID,
                             WORKFLOW_SCHEMA_V18_ID,
                             WORKFLOW_SCHEMA_V19_ID,
+                            WORKFLOW_SCHEMA_V20_ID,
                         }
                         or symbol_id not in supported_api_symbols
                         or not source_matches_candidate
@@ -607,6 +612,7 @@ def validate_materialized_input_index(
                 WORKFLOW_SCHEMA_V17_ID,
                 WORKFLOW_SCHEMA_V18_ID,
                 WORKFLOW_SCHEMA_V19_ID,
+                WORKFLOW_SCHEMA_V20_ID,
             }:
                 try:
                     expected_mode = verification_mode(case)

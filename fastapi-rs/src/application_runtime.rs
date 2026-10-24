@@ -7494,7 +7494,8 @@ impl PyFastApi {
             )
         };
         let stack = Self::middleware_stack_for(slf, py)?;
-        if scope.bind(py).get_item("type")?.extract::<String>()? == "http" && telemetry_tracing {
+        let scope_type = scope.bind(py).get_item("type")?.extract::<String>()?;
+        if matches!(scope_type.as_str(), "http" | "websocket") && telemetry_tracing {
             if let Some(tracer_provider) =
                 fastapi_telemetry_tracer_provider(py, configured_tracer_provider)?
             {
@@ -8080,19 +8081,29 @@ impl FastApiTelemetrySpanState {
         scope: Py<PyAny>,
     ) -> PyResult<Self> {
         let scope_bound = scope.bind(py);
+        let is_websocket = parse_scope_string(scope_bound, "type", "http")? == "websocket";
         let method = parse_scope_string(scope_bound, "method", "GET")?;
-        let path = parse_scope_string(scope_bound, "path", "/")?;
         let attributes = PyDict::new(py);
-        attributes.set_item("http.request.method", &method)?;
-        attributes.set_item(
-            "network.protocol.version",
-            parse_scope_string(scope_bound, "http_version", "1.1")?,
-        )?;
-        attributes.set_item("url.path", &path)?;
-        attributes.set_item(
-            "url.scheme",
-            parse_scope_string(scope_bound, "scheme", "http")?,
-        )?;
+        let span_name = if is_websocket {
+            attributes.set_item(
+                "url.scheme",
+                parse_scope_string(scope_bound, "scheme", "ws")?,
+            )?;
+            attributes.set_item("network.protocol.name", "websocket")?;
+            "WS".to_owned()
+        } else {
+            attributes.set_item("http.request.method", &method)?;
+            attributes.set_item(
+                "network.protocol.version",
+                parse_scope_string(scope_bound, "http_version", "1.1")?,
+            )?;
+            attributes.set_item("url.path", parse_scope_string(scope_bound, "path", "/")?)?;
+            attributes.set_item(
+                "url.scheme",
+                parse_scope_string(scope_bound, "scheme", "http")?,
+            )?;
+            method
+        };
 
         let server = scope_bound.call_method1("get", ("server", py.None()))?;
         if let Ok(server) = server.cast::<PyTuple>() {
@@ -8131,7 +8142,7 @@ impl FastApiTelemetrySpanState {
         kwargs.set_item("set_status_on_exception", false)?;
         kwargs.set_item("end_on_exit", true)?;
         let context_manager = tracer
-            .call_method("start_as_current_span", (method,), Some(&kwargs))?
+            .call_method("start_as_current_span", (span_name,), Some(&kwargs))?
             .unbind();
         let span = context_manager.bind(py).call_method0("__enter__")?.unbind();
 
@@ -8162,6 +8173,8 @@ impl FastApiTelemetrySpanState {
         };
 
         let update_result: PyResult<()> = (|| {
+            let is_websocket =
+                parse_scope_string(self.scope.bind(py), "type", "http")? == "websocket";
             if let Some(status) = self.response_status {
                 span.bind(py)
                     .call_method1("set_attribute", ("http.response.status_code", status))?;
@@ -8181,14 +8194,18 @@ impl FastApiTelemetrySpanState {
                 if let Some(route_path) = route_path {
                     span.bind(py)
                         .call_method1("set_attribute", ("http.route", &route_path))?;
-                    let method = parse_scope_string(self.scope.bind(py), "method", "GET")?;
+                    let method = if is_websocket {
+                        "WS".to_owned()
+                    } else {
+                        parse_scope_string(self.scope.bind(py), "method", "GET")?
+                    };
                     span.bind(py)
                         .call_method1("update_name", (format!("{method} {route_path}"),))?;
                 }
             }
             let failed = error.is_some()
-                || incomplete
-                || self.response_status.is_none_or(|status| status >= 500);
+                || (!is_websocket
+                    && (incomplete || self.response_status.is_none_or(|status| status >= 500)));
             if failed {
                 let error_type = match error {
                     Some(error) => Some(fastapi_telemetry_exception_type(py, error)?),
@@ -8427,7 +8444,9 @@ impl AwaitableStateMachine for FastApiTelemetryCall {
             MachineResume::Value(value) if self.pending => {
                 self.pending = false;
                 if let Some(span_state) = self.span_state.take() {
-                    let incomplete = !span_state.borrow().response_terminal;
+                    let is_websocket =
+                        parse_scope_string(self.scope.bind(py), "type", "http")? == "websocket";
+                    let incomplete = !is_websocket && !span_state.borrow().response_terminal;
                     span_state.borrow_mut().finish(py, None, incomplete)?;
                 }
                 Ok(MachineAction::Complete(value))

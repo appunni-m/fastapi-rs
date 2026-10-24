@@ -1,0 +1,37 @@
+schema: fastapi-rs/python-asgi-workflow@20
+workload:
+  file: tests/fixtures/workloads/telemetry_websocket_span.py
+  factory: create_websocket_telemetry_app
+  instantiate_per_case: true
+oracle_profile_extension: telemetry
+cases:
+- case_id: fastapi.telemetry.websocket-server-span-root
+  verification: parity
+  factory_input: {}
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: connect-and-close
+    kind: websocket_session
+    scope:
+      type: websocket
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      scheme: ws
+      path: /ws
+      query_string: ''
+      root_path: ''
+      headers: [[host, testserver]]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+      subprotocols: []
+    receive_events:
+    - {type: websocket.connect}
+    - {type: websocket.disconnect, code: 1000, reason: client complete}
+    observations:
+    - {kind: telemetry, selector: server_spans, comparison: exact}
+  source_evidence:
+  - {path: tests/test_telemetry/test_websockets.py, kind: upstream_test}
+  - {path: docs/en/docs/advanced/opentelemetry.md, kind: upstream_documentation}
