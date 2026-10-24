@@ -33384,12 +33384,13 @@
     {
       "id": "request-validation-error-details-wave",
       "input_path": "tests/fixtures/inputs/parity/request-validation-error-details-wave.json",
-      "input_sha256": "4f29def83279e3660f1a9432a25c0c00753e8dc9701cd67154e1f22998c15c34",
+      "input_sha256": "dea7fe0ecf052331af2874fcf6892eca878c1ce8b03f8c2eb2a2716877f6eff1",
       "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml",
-      "recipe_sha256": "178f7025d6dbd963f74327b566e8aa96decf807e66b505dd966c2caf68860f8d",
+      "recipe_sha256": "77176aae532634dc511ae7d8d0fd90d9f4b23fd6bed5d5582aecf1bbf3f3a483",
       "case_ids": [
         "fastapi.request-validation-error-details.multi-location-default-422",
-        "fastapi.request-validation-error-details.rethrowing-handler"
+        "fastapi.request-validation-error-details.rethrowing-handler",
+        "fastapi.request-validation-error-details.non-json-body-bytes"
       ],
       "workload_path": "tests/fixtures/workloads/request_validation_error_details_wave.py",
       "workload_sha256": "ed520f22df0b590bbaedb937b7c48f720bbc5cfe03a1cb2c3963532803f5a138",
@@ -33409,6 +33410,14 @@
             "source:upstream-test:tests/test_multi_body_errors.py",
             "source:upstream-test:tests/test_multi_query_errors.py",
             "source:upstream-test:tests/test_validation_error_context.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.request-validation-error-details.non-json-body-bytes",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:upstream-test:tests/test_multi_body_errors.py",
+            "source:upstream-test:tests/test_multi_query_errors.py"
           ]
         }
       ]
@@ -70223,9 +70232,10 @@
       "fixture_id": "fastapi.test.test-multi-body-errors",
       "workflow_id": "request-validation-error-details-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, http.body.bytes, http.headers.ordered, http.status, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, http.body.bytes, http.headers.ordered, http.status, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.request-validation-error-details.multi-location-default-422",
+        "fastapi.request-validation-error-details.non-json-body-bytes",
         "fastapi.request-validation-error-details.rethrowing-handler"
       ],
       "observation_selectors": [
@@ -70246,9 +70256,10 @@
       "fixture_id": "fastapi.test.test-multi-query-errors",
       "workflow_id": "request-validation-error-details-wave",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, http.body.bytes, http.headers.ordered, http.status, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, http.body.bytes, http.headers.ordered, http.status, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
         "fastapi.request-validation-error-details.multi-location-default-422",
+        "fastapi.request-validation-error-details.non-json-body-bytes",
         "fastapi.request-validation-error-details.rethrowing-handler"
       ],
       "observation_selectors": [

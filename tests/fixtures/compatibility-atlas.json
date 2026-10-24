@@ -567580,9 +567580,10 @@
           {
             "case_ids": [
               "fastapi.request-validation-error-details.multi-location-default-422",
+              "fastapi.request-validation-error-details.non-json-body-bytes",
               "fastapi.request-validation-error-details.rethrowing-handler"
             ],
-            "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, http.body.bytes, http.headers.ordered, http.status, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, http.body.bytes, http.headers.ordered, http.status, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "asgi.application_error.exception",
@@ -567771,7 +567772,7 @@
         "reviewed_module_mapping": {
           "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
           "rationale": "The source tests array-body model parsing, positive decimal validation, multiple indexed element errors, and OpenAPI request schema generation.",
-          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/core-multi-body-errors-upstream.yaml::fastapi.request.multi-body-errors.core-upstream (actions: single-valid-list-row, constrained-decimal-error, multiple-row-errors, openapi-list-row-schema; selectors: docs.response.status, http.body.bytes, http.status, openapi.document); tests/fixtures/input-recipes/parity/request-models.yaml::fastapi.request-models.multi-body-errors.test-put-incorrect-body-multiple (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-cross-location-wave.yaml::fastapi.request-validation.cross-location.path-query-body-aggregation (actions: dispatch-invalid-path-query-and-body; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml::fastapi.request-validation-error-details.multi-location-default-422 (actions: invalid-query-and-body; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml::fastapi.request-validation-error-details.rethrowing-handler (actions: capture-invalid-query-and-body-error; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml::fastapi.request-validation-handler.body-error (actions: dispatch-body-validation-error; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status). Inputs contain no expected results.",
+          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/core-multi-body-errors-upstream.yaml::fastapi.request.multi-body-errors.core-upstream (actions: single-valid-list-row, constrained-decimal-error, multiple-row-errors, openapi-list-row-schema; selectors: docs.response.status, http.body.bytes, http.status, openapi.document); tests/fixtures/input-recipes/parity/request-models.yaml::fastapi.request-models.multi-body-errors.test-put-incorrect-body-multiple (actions: dispatch; selectors: http.body.bytes, http.status); tests/fixtures/input-recipes/parity/request-validation-cross-location-wave.yaml::fastapi.request-validation.cross-location.path-query-body-aggregation (actions: dispatch-invalid-path-query-and-body; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml::fastapi.request-validation-error-details.multi-location-default-422 (actions: invalid-query-and-body; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml::fastapi.request-validation-error-details.rethrowing-handler (actions: capture-invalid-query-and-body-error; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml::fastapi.request-validation-error-details.non-json-body-bytes (actions: capture-invalid-query-and-text-body-error; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/request-validation-exception-handler.yaml::fastapi.request-validation-handler.body-error (actions: dispatch-body-validation-error; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status). Inputs contain no expected results.",
           "supporting_sources": [
             {
               "end_line": 23,
@@ -568127,6 +568128,19 @@
             },
             {
               "case_ids": [
+                "fastapi.request-validation-error-details.non-json-body-bytes"
+              ],
+              "observation_selectors": [
+                "asgi.application_error.exception",
+                "construction.exception_class",
+                "construction.exception_message",
+                "construction.outcome",
+                "validation.error_class"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml"
+            },
+            {
+              "case_ids": [
                 "fastapi.request-validation-handler.body-error"
               ],
               "observation_selectors": [
@@ -568205,6 +568219,7 @@
         {
           "case_ids": [
             "fastapi.request-validation-error-details.multi-location-default-422",
+            "fastapi.request-validation-error-details.non-json-body-bytes",
             "fastapi.request-validation-error-details.rethrowing-handler"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml",
@@ -568598,9 +568613,10 @@
           {
             "case_ids": [
               "fastapi.request-validation-error-details.multi-location-default-422",
+              "fastapi.request-validation-error-details.non-json-body-bytes",
               "fastapi.request-validation-error-details.rethrowing-handler"
             ],
-            "coverage_scope": "Partial independent sample across 2 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, http.body.bytes, http.headers.ordered, http.status, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_scope": "Partial independent sample across 3 case(s); observes asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, error.public_attributes, http.body.bytes, http.headers.ordered, http.status, validation.error_class, validation.error_details. Unlisted functions, branches, configurations, and edge cases are not claimed.",
             "coverage_status": "partial",
             "observation_selectors": [
               "asgi.application_error.exception",
@@ -568751,7 +568767,7 @@
         "reviewed_module_mapping": {
           "contract_gate": "Input mapping only: the cited recipe cases contain stimuli and observation selectors, not expected outputs or measurements. The cases are selected examples from the pinned test module; no complete module parity result is claimed, and any focused workflow receipt covers only its listed cases. Full module snapshots, unlisted defaults/aliases/constraints, complete validation error structures, and exact TestClient behavior are not established by these cases. Compare only the listed workflow selectors; generic request and parser behavior remains under Starlette 1.6.0's separate contract.",
           "rationale": "The source tests repeated integer query values, indexed parse errors, and the OpenAPI array parameter schema.",
-          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/core-multi-query-errors-upstream.yaml::fastapi.request.multi-query-errors.core-upstream (actions: repeated-valid-integers, repeated-invalid-integers, openapi-query-list-schema; selectors: docs.response.status, http.body.bytes, http.status, openapi.document); tests/fixtures/input-recipes/parity/request-validation-cross-location-wave.yaml::fastapi.request-validation.cross-location.path-query-body-aggregation (actions: dispatch-invalid-path-query-and-body; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml::fastapi.request-validation-error-details.multi-location-default-422 (actions: invalid-query-and-body; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml::fastapi.request-validation-error-details.rethrowing-handler (actions: capture-invalid-query-and-body-error; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.repeated-invalid-integers (actions: get-invalid-query-values; selectors: http.body.bytes, http.status). Inputs contain no expected results.",
+          "stimulus_notes": "Request-parameter source review links these partial input cases: tests/fixtures/input-recipes/parity/core-multi-query-errors-upstream.yaml::fastapi.request.multi-query-errors.core-upstream (actions: repeated-valid-integers, repeated-invalid-integers, openapi-query-list-schema; selectors: docs.response.status, http.body.bytes, http.status, openapi.document); tests/fixtures/input-recipes/parity/request-validation-cross-location-wave.yaml::fastapi.request-validation.cross-location.path-query-body-aggregation (actions: dispatch-invalid-path-query-and-body; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml::fastapi.request-validation-error-details.multi-location-default-422 (actions: invalid-query-and-body; selectors: construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.headers.ordered, http.status); tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml::fastapi.request-validation-error-details.rethrowing-handler (actions: capture-invalid-query-and-body-error; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml::fastapi.request-validation-error-details.non-json-body-bytes (actions: capture-invalid-query-and-text-body-error; selectors: asgi.application_error.exception, construction.exception_class, construction.exception_message, construction.outcome, validation.error_class); tests/fixtures/input-recipes/parity/request-validation-parameters.yaml::fastapi.request-parameters.query.repeated-invalid-integers (actions: get-invalid-query-values; selectors: http.body.bytes, http.status). Inputs contain no expected results.",
           "supporting_sources": [
             {
               "end_line": 13,
@@ -569097,6 +569113,19 @@
             },
             {
               "case_ids": [
+                "fastapi.request-validation-error-details.non-json-body-bytes"
+              ],
+              "observation_selectors": [
+                "asgi.application_error.exception",
+                "construction.exception_class",
+                "construction.exception_message",
+                "construction.outcome",
+                "validation.error_class"
+              ],
+              "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml"
+            },
+            {
+              "case_ids": [
                 "fastapi.request-parameters.query.repeated-invalid-integers"
               ],
               "observation_selectors": [
@@ -569160,6 +569189,7 @@
         {
           "case_ids": [
             "fastapi.request-validation-error-details.multi-location-default-422",
+            "fastapi.request-validation-error-details.non-json-body-bytes",
             "fastapi.request-validation-error-details.rethrowing-handler"
           ],
           "recipe_path": "tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml",

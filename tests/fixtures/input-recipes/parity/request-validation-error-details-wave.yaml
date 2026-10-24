@@ -78,3 +78,42 @@ cases:
   - {path: tests/test_multi_query_errors.py, kind: upstream_test}
   - {path: tests/test_multi_body_errors.py, kind: upstream_test}
   - {path: tests/test_validation_error_context.py, kind: upstream_test}
+- case_id: fastapi.request-validation-error-details.non-json-body-bytes
+  factory_input:
+    rethrow_validation_error: true
+  construction_observation:
+    kind: construction
+    selectors: [outcome, exception_class, exception_message]
+    comparison: exact
+  actions:
+  - action_id: capture-invalid-query-and-text-body-error
+    kind: http_request
+    scope:
+      type: http
+      asgi: {version: '3.0', spec_version: '2.4'}
+      http_version: '1.1'
+      method: POST
+      scheme: http
+      path: /items
+      query_string: 'q=bad&q=worse'
+      root_path: ''
+      headers:
+      - [host, testserver]
+      - [content-type, text/plain]
+      client: [127.0.0.1, 123]
+      server: [testserver, 80]
+    receive_events:
+    - type: http.request
+      body: '[{"name":"Foo","age":1}]'
+      more_body: false
+    observations:
+    - {kind: application_error, selector: validation_error_class, comparison: exact}
+    - {kind: application_error, selector: exception, comparison: exact}
+    - {kind: application_error, selector: validation_error_details, comparison: exact}
+    - kind: application_error
+      selector: error_public_attributes
+      attributes: [args, body, endpoint_ctx, endpoint_function, endpoint_path, endpoint_file, endpoint_line]
+      comparison: exact
+  source_evidence:
+  - {path: tests/test_multi_query_errors.py, kind: upstream_test}
+  - {path: tests/test_multi_body_errors.py, kind: upstream_test}

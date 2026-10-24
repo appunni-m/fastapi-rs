@@ -16141,11 +16141,6 @@ fn append_input_validation_details(
         detail.set_item("loc", validation_location_tuple(py, &loc)?)?;
         detail.set_item("msg", entry.get_item("msg")?)?;
         if let Some(input) = entry.get_item("input")? {
-            let input = if input.is_instance_of::<PyBytes>() {
-                input.call_method0("decode")?
-            } else {
-                input
-            };
             detail.set_item("input", input)?;
         }
         if let Some(context) = entry.get_item("ctx")? {

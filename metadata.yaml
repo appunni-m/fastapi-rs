@@ -14037,6 +14037,7 @@ reviewed_api_contract_overlay:
       source_evidence:
         - {path: fastapi/exceptions.py, symbol: ValidationException}
         - {path: fastapi/exceptions.py, symbol: RequestValidationError}
+        - {path: fastapi/routing.py, symbol: get_request_handler}
         - {path: tests/test_validation_error_context.py, symbol: test_validation_error_with_only_path}
         - {path: tests/test_validation_error_context.py, symbol: test_validation_error_with_no_context}
       feature_ids: [public-api-errors, request-validation]
@@ -14059,6 +14060,8 @@ reviewed_api_contract_overlay:
           case_id: fastapi.request-validation-handler.manual-structured-errors
         - recipe_path: tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml
           case_id: fastapi.request-validation-error-details.rethrowing-handler
+        - recipe_path: tests/fixtures/input-recipes/parity/request-validation-error-details-wave.yaml
+          case_id: fastapi.request-validation-error-details.non-json-body-bytes
         - recipe_path: tests/fixtures/input-recipes/parity/validation-error-context-exact-review.yaml
           case_id: fastapi.validation-error-context.exact.request-constructor-fields
       observation_selectors: [http.status, http.headers.ordered, http.body.bytes, construction.outcome, construction.exception_class, construction.exception_message, asgi.application_error.exception, validation.error_details, error.public_attributes, python.import_path, python.object_identity, python.signature, python.call_outcome, python.attribute_value]
@@ -14074,8 +14077,10 @@ reviewed_api_contract_overlay:
         location, nested Decimal/datetime/UUID/Enum values, and a ValueError
         context. A direct public-constructor case rethrows an input-built
         RequestValidationError and compares its body, endpoint context, and
-        derived fields. Other error records, WebSocket validation, overrides,
-        and other ValidationException subclasses remain outside this slice.
+        derived fields. A text/plain request case confirms a rethrown validation
+        error retains the original request body as bytes. Other error records,
+        WebSocket validation, overrides, and other ValidationException
+        subclasses remain outside this slice.
         The direct API workflow separately observes this class's import path,
         exact identity, signature, docstring value, and selected constructor
         outcomes; comparison 805dbf0d-e424-4091-8131-1af90c9e4af6 passed those
