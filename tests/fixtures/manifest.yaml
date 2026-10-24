@@ -293,18 +293,18 @@ source_artifacts:
   api_source_classification_review:
     path: tests/fixtures/api-source-classification-review.json
     schema: fastapi-rs/source-api-classification-review@2
-    sha256: cd6613cfaf75533f201363132c4db5fdb9e6b83d8b362f78ab0e540061fdd2dd
+    sha256: 747ff1376c4f573208b79f1dbb93040f800b2813aba535ea89b79c55fd7999e4
     purpose: Reviewed source-only classification of selected import bindings and API candidates; not a FastAPI-RS support or parity claim
     source_identity:
       package: FastAPI
       version: 0.157.0
       source_commit: 386a28af2f87af1a32ac26d88f07b7f58ab2dfb1
     counts:
-      candidates: 389
+      candidates: 405
       supported: 6
-      private_or_internal: 381
+      private_or_internal: 397
       uncertain: 2
-    candidate_ids_sha256: 36655ae691b6f8b1677796d91af2d602be393b82f84afeae54154be5ed2c4b8e
+    candidate_ids_sha256: fc717eac808477176ed9269c042760666f3e8de07065e36ee543d0aa094f4abb
     selection:
       uncertain_candidate_ids:
       - fastapi.__main__.main
@@ -315,8 +315,12 @@ source_artifacts:
       - fastapi.applications.Depends
       - fastapi.applications.Doc
       - fastapi.applications.Enum
+      - fastapi.applications.ExceptionTelemetryMiddleware
+      - fastapi.applications.FastAPIDeprecationWarning
       - fastapi.applications.IncEx
+      - fastapi.applications.NativeTelemetry
       - fastapi.applications.RequestValidationError
+      - fastapi.applications.TelemetryConfig
       - fastapi.applications.WebSocketRequestValidationError
       - fastapi.applications.deprecated
       - fastapi.applications.generate_unique_id
@@ -328,6 +332,7 @@ source_artifacts:
       - fastapi.applications.os
       - fastapi.applications.request_validation_exception_handler
       - fastapi.applications.routing
+      - fastapi.applications.warnings
       - fastapi.applications.websocket_request_validation_exception_handler
       - fastapi.background.Doc
       - fastapi.background.ParamSpec
@@ -338,9 +343,14 @@ source_artifacts:
       - fastapi.datastructures.GetJsonSchemaHandler
       - fastapi.dependencies.models.inspect
       - fastapi.dependencies.models.sys
+      - fastapi.dependencies.utils.AliasChoices
+      - fastapi.dependencies.utils.AliasPath
+      - fastapi.dependencies.utils.BeforeValidator
+      - fastapi.dependencies.utils.Tag
       - fastapi.dependencies.utils.dataclass
       - fastapi.dependencies.utils.dataclasses
       - fastapi.dependencies.utils.inspect
+      - fastapi.dependencies.utils.partial
       - fastapi.dependencies.utils.sys
       - fastapi.encoders.AnyUrl
       - fastapi.encoders.BaseModel
@@ -409,18 +419,22 @@ source_artifacts:
       - fastapi.openapi.utils.warnings
       - fastapi.param_functions.AliasChoices
       - fastapi.param_functions.AliasPath
+      - fastapi.param_functions.Discriminator
       - fastapi.param_functions.Doc
       - fastapi.param_functions.Example
       - fastapi.param_functions.deprecated
       - fastapi.param_functions.params
+      - fastapi.param_functions.re
       - fastapi.params.AliasChoices
       - fastapi.params.AliasPath
+      - fastapi.params.Discriminator
       - fastapi.params.Enum
       - fastapi.params.Example
       - fastapi.params.FastAPIDeprecationWarning
       - fastapi.params.FieldInfo
       - fastapi.params.dataclass
       - fastapi.params.deprecated
+      - fastapi.params.re
       - fastapi.params.warnings
       - fastapi.responses.importlib
       - fastapi.routing.AbstractAsyncContextManager
@@ -461,12 +475,14 @@ source_artifacts:
       - fastapi.routing.get_dependant
       - fastapi.routing.get_parameterless_sub_dependant
       - fastapi.routing.get_stream_item_type
+      - fastapi.routing.get_telemetry_data
       - fastapi.routing.get_typed_return_annotation
       - fastapi.routing.get_value_or_default
       - fastapi.routing.inspect
       - fastapi.routing.is_body_allowed_for_status_code
       - fastapi.routing.json
       - fastapi.routing.jsonable_encoder
+      - fastapi.routing.math
       - fastapi.routing.os
       - fastapi.routing.params
       - fastapi.routing.solve_dependencies
@@ -547,7 +563,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@12
-    sha256: 1abc2e5b207187ebc090bbb01f771793b717d92d7976ce937d35fa749a94a65c
+    sha256: bf2b8f6808b5e1f2ca716ab9e23181cc45d900e835dccd03e658b531db5b86c8
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1831
@@ -556,11 +572,11 @@ source_artifacts:
       inherited_private_or_internal: 4
       inherited_uncertain: 0
       reviewed_import_binding_candidates: 96
-      reviewed_source_api_candidates: 389
+      reviewed_source_api_candidates: 405
       source_classifications:
         supported: 494
-        private_or_internal: 1280
-        uncertain: 57
+        private_or_internal: 1296
+        uncertain: 41
       alias_records: 71
       source_deprecations: 23
       error_candidates: 49

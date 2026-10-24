@@ -1945,6 +1945,66 @@
       "evidence": [
         {
           "path": "fastapi/applications.py",
+          "line": 29,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/applications.py",
+          "line": 1048,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.applications.ExceptionTelemetryMiddleware",
+      "reason": "FastAPI 0.157.0 binds `ExceptionTelemetryMiddleware` at `fastapi/applications.py:29` and reads that binding only inside FastAPI implementation at lines 1048. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/applications.py",
+        "line": 29
+      },
+      "binding": {
+        "module": "fastapi.telemetry._asgi",
+        "name": "ExceptionTelemetryMiddleware",
+        "target": "fastapi.telemetry._asgi.ExceptionTelemetryMiddleware"
+      }
+    },
+    {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "path": "fastapi/applications.py",
+          "line": 15,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/applications.py",
+          "line": 943,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.applications.FastAPIDeprecationWarning",
+      "reason": "FastAPI 0.157.0 binds `FastAPIDeprecationWarning` at `fastapi/applications.py:15` and reads that binding only inside FastAPI implementation at lines 943. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/applications.py",
+        "line": 15
+      },
+      "binding": {
+        "module": "fastapi.exceptions",
+        "name": "FastAPIDeprecationWarning",
+        "target": "fastapi.exceptions.FastAPIDeprecationWarning"
+      }
+    },
+    {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "path": "fastapi/applications.py",
           "line": 1223,
           "role": "fastapi-implementation-use"
         },
@@ -2095,6 +2155,36 @@
       "evidence": [
         {
           "path": "fastapi/applications.py",
+          "line": 29,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/applications.py",
+          "line": 1024,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.applications.NativeTelemetry",
+      "reason": "FastAPI 0.157.0 binds `NativeTelemetry` at `fastapi/applications.py:29` and reads that binding only inside FastAPI implementation at lines 1024. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/applications.py",
+        "line": 29
+      },
+      "binding": {
+        "module": "fastapi.telemetry._asgi",
+        "name": "NativeTelemetry",
+        "target": "fastapi.telemetry._asgi.NativeTelemetry"
+      }
+    },
+    {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "path": "fastapi/applications.py",
           "line": 1002,
           "role": "fastapi-implementation-use"
         }
@@ -2143,6 +2233,41 @@
       "source": {
         "line": 3,
         "path": "fastapi/applications.py"
+      }
+    },
+    {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "path": "fastapi/applications.py",
+          "line": 28,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/applications.py",
+          "line": 72,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/applications.py",
+          "line": 1011,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.applications.TelemetryConfig",
+      "reason": "FastAPI 0.157.0 binds `TelemetryConfig` at `fastapi/applications.py:28` and reads that binding only inside FastAPI implementation at lines 72, 1011. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/applications.py",
+        "line": 28
+      },
+      "binding": {
+        "module": "fastapi.telemetry",
+        "name": "TelemetryConfig",
+        "target": "fastapi.telemetry.TelemetryConfig"
       }
     },
     {
@@ -2602,6 +2727,40 @@
         "module": "fastapi",
         "name": "routing",
         "target": "fastapi.routing"
+      }
+    },
+    {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "path": "fastapi/applications.py",
+          "line": 2,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/applications.py",
+          "line": 939,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.applications.warnings",
+      "reason": "FastAPI 0.157.0 binds `warnings` at `fastapi/applications.py:2` and reads that binding only inside FastAPI implementation at lines 939. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/applications.py",
+        "line": 2
+      },
+      "binding": {
+        "as_name": null,
+        "form": "import",
+        "level": 0,
+        "local_name": "warnings",
+        "module": "warnings",
+        "name": null,
+        "target": "warnings"
       }
     },
     {
@@ -3653,6 +3812,96 @@
       }
     },
     {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 73,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 585,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 1088,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 1094,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 1306,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.dependencies.utils.AliasChoices",
+      "reason": "FastAPI 0.157.0 binds `AliasChoices` at `fastapi/dependencies/utils.py:73` and reads that binding only inside FastAPI implementation at lines 585, 1088, 1094, 1306. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/dependencies/utils.py",
+        "line": 73
+      },
+      "binding": {
+        "module": "pydantic",
+        "name": "AliasChoices",
+        "target": "pydantic.AliasChoices"
+      }
+    },
+    {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 73,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 1087,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 1090,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 1302,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 1307,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.dependencies.utils.AliasPath",
+      "reason": "FastAPI 0.157.0 binds `AliasPath` at `fastapi/dependencies/utils.py:73` and reads that binding only inside FastAPI implementation at lines 1087, 1090, 1302, 1307. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/dependencies/utils.py",
+        "line": 73
+      },
+      "binding": {
+        "module": "pydantic",
+        "name": "AliasPath",
+        "target": "pydantic.AliasPath"
+      }
+    },
+    {
       "binding": {
         "module": "typing",
         "name": "Annotated",
@@ -3898,6 +4147,36 @@
       "source": {
         "line": 73,
         "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 73,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 1020,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.dependencies.utils.BeforeValidator",
+      "reason": "FastAPI 0.157.0 binds `BeforeValidator` at `fastapi/dependencies/utils.py:73` and reads that binding only inside FastAPI implementation at lines 1020. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/dependencies/utils.py",
+        "line": 73
+      },
+      "binding": {
+        "module": "pydantic",
+        "name": "BeforeValidator",
+        "target": "pydantic.BeforeValidator"
       }
     },
     {
@@ -4394,6 +4673,41 @@
       "source": {
         "line": 4,
         "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 73,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 1023,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 1024,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.dependencies.utils.Tag",
+      "reason": "FastAPI 0.157.0 binds `Tag` at `fastapi/dependencies/utils.py:73` and reads that binding only inside FastAPI implementation at lines 1023, 1024. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/dependencies/utils.py",
+        "line": 73
+      },
+      "binding": {
+        "module": "pydantic",
+        "name": "Tag",
+        "target": "pydantic.Tag"
       }
     },
     {
@@ -5441,6 +5755,36 @@
       "source": {
         "line": 30,
         "path": "fastapi/dependencies/utils.py"
+      }
+    },
+    {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 18,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/dependencies/utils.py",
+          "line": 1020,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.dependencies.utils.partial",
+      "reason": "FastAPI 0.157.0 binds `partial` at `fastapi/dependencies/utils.py:18` and reads that binding only inside FastAPI implementation at lines 1020. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/dependencies/utils.py",
+        "line": 18
+      },
+      "binding": {
+        "module": "functools",
+        "name": "partial",
+        "target": "functools.partial"
       }
     },
     {
@@ -9073,6 +9417,66 @@
       "evidence": [
         {
           "path": "fastapi/param_functions.py",
+          "line": 10,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/param_functions.py",
+          "line": 179,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/param_functions.py",
+          "line": 555,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/param_functions.py",
+          "line": 892,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/param_functions.py",
+          "line": 1213,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/param_functions.py",
+          "line": 1556,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/param_functions.py",
+          "line": 1887,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/param_functions.py",
+          "line": 2217,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.param_functions.Discriminator",
+      "reason": "FastAPI 0.157.0 binds `Discriminator` at `fastapi/param_functions.py:10` and reads that binding only inside FastAPI implementation at lines 179, 555, 892, 1213, 1556, 1887, 2217. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/param_functions.py",
+        "line": 10
+      },
+      "binding": {
+        "module": "pydantic",
+        "name": "Discriminator",
+        "target": "pydantic.Discriminator"
+      }
+    },
+    {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "path": "fastapi/param_functions.py",
           "line": 17,
           "role": "fastapi-implementation-use"
         },
@@ -10497,6 +10901,70 @@
       "candidate_kind": "import_binding",
       "evidence": [
         {
+          "path": "fastapi/param_functions.py",
+          "line": 1,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/param_functions.py",
+          "line": 160,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/param_functions.py",
+          "line": 533,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/param_functions.py",
+          "line": 873,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/param_functions.py",
+          "line": 1194,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/param_functions.py",
+          "line": 1537,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/param_functions.py",
+          "line": 1868,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/param_functions.py",
+          "line": 2198,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.param_functions.re",
+      "reason": "FastAPI 0.157.0 binds `re` at `fastapi/param_functions.py:1` and reads that binding only inside FastAPI implementation at lines 160, 533, 873, 1194, 1537, 1868, 2198. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/param_functions.py",
+        "line": 1
+      },
+      "binding": {
+        "as_name": null,
+        "form": "import",
+        "level": 0,
+        "local_name": "re",
+        "module": "re",
+        "name": null,
+        "target": "re"
+      }
+    },
+    {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
           "path": "fastapi/params.py",
           "line": 38,
           "role": "fastapi-implementation-use"
@@ -10701,6 +11169,71 @@
       "source": {
         "line": 3,
         "path": "fastapi/params.py"
+      }
+    },
+    {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "path": "fastapi/params.py",
+          "line": 10,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 55,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 170,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 260,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 349,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 438,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 526,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 641,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 729,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.params.Discriminator",
+      "reason": "FastAPI 0.157.0 binds `Discriminator` at `fastapi/params.py:10` and reads that binding only inside FastAPI implementation at lines 55, 170, 260, 349, 438, 526, 641, 729. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/params.py",
+        "line": 10
+      },
+      "binding": {
+        "module": "pydantic",
+        "name": "Discriminator",
+        "target": "pydantic.Discriminator"
       }
     },
     {
@@ -11086,6 +11619,75 @@
         "module": "typing_extensions",
         "name": "deprecated",
         "target": "typing_extensions.deprecated"
+      }
+    },
+    {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "path": "fastapi/params.py",
+          "line": 1,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 48,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 163,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 253,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 342,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 431,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 519,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 634,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/params.py",
+          "line": 722,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.params.re",
+      "reason": "FastAPI 0.157.0 binds `re` at `fastapi/params.py:1` and reads that binding only inside FastAPI implementation at lines 48, 163, 253, 342, 431, 519, 634, 722. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/params.py",
+        "line": 1
+      },
+      "binding": {
+        "as_name": null,
+        "form": "import",
+        "level": 0,
+        "local_name": "re",
+        "module": "re",
+        "name": null,
+        "target": "re"
       }
     },
     {
@@ -15153,6 +15755,41 @@
       "evidence": [
         {
           "path": "fastapi/routing.py",
+          "line": 86,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/routing.py",
+          "line": 430,
+          "role": "fastapi-implementation-use"
+        },
+        {
+          "path": "fastapi/routing.py",
+          "line": 814,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.routing.get_telemetry_data",
+      "reason": "FastAPI 0.157.0 binds `get_telemetry_data` at `fastapi/routing.py:86` and reads that binding only inside FastAPI implementation at lines 430, 814. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/routing.py",
+        "line": 86
+      },
+      "binding": {
+        "module": "fastapi.telemetry._api",
+        "name": "get_telemetry_data",
+        "target": "fastapi.telemetry._api.get_telemetry_data"
+      }
+    },
+    {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "path": "fastapi/routing.py",
           "line": 1137,
           "role": "fastapi-implementation-use"
         }
@@ -15425,6 +16062,40 @@
       "source": {
         "line": 47,
         "path": "fastapi/routing.py"
+      }
+    },
+    {
+      "candidate_kind": "import_binding",
+      "evidence": [
+        {
+          "path": "fastapi/routing.py",
+          "line": 8,
+          "role": "fastapi-source-binding"
+        },
+        {
+          "path": "fastapi/routing.py",
+          "line": 313,
+          "role": "fastapi-implementation-use"
+        }
+      ],
+      "evidence_basis": [
+        "implementation-only"
+      ],
+      "id": "fastapi.routing.math",
+      "reason": "FastAPI 0.157.0 binds `math` at `fastapi/routing.py:8` and reads that binding only inside FastAPI implementation at lines 313. This import or type-annotation use establishes internal source use, not a supported consumer-facing FastAPI import path; classify it private/internal.",
+      "recommendation": "private/internal",
+      "source": {
+        "path": "fastapi/routing.py",
+        "line": 8
+      },
+      "binding": {
+        "as_name": null,
+        "form": "import",
+        "level": 0,
+        "local_name": "math",
+        "module": "math",
+        "name": null,
+        "target": "math"
       }
     },
     {
@@ -18166,10 +18837,10 @@
   ],
   "schema": "fastapi-rs/source-api-classification-review@2",
   "scope": {
-    "candidate_count": 389,
-    "candidate_ids_sha256": "36655ae691b6f8b1677796d91af2d602be393b82f84afeae54154be5ed2c4b8e",
+    "candidate_count": 405,
+    "candidate_ids_sha256": "fc717eac808477176ed9269c042760666f3e8de07065e36ee543d0aa094f4abb",
     "recommendation_counts": {
-      "private/internal": 381,
+      "private/internal": 397,
       "uncertain": 2,
       "supported": 6
     },
@@ -18220,8 +18891,12 @@
         "fastapi.applications.Depends",
         "fastapi.applications.Doc",
         "fastapi.applications.Enum",
+        "fastapi.applications.ExceptionTelemetryMiddleware",
+        "fastapi.applications.FastAPIDeprecationWarning",
         "fastapi.applications.IncEx",
+        "fastapi.applications.NativeTelemetry",
         "fastapi.applications.RequestValidationError",
+        "fastapi.applications.TelemetryConfig",
         "fastapi.applications.WebSocketRequestValidationError",
         "fastapi.applications.deprecated",
         "fastapi.applications.generate_unique_id",
@@ -18233,6 +18908,7 @@
         "fastapi.applications.os",
         "fastapi.applications.request_validation_exception_handler",
         "fastapi.applications.routing",
+        "fastapi.applications.warnings",
         "fastapi.applications.websocket_request_validation_exception_handler",
         "fastapi.background.Doc",
         "fastapi.background.ParamSpec",
@@ -18243,9 +18919,14 @@
         "fastapi.datastructures.GetJsonSchemaHandler",
         "fastapi.dependencies.models.inspect",
         "fastapi.dependencies.models.sys",
+        "fastapi.dependencies.utils.AliasChoices",
+        "fastapi.dependencies.utils.AliasPath",
+        "fastapi.dependencies.utils.BeforeValidator",
+        "fastapi.dependencies.utils.Tag",
         "fastapi.dependencies.utils.dataclass",
         "fastapi.dependencies.utils.dataclasses",
         "fastapi.dependencies.utils.inspect",
+        "fastapi.dependencies.utils.partial",
         "fastapi.dependencies.utils.sys",
         "fastapi.encoders.AnyUrl",
         "fastapi.encoders.BaseModel",
@@ -18314,18 +18995,22 @@
         "fastapi.openapi.utils.warnings",
         "fastapi.param_functions.AliasChoices",
         "fastapi.param_functions.AliasPath",
+        "fastapi.param_functions.Discriminator",
         "fastapi.param_functions.Doc",
         "fastapi.param_functions.Example",
         "fastapi.param_functions.deprecated",
         "fastapi.param_functions.params",
+        "fastapi.param_functions.re",
         "fastapi.params.AliasChoices",
         "fastapi.params.AliasPath",
+        "fastapi.params.Discriminator",
         "fastapi.params.Enum",
         "fastapi.params.Example",
         "fastapi.params.FastAPIDeprecationWarning",
         "fastapi.params.FieldInfo",
         "fastapi.params.dataclass",
         "fastapi.params.deprecated",
+        "fastapi.params.re",
         "fastapi.params.warnings",
         "fastapi.responses.importlib",
         "fastapi.routing.AbstractAsyncContextManager",
@@ -18366,12 +19051,14 @@
         "fastapi.routing.get_dependant",
         "fastapi.routing.get_parameterless_sub_dependant",
         "fastapi.routing.get_stream_item_type",
+        "fastapi.routing.get_telemetry_data",
         "fastapi.routing.get_typed_return_annotation",
         "fastapi.routing.get_value_or_default",
         "fastapi.routing.inspect",
         "fastapi.routing.is_body_allowed_for_status_code",
         "fastapi.routing.json",
         "fastapi.routing.jsonable_encoder",
+        "fastapi.routing.math",
         "fastapi.routing.os",
         "fastapi.routing.params",
         "fastapi.routing.solve_dependencies",
