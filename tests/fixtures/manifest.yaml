@@ -585,7 +585,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@12
-    sha256: 313c1491e7c278ac372c76b22c150977a22016c3a8ac0185aba7141845df2305
+    sha256: 1f754d0afdd42002e147a7f50654725ac642821f2a547dab620cf1ce3cda79de
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1831
@@ -625,7 +625,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@3
-    sha256: 037887305ee42d9babb872ab3d0cc7405f3d2a5555f277b41f7afb93b32f6bcc
+    sha256: 08ae5a64b19ba6543001630df03b737c7a56e6f9d07c2138797c625eec9f301a
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 914
@@ -665,13 +665,13 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@12
-    sha256: 7e4f13fc580e84bf373036fffe80ab8cd11a9c5dab01b96ee8bc0124dfd968d1
+    sha256: 572131c24ffdfae0e37405d00e48cd76e0a74bd6b698c642b440f9fc1f91d828
     schema_path: tests/fixtures/schemas/materialized-input-index-v12.schema.json
     schema_sha256: 668c3c0e71c739ab05d23b414f07c4ccfe6227116094891280943a8326e1d77a
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
       workflows: 749
-      cases: 3176
+      cases: 3177
       partial_source_mappings: 2033
 
 contract_metadata:
@@ -1586,7 +1586,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 15
     symbols_with_direct_api_input_workflow_refs: 197
     symbols_with_operation_fixture_refs: 491
-    operation_fixture_refs: 3077
+    operation_fixture_refs: 3079
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -6259,9 +6259,9 @@ api_surface_contract:
       - The linked constructor workflow covers the exact signature, debug=True construction, rejection
         of removed openapi_prefix and arbitrary extra keywords, and empty-version behavior with OpenAPI
         enabled or disabled. A separate input observes one root-path HTTP SERVER span; metrics, logs,
-        context, exporters, and lifespan effects remain unobserved. The linked ASGI workflow checks selected
-        route defaults, metadata, and OpenAPI omission; other constructor options and error branches remain
-        unproven.
+        exporters, and lifespan effects remain unobserved, while tracing context is limited to one traceparent
+        input. The linked ASGI workflow checks selected route defaults, metadata, and OpenAPI omission;
+        other constructor options and error branches remain unproven.
       - Application routing, lifecycle, middleware, dependency resolution, serialization, and OpenAPI
         behavior outside the linked cases are not established by this constructor slice.
       - Comparison receipts are generated under ignored parity-results and are not committed; regenerate
@@ -10238,12 +10238,25 @@ api_surface_contract:
       - python.call_outcome
     - workflow_id: telemetry-server-span
       input_path: tests/fixtures/inputs/parity/telemetry-server-span.json
-      input_sha256: 37ef345207809937053fea370a0fb1479c883a17618b5f1564a1eb4fdede563d
+      input_sha256: d2ae61ada2b3180d14004ebf01d19b8a10ad08022a9ea1569650226968dd2e63
       recipe_path: tests/fixtures/input-recipes/parity/telemetry-server-span.yaml
-      recipe_sha256: 1ff2079406fb928d015ad8c5807568ffd3c58918443dcaa1b11d8fe03b5e858e
+      recipe_sha256: 5cc82a6a1427a884d7facb502d6c61c2cd8d691017bf843e001e358b447465ee
       workload_path: tests/fixtures/workloads/telemetry_server_span.py
       workload_sha256: 042c92ff9b8f9c10c1cce8d38bd14166488d392f30eeed5c28cc5023b5241459
       case_id: fastapi.telemetry.http-server-span-root
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - telemetry.server_spans
+    - workflow_id: telemetry-server-span
+      input_path: tests/fixtures/inputs/parity/telemetry-server-span.json
+      input_sha256: d2ae61ada2b3180d14004ebf01d19b8a10ad08022a9ea1569650226968dd2e63
+      recipe_path: tests/fixtures/input-recipes/parity/telemetry-server-span.yaml
+      recipe_sha256: 5cc82a6a1427a884d7facb502d6c61c2cd8d691017bf843e001e358b447465ee
+      workload_path: tests/fixtures/workloads/telemetry_server_span.py
+      workload_sha256: 042c92ff9b8f9c10c1cce8d38bd14166488d392f30eeed5c28cc5023b5241459
+      case_id: fastapi.telemetry.http-server-span-query-redaction
       observation_selectors:
       - construction.exception_class
       - construction.exception_message
@@ -10866,12 +10879,25 @@ api_surface_contract:
     operation_fixture_refs:
     - workflow_id: telemetry-server-span
       input_path: tests/fixtures/inputs/parity/telemetry-server-span.json
-      input_sha256: 37ef345207809937053fea370a0fb1479c883a17618b5f1564a1eb4fdede563d
+      input_sha256: d2ae61ada2b3180d14004ebf01d19b8a10ad08022a9ea1569650226968dd2e63
       recipe_path: tests/fixtures/input-recipes/parity/telemetry-server-span.yaml
-      recipe_sha256: 1ff2079406fb928d015ad8c5807568ffd3c58918443dcaa1b11d8fe03b5e858e
+      recipe_sha256: 5cc82a6a1427a884d7facb502d6c61c2cd8d691017bf843e001e358b447465ee
       workload_path: tests/fixtures/workloads/telemetry_server_span.py
       workload_sha256: 042c92ff9b8f9c10c1cce8d38bd14166488d392f30eeed5c28cc5023b5241459
       case_id: fastapi.telemetry.http-server-span-root
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - telemetry.server_spans
+    - workflow_id: telemetry-server-span
+      input_path: tests/fixtures/inputs/parity/telemetry-server-span.json
+      input_sha256: d2ae61ada2b3180d14004ebf01d19b8a10ad08022a9ea1569650226968dd2e63
+      recipe_path: tests/fixtures/input-recipes/parity/telemetry-server-span.yaml
+      recipe_sha256: 5cc82a6a1427a884d7facb502d6c61c2cd8d691017bf843e001e358b447465ee
+      workload_path: tests/fixtures/workloads/telemetry_server_span.py
+      workload_sha256: 042c92ff9b8f9c10c1cce8d38bd14166488d392f30eeed5c28cc5023b5241459
+      case_id: fastapi.telemetry.http-server-span-query-redaction
       observation_selectors:
       - construction.exception_class
       - construction.exception_message

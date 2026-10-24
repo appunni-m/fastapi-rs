@@ -85,6 +85,102 @@ const SSE_KEEPALIVE_INTERVAL_SECONDS: f64 = 15.0;
 const SSE_KEEPALIVE_COMMENT: &[u8] = b": ping\n\n";
 const FASTAPI_TELEMETRY_VERSION: &str = "0.157.0";
 const FASTAPI_TELEMETRY_SCHEMA_URL: &str = "https://opentelemetry.io/schemas/1.44.0";
+const FASTAPI_TELEMETRY_SENSITIVE_QUERY_PARAMETERS: [&str; 5] = [
+    "X-Amz-Signature",
+    "X-Amz-Credential",
+    "X-Amz-Security-Token",
+    "sig",
+    "X-Goog-Signature",
+];
+
+fn fastapi_telemetry_decode_query_component(value: &[u8]) -> String {
+    let mut decoded = Vec::with_capacity(value.len());
+    let mut index = 0;
+    while index < value.len() {
+        match value[index] {
+            b'+' => {
+                decoded.push(b' ');
+                index += 1;
+            }
+            b'%' if index + 2 < value.len() => {
+                let high = fastapi_telemetry_hex_digit(value[index + 1]);
+                let low = fastapi_telemetry_hex_digit(value[index + 2]);
+                if let (Some(high), Some(low)) = (high, low) {
+                    decoded.push((high << 4) | low);
+                    index += 3;
+                } else {
+                    decoded.push(b'%');
+                    index += 1;
+                }
+            }
+            byte => {
+                let character = char::from(byte);
+                let mut buffer = [0; 4];
+                decoded.extend_from_slice(character.encode_utf8(&mut buffer).as_bytes());
+                index += 1;
+            }
+        }
+    }
+    String::from_utf8_lossy(&decoded).into_owned()
+}
+
+fn fastapi_telemetry_hex_digit(byte: u8) -> Option<u8> {
+    match byte {
+        b'0'..=b'9' => Some(byte - b'0'),
+        b'a'..=b'f' => Some(byte - b'a' + 10),
+        b'A'..=b'F' => Some(byte - b'A' + 10),
+        _ => None,
+    }
+}
+
+fn fastapi_telemetry_encode_query_component(value: &str) -> String {
+    let mut encoded = String::with_capacity(value.len());
+    for byte in value.bytes() {
+        match byte {
+            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'_' | b'.' | b'-' | b'~' => {
+                encoded.push(char::from(byte));
+            }
+            b' ' => encoded.push('+'),
+            _ => {
+                const HEX: &[u8; 16] = b"0123456789ABCDEF";
+                encoded.push('%');
+                encoded.push(char::from(HEX[usize::from(byte >> 4)]));
+                encoded.push(char::from(HEX[usize::from(byte & 0x0F)]));
+            }
+        }
+    }
+    encoded
+}
+
+fn fastapi_telemetry_url_query(query_string: &[u8]) -> String {
+    let mut encoded_pairs = Vec::new();
+    for field in query_string
+        .split(|byte| *byte == b'&')
+        .filter(|field| !field.is_empty())
+    {
+        let (key, value) = match field.iter().position(|byte| *byte == b'=') {
+            Some(separator) => (
+                fastapi_telemetry_decode_query_component(&field[..separator]),
+                fastapi_telemetry_decode_query_component(&field[separator + 1..]),
+            ),
+            None => (
+                fastapi_telemetry_decode_query_component(field),
+                String::new(),
+            ),
+        };
+        let value = if FASTAPI_TELEMETRY_SENSITIVE_QUERY_PARAMETERS.contains(&key.as_str()) {
+            "REDACTED"
+        } else {
+            value.as_str()
+        };
+        encoded_pairs.push(format!(
+            "{}={}",
+            fastapi_telemetry_encode_query_component(&key),
+            fastapi_telemetry_encode_query_component(value)
+        ));
+    }
+    encoded_pairs.join("&")
+}
 
 fn native_task_coroutine(py: Python<'_>, awaitable: Py<PyAny>) -> PyResult<Py<PyAny>> {
     py.import("fastapi_rs._core")?
@@ -8102,6 +8198,11 @@ impl FastApiTelemetrySpanState {
                 "url.scheme",
                 parse_scope_string(scope_bound, "scheme", "http")?,
             )?;
+            let query_string = scope_bound.call_method1("get", ("query_string", py.None()))?;
+            if query_string.is_truthy()? {
+                let query_string = query_string.extract::<Vec<u8>>()?;
+                attributes.set_item("url.query", fastapi_telemetry_url_query(&query_string))?;
+            }
             method
         };
 

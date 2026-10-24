@@ -7059,9 +7059,10 @@ reviewed_api_contract_overlay:
             The linked constructor workflow covers the exact signature, debug=True construction,
             rejection of removed openapi_prefix and arbitrary extra keywords, and empty-version
             behavior with OpenAPI enabled or disabled. A separate input observes one root-path
-            HTTP SERVER span; metrics, logs, context, exporters, and lifespan effects remain
-            unobserved. The linked ASGI workflow checks selected route defaults, metadata, and
-            OpenAPI omission; other constructor options and error branches remain unproven.
+            HTTP SERVER span; metrics, logs, exporters, and lifespan effects remain unobserved,
+            while tracing context is limited to one traceparent input. The linked ASGI workflow
+            checks selected route defaults, metadata, and OpenAPI omission; other constructor
+            options and error branches remain unproven.
           - >-
             Application routing, lifecycle, middleware, dependency resolution, serialization, and
             OpenAPI behavior outside the linked cases are not established by this constructor slice.
@@ -7077,8 +7078,10 @@ reviewed_api_contract_overlay:
         telemetry configurations and map a root-path HTTP SERVER span, including late-bound
         global-provider selection and W3C parent IDs from one well-formed traceparent header on
         GET /. Another input maps one normally completed WebSocket at /ws to its SERVER span.
-        Duplicate or multi-value propagation header behavior is not covered. The telemetry
-        claims remain limited to these selected observations.
+        One HTTP query input verifies redaction for all five configured sensitive parameter names,
+        repeated and blank values, plus encoding of spaces and invalid UTF-8. Duplicate or
+        multi-value propagation header behavior is not covered. The telemetry claims remain
+        limited to these selected observations.
         The linked ASGI workflow
         compares selected route defaults, metadata, and OpenAPI exclusion. Other constructor
         options and application behavior are outside this bounded slice.
@@ -7185,6 +7188,10 @@ reviewed_api_contract_overlay:
           observation_selectors: [python.call_outcome]
         - recipe_path: tests/fixtures/input-recipes/parity/telemetry-server-span.yaml
           case_id: fastapi.telemetry.http-server-span-root
+          workload_path: tests/fixtures/workloads/telemetry_server_span.py
+          observation_selectors: [telemetry.server_spans]
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-server-span.yaml
+          case_id: fastapi.telemetry.http-server-span-query-redaction
           workload_path: tests/fixtures/workloads/telemetry_server_span.py
           observation_selectors: [telemetry.server_spans]
         - recipe_path: tests/fixtures/input-recipes/parity/telemetry-websocket-span.yaml
@@ -7316,6 +7323,10 @@ reviewed_api_contract_overlay:
       fixture_refs:
         - recipe_path: tests/fixtures/input-recipes/parity/telemetry-server-span.yaml
           case_id: fastapi.telemetry.http-server-span-root
+          workload_path: tests/fixtures/workloads/telemetry_server_span.py
+          observation_selectors: [telemetry.server_spans]
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-server-span.yaml
+          case_id: fastapi.telemetry.http-server-span-query-redaction
           workload_path: tests/fixtures/workloads/telemetry_server_span.py
           observation_selectors: [telemetry.server_spans]
         - recipe_path: tests/fixtures/input-recipes/parity/telemetry-global-provider.yaml

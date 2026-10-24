@@ -43903,11 +43903,12 @@
     {
       "id": "telemetry-server-span",
       "input_path": "tests/fixtures/inputs/parity/telemetry-server-span.json",
-      "input_sha256": "37ef345207809937053fea370a0fb1479c883a17618b5f1564a1eb4fdede563d",
+      "input_sha256": "d2ae61ada2b3180d14004ebf01d19b8a10ad08022a9ea1569650226968dd2e63",
       "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-server-span.yaml",
-      "recipe_sha256": "1ff2079406fb928d015ad8c5807568ffd3c58918443dcaa1b11d8fe03b5e858e",
+      "recipe_sha256": "5cc82a6a1427a884d7facb502d6c61c2cd8d691017bf843e001e358b447465ee",
       "case_ids": [
-        "fastapi.telemetry.http-server-span-root"
+        "fastapi.telemetry.http-server-span-root",
+        "fastapi.telemetry.http-server-span-query-redaction"
       ],
       "workload_path": "tests/fixtures/workloads/telemetry_server_span.py",
       "workload_sha256": "042c92ff9b8f9c10c1cce8d38bd14166488d392f30eeed5c28cc5023b5241459",
@@ -43915,6 +43916,14 @@
       "case_contracts": [
         {
           "case_id": "fastapi.telemetry.http-server-span-root",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/opentelemetry.md",
+            "source:upstream-test:tests/test_telemetry/test_http.py"
+          ]
+        },
+        {
+          "case_id": "fastapi.telemetry.http-server-span-query-redaction",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:advanced/opentelemetry.md",
@@ -79482,8 +79491,9 @@
       "fixture_id": "fastapi.docs.advanced-opentelemetry",
       "workflow_id": "telemetry-server-span",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, telemetry.server_spans. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, telemetry.server_spans. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.telemetry.http-server-span-query-redaction",
         "fastapi.telemetry.http-server-span-root"
       ],
       "observation_selectors": [
@@ -79498,8 +79508,9 @@
       "fixture_id": "fastapi.test.test-telemetry-test-http",
       "workflow_id": "telemetry-server-span",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes telemetry.server_spans. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes telemetry.server_spans. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.telemetry.http-server-span-query-redaction",
         "fastapi.telemetry.http-server-span-root"
       ],
       "observation_selectors": [
