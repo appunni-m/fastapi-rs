@@ -18,7 +18,16 @@ def create_app() -> FastAPI:
         pass
 
     class LookupFirstOrderException(LookupError, DerivedOrderException):
-        pass
+        def __init__(
+            self,
+            *,
+            status_code: int,
+            detail: str,
+            headers: dict[str, str] | None = None,
+        ) -> None:
+            DerivedOrderException.__init__(
+                self, status_code=status_code, detail=detail, headers=headers
+            )
 
     @app.exception_handler(RequestValidationError)
     async def handle_invalid_request(
@@ -66,7 +75,7 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=418, detail="Order is temporarily locked.")
         return {"order_id": order_id}
 
-    @app.get("/orders/derived")
+    @app.get("/error-cases/derived")
     async def read_derived_order() -> None:
         raise DerivedOrderException(
             status_code=409,
@@ -74,7 +83,7 @@ def create_app() -> FastAPI:
             headers={"X-Failure-Origin": "derived-order"},
         )
 
-    @app.get("/orders/mixed-derived-first")
+    @app.get("/error-cases/mixed-derived-first")
     async def read_mixed_derived_first() -> None:
         raise DerivedFirstOrderException(
             status_code=409,
@@ -82,7 +91,7 @@ def create_app() -> FastAPI:
             headers={"X-Failure-Origin": "derived-first"},
         )
 
-    @app.get("/orders/mixed-lookup-first")
+    @app.get("/error-cases/mixed-lookup-first")
     async def read_mixed_lookup_first() -> None:
         raise LookupFirstOrderException(
             status_code=409,
