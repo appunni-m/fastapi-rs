@@ -12633,15 +12633,15 @@
       "classification_evidence_rule": "Reviewed pinned-source/docs/test evidence; tests establish exercised behavior, while public documentation, release notes, or explicit deprecation evidence establish lifecycle and exposure.",
       "classification_review": {
         "evidence": [
-          "docs/en/docs/advanced/websockets.md",
-          "docs/en/docs/release-notes.md:7226",
+          "fastapi/applications.py:1403-1416",
+          "fastapi/applications.py:1472-1479",
           "tests/test_ws_router.py"
         ],
         "evidence_basis": [
-          "explicitly-internal-release-note",
+          "source-callers-and-no-public-reference",
           "tests-are-implementation-coverage-only"
         ],
-        "reason": "Source-defined callable is importable/tested but lacks a documented public or extension contract and is used as implementation detail.",
+        "reason": "FastAPI exposes websocket registration through its documented websocket decorator, which calls this forwarding helper. The helper has no independent consumer contract; router tests exercise behavior through supported registration APIs, so this member is private/internal.",
         "source": {
           "line": 1403,
           "path": "fastapi/applications.py"
@@ -14730,15 +14730,15 @@
       "classification_review": {
         "evidence": [
           "docs/en/docs/advanced/websockets.md",
-          "docs/en/docs/release-notes.md:7226",
+          "docs/en/docs/reference/fastapi.md:11-32",
+          "docs/en/docs/release-notes.md:7605",
           "tests/test_ws_router.py"
         ],
         "evidence_basis": [
           "related-doc-not-member-contract",
-          "alpha-or-advanced-release-note",
           "tests-or-runtime-prove-existence-only"
         ],
-        "reason": "WebSocket registration is documented through websocket decorators; the exact websocket_route spelling lacks an explicit stable reference target.",
+        "reason": "FastAPI documents websocket decorators, and its reference exposes the websocket spelling; the release-note entry at line 7605 names APIRouter.websocket_route specifically. It does not establish FastAPI.websocket_route as the same consumer contract, so keep this exact member uncertain.",
         "source": {
           "line": 4687,
           "path": "fastapi/applications.py"
@@ -48817,7 +48817,7 @@
       "candidate_kinds": [
         "class_member"
       ],
-      "classification": "uncertain",
+      "classification": "private/internal",
       "classification_evidence_rule": "Reviewed pinned-source/docs/test evidence; tests establish exercised behavior, while public documentation, release notes, or explicit deprecation evidence establish lifecycle and exposure.",
       "classification_review": {
         "evidence": [
@@ -48828,9 +48828,10 @@
         ],
         "evidence_basis": [
           "related-doc-not-member-contract",
+          "source-callers-and-no-public-reference",
           "tests-are-implementation-coverage-only"
         ],
-        "reason": "Param.__init__() is the shared FieldInfo-based constructor and is named as the common base for concrete parameter classes. The reference documents concrete constructors, not direct Param construction; whether users should construct Param itself remains uncertain.",
+        "reason": "Param.__init__() constructs the shared base used by concrete parameter classes. The pinned docs describe Param as a common base and publish concrete helpers, not direct Param construction; tests exercise the base through those helpers. Classify this constructor as private/internal.",
         "source": {
           "line": 30,
           "path": "fastapi/params.py"
@@ -51827,14 +51828,14 @@
       "classification_review": {
         "evidence": [
           "fastapi/routing.py:1316-1332",
-          "docs/en/docs/release-notes.md:374-387",
+          "docs/en/docs/release-notes.md:755-764",
           "tests/test_custom_route_class.py"
         ],
         "evidence_basis": [
           "alpha-or-advanced-release-note",
           "tests-are-implementation-coverage-only"
         ],
-        "reason": "APIRoute.handle() is a routing customization point. The release notes call routing customization undocumented, experimental, and unsupported as a stable contract, while still describing consumer customization; retain uncertain rather than infer private status.",
+        "reason": "fastapi.routing.APIRoute.handle() is a routing customization point. The pinned release notes describe it as experimental and potentially changing, and say custom route/router subclasses are undocumented. Keep it uncertain rather than infer private status.",
         "source": {
           "line": 1316,
           "path": "fastapi/routing.py"
@@ -51994,14 +51995,14 @@
       "classification_review": {
         "evidence": [
           "fastapi/routing.py:1306-1314",
-          "docs/en/docs/release-notes.md:374-387",
+          "docs/en/docs/release-notes.md:755-764",
           "tests/test_custom_route_class.py"
         ],
         "evidence_basis": [
           "alpha-or-advanced-release-note",
           "tests-are-implementation-coverage-only"
         ],
-        "reason": "APIRoute.matches() is a routing customization point. The release notes call routing customization undocumented, experimental, and unsupported as a stable contract, while still describing consumer customization; retain uncertain rather than infer private status.",
+        "reason": "fastapi.routing.APIRoute.matches() is a routing customization point. The pinned release notes describe routing customization as experimental and potentially changing, and say custom route/router subclasses are undocumented. Keep it uncertain rather than infer private status.",
         "source": {
           "line": 1306,
           "path": "fastapi/routing.py"
@@ -53843,7 +53844,7 @@
       "classification_review": {
         "evidence": [
           "fastapi/routing.py:2890-2898",
-          "docs/en/docs/release-notes.md:374-382",
+          "docs/en/docs/release-notes.md:755-764",
           "tests/test_custom_route_class.py",
           "tests/test_ws_router.py"
         ],
@@ -53851,7 +53852,7 @@
           "alpha-or-advanced-release-note",
           "tests-are-implementation-coverage-only"
         ],
-        "reason": "APIRouter.handle() is an alpha routing customization point. The release notes say it is not officially supported and may change, while describing consumer customization; retain uncertain rather than infer private status.",
+        "reason": "fastapi.routing.APIRouter.handle() is a routing customization point. The pinned release notes describe it as experimental and potentially changing, and say custom route/router subclasses are undocumented. Keep it uncertain rather than infer private status.",
         "source": {
           "line": 2890,
           "path": "fastapi/routing.py"
@@ -54023,7 +54024,7 @@
       "classification_review": {
         "evidence": [
           "fastapi/routing.py:2900-2908",
-          "docs/en/docs/release-notes.md:374-382",
+          "docs/en/docs/release-notes.md:755-764",
           "tests/test_custom_route_class.py",
           "tests/test_ws_router.py"
         ],
@@ -54031,7 +54032,7 @@
           "alpha-or-advanced-release-note",
           "tests-are-implementation-coverage-only"
         ],
-        "reason": "APIRouter.matches() is an alpha routing customization point. The release notes say it is not officially supported and may change, while describing consumer customization; retain uncertain rather than infer private status.",
+        "reason": "fastapi.routing.APIRouter.matches() is a routing customization point. The pinned release notes describe routing customization as experimental and potentially changing, and say custom route/router subclasses are undocumented. Keep it uncertain rather than infer private status.",
         "source": {
           "line": 2900,
           "path": "fastapi/routing.py"
@@ -54587,7 +54588,7 @@
       "classification_evidence_rule": "Reviewed pinned-source/docs/test evidence; tests establish exercised behavior, while public documentation, release notes, or explicit deprecation evidence establish lifecycle and exposure.",
       "classification_review": {
         "evidence": [
-          "docs/en/docs/release-notes.md:7226",
+          "docs/en/docs/release-notes.md:7605",
           "tests/test_custom_route_class.py",
           "tests/test_ws_router.py"
         ],
@@ -54605,7 +54606,7 @@
       "public_evidence": [
         {
           "kind": "reviewed_documentation_contract",
-          "line": 7226,
+          "line": 7605,
           "path": "docs/en/docs/release-notes.md"
         }
       ],
@@ -81589,12 +81590,12 @@
       "candidate_count": 138,
       "candidate_set": "uncertain public_or_protocol_callable candidates from the 277-callable inventory subset",
       "recommendation_counts": {
-        "private/internal": 72,
+        "private/internal": 73,
         "supported": 53,
-        "uncertain": 13
+        "uncertain": 12
       }
     },
-    "sha256": "720c4ff9985dc9e37762bea6dffddb499e5dc3cfa3b4cee82c513c5b19ebe3cf"
+    "sha256": "5ec1908474eeab28fb18cac9a9b54f4f8e726f1321b19cd36914fb62a4425640"
   },
   "api_import_binding_classification_review": {
     "path": "tests/fixtures/api-import-binding-classification-review.json",
@@ -82022,9 +82023,9 @@
     "alias_records": 71,
     "api_candidates": 1831,
     "api_classifications": {
-      "private/internal": 1279,
+      "private/internal": 1280,
       "supported": 494,
-      "uncertain": 58
+      "uncertain": 57
     },
     "documentation_headings_inheriting_page_exclusion": 454,
     "documentation_headings_without_feature_signal": 0,
