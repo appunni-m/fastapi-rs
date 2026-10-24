@@ -18950,7 +18950,7 @@ impl FastApiCall {
             )
         };
         if let Some(openapi_url) = openapi_url.as_deref().filter(|url| !url.is_empty()) {
-            if route_path == openapi_url && method == "GET" {
+            if route_path == openapi_url && matches!(method.as_str(), "GET" | "HEAD") {
                 let root_path = root_path.trim_end_matches('/');
                 let public_app = fastapi_public_instance(py, &self.app)?;
                 let schema = public_app.bind(py).getattr("openapi")?.call0()?.unbind();

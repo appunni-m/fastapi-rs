@@ -15107,17 +15107,25 @@
     {
       "id": "instance-openapi-method",
       "input_path": "tests/fixtures/inputs/parity/instance-openapi-method.json",
-      "input_sha256": "f39e0a044d58a0c76f8fb3fb5f9cf2f6024ad120c84f1df04948e40e40e16723",
+      "input_sha256": "45fe3acbb250753c3af2a2b5deca84cc5b98e8e3daa2ddb332d5f1b4dd60a5f4",
       "recipe_path": "tests/fixtures/input-recipes/parity/instance-openapi-method.yaml",
-      "recipe_sha256": "f5eaf17255d6f0698525ea7c39e1af434b3bbccb63ed662297329b568337ef74",
+      "recipe_sha256": "654e746a360b0a6c6628100a4733114ca62b9a694024e7673a97ab0e038bed1d",
       "case_ids": [
-        "fastapi.instance-openapi-method.instance-replacement"
+        "fastapi.instance-openapi-method.instance-replacement",
+        "fastapi.instance-openapi-method.generated-route-head"
       ],
       "workload_path": "tests/fixtures/workloads/instance_openapi_method.py",
       "workload_sha256": "bdfd82c2e66d4b89cadbed47cb8f668d71ac30e5e4972d32944c61605345d297",
       "case_contracts": [
         {
           "case_id": "fastapi.instance-openapi-method.instance-replacement",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:how-to/extending-openapi.md"
+          ]
+        },
+        {
+          "case_id": "fastapi.instance-openapi-method.generated-route-head",
           "verification": "parity",
           "requirement_refs": [
             "source:documented-page:how-to/extending-openapi.md"
@@ -59948,15 +59956,20 @@
       "fixture_id": "fastapi.docs.how-to-extending-openapi",
       "workflow_id": "instance-openapi-method",
       "coverage_status": "partial",
-      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.status, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "coverage_scope": "Partial independent sample across 2 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, docs.response.body.bytes, docs.response.headers, docs.response.status, http.body.bytes, http.headers.ordered, http.status, openapi.document. Unlisted functions, branches, configurations, and edge cases are not claimed.",
       "case_ids": [
+        "fastapi.instance-openapi-method.generated-route-head",
         "fastapi.instance-openapi-method.instance-replacement"
       ],
       "observation_selectors": [
         "construction.exception_class",
         "construction.exception_message",
         "construction.outcome",
+        "docs.response.body.bytes",
+        "docs.response.headers",
         "docs.response.status",
+        "http.body.bytes",
+        "http.headers.ordered",
         "http.status",
         "openapi.document"
       ]

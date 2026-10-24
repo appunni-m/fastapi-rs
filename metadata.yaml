@@ -9077,6 +9077,10 @@ reviewed_api_contract_overlay:
           case_id: fastapi.instance-openapi-method.instance-replacement
           workload_path: tests/fixtures/workloads/instance_openapi_method.py
           observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, openapi.document]
+        - recipe_path: tests/fixtures/input-recipes/parity/instance-openapi-method.yaml
+          case_id: fastapi.instance-openapi-method.generated-route-head
+          workload_path: tests/fixtures/workloads/instance_openapi_method.py
+          observation_selectors: [construction.outcome, construction.exception_class, construction.exception_message, http.status, http.headers.ordered, http.body.bytes]
         - recipe_path: tests/fixtures/input-recipes/parity/fastapi-root-path-tutorial-review.yaml
           case_id: fastapi.applications.root-path.configured-over-incoming-scope
           workload_path: tests/fixtures/workloads/fastapi_root_path_tutorial_review.py
