@@ -14265,7 +14265,7 @@ def generate(args: argparse.Namespace) -> dict[str, Any]:
                 len(item.get("case_designs", [])) for item in fixture_backlog
             ),
             "test_function_workflow_case_links": sum(
-                len(case.get("workflow_cases", []))
+                len(case.get("workflow_cases", [])) + int(bool(case.get("workflow_case")))
                 for item in fixture_backlog
                 for case in item.get("case_designs", [])
             ),
@@ -15016,7 +15016,7 @@ def _sync_manifest_artifact_metadata(
             "designs": len(fixture_designs),
             "test_case_designs": sum(len(row.get("case_designs", [])) for row in fixture_designs),
             "test_function_workflow_case_links": sum(
-                len(case.get("workflow_cases", []))
+                len(case.get("workflow_cases", [])) + int(bool(case.get("workflow_case")))
                 for row in fixture_designs
                 for case in row.get("case_designs", [])
             ),

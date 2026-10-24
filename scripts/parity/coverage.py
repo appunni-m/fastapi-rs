@@ -4624,7 +4624,7 @@ def validate_compatibility_artifacts(
                 )
 
     test_function_workflow_case_links = sum(
-        len(design.get("workflow_cases", []))
+        len(design.get("workflow_cases", [])) + int(bool(design.get("workflow_case")))
         for fixture in fixture_rows
         for design in fixture.get("case_designs", [])
     )
