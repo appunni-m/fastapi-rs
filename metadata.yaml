@@ -16421,9 +16421,10 @@ reviewed_api_contract_overlay:
         known_gaps:
           - >-
             The cases below sample the public root class but do not exhaust every BinaryIO type,
-            Pydantic input or serialization mode, multipart edge, header encoding/order, or file
-            operation failure. See the canonical `fastapi.datastructures.UploadFile` contract for
-            selected class-level coverage and its remaining gaps.
+            Pydantic input values or all JSON Schema configuration combinations, multipart edges,
+            header encoding/order, or file operation failures. See the canonical
+            `fastapi.datastructures.UploadFile` contract for selected class-level coverage and its
+            remaining gaps.
       source_evidence:
         - path: fastapi/__init__.py
           kind: import-binding
@@ -16471,6 +16472,10 @@ reviewed_api_contract_overlay:
           observation_selectors: [http.status, http.body.bytes]
         - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
           case_id: fastapi.uploadfile.pydantic-contract.json-schema
+          workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+          case_id: fastapi.uploadfile.pydantic-contract.serialization-json-schema
           workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
           observation_selectors: [http.status, http.body.bytes]
         - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
@@ -16524,7 +16529,8 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         The root alias is the same class as `fastapi.datastructures.UploadFile` in the
         pinned source. The linked input cases map constructor and four method
-        signatures, class and method metadata, Pydantic schema and validation,
+        signatures, class and method metadata, Pydantic schema generation in
+        validation and serialization modes plus selected validation,
         selected invalid values, BytesIO and spooled-file operations, metadata
         mutation, propagated I/O errors, OpenAPI contribution, and multipart
         request-object identity. A standalone APIRoute.app case maps one
@@ -16698,6 +16704,9 @@ reviewed_api_contract_overlay:
             each async file method and the size increment after a failed write. The broader
             invalid-input types beyond current samples, unusual header combinations, and storage
             types beyond BytesIO and SpooledTemporaryFile remain unverified.
+          - >-
+            Bare TypeAdapter schema generation is observed in validation and serialization modes;
+            field composition and additional schema-generation configuration remain unverified.
       source_evidence:
         - path: fastapi/datastructures.py
           kind: source-definition
@@ -16731,6 +16740,10 @@ reviewed_api_contract_overlay:
           observation_selectors: [http.status, http.body.bytes]
         - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
           case_id: fastapi.uploadfile.pydantic-contract.json-schema
+          workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
+          observation_selectors: [http.status, http.body.bytes]
+        - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
+          case_id: fastapi.uploadfile.pydantic-contract.serialization-json-schema
           workload_path: tests/fixtures/workloads/uploadfile_pydantic_contract.py
           observation_selectors: [http.status, http.body.bytes]
         - recipe_path: tests/fixtures/input-recipes/parity/uploadfile-pydantic-contract.yaml
@@ -16784,7 +16797,8 @@ reviewed_api_contract_overlay:
       supported_slice: >-
         The public class constructs from BytesIO and SpooledTemporaryFile objects, exposes selected
         file metadata, supports the linked awaited file-operation sequence, generates its Pydantic
-        JSON schema, and accepts a Starlette UploadFile base instance through TypeAdapter. The
+        JSON schema in validation and serialization modes, and accepts a Starlette UploadFile base
+        instance through TypeAdapter. The
         spooled-file cases compare threshold equality, crossing, and an already-rolled file. The
         linked custom type cases observe validator diagnostics, including Python format-protocol
         behavior for one custom metaclass. The invalid-input matrix covers None, boolean, integer,

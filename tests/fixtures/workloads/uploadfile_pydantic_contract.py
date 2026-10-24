@@ -69,6 +69,10 @@ def create_app(_factory_input: dict[str, object], _event_trace: list[str]) -> Fa
     async def json_schema() -> dict[str, str]:
         return TypeAdapter(UploadFile).json_schema()
 
+    @app.get("/uploadfile-pydantic-contract/serialization-json-schema")
+    async def serialization_json_schema() -> dict[str, str]:
+        return TypeAdapter(UploadFile).json_schema(mode="serialization")
+
     @app.get("/uploadfile-pydantic-contract/accept-starlette-base")
     async def accept_starlette_base() -> dict[str, bool]:
         value = StarletteUploadFile(BytesIO(b"upload"), filename="upload.bin", size=6)
