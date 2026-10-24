@@ -7461,7 +7461,11 @@ reviewed_api_contract_overlay:
         - recipe_path: tests/fixtures/input-recipes/parity/router-prefix-and-nested-composition-upstream.yaml
           case_id: fastapi.test.test-router-include-context.test-repeated-deep-inclusions-handle-all-concrete-paths
           workload_path: tests/fixtures/workloads/router_prefix_and_nested_composition_upstream.py
-      feature_ids: [app-routing, dependency-security, response-serialization, python-data-encoding]
+        - recipe_path: tests/fixtures/input-recipes/parity/telemetry-exclude.yaml
+          case_id: fastapi.telemetry.exclude-http-scope
+          workload_path: tests/fixtures/workloads/telemetry_exclude.py
+          observation_selectors: [http.status, http.body.bytes, telemetry.server_spans]
+      feature_ids: [app-routing, dependency-security, response-serialization, python-data-encoding, telemetry]
       observation_selectors:
         - python.signature
         - telemetry.server_spans
@@ -7540,7 +7544,10 @@ reviewed_api_contract_overlay:
         Four additional-response cases cover media-type content merging, model-derived
         response schemas, preserved examples, and status-description defaults for
         declared responses; they do not establish arbitrary metadata-key or malformed
-        declaration parity.
+        declaration parity. The telemetry exclusion case observes one HTTP scope whose
+        callback returns true, including its completed response and absence of a server
+        span; callback errors, nonmatching scopes, metrics, logs, WebSocket/lifespan
+        behavior, and request-context clearing remain unproven.
       target_binding:
         implementation_owner: fastapi-rs
         status: partial-contract

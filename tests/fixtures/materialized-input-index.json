@@ -43846,6 +43846,29 @@
       ]
     },
     {
+      "id": "telemetry-exclude",
+      "input_path": "tests/fixtures/inputs/parity/telemetry-exclude.json",
+      "input_sha256": "148f0314bbd8ea02330f27aa28b1d3659e1aa65637172c56972091308a08e11b",
+      "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-exclude.yaml",
+      "recipe_sha256": "fcebe1b8f7a2690488711999206f83def0446a60eab5b1566489c569c06fadd7",
+      "case_ids": [
+        "fastapi.telemetry.exclude-http-scope"
+      ],
+      "workload_path": "tests/fixtures/workloads/telemetry_exclude.py",
+      "workload_sha256": "7680d5f2794ea56b7b0d5649dfd51e1eeb901a35dcf8aa2dbada700d1c371db3",
+      "oracle_profile_extension": "telemetry",
+      "case_contracts": [
+        {
+          "case_id": "fastapi.telemetry.exclude-http-scope",
+          "verification": "parity",
+          "requirement_refs": [
+            "source:documented-page:advanced/opentelemetry.md",
+            "source:upstream-test:tests/test_telemetry/test_http.py"
+          ]
+        }
+      ]
+    },
+    {
       "id": "telemetry-global-provider",
       "input_path": "tests/fixtures/inputs/parity/telemetry-global-provider.json",
       "input_sha256": "495ba9d25de0e78efc353534479db3c9dd0e80ea1da2d7a413c89f6491879e19",
@@ -79357,6 +79380,39 @@
       "observation_selectors": [
         "python.call_outcome",
         "python.signature"
+      ]
+    },
+    {
+      "source_item_id": "documented-page:advanced/opentelemetry.md",
+      "fixture_id": "fastapi.docs.advanced-opentelemetry",
+      "workflow_id": "telemetry-exclude",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status, telemetry.server_spans. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.telemetry.exclude-http-scope"
+      ],
+      "observation_selectors": [
+        "construction.exception_class",
+        "construction.exception_message",
+        "construction.outcome",
+        "http.body.bytes",
+        "http.status",
+        "telemetry.server_spans"
+      ]
+    },
+    {
+      "source_item_id": "upstream-test:tests/test_telemetry/test_http.py",
+      "fixture_id": "fastapi.test.test-telemetry-test-http",
+      "workflow_id": "telemetry-exclude",
+      "coverage_status": "partial",
+      "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, telemetry.server_spans. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+      "case_ids": [
+        "fastapi.telemetry.exclude-http-scope"
+      ],
+      "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
+        "telemetry.server_spans"
       ]
     },
     {

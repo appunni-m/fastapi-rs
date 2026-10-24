@@ -284682,6 +284682,23 @@
           },
           {
             "case_ids": [
+              "fastapi.telemetry.exclude-http-scope"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, http.body.bytes, http.status, telemetry.server_spans. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "construction.exception_class",
+              "construction.exception_message",
+              "construction.outcome",
+              "http.body.bytes",
+              "http.status",
+              "telemetry.server_spans"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-exclude.yaml",
+            "workflow_id": "telemetry-exclude"
+          },
+          {
+            "case_ids": [
               "fastapi.telemetry.global-tracer-provider-late-binding"
             ],
             "coverage_scope": "Partial independent sample across 1 case(s); observes construction.exception_class, construction.exception_message, construction.outcome, telemetry.server_spans. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -662493,6 +662510,20 @@
         "independent_workflow_mappings": [
           {
             "case_ids": [
+              "fastapi.telemetry.exclude-http-scope"
+            ],
+            "coverage_scope": "Partial independent sample across 1 case(s); observes http.body.bytes, http.status, telemetry.server_spans. Unlisted functions, branches, configurations, and edge cases are not claimed.",
+            "coverage_status": "partial",
+            "observation_selectors": [
+              "http.body.bytes",
+              "http.status",
+              "telemetry.server_spans"
+            ],
+            "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-exclude.yaml",
+            "workflow_id": "telemetry-exclude"
+          },
+          {
+            "case_ids": [
               "fastapi.telemetry.global-tracer-provider-late-binding"
             ],
             "coverage_scope": "Partial independent sample across 1 case(s); observes telemetry.server_spans. Unlisted functions, branches, configurations, and edge cases are not claimed.",
@@ -662658,12 +662689,26 @@
       },
       "mapping_status": "partially_mapped",
       "observation_selectors": [
+        "http.body.bytes",
+        "http.status",
         "telemetry.server_span_parent_context",
         "telemetry.server_spans"
       ],
       "review_reason": "At least one behavior mapping is contract-gated and is not represented by a complete independent workflow.",
       "review_status": "reviewed_partial",
       "selector_evidence": [
+        {
+          "case_ids": [
+            "fastapi.telemetry.exclude-http-scope"
+          ],
+          "recipe_path": "tests/fixtures/input-recipes/parity/telemetry-exclude.yaml",
+          "selectors": [
+            "http.body.bytes",
+            "http.status",
+            "telemetry.server_spans"
+          ],
+          "workflow_id": "telemetry-exclude"
+        },
         {
           "case_ids": [
             "fastapi.telemetry.global-tracer-provider-late-binding"

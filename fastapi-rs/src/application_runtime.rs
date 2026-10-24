@@ -4697,6 +4697,7 @@ pub(crate) struct PyFastApi {
     router_view: Option<Py<PyAny>>,
     telemetry_tracing: bool,
     telemetry_tracer_provider: Option<Py<PyAny>>,
+    telemetry_exclude: Option<Py<PyAny>>,
 }
 
 struct OpenApiRouteSnapshot {
@@ -5587,16 +5588,21 @@ impl PyFastApi {
         include_in_schema: bool,
         extra: Option<&Bound<'_, PyDict>>,
     ) -> PyResult<Self> {
-        let (telemetry_tracing, telemetry_tracer_provider) = match telemetry {
+        let (telemetry_tracing, telemetry_tracer_provider, telemetry_exclude) = match telemetry {
             Some(telemetry) => {
                 let telemetry = telemetry.bind(py);
                 let tracing = telemetry
                     .call_method1("get", ("tracing", true))?
                     .extract::<bool>()?;
                 let provider = telemetry.call_method1("get", ("tracer_provider", py.None()))?;
-                (tracing, (!provider.is_none()).then(|| provider.unbind()))
+                let exclude = telemetry.call_method1("get", ("exclude", py.None()))?;
+                (
+                    tracing,
+                    (!provider.is_none()).then(|| provider.unbind()),
+                    (!exclude.is_none()).then(|| exclude.unbind()),
+                )
             }
-            None => (true, None),
+            None => (true, None, None),
         };
         if openapi_url.is_some_and(|url| !url.is_empty()) && title.is_empty() {
             return Err(PyAssertionError::new_err(
@@ -5859,6 +5865,7 @@ impl PyFastApi {
             router_view: None,
             telemetry_tracing,
             telemetry_tracer_provider,
+            telemetry_exclude,
         };
         register_constructor_websocket_routes(&mut app, py)?;
         Ok(app)
@@ -7474,13 +7481,16 @@ impl PyFastApi {
         scope
             .bind(py)
             .set_item("app", fastapi_public_instance(py, &slf)?)?;
-        let (telemetry_tracing, configured_tracer_provider) = {
+        let (telemetry_tracing, configured_tracer_provider, telemetry_exclude) = {
             let app = slf.bind(py).borrow();
             (
                 app.telemetry_tracing,
                 app.telemetry_tracer_provider
                     .as_ref()
                     .map(|provider| provider.clone_ref(py)),
+                app.telemetry_exclude
+                    .as_ref()
+                    .map(|exclude| exclude.clone_ref(py)),
             )
         };
         let stack = Self::middleware_stack_for(slf, py)?;
@@ -7488,6 +7498,14 @@ impl PyFastApi {
             if let Some(tracer_provider) =
                 fastapi_telemetry_tracer_provider(py, configured_tracer_provider)?
             {
+                if let Some(exclude) = telemetry_exclude {
+                    if exclude.bind(py).call1((scope.bind(py),))?.is_truthy()? {
+                        return stack
+                            .bind(py)
+                            .call1((scope.bind(py), receive.bind(py), send.bind(py)))
+                            .map(Bound::unbind);
+                    }
+                }
                 return into_python_awaitable(
                     py,
                     FastApiTelemetryCall {

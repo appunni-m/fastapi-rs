@@ -349,6 +349,16 @@ def _target_execution_identity(
     return result
 
 
+def _oracle_result_identity(identity: Any, workflow_schema: str) -> Any:
+    """Add the result-schema-only null fault flag absent from oracle profile probes."""
+    prefix = "fastapi-rs/python-asgi-workflow@"
+    if isinstance(identity, dict) and workflow_schema.startswith(prefix):
+        version = workflow_schema.removeprefix(prefix)
+        if version.isdecimal() and int(version) >= 7:
+            return {**identity, "fault_injection_compiled": None}
+    return identity
+
+
 def _case_result_matches(result: dict[str, Any], *, product: str, context: dict[str, Any]) -> bool:
     result_identity = result.get("identity")
     expected_identity = (
@@ -1037,7 +1047,7 @@ def main() -> int:
             "input_sha256": input_sha256,
             "recipe_sha256": recipe_sha256,
             "workload_sha256": workload_sha256,
-            "oracle_identity": oracle_profile_identity,
+            "oracle_identity": _oracle_result_identity(oracle_profile_identity, schema),
             "target_execution_identity": _target_execution_identity(
                 target_profile_identity, runtime_source_scope_sha256=runtime_source_scope_sha256
             ),
@@ -1299,10 +1309,9 @@ def main() -> int:
         comparison_reference = _artifact_reference(comparison_artifact, product=None)
         oracle_result = read_json(ROOT / oracle_artifact)
         target_result = read_json(ROOT / target_artifact)
-        if (
-            not isinstance(oracle_result, dict)
-            or oracle_result.get("identity") != oracle_profile_identity
-        ):
+        if not isinstance(oracle_result, dict) or oracle_result.get(
+            "identity"
+        ) != _oracle_result_identity(oracle_profile_identity, schema):
             raise ContractError("oracle result identity changed after profile probing")
         if (
             not isinstance(target_result, dict)

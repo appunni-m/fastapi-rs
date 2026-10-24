@@ -585,7 +585,7 @@ source_artifacts:
   compatibility_atlas:
     path: tests/fixtures/compatibility-atlas.json
     schema: fastapi-rs/compatibility-atlas@12
-    sha256: c9c3e80acf45ca7e564db5b1fbca4512c742bd517a47e245b0ffb8fb16c907cc
+    sha256: 84e5ea9fbd91ba6177724d6bee396bcf8bbc63abea37bb533607527dae45084f
     purpose: source-backed API classifications and fixture candidates; not parity evidence
     counts:
       api_candidates: 1831
@@ -625,7 +625,7 @@ source_artifacts:
   fixture_backlog:
     path: tests/fixtures/fixture-backlog.json
     schema: fastapi-rs/fixture-backlog@3
-    sha256: c149ff473e82992d593689b8f8af6692f83c458071ddbdb8eaf275101987d9d8
+    sha256: c3df1a0ad290cf9bf0cd2adfcf51642a1c0146a470f904adc3818a2e80fb2148
     purpose: source-linked input-only fixture design queue; no expected results
     counts:
       designs: 914
@@ -665,14 +665,14 @@ source_artifacts:
   materialized_input_index:
     path: tests/fixtures/materialized-input-index.json
     schema: fastapi-rs/materialized-input-index@12
-    sha256: 3cc3fa4ff6dd6e44f11329d308d21ca1196fbf83bd118c7068ac2e1a20451f48
+    sha256: 934e4bfa26b6530a159faffd1488de6d6b1d8291b2d72c48a09d87fcc1e2fd3e
     schema_path: tests/fixtures/schemas/materialized-input-index-v12.schema.json
     schema_sha256: 668c3c0e71c739ab05d23b414f07c4ccfe6227116094891280943a8326e1d77a
     purpose: Partial, independently authored workflow mappings back to the source fixture backlog
     counts:
-      workflows: 747
-      cases: 3173
-      partial_source_mappings: 2030
+      workflows: 748
+      cases: 3174
+      partial_source_mappings: 2032
 
 contract_metadata:
   aliases:
@@ -1050,7 +1050,7 @@ unresolved:
     schema_sha256: 0d4ea9055fad2a4b43b51bf8b4e52bb5f8dd83a9215879cc0c5f647627bac94a
     result_schema_id: fastapi-rs/python-asgi-workflow-result@19
     result_schema_path: tests/fixtures/schemas/python-asgi-workflow-result-v19.schema.json
-    result_schema_sha256: ce17e1b15383d09fc999c3399fcd702b630e857ef83d4b43e4942fd30171c154
+    result_schema_sha256: 7fe022c824b9109e6861f6761f1e3a4055100cae5e2324b43e22d223eed4ab44
     comparison_schema_id: fastapi-rs/python-asgi-comparison@20
     comparison_schema_path: tests/fixtures/schemas/python-asgi-comparison-v20.schema.json
     comparison_schema_sha256: 9d3fdbe5bd57dc31f108f3169957329918218bbc9682a3c689f15220762afd8f
@@ -1571,7 +1571,7 @@ api_surface_contract:
     symbols_with_error_contract_refs: 15
     symbols_with_direct_api_input_workflow_refs: 197
     symbols_with_operation_fixture_refs: 491
-    operation_fixture_refs: 3074
+    operation_fixture_refs: 3075
     symbols_with_identity_workflow_refs: 44
     identity_workflow_refs: 52
   symbols:
@@ -12152,12 +12152,28 @@ api_surface_contract:
       - http.body.bytes
       - http.headers.ordered
       - http.status
+    - workflow_id: telemetry-exclude
+      input_path: tests/fixtures/inputs/parity/telemetry-exclude.json
+      input_sha256: 148f0314bbd8ea02330f27aa28b1d3659e1aa65637172c56972091308a08e11b
+      recipe_path: tests/fixtures/input-recipes/parity/telemetry-exclude.yaml
+      recipe_sha256: fcebe1b8f7a2690488711999206f83def0446a60eab5b1566489c569c06fadd7
+      workload_path: tests/fixtures/workloads/telemetry_exclude.py
+      workload_sha256: 7680d5f2794ea56b7b0d5649dfd51e1eeb901a35dcf8aa2dbada700d1c371db3
+      case_id: fastapi.telemetry.exclude-http-scope
+      observation_selectors:
+      - construction.exception_class
+      - construction.exception_message
+      - construction.outcome
+      - http.body.bytes
+      - http.status
+      - telemetry.server_spans
     identity_workflow_refs: []
     feature_ids:
     - app-routing
     - dependency-security
     - python-data-encoding
     - response-serialization
+    - telemetry
     observation_selectors:
     - asgi.application_error.exception
     - asgi.send.message_types
